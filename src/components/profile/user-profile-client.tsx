@@ -220,7 +220,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   if (loading || !mounted) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center py-20 text-center">
+      <div className="flex h-full w-full flex-col items-center justify-center py-20 text-center text-left">
         <div className="relative mb-8 mx-auto">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
             <div className="absolute inset-0 flex items-center justify-center">
@@ -234,7 +234,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   if (!userProfile) {
     return (
-      <div className="text-center py-24 px-4 space-y-6">
+      <div className="text-center py-24 px-4 space-y-6 text-left">
         <div className="bg-muted/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
             <Globe className="h-10 w-10 text-muted-foreground/30" />
         </div>
@@ -541,28 +541,27 @@ export default function UserProfileClient({ userId }: { userId: string }) {
           mounted && isMobile ? (
               <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                   <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                      <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                          <SheetHeader className="text-left flex-shrink-0">
-                              <SheetTitle className="text-2xl font-black font-headline">Refine Your Identity</SheetTitle>
-                              <SheetDescription className="text-sm font-medium mt-1">Update your global Kingdom profile.</SheetDescription>
-                              <div className="flex items-center gap-2 mt-4"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
+                      <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                          <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
+                              <SheetTitle className="text-2xl font-black font-headline text-left text-left text-left">Refine Your Identity</SheetTitle>
+                              <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update your global Kingdom profile.</SheetDescription>
                           </SheetHeader>
                       </div>
-                      <ScrollArea className="flex-grow p-8">
+                      <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left">
                           <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
                       </ScrollArea>
                   </SheetContent>
               </Sheet>
           ) : (
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                  <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                      <div className="p-8 border-b shrink-0 bg-muted/10">
-                          <DialogHeader>
-                              <DialogTitle className="text-2xl font-bold font-headline">Edit Kingdom Profile</DialogTitle>
-                              <DialogDescription className="text-sm font-medium">Keep your identity current for the harvest workforce.</DialogDescription>
+                  <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left">
+                      <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
+                          <DialogHeader className="text-left text-left text-left text-left text-left">
+                              <DialogTitle className="text-2xl font-bold font-headline text-left text-left text-left text-left text-left">Edit Kingdom Profile</DialogTitle>
+                              <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left">Keep your identity current for the harvest workforce.</DialogDescription>
                           </DialogHeader>
                       </div>
-                      <ScrollArea className="flex-1 min-h-0 p-8">
+                      <ScrollArea className="flex-1 min-h-0 p-8 text-left text-left text-left text-left text-left text-left">
                           <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
                       </ScrollArea>
                   </DialogContent>

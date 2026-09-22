@@ -93,12 +93,6 @@ function SoulSelectionDialog({
             <DialogHeader className="text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
                 <DialogDescription className="text-sm font-medium">Select a convert to link this action to their record.</DialogDescription>
-                {isMobile && (
-                    <div className="flex items-center gap-2 mt-4">
-                        <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" />
-                        <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span>
-                    </div>
-                )}
             </DialogHeader>
         </div>
     );

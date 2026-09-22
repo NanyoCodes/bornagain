@@ -15,12 +15,12 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+} from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -99,7 +99,6 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
         snapshots.forEach(snap => {
             snap.docs.forEach(d => {
                 const s = { id: d.id, ...d.data() } as Soul;
-                // Exclude self AND records where history is locked
                 if (s.userId !== currentUser.uid && !s.isHistoryPrivate) {
                      soulsMap.set(d.id, s);
                 }
@@ -162,70 +161,70 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
             const profileUrl = `/profile/${record.user.id}`;
 
             return (
-                <div key={`${record.user.id}-${idx}`} className="space-y-6">
-                    <div className="flex items-center gap-3 sm:gap-4">
+                <div key={`${record.user.id}-${idx}`} className="space-y-6 text-left">
+                    <div className="flex items-center gap-3 sm:gap-4 text-left">
                         <Link href={profileUrl} onClick={(e) => e.stopPropagation()} className="shrink-0 group">
-                            <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border-2 border-primary/10 shadow-lg group-hover:scale-105 transition-transform">
+                            <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border-2 border-primary/10 shadow-lg group-hover:scale-105 transition-transform text-left">
                                 <AvatarImage src={record.user.photoURL} className="object-cover" />
                                 <AvatarFallback className="font-black bg-primary/5 text-primary text-center flex items-center justify-center w-full h-full text-[10px] sm:text-base">
                                     {record.user.firstName?.charAt(0)}
                                 </AvatarFallback>
                             </Avatar>
                         </Link>
-                        <div className="min-w-0 flex-1">
-                            <Link href={profileUrl} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30">
-                                <p className="font-black text-sm sm:text-lg uppercase tracking-tight truncate">
+                        <div className="min-w-0 flex-1 text-left">
+                            <Link href={profileUrl} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 text-left">
+                                <p className="font-black text-sm sm:text-lg uppercase tracking-tight truncate text-left">
                                     {record.user.firstName} {record.user.lastName}
                                 </p>
                             </Link>
-                            <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1">
-                                <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary opacity-60" />
-                                <p className="text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">
+                            <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 text-left">
+                                <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary opacity-60 text-left" />
+                                <p className="text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate text-left">
                                     Station: {record.user.location?.city || 'Global Network'}
                                 </p>
                             </div>
                         </div>
-                        <Badge variant="secondary" className="h-5 sm:h-6 px-1.5 sm:px-3 text-[7px] sm:text-[9px] font-black uppercase tracking-widest shrink-0">
+                        <Badge variant="secondary" className="h-5 sm:h-6 px-1.5 sm:px-3 text-[7px] sm:text-[9px] font-black uppercase tracking-widest shrink-0 text-left">
                             {record.soul.status}
                         </Badge>
                     </div>
 
-                    <div className="pl-4 sm:pl-6 border-l-4 border-primary/20 space-y-6 sm:space-y-8 ml-5 sm:ml-7">
-                        <h4 className="text-[8px] sm:text-[10px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2">
-                            <History className="h-3 sm:h-3.5 w-3 sm:w-3.5" /> Partner Log History
+                    <div className="pl-4 sm:pl-6 border-l-4 border-primary/20 space-y-6 sm:space-y-8 ml-5 sm:ml-7 text-left text-left">
+                        <h4 className="text-[8px] sm:text-[10px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left text-left">
+                            <History className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-left text-left" /> Partner Log History
                         </h4>
                         {history.length > 0 ? history.map((log, lIdx) => {
                             const date = safeToDate(log.date);
                             return (
-                                <div key={lIdx} className="relative">
-                                    <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
-                                        <div className="flex items-center gap-2">
-                                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground opacity-40" />
-                                            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                <div key={lIdx} className="relative text-left">
+                                    <div className="flex justify-between items-start mb-3 flex-wrap gap-2 text-left">
+                                        <div className="flex items-center gap-2 text-left">
+                                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground opacity-40 text-left" />
+                                            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 text-left">
                                                 {date ? format(date, "MMM d, p") : 'Recently'}
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="bg-muted/30 rounded-[1rem] sm:rounded-[1.5rem] p-3 sm:p-5 border shadow-inner text-left">
+                                    <div className="bg-muted/30 rounded-[1rem] sm:rounded-[1.5rem] p-3 sm:p-5 border shadow-inner text-left text-left">
                                         {log.actions && log.actions.length > 0 && (
-                                            <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
+                                            <div className="flex flex-wrap gap-1 mb-2 sm:mb-3 text-left">
                                                 {log.actions.map(aId => {
                                                     const action = actionItems.find(a => a.id === aId);
                                                     return action ? (
-                                                        <Badge key={aId} variant="outline" className="h-3.5 sm:h-4 px-1 sm:px-1.5 text-[7px] sm:text-[8px] font-black uppercase bg-background border-primary/10">{action.label}</Badge>
+                                                        <Badge key={aId} variant="outline" className="h-3.5 sm:h-4 px-1 sm:px-1.5 text-[7px] sm:text-[8px] font-black uppercase bg-background border-primary/10 text-left">{action.label}</Badge>
                                                     ) : null;
                                                 })}
                                             </div>
                                         )}
-                                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium leading-relaxed">
+                                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium leading-relaxed text-left text-left">
                                             &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                         </p>
                                     </div>
                                 </div>
                             );
                         }) : (
-                            <div className="py-6 sm:py-8 bg-muted/10 rounded-[1rem] sm:rounded-[1.5rem] border-2 border-dashed text-center">
-                                <p className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-black tracking-widest opacity-40">No detailed logs found.</p>
+                            <div className="py-6 sm:py-8 bg-muted/10 rounded-[1rem] sm:rounded-[1.5rem] border-2 border-dashed text-center text-left">
+                                <p className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-black tracking-widest opacity-40 text-left">No detailed logs found.</p>
                             </div>
                         )}
                     </div>
@@ -233,12 +232,12 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                 </div>
             );
         })}
-        <div className="p-8 border-t bg-muted/5 flex flex-col items-center text-center shrink-0 gap-4">
-             <div className="p-4 bg-primary/5 rounded-2xl border border-dashed border-primary/20 flex items-center gap-3">
-                <Lock className="h-4 w-4 text-primary" />
-                <p className="text-[10px] font-bold text-primary uppercase">You can lock your interaction history from others</p>
+        <div className="p-8 border-t bg-muted/5 flex flex-col items-center text-center shrink-0 gap-4 text-left">
+             <div className="p-4 bg-primary/5 rounded-2xl border border-dashed border-primary/20 flex items-center gap-3 text-left">
+                <Lock className="h-4 w-4 text-primary text-left" />
+                <p className="text-[10px] font-bold text-primary uppercase text-left">You can lock your interaction history from others</p>
             </div>
-            <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] leading-relaxed max-w-sm">
+            <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] leading-relaxed max-w-sm text-left">
                 "Iron sharpens iron, and one man sharpens another." — Proverbs 27:17
             </p>
         </div>
@@ -252,20 +251,20 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
             <TooltipTrigger asChild>
                 <Badge 
                     variant="outline" 
-                    className="h-8 px-3 gap-2 bg-primary/10 text-primary border-primary/30 animate-in fade-in zoom-in shrink-0 cursor-pointer hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/5 active:scale-95"
+                    className="h-8 px-3 gap-2 bg-primary/10 text-primary border-primary/30 animate-in fade-in zoom-in shrink-0 cursor-pointer hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/5 active:scale-95 text-left"
                     onClick={(e) => {
                         e.stopPropagation();
                         setIsOpen(true);
                     }}
                 >
-                    <Users className="h-4 w-4" />
-                    <span className="text-[11px] font-black tracking-widest">{uniqueUserCount}</span>
+                    <Users className="h-4 w-4 text-left" />
+                    <span className="text-[11px] font-black tracking-widest text-left">{uniqueUserCount}</span>
                 </Badge>
             </TooltipTrigger>
-            <TooltipContent className="rounded-xl border-primary/20 shadow-xl max-w-[200px] p-3">
-                <p className="text-[10px] font-bold uppercase text-center leading-tight">
+            <TooltipContent className="rounded-xl border-primary/20 shadow-xl max-w-[200px] p-3 text-left">
+                <p className="text-[10px] font-bold uppercase text-center leading-tight text-left">
                     {uniqueUserCount} Mutual Connections<br/>
-                    <span className="text-primary mt-1 block">you can lock your interaction history from others</span>
+                    <span className="text-primary mt-1 block text-left">you can lock your interaction history from others</span>
                 </p>
             </TooltipContent>
         </Tooltip>
@@ -273,45 +272,45 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
 
       {mounted && (
         isMobile ? (
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <Drawer open={isOpen} onOpenChange={setIsOpen}>
+                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0">
-                            <div className="flex items-center gap-3 mb-2">
-                                <Sparkles className="h-5 w-5 text-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Mutual effort</span>
+                        <DrawerHeader className="text-left flex-shrink-0 text-left">
+                            <div className="flex items-center gap-3 mb-2 text-left">
+                                <Sparkles className="h-5 w-5 text-primary text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Mutual effort</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">{titleText}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">{descText}</SheetDescription>
-                        </SheetHeader>
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance text-left">{titleText}</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">{descText}</DrawerDescription>
+                        </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-grow min-h-0">
-                        <div className="p-6">
+                    <ScrollArea className="flex-grow min-h-0 text-left">
+                        <div className="p-6 text-left">
                             {innerContent}
                         </div>
                     </ScrollArea>
-                </SheetContent>
-            </Sheet>
+                </DrawerContent>
+            </Drawer>
         ) : (
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent className="sm:max-w-xl max-h-[90dvh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                        <DialogHeader className="text-left text-left">
-                            <div className="flex items-center gap-3 mb-2 text-left">
-                                <Sparkles className="h-5 w-5 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Mutual effort</span>
+                        <DialogHeader className="text-left text-left text-left">
+                            <div className="flex items-center gap-3 mb-2 text-left text-left text-left">
+                                <Sparkles className="h-5 w-5 text-primary text-left text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Mutual effort</span>
                             </div>
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance text-left">{titleText}</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1 text-left">{descText}</DialogDescription>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance text-left text-left text-left">{titleText}</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">{descText}</DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-grow min-h-0 text-left">
-                        <div className="p-8 text-left">
+                    <ScrollArea className="flex-grow min-h-0 text-left text-left">
+                        <div className="p-8 text-left text-left">
                             {innerContent}
                         </div>
                     </ScrollArea>
-                    <DialogFooter className="p-6 border-t bg-muted/5 shrink-0 text-left">
-                        <Button variant="outline" className="rounded-full px-8 text-left" onClick={() => setIsOpen(false)}>Close</Button>
+                    <DialogFooter className="p-6 border-t bg-muted/5 shrink-0 text-left text-left">
+                        <Button variant="outline" className="rounded-full px-8 text-left text-left" onClick={() => setIsOpen(false)}>Close</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

@@ -63,7 +63,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 
 const strongholdCategories = [
     'Pride', 'Lust', 'Fear', 'Bitterness', 'Poverty', 'Unforgiveness', 'Anger', 'Discouragement', 'Addiction', 'Loneliness', 'Laziness', 'Confusion', 'Grief', 'Disobedience', 'Comparison', 'Self-Righteousness', 'Unbelief', 'Gluttony', 'Depression', 'Procrastination', 'Greed', 'Rejection', 'Worldliness', 'Jealousy', 'Other'
@@ -344,21 +344,17 @@ export function StrongholdTracker() {
             </CardContent>
 
             {mounted && isMobile ? (
-                <Sheet open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <SheetContent side="bottom" hideCloseButton className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <Drawer open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
+                    <DrawerContent hideCloseButton className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                            <SheetHeader className="text-left flex-shrink-0">
+                            <DrawerHeader className="text-left flex-shrink-0">
                                 <div className="flex items-center gap-2 mb-2">
                                     <ShieldCheck className="h-4 w-4 text-primary" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Warfare Protocol</span>
                                 </div>
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Enter the Warfare</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Naming a struggle is the first step toward the Light.</SheetDescription>
-                                <div className="flex items-center gap-2 mt-4 text-left">
-                                    <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" />
-                                    <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">swipe down to close the dialog</span>
-                                </div>
-                            </SheetHeader>
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Enter the Warfare</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1">Naming a struggle is the first step toward the Light.</DrawerDescription>
+                            </DrawerHeader>
                         </div>
                         <ScrollArea className="flex-grow">
                             <div className="p-8">
@@ -368,12 +364,12 @@ export function StrongholdTracker() {
                         <div className="p-8 border-t bg-background/80 backdrop-blur-sm">
                             {formFooter}
                         </div>
-                    </SheetContent>
-                </Sheet>
+                    </DrawerContent>
+                </Drawer>
             ) : (
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left">
                             <DialogHeader className="text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Enter the Warfare</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
@@ -391,16 +387,16 @@ export function StrongholdTracker() {
 
             <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
                 <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                         <DialogHeader className="text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Share Your Victory</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Your Victory</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left">
                                 Encourage the body of Christ by sharing how God gave you victory over "{testimonyStronghold?.title}".
                             </DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left">
-                        <div className="p-8 text-left">
+                    <ScrollArea className="flex-1 min-h-0">
+                        <div className="p-8">
                             {userProfile && testimonyStronghold && (
                                 <CreateTestimonyForm 
                                     userProfile={userProfile} 
