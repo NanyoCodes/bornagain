@@ -227,12 +227,12 @@ export function StrongholdTracker() {
 
             <CardHeader className="p-4 sm:p-6 pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1">
+                    <div className="space-y-1 text-left">
                         <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                             <Flame className="h-5 w-5 text-primary" />
                             Victory Tracker
                         </CardTitle>
-                        <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Overcoming strongholds in Christ</CardDescription>
+                        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Overcoming strongholds in Christ</p>
                     </div>
                     <Button onClick={() => setIsAddOpen(true)} className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
                         <Plus className="mr-2 h-4 w-4" />
