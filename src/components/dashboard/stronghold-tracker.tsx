@@ -221,8 +221,8 @@ export function StrongholdTracker() {
 
     return (
         <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory text-left">
-            <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/victory:opacity-[0.05] transition-opacity">
-                <ShieldCheck className="h-32 w-32 text-primary rotate-12" />
+            <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/victory:opacity-[0.05] transition-opacity text-left">
+                <ShieldCheck className="h-32 w-32 text-primary rotate-12 text-left" />
             </div>
 
             <CardHeader className="p-4 sm:p-6 pb-4">
@@ -243,7 +243,7 @@ export function StrongholdTracker() {
 
             <CardContent className="px-4 sm:px-6 pb-6 space-y-4 text-left">
                 {loading ? (
-                    <div className="flex justify-center py-10 text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left text-left" /></div>
+                    <div className="flex justify-center py-10 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div>
                 ) : strongholds && strongholds.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                         {strongholds.map((s) => {
@@ -258,16 +258,16 @@ export function StrongholdTracker() {
                                     "p-0 rounded-[1.5rem] border-2 transition-all group/item relative overflow-hidden text-left",
                                     isVictorious ? "bg-green-500/5 border-green-500/20" : "bg-muted/10 border-transparent hover:border-primary/10"
                                 )}>
-                                    <div className="p-4 text-left text-left">
+                                    <div className="p-4 text-left">
                                         <div className="flex justify-between items-start mb-3 text-left">
                                             <div className="min-w-0 flex-1 text-left">
                                                 <div className="flex items-center gap-2 mb-1 text-left">
-                                                    <Link href={circleLink} className="text-left text-left">
+                                                    <Link href={circleLink} className="text-left text-left text-left">
                                                         <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50 hover:bg-primary/10 transition-colors cursor-pointer text-left">{s.category}</Badge>
                                                     </Link>
                                                     {isVictorious && <Badge className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-green-500 text-white border-none text-left">Victorious</Badge>}
                                                 </div>
-                                                <Link href={circleLink} className="group/title text-left">
+                                                <Link href={circleLink} className="group/title text-left text-left text-left">
                                                     <h4 className="font-black text-sm sm:text-base uppercase tracking-tight truncate group-hover/title:text-primary transition-colors text-left">{s.title}</h4>
                                                 </Link>
                                             </div>
@@ -301,10 +301,10 @@ export function StrongholdTracker() {
                                         </div>
 
                                         {isVictorious && (
-                                            <div className="flex items-center justify-between gap-4 py-1 text-left text-left text-left">
-                                                <div className="flex items-center gap-3 min-w-0 text-left text-left text-left">
-                                                    <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0 text-left text-left text-left">
-                                                        <CheckCircle2 className="h-5 w-5 text-green-600 text-left text-left text-left" />
+                                            <div className="flex items-center justify-between gap-4 py-1 text-left">
+                                                <div className="flex items-center gap-3 min-w-0 text-left">
+                                                    <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0 text-left">
+                                                        <CheckCircle2 className="h-5 w-5 text-green-600 text-left" />
                                                     </div>
                                                     <p className="text-[10px] font-bold text-green-700 leading-tight italic break-words text-left">
                                                         "{victoryVerse.text}" — {victoryVerse.ref}
@@ -316,7 +316,7 @@ export function StrongholdTracker() {
                                                     className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20 px-3 shrink-0 text-left"
                                                     onClick={() => setTestimonyStronghold(s)}
                                                 >
-                                                    <Newspaper className="mr-1.5 h-3 w-3 text-left" />
+                                                    <Newspaper className="mr-1.5 h-3 w-3 text-left text-left text-left" />
                                                     TESTIFY
                                                 </Button>
                                             </div>
@@ -324,7 +324,7 @@ export function StrongholdTracker() {
                                     </div>
                                     
                                     <Link href={circleLink} className="block w-full py-2.5 bg-primary/20 border-t border-primary/20 text-center group/circle hover:bg-primary/30 transition-all text-left">
-                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary group-hover/circle:scale-105 transition-transform flex items-center justify-center gap-1.5 text-left text-left">
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary group-hover/circle:scale-105 transition-transform flex items-center justify-center gap-1.5 text-left">
                                             ENTER VICTORY CIRCLE <ArrowRight className="h-3 w-3 text-left" />
                                         </span>
                                     </Link>
@@ -343,38 +343,38 @@ export function StrongholdTracker() {
 
             {mounted && isMobile ? (
                 <Drawer open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DrawerContent hideCloseButton className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 flex flex-col gap-2">
-                                <div className="flex items-center gap-2 mb-2 text-left text-left">
-                                    <ShieldCheck className="h-4 w-4 text-primary text-left text-left" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Warfare Protocol</span>
+                    <DrawerContent hideCloseButton className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <DrawerHeader className="text-left flex-shrink-0 flex flex-col gap-2 text-left">
+                                <div className="flex items-center gap-2 mb-2 text-left">
+                                    <ShieldCheck className="h-4 w-4 text-primary text-left" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Warfare Protocol</span>
                                 </div>
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Enter the Warfare</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Naming a struggle is the first step toward the Light.</DrawerDescription>
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Enter the Warfare</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Naming a struggle is the first step toward the Light.</DrawerDescription>
                             </DrawerHeader>
                         </div>
-                        <ScrollArea className="flex-grow p-8 text-left text-left">
+                        <ScrollArea className="flex-grow p-8 text-left">
                             {formFields}
                         </ScrollArea>
-                        <div className="p-8 border-t bg-background/80 backdrop-blur-sm text-left text-left">
+                        <div className="p-8 border-t bg-background/80 backdrop-blur-sm text-left">
                             {formFooter}
                         </div>
                     </DrawerContent>
                 </Drawer>
             ) : (
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left text-left">
-                            <DialogHeader className="text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Enter the Warfare</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left">
+                            <DialogHeader className="text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Enter the Warfare</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <div className="p-8 text-left text-left">
+                        <div className="p-8 text-left">
                             {formFields}
                         </div>
-                        <div className="p-8 bg-muted/5 border-t text-left text-left">
+                        <div className="p-8 bg-muted/5 border-t text-left">
                             {formFooter}
                         </div>
                     </DialogContent>
@@ -382,17 +382,17 @@ export function StrongholdTracker() {
             )}
 
             <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
-                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
-                        <DialogHeader className="text-left text-left text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Share Your Victory</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">
+                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                        <DialogHeader className="text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Your Victory</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left">
                                 Encourage the body of Christ by sharing how God gave you victory over "{testimonyStronghold?.title}".
                             </DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left text-left">
-                        <div className="p-8 text-left text-left text-left">
+                    <ScrollArea className="flex-1 min-h-0 text-left">
+                        <div className="p-8 text-left">
                             {userProfile && testimonyStronghold && (
                                 <CreateTestimonyForm 
                                     userProfile={userProfile} 
