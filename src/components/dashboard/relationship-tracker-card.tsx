@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
-import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, getDocs, addDoc, getDoc } from 'firebase/firestore';
+import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, getDocs, addDoc, getDoc, updateDoc } from 'firebase/firestore';
 import type { UserProfile, Soul, SoulRelationship } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -28,7 +28,8 @@ import {
   PlusCircle,
   HeartHandshake,
   ChevronDown,
-  Share
+  Share,
+  ArrowRight
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -101,8 +102,8 @@ function SoulSelectionDialog({
     }, [souls, search]);
 
     const header = (
-        <div className="p-8 border-b bg-muted/10">
-            <DialogHeader className="text-left">
+        <div className="p-8 border-b bg-muted/10 text-left">
+            <DialogHeader>
                 <DialogTitle className="text-2xl font-black font-headline uppercase">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
                 <DialogDescription className="text-sm font-medium">Select a convert to link this action to their record.</DialogDescription>
             </DialogHeader>
@@ -110,7 +111,7 @@ function SoulSelectionDialog({
     );
 
     const body = (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 text-left">
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                 <Input 
@@ -148,7 +149,7 @@ function SoulSelectionDialog({
                             <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
                                 <Users className="h-6 w-6 text-muted-foreground opacity-20" />
                             </div>
-                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center">
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60">
                                 {search ? "No matches found" : "Log your first soul to begin tracking"}
                             </p>
                         </div>
@@ -400,7 +401,7 @@ export function RelationshipTrackerCard() {
 
           await updateDoc(doc(firestore, 'chats', chatId), { lastUpdatedAt: serverTimestamp(), hasMessages: true });
           
-          toast({ title: 'Shared with Partner!' });
+          toast({ title: 'Shared with Partner!', description: `Details sent to ${partner.firstName}.` });
           finalizeLog(activeSoul, 'introduced_friend', `Shared with partner: ${partner.firstName}`);
           setIsPartnerSelectionDialogOpen(false);
           setIsShareTargetDialogOpen(false);
@@ -410,35 +411,13 @@ export function RelationshipTrackerCard() {
       }
   };
 
-  const partnerSelectionBody = (
-    <ScrollArea className="h-64">
-        <div className="space-y-2">
-            {uniquePartners.map(p => (
-                <Button 
-                    key={p.userId} 
-                    variant="ghost" 
-                    className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group"
-                    onClick={() => handleShareToPartner(p)}
-                >
-                    <Avatar className="h-8 w-8 border shrink-0">
-                        <AvatarImage src={p.photoURL} />
-                        <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
-                </Button>
-            ))}
-            {uniquePartners.length === 0 && (
-                <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
-            )}
-        </div>
-    </ScrollArea>
-  );
+  const handleHelpNeedConfirm = (note: string) => {
+      if (!activeSoul) return;
+      finalizeLog(activeSoul, 'helped_with_need', `Service: ${note}`);
+      setIsHelpNeedDialogOpen(false);
+  }
 
-  const activeActionLabel = useMemo(() => 
-    actionItems.find(a => a.id === selectedActionId)?.label || "Connect with", 
-  [selectedActionId]);
-
-  const uniquePartnersList = useMemo(() => {
+  const uniquePartners = useMemo(() => {
     const partners = userProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
     partners.forEach(p => {
@@ -474,7 +453,7 @@ export function RelationshipTrackerCard() {
           <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
               <div className="space-y-1">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
@@ -493,8 +472,8 @@ export function RelationshipTrackerCard() {
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-center">
+        <CardContent className="px-4 sm:px-6 pb-2 relative z-10 text-left">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {actionItems.map(action => {
                   const isCompleted = completedToday.includes(action.id);
                   const Icon = iconMap[action.id] || Heart;
@@ -506,7 +485,7 @@ export function RelationshipTrackerCard() {
                                       <Button
                                           variant="outline"
                                           className={cn(
-                                              "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden",
+                                              "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-500 rounded-3xl border-2 overflow-hidden",
                                               isCompleted 
                                                   ? "bg-primary/5 border-primary/40 shadow-inner ring-1 ring-primary/10" 
                                                   : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
@@ -602,12 +581,12 @@ export function RelationshipTrackerCard() {
           <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
               <div className="p-8 border-b shrink-0 bg-muted/10">
                   <DrawerHeader className="text-left flex-shrink-0">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1">Draft a powerful prayer for {activeSoul?.firstName}.</DrawerDescription>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DrawerDescription>
                   </DrawerHeader>
               </div>
               <ScrollArea className="flex-grow p-8">
-                  <div className="space-y-6 text-left text-left">
+                  <div className="space-y-6 text-left">
                       <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Prayer Focus</label>
                           <div className="flex flex-wrap gap-2">
@@ -652,9 +631,9 @@ export function RelationshipTrackerCard() {
       <Drawer open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
           <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
               <div className="p-8 border-b shrink-0 bg-muted/10">
-                  <DrawerHeader className="text-left flex-shrink-0">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1">Describe how you supported {activeSoul?.firstName}.</DrawerDescription>
+                  <DrawerHeader className="text-left flex-shrink-0 text-left">
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Describe how you supported {activeSoul?.firstName}.</DrawerDescription>
                   </DrawerHeader>
               </div>
               <div className="p-8 space-y-6">
@@ -696,9 +675,9 @@ export function RelationshipTrackerCard() {
       <Drawer open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
               <div className="p-8 border-b shrink-0 bg-muted/10">
-                  <DrawerHeader className="text-left flex-shrink-0">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1">Which partner should receive these details?</DrawerDescription>
+                  <DrawerHeader className="text-left flex-shrink-0 text-left">
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Which partner should receive these details?</DrawerDescription>
                   </DrawerHeader>
               </div>
               <div className="p-8">
