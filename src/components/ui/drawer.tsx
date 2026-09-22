@@ -103,7 +103,7 @@ const DrawerDescription = React.forwardRef<
   />
 ))
 DrawerDescription.displayName =
-  DrawerPrimitive.Description.displayName
+  "DrawerDescription"
 
 export {
   Drawer,

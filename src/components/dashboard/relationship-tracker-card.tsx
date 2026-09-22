@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, getDocs, addDoc, getDoc, updateDoc } from 'firebase/firestore';
-import type { Soul, UserProfile } from '@/lib/types';
+import type { Soul, UserProfile, Chat } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -28,7 +28,8 @@ import {
   Share,
   Smartphone,
   ChevronDown,
-  HeartHandshake
+  HeartHandshake,
+  X
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -117,7 +118,7 @@ function SoulSelectionDialog({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={e => setSearch(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
@@ -132,8 +133,7 @@ function SoulSelectionDialog({
                                 onClick={() => onSelect(soul)}
                                 disabled={isLoading}
                             >
-                                <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left">
-                                    <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
                                     <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="text-left min-w-0 flex-1">
@@ -163,7 +163,7 @@ function SoulSelectionDialog({
     if (isMobile) {
         return (
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     {header}
                     <div className="flex-grow overflow-hidden">{body}</div>
                 </DrawerContent>
@@ -333,6 +333,11 @@ export function RelationshipTrackerCard() {
             break;
         case 'helped_with_need':
             setIsHelpNeedDialogOpen(true);
+            break;
+        case 'shared_meal':
+        case 'gave_gift':
+            const mPath = selectedActionId === 'shared_meal' ? '/marketplace' : '/marketplace/gifts';
+            router.push(`${mPath}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
             break;
         default:
             finalizeLog(soul, selectedActionId);
@@ -541,7 +546,7 @@ export function RelationshipTrackerCard() {
         </CardContent>
         <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
               <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm">
-                  <Link href="/dashboard/souls-won">
+                  <Link href="/souls-won">
                       <UserPlus className="mr-2 h-4 w-4" />
                       MANAGE SOULS WON
                   </Link>
@@ -669,10 +674,10 @@ export function RelationshipTrackerCard() {
               </div>
               <div className="p-8 flex flex-col gap-3 text-left">
                   <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
-                      <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
+                      <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External
                   </Button>
                   <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
-                      <HeartHandshake className="h-5 w-5" /> Partner on App
+                      <HeartHandshake className="h-5 w-5 text-left" /> Partner on App
                   </Button>
               </div>
           </DrawerContent>
