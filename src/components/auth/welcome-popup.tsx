@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -40,7 +39,7 @@ export function WelcomePopup({ isOpen, onClose, userName }: WelcomePopupProps) {
   const desc = "You've joined a global movement. Here's how you can get started.";
 
   const body = (
-    <div className="space-y-6 py-2">
+    <div className="space-y-6 py-2 text-left">
         <div className="flex items-start gap-4">
             <div className="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center shrink-0 mt-1">
                 <Zap className="h-6 w-6" />
@@ -104,7 +103,7 @@ export function WelcomePopup({ isOpen, onClose, userName }: WelcomePopupProps) {
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           <div className="bg-muted/40 pt-12 pb-8 px-8 text-center border-b flex-shrink-0">
             <div className="w-20 h-20 bg-primary/10 text-primary rounded-full mx-auto flex items-center justify-center mb-6 relative">
                 <PartyPopper className="h-10 w-10" strokeWidth={1.5} />
@@ -128,7 +127,7 @@ export function WelcomePopup({ isOpen, onClose, userName }: WelcomePopupProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-sm sm:max-w-md p-0 flex flex-col max-h-[90vh] overflow-hidden rounded-3xl">
+      <DialogContent className="max-w-sm sm:max-w-md p-0 flex flex-col max-h-[90vh] overflow-hidden rounded-3xl text-left">
         <div className="bg-muted/40 pt-8 pb-6 px-8 text-center border-b flex-shrink-0">
           <div className="w-16 h-16 bg-primary/10 text-primary rounded-full mx-auto flex items-center justify-center mb-4">
             <PartyPopper className="h-8 w-8" strokeWidth={1.5} />
