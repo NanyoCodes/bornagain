@@ -117,7 +117,7 @@ function SoulSelectionDialog({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
@@ -402,6 +402,7 @@ export function RelationshipTrackerCard() {
           await updateDoc(doc(firestore, 'chats', chatId), { lastUpdatedAt: serverTimestamp(), hasMessages: true });
           
           toast({ title: 'Shared with Partner!', description: `Details sent to ${partner.firstName}.` });
+          
           finalizeLog(activeSoul, 'introduced_friend', `Shared with partner: ${partner.firstName}`);
           setIsPartnerSelectionDialogOpen(false);
           setIsShareTargetDialogOpen(false);
@@ -538,7 +539,7 @@ export function RelationshipTrackerCard() {
                                               "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
                                               isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
                                           )}>
-                                              <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
+                                              <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                           </div>
                                           <div className="space-y-0.5 min-w-0 w-full">
                                               <span className={cn(
