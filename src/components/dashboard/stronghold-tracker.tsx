@@ -171,7 +171,7 @@ export function StrongholdTracker() {
     };
 
     const formFields = (
-        <div className="space-y-6 text-left">
+        <div className="space-y-6">
             <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Area of Struggle</Label>
                 <Input 
@@ -200,7 +200,7 @@ export function StrongholdTracker() {
             </div>
             <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3">
                 <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-[10px] text-muted-foreground leading-relaxed font-medium text-left">This record is <span className="font-black text-foreground">strictly private</span>. It exists only for your personal accountability before God.</p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">This record is <span className="font-black text-foreground">strictly private</span>. It exists only for your personal accountability before God.</p>
             </div>
         </div>
     );
@@ -220,7 +220,7 @@ export function StrongholdTracker() {
     );
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory text-left">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory">
             <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/victory:opacity-[0.05] transition-opacity">
                 <ShieldCheck className="h-32 w-32 text-primary rotate-12" />
             </div>
@@ -268,7 +268,7 @@ export function StrongholdTracker() {
                                                     {isVictorious && <Badge className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-green-500 text-white border-none">Victorious</Badge>}
                                                 </div>
                                                 <Link href={circleLink} className="group/title">
-                                                    <h4 className="font-black text-sm sm:text-base uppercase tracking-tight truncate group-hover/title:text-primary transition-colors text-left">{s.title}</h4>
+                                                    <h4 className="font-black text-sm sm:text-base uppercase tracking-tight truncate group-hover/title:text-primary transition-colors">{s.title}</h4>
                                                 </Link>
                                             </div>
                                             <DropdownMenu>
@@ -306,7 +306,7 @@ export function StrongholdTracker() {
                                                     <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
                                                         <CheckCircle2 className="h-5 w-5 text-green-600" />
                                                     </div>
-                                                    <p className="text-[10px] font-bold text-green-700 leading-tight italic break-words text-left">
+                                                    <p className="text-[10px] font-bold text-green-700 leading-tight italic break-words">
                                                         "{victoryVerse.text}" — {victoryVerse.ref}
                                                     </p>
                                                 </div>
@@ -337,15 +337,15 @@ export function StrongholdTracker() {
                         <div className="h-12 w-12 bg-muted/40 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Zap className="h-6 w-6 text-muted-foreground opacity-20" />
                         </div>
-                        <p className="text-xs text-muted-foreground font-medium italic px-12 text-balance leading-relaxed text-center">"For the weapons of our warfare are not carnal but mighty in God for pulling down strongholds." — 2 Cor 10:4</p>
-                        <Button variant="link" onClick={() => setIsAddOpen(true)} className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest w-full text-center">Initialize a Tracker</Button>
+                        <p className="text-xs text-muted-foreground font-medium italic px-12 text-balance leading-relaxed">"For the weapons of our warfare are not carnal but mighty in God for pulling down strongholds." — 2 Cor 10:4</p>
+                        <Button variant="link" onClick={() => setIsAddOpen(true)} className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest w-full">Initialize a Tracker</Button>
                     </div>
                 )}
             </CardContent>
 
             {mounted && isMobile ? (
                 <Drawer open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DrawerContent hideCloseButton className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <DrawerContent hideCloseButton className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <DrawerHeader className="text-left flex-shrink-0 flex flex-col gap-2">
                                 <div className="flex items-center gap-2 mb-2">
@@ -368,8 +368,8 @@ export function StrongholdTracker() {
                 </Drawer>
             ) : (
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left text-left">
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                        <div className="p-8 border-b bg-muted/10 text-left">
                             <DialogHeader className="text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Enter the Warfare</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
@@ -386,10 +386,10 @@ export function StrongholdTracker() {
             )}
 
             <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
-                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
+                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh]">
                     <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                         <DialogHeader className="text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Your Victory</DialogTitle>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Share Your Victory</DialogTitle>
                             <DialogDescription className="text-sm font-medium mt-1 text-left">
                                 Encourage the body of Christ by sharing how God gave you victory over "{testimonyStronghold?.title}".
                             </DialogDescription>
