@@ -170,7 +170,7 @@ export function StrongholdTracker() {
     };
 
     const formFields = (
-        <div className="space-y-6">
+        <div className="space-y-6 text-left">
             <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Area of Struggle</Label>
                 <Input 
@@ -186,7 +186,7 @@ export function StrongholdTracker() {
                     <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                         <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-2xl border-none shadow-2xl">
+                    <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
                         <ScrollArea className="h-64">
                             {strongholdCategories.map(c => (
                                 <SelectItem key={c} value={c} className="rounded-xl">
@@ -219,7 +219,7 @@ export function StrongholdTracker() {
     );
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory text-left">
             <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/victory:opacity-[0.05] transition-opacity">
                 <ShieldCheck className="h-32 w-32 text-primary rotate-12" />
             </div>
@@ -254,7 +254,7 @@ export function StrongholdTracker() {
 
                             return (
                                 <div key={s.id} className={cn(
-                                    "p-0 rounded-[1.5rem] border-2 transition-all group/item relative overflow-hidden",
+                                    "p-0 rounded-[1.5rem] border-2 transition-all group/item relative overflow-hidden text-left",
                                     isVictorious ? "bg-green-500/5 border-green-500/20" : "bg-muted/10 border-transparent hover:border-primary/10"
                                 )}>
                                     <div className="p-4">
@@ -344,8 +344,8 @@ export function StrongholdTracker() {
 
             {mounted && isMobile ? (
                 <Sheet open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <SheetContent side="bottom" hideCloseButton className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                    <SheetContent side="bottom" hideCloseButton className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <SheetHeader className="text-left flex-shrink-0">
                                 <div className="flex items-center gap-2 mb-2">
                                     <ShieldCheck className="h-4 w-4 text-primary" />
@@ -371,10 +371,10 @@ export function StrongholdTracker() {
                 </Sheet>
             ) : (
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                        <div className="p-8 border-b bg-muted/10">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Enter the Warfare</DialogTitle>
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left">
+                            <DialogHeader className="text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Enter the Warfare</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
                             </DialogHeader>
                         </div>
@@ -389,17 +389,17 @@ export function StrongholdTracker() {
             )}
 
             <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
-                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh]">
+                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
                     <div className="p-8 border-b bg-muted/10 shrink-0">
-                        <DialogHeader>
+                        <DialogHeader className="text-left">
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Share Your Victory</DialogTitle>
                             <DialogDescription className="text-sm font-medium mt-1">
                                 Encourage the body of Christ by sharing how God gave you victory over "{testimonyStronghold?.title}".
                             </DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0">
-                        <div className="p-8">
+                    <ScrollArea className="flex-1 min-h-0 text-left">
+                        <div className="p-8 text-left">
                             {userProfile && testimonyStronghold && (
                                 <CreateTestimonyForm 
                                     userProfile={userProfile} 

@@ -91,12 +91,12 @@ function SoulSelectionDialog({
     const header = (
         <div className="p-8 border-b bg-muted/10 text-left">
             <DialogHeader className="text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
+                <DialogTitle className="text-2xl font-black font-headline uppercase">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
+                <DialogDescription className="text-sm font-medium">Select a convert to link this action to their record.</DialogDescription>
                 {isMobile && (
-                    <div className="flex items-center gap-2 mt-4 text-left">
+                    <div className="flex items-center gap-2 mt-4">
                         <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" />
-                        <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">SWIPE DOWN TO CLOSE</span>
+                        <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span>
                     </div>
                 )}
             </DialogHeader>
@@ -105,44 +105,44 @@ function SoulSelectionDialog({
 
     const body = (
         <div className="p-6 space-y-6 text-left">
-            <div className="relative text-left">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50 text-left" />
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
-                    className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left"
+                    onChange={e => setSearchTerm(e.target.value)}
+                    className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
-            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left">
-                <div className="p-2 space-y-1.5 text-left">
+            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
+                <div className="p-2 space-y-1.5">
                     {filteredSouls.length > 0 ? (
                         filteredSouls.map(soul => (
                             <Button 
                                 key={soul.id} 
                                 variant="ghost" 
-                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex items-center text-left"
+                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex items-center"
                                 onClick={() => onSelect(soul)}
                                 disabled={isLoading}
                             >
-                                <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left">
-                                    <AvatarFallback className="font-bold bg-primary/5 text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
+                                    <AvatarFallback className="font-black bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <div className="text-left min-w-0 flex-1 text-left">
-                                    <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
-                                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p>
+                                <div className="text-left min-w-0 flex-1">
+                                    <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
                                 </div>
-                                <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left">
-                                    <PlusCircle className="h-4 w-4 text-left" />
+                                <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <PlusCircle className="h-4 w-4" />
                                 </div>
                             </Button>
                         ))
                     ) : (
-                        <div className="text-center py-16 px-8 space-y-3 text-left">
-                            <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left">
-                                <Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" />
+                        <div className="text-center py-16 px-8 space-y-3">
+                            <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
+                                <Users className="h-6 w-6 text-muted-foreground opacity-20" />
                             </div>
-                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center text-left">
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center">
                                 {search ? "No matches found" : "Log your first soul to begin tracking"}
                             </p>
                         </div>
@@ -291,13 +291,13 @@ export function RelationshipTrackerCard() {
   if (userLoading || profileLoading || soulsLoading) {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
-        <CardHeader className="p-4 sm:p-6 text-left">
-          <Skeleton className="h-5 w-32 mb-2 text-left" />
-          <Skeleton className="h-3 w-48 text-left" />
+        <CardHeader className="p-4 sm:p-6">
+          <Skeleton className="h-5 w-32 mb-2" />
+          <Skeleton className="h-3 w-48" />
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6 text-left">
+        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-2xl text-left" />
+            <Skeleton key={i} className="h-20 w-full rounded-2xl" />
           ))}
         </CardContent>
       </Card>
@@ -307,22 +307,22 @@ export function RelationshipTrackerCard() {
   return (
     <>
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left">
-        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity text-left">
-          <Users className="h-32 w-32 text-primary rotate-12 text-left" />
+        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity">
+          <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
-              <div className="space-y-1 text-left">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
-                      <Sparkles className="h-5 w-5 text-primary text-left" />
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
+              <div className="space-y-1">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-primary" />
                       Kingdom Connections
                   </CardTitle>
                   <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end text-left">
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                 {currentDate && (
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
                     {format(currentDate, 'PPPP')}
                   </div>
                 )}
@@ -330,8 +330,8 @@ export function RelationshipTrackerCard() {
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 sm:px-6 pb-2 relative z-10 text-left">
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-left">
+        <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {actionItems.map(action => {
                   const isCompleted = completedToday.includes(action.id);
                   const Icon = iconMap[action.id] || Heart;
@@ -339,14 +339,14 @@ export function RelationshipTrackerCard() {
                       <TooltipProvider key={action.id}>
                           <Tooltip>
                               <TooltipTrigger asChild>
-                                  <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }} className="text-left">
+                                  <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }}>
                                       <Button
                                           variant="outline"
                                           className={cn(
-                                              "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-500 rounded-3xl border-2 overflow-hidden text-left",
+                                              "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden",
                                               isCompleted 
-                                                  ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
-                                                  : "bg-background/40 hover:bg-muted/50 hover:border-primary/30"
+                                                  ? "bg-primary/5 border-primary/40 shadow-inner ring-1 ring-primary/10" 
+                                                  : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
                                           )}
                                           onClick={() => handleActionClick(action.id)}
                                           disabled={togglingId === action.id}
@@ -357,26 +357,26 @@ export function RelationshipTrackerCard() {
                                                       initial={{ scale: 0, opacity: 0 }}
                                                       animate={{ scale: 1, opacity: 1 }}
                                                       exit={{ scale: 0, opacity: 0 }}
-                                                      className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20 text-left"
+                                                      className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20"
                                                   >
-                                                      <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current text-left" />
+                                                      <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current" />
                                                   </motion.div>
                                               )}
                                           </AnimatePresence>
 
                                           {togglingId === action.id ? (
-                                              <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
+                                              <Loader2 className="h-6 w-6 animate-spin text-primary" />
                                           ) : (
                                               <>
                                                   <div className={cn(
-                                                      "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500 text-left",
+                                                      "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
                                                       isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
                                                   )}>
-                                                      <Icon className={cn("h-5 w-5 transition-all text-left", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
+                                                      <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                                   </div>
-                                                  <div className="space-y-0.5 min-w-0 w-full text-left">
+                                                  <div className="space-y-0.5 min-w-0 w-full">
                                                       <span className={cn(
-                                                          "text-[9px] font-black uppercase tracking-tight block truncate text-center text-left",
+                                                          "text-[9px] font-black uppercase tracking-tight block truncate text-center",
                                                           isCompleted ? "text-primary" : "text-foreground"
                                                       )}>
                                                           {action.label}
@@ -387,8 +387,8 @@ export function RelationshipTrackerCard() {
                                       </Button>
                                   </motion.div>
                               </TooltipTrigger>
-                              <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left" side="bottom">
-                                  <p className="text-[10px] font-bold uppercase text-primary text-left">Kingdom Action</p>
+                              <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
+                                  <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
                                   <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
                               </TooltipContent>
                           </Tooltip>
@@ -398,13 +398,13 @@ export function RelationshipTrackerCard() {
           </div>
         </CardContent>
         <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
-              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm text-left">
-                  <Link href="/souls-won" className="text-left">
-                      <UserPlus className="mr-2 h-4 w-4 text-left" />
+              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm">
+                  <Link href="/souls-won">
+                      <UserPlus className="mr-2 h-4 w-4" />
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 text-left">
+              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
                   Unity • Growth • Love
               </p>
         </CardFooter>

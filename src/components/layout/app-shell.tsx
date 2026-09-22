@@ -158,7 +158,7 @@ function CartButton() {
   );
 
   const listContent = (
-    <div className="p-4 space-y-4 text-left">
+    <div className="p-4 space-y-4 text-left text-left">
         {cartItems && cartItems.length > 0 ? (
             <div className="space-y-3 text-left">
                 {cartItems.map((item: any) => (
@@ -255,7 +255,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
           <Button variant="ghost" size="icon" onClick={() => { setShowMobileSearch(false); setSearchTerm(''); }} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors text-left">
             <ArrowLeft className="h-6 w-6 text-left" />
           </Button>
-          <div className="relative flex-1 text-left">
+          <div className="relative flex-1 text-left text-left">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50 text-left" />
               <Input
                 type="search"
@@ -335,10 +335,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                     </Button>
                 </motion.div>
             </Link>
-            <Link href="/notifications" className="text-left text-left">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left text-left">
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left text-left">
-                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110 text-left text-left" />
+            <Link href="/notifications" className="text-left text-left text-left">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left text-left text-left">
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left text-left text-left">
+                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110 text-left text-left text-left" />
                       {unreadNotifCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center text-left text-left text-left">
                           {unreadNotifCount}
@@ -809,4 +809,3 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SearchProvider>
   );
 }
-
