@@ -32,6 +32,13 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
 import { CampaignCard } from '@/components/campaigns/campaign-card';
+import { 
+    Carousel, 
+    CarouselContent, 
+    CarouselItem, 
+    CarouselNext, 
+    CarouselPrevious 
+} from '@/components/ui/carousel';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
@@ -416,26 +423,34 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </CardDescription>
             </CardHeader>
             <CardContent className="px-6 sm:px-12 pb-12 text-left">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-                    {videoTestimonies.map((video, idx) => (
-                        <div key={idx} className="space-y-3 text-left">
-                            {video.title && (
-                                <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 truncate ml-2 text-center md:text-left text-left">
-                                    {video.title}
-                                </h4>
-                            )}
-                            <div className="relative w-full aspect-video rounded-xl sm:rounded-[1.5rem] overflow-hidden bg-black shadow-2xl border border-white/5 transition-transform duration-300 hover:scale-[1.02] text-left">
-                                <iframe
-                                    src={video.embedUrl!}
-                                    title={video.title || `Video Testimony from ${displayName}`}
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                    className="absolute inset-0 w-full h-full border-0 text-left"
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <Carousel className="w-full max-w-4xl mx-auto">
+                    <CarouselContent className="text-left">
+                        {videoTestimonies.map((video, idx) => (
+                            <CarouselItem key={idx} className="md:basis-1/2 lg:basis-1/2 text-left">
+                                <div className="space-y-3 p-1 text-left">
+                                    {video.title && (
+                                        <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 truncate ml-2 text-center md:text-left text-left">
+                                            {video.title}
+                                        </h4>
+                                    )}
+                                    <div className="relative w-full aspect-video rounded-xl sm:rounded-[1.5rem] overflow-hidden bg-black shadow-2xl border border-white/5 transition-transform duration-300 hover:scale-[1.02] text-left">
+                                        <iframe
+                                            src={video.embedUrl!}
+                                            title={video.title || `Video Testimony from ${displayName}`}
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                            className="absolute inset-0 w-full h-full border-0 text-left"
+                                        />
+                                    </div>
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <div className="hidden sm:block text-left">
+                        <CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2 h-10 w-10 border-white/10 bg-white/5 text-white hover:bg-white/20" />
+                        <CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2 h-10 w-10 border-white/10 bg-white/5 text-white hover:bg-white/20" />
+                    </div>
+                </Carousel>
             </CardContent>
         </Card>
       )}

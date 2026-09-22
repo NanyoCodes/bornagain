@@ -353,9 +353,9 @@ export function StrongholdTracker() {
                                 </div>
                                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Enter the Warfare</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Naming a struggle is the first step toward the Light.</SheetDescription>
-                                <div className="flex items-center gap-2 mt-4">
+                                <div className="flex items-center gap-2 mt-4 text-left">
                                     <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" />
-                                    <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span>
+                                    <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">SWIPE DOWN TO CLOSE</span>
                                 </div>
                             </SheetHeader>
                         </div>
