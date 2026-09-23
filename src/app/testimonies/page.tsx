@@ -39,7 +39,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Testimony, PrayerRequest, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import { useCollection, useFirestore, useUser, useDoc, useStorage } from "@/firebase";
 import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where } from "firebase/firestore";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
@@ -261,9 +261,12 @@ function TestimoniesContent() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors" onClick={(e) => { e.stopPropagation(); setIsTestimonyDialogOpen(true); }}>
+                          <button 
+                            className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                            onClick={(e) => { e.stopPropagation(); setIsTestimonyDialogOpen(true); }}
+                          >
                               <Newspaper className="h-3.5 w-3.5" />
-                          </Button>
+                          </button>
                         </TooltipTrigger>
                         <TooltipContent><p className="text-[10px] font-black uppercase">Share Testimony</p></TooltipContent>
                       </Tooltip>
@@ -271,9 +274,12 @@ function TestimoniesContent() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors" onClick={(e) => { e.stopPropagation(); setIsPrayerDialogOpen(true); }}>
+                          <button 
+                            className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                            onClick={(e) => { e.stopPropagation(); setIsPrayerDialogOpen(true); }}
+                          >
                               <HandHeart className="h-3.5 w-3.5" />
-                          </Button>
+                          </button>
                         </TooltipTrigger>
                         <TooltipContent><p className="text-[10px] font-black uppercase">Request Prayer</p></TooltipContent>
                       </Tooltip>
@@ -325,7 +331,7 @@ function TestimoniesContent() {
                 </Tabs>
             </div>
         </div>
-        <div className="lg:col-span-4"><FeedSidebar mode="testimonies" /></div>
+        <div className="lg:col-span-4 text-left"><FeedSidebar mode="testimonies" /></div>
       </div>
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
           <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
@@ -348,8 +354,8 @@ function TestimoniesContent() {
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <DrawerHeader className="text-left flex-shrink-0">
                         <div className="flex items-center gap-2 mb-4"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Testimony</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1">Update your shared story for the community.</DrawerDescription>
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Update your shared story for the community.</DrawerDescription>
                     </DrawerHeader>
                   </div>
                   <ScrollArea className="flex-grow">
@@ -362,8 +368,8 @@ function TestimoniesContent() {
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <DrawerHeader className="text-left flex-shrink-0">
                         <div className="flex items-center gap-2 mb-4"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Prayer Request</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1">Update your request for the Body of Christ.</DrawerDescription>
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Prayer Request</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Update your request for the Body of Christ.</DrawerDescription>
                     </DrawerHeader>
                   </div>
                   <ScrollArea className="flex-grow">
@@ -376,8 +382,8 @@ function TestimoniesContent() {
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <DrawerHeader className="text-left flex-shrink-0">
                         <div className="flex items-center gap-2 mb-4"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight"> {prayerToAnswer ? 'Record Miracle' : 'Share Testimony'}</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others with what God has done."}</DrawerDescription>
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left"> {prayerToAnswer ? 'Record Miracle' : 'Share Testimony'}</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others with what God has done."}</DrawerDescription>
                     </DrawerHeader>
                   </div>
                   <ScrollArea className="flex-grow">
@@ -390,8 +396,8 @@ function TestimoniesContent() {
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <DrawerHeader className="text-left flex-shrink-0">
                         <div className="flex items-center gap-2 mb-4"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Request Prayer</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1">Share your need with the global community.</DrawerDescription>
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Request Prayer</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Share your need with the global community.</DrawerDescription>
                     </DrawerHeader>
                   </div>
                   <ScrollArea className="flex-grow">
@@ -406,8 +412,8 @@ function TestimoniesContent() {
                 <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                   <div className="p-8 border-b shrink-0 bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Testimony</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">Make changes to your testimony here.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="flex-1 min-h-0"><div className="p-8">{testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}</div></ScrollArea>
@@ -417,8 +423,8 @@ function TestimoniesContent() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-8 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">Update the details of your request.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]"><div className="p-8">{prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}</div></ScrollArea>
@@ -428,8 +434,8 @@ function TestimoniesContent() {
                 <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-8 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]"><div className="p-8">{testimonyFormContent}</div></ScrollArea>
@@ -439,8 +445,8 @@ function TestimoniesContent() {
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-8 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">Share your request with the Body of Christ.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]"><div className="p-8">{prayerFormContent}</div></ScrollArea>

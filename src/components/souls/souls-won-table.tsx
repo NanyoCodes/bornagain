@@ -786,7 +786,7 @@ function SoulProfileContent({
                 <MessageSquare className="h-7 w-7 text-primary" />
             </div>
           <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Message Hub</DialogTitle>
-          <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DrawerDescription>
+          <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DialogDescription>
         </DialogHeader>
         {commBody}
       </DialogContent>
@@ -873,7 +873,7 @@ function SoulProfileContent({
                 <Share className="h-7 w-7 text-primary text-center text-left" />
             </div>
           <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Share Details</DialogTitle>
-          <DialogDescription className="text-sm font-medium text-center text-left">Where would you like to share {soul?.firstName}'s info?</DrawerDescription>
+          <DialogDescription className="text-sm font-medium text-center text-left">Where would you like to share {soul?.firstName}'s info?</DialogDescription>
         </DialogHeader>
         {shareTargetBody}
       </DialogContent>
@@ -1269,7 +1269,7 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
 
   if (loading) return <div className="space-y-4 text-left text-left">{[...Array(5)].map((_, i) => (<div key={i} className="flex items-center space-x-4 p-4 border-b last:border-0 bg-card/50 backdrop-blur-sm rounded-xl text-left text-left text-left"><Skeleton className="h-12 w-12 rounded-full text-left text-left text-left" /><div className="space-y-2 flex-1"><Skeleton className="h-5 w-3/4 text-left text-left text-left" /><Skeleton className="h-4 w-1/2 text-left text-left text-left" /></div><Skeleton className="h-9 w-24 rounded-xl text-left text-left text-left" /></div>))}</div>;
   
-  if (souls.length === 0) return <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left"><CardContent><div className="text-center py-24 flex flex-col items-center"><div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20"><HeartHandshake className="h-10 w-10 text-primary opacity-40" /></div><h3 className="text-xl font-black font-headline uppercase tracking-tight text-center">Your Harvest Field</h3><p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p></div></CardContent></Card>;
+  if (souls.length === 0) return <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left text-left"><CardContent className="text-left"><div className="text-center py-24 flex flex-col items-center"><div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20"><HeartHandshake className="h-10 w-10 text-primary opacity-40" /></div><h3 className="text-xl font-black font-headline uppercase tracking-tight text-center">Your Harvest Field</h3><p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p></div></CardContent></Card>;
 
   const profileView = selectedSoul && (
     <SoulProfileContent 
@@ -1363,7 +1363,7 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
                         <ScrollArea className="max-h-[80vh] text-left text-left">
                             {profileView}
                         </ScrollArea>
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left text-left">
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left text-left text-left">
                             {selectedSoul.firstName} {selectedSoul.lastName}
                         </p>
                     </motion.div>

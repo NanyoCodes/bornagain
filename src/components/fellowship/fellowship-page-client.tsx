@@ -147,7 +147,7 @@ function ShareConvertsDialog({
                 <Input 
                     placeholder="Search converts..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner font-bold"
                 />
             </div>
@@ -341,7 +341,7 @@ function FullDevotionalDialog({
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                         <SheetHeader className="text-left flex-shrink-0">
-                            <div className="flex items-center gap-2 mb-4">
+                            <div className="flex items-center gap-2 mb-2">
                                 <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
                                 <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span>
                             </div>
@@ -1046,7 +1046,12 @@ export default function FellowshipPageClient() {
                 isMobile ? (
                     <Drawer open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left flex-shrink-0 text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Devotional Hub</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">Arrange the Word and Prayer for your group.</DrawerDescription></DrawerHeader></div>
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                              <DrawerHeader className="text-left flex-shrink-0 text-left">
+                                <DrawerTitle className="text-2xl font-black font-headline text-left">Devotional Hub</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Arrange the Word and Prayer for your group.</DrawerDescription>
+                              </DrawerHeader>
+                            </div>
                             <ScrollArea className="flex-grow text-left"><div className="p-8 space-y-10 text-left"><Form {...form}><form id="devotional-form-mobile" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6 text-left"><FormField control={form.control} name="scheduledDate" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel><FormControl><Input type="date" min={todayStr} {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel><FormControl><Input placeholder="e.g., Favor & Grace" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="scripture" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel><FormControl><Input placeholder="e.g., Psalm 23:1" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="text" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel><FormControl><Textarea placeholder="Share the revelation..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="prayer" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel><FormControl><Textarea placeholder="Type a guided prayer..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-14 font-black shadow-xl rounded-2xl tracking-widest uppercase text-left">{isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}{activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}</Button></form></Form></div></ScrollArea>
                         </DrawerContent>
                     </Drawer>
@@ -1104,9 +1109,9 @@ export default function FellowshipPageClient() {
                                     <DialogDescription className="text-sm font-medium text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 p-8 text-left">
+                            <div className="flex-grow overflow-y-auto p-8 text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />
-                            </ScrollArea>
+                            </div>
                         </DialogContent>
                     </Dialog>
                 )
