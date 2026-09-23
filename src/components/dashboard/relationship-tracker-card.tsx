@@ -67,7 +67,6 @@ const iconMap: Record<string, any> = {
     'text_message': MessageSquare,
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
-    'matchmaking': HeartHandshake,
 };
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -674,10 +673,10 @@ export function RelationshipTrackerCard() {
               </div>
               <div className="p-8 flex flex-col gap-3 text-left text-left">
                   <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left">
-                      <WhatsAppIcon className="h-5 w-5 text-left text-left" /> WhatsApp External
+                      <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External
                   </Button>
                   <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left text-left">
-                      <HeartHandshake className="h-5 w-5 text-left text-left" /> Partner on App
+                      <HeartHandshake className="h-5 w-5 text-left" /> Partner on App
                   </Button>
               </div>
           </DrawerContent>
