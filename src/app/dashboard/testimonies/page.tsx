@@ -314,14 +314,6 @@ function TestimoniesContent() {
                     >
                         <Camera className="h-4 w-4" />
                     </button>
-                    <button 
-                        className="h-9 w-9 rounded-full bg-[#27272a] flex items-center justify-center text-orange-500 shadow-inner"
-                        onClick={(e) => { e.stopPropagation(); setIsTestimonyDialogOpen(true); }}
-                    >
-                        <div className="h-6 w-6 rounded-full bg-orange-500/10 flex items-center justify-center">
-                            <Flame className="h-3.5 w-3.5 fill-current" />
-                        </div>
-                    </button>
                 </div>
             </div>
 
@@ -432,8 +424,8 @@ function TestimoniesContent() {
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                     <SheetHeader className="text-left text-left">
-                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</SheetTitle>
-                      <SheetDescription className="text-sm font-medium mt-1 text-left">Update your shared story for the community.</SheetDescription>
+                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DrawerTitle>
+                      <SheetDescription className="text-sm font-medium mt-1 text-left">Update your shared story for the community.</DrawerDescription>
                     </SheetHeader>
                   </div>
                   <ScrollArea className="flex-grow text-left text-left">
@@ -496,8 +488,8 @@ function TestimoniesContent() {
             <>
               <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
                 <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
-                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                    <DialogHeader className="text-left text-left text-left">
+                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                    <DialogHeader className="text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Edit Testimony</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
@@ -546,7 +538,7 @@ function TestimoniesContent() {
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left">
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
