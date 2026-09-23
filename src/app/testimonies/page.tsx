@@ -252,7 +252,7 @@ function TestimoniesContent() {
                         {user?.displayName?.charAt(0) || 'U'}
                     </AvatarFallback>
                 </Avatar>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 text-left">
                     <p className="text-[12px] font-bold text-foreground/80 leading-tight">Share God's goodness today...</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -482,11 +482,11 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left">
                     <DialogHeader className="text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Edit Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left text-left">Update the details of your request.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh] text-left">
@@ -498,10 +498,10 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
@@ -514,10 +514,10 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Share Prayer Request</DialogTitle>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>

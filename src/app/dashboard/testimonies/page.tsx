@@ -418,7 +418,7 @@ function TestimoniesContent() {
           {isMobile ? (
             <>
               <Drawer open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
-                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                     <DrawerHeader className="text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-4">
@@ -440,7 +440,7 @@ function TestimoniesContent() {
               <Drawer open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                    <DrawerHeader className="text-left text-left text-left text-left text-left text-left">
+                    <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-4">
                             <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
                             <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span>
@@ -459,7 +459,7 @@ function TestimoniesContent() {
               
               <Drawer open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left flex-shrink-0 text-left text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-4">
                             <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
@@ -479,7 +479,7 @@ function TestimoniesContent() {
 
               <Drawer open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left flex-shrink-0 text-left text-left text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-4">
                             <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
@@ -517,7 +517,7 @@ function TestimoniesContent() {
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Edit Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Update the details of your request.</DialogDescription>
@@ -552,7 +552,7 @@ function TestimoniesContent() {
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left text-left">Share your request with the global community.</DialogDescription>
+                        <DialogDescription className="text-sm font-medium text-left text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left">
