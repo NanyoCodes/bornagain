@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   onSnapshot, 
   queryEqual, 
@@ -19,7 +19,7 @@ interface UseCollectionOptions {
 
 /**
  * useCollection Hook
- * Optimized with deep logical equality checks to prevent infinite re-subscription loops.
+ * Optimized with deep logical equality checks and ref-based stabilization to prevent infinite re-subscription loops.
  */
 export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
@@ -30,20 +30,21 @@ export function useCollection<T extends { id: string }>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // Stabilize the query reference using logical equality to prevent infinite loops
-  const [stableQuery, setStableQuery] = useState<Query<DocumentData> | null>(null);
+  // Stabilize the query reference logically without triggering extra state updates
+  const stableQuery = useRef<Query<DocumentData> | null>(null);
+  if (query === null) {
+      stableQuery.current = null;
+  } else if (!stableQuery.current || !queryEqual(query, stableQuery.current)) {
+      stableQuery.current = query;
+  }
+
+  // Stabilize options to prevent loops when inline objects are passed
+  const snapshotOptionsJson = JSON.stringify(options?.snapshotOptions);
+  const stableOptions = useMemo(() => options?.snapshotOptions, [snapshotOptionsJson]);
 
   useEffect(() => {
-    if (!query) {
-      if (stableQuery !== null) setStableQuery(null);
-    } else if (!stableQuery || !queryEqual(query, stableQuery)) {
-      setStableQuery(query);
-    }
-  }, [query, stableQuery]);
-
-  // Handle subscription only when the logical query actually changes
-  useEffect(() => {
-    if (!stableQuery) {
+    const currentQuery = stableQuery.current;
+    if (!currentQuery) {
       setData(null);
       setLoading(false);
       return;
@@ -52,11 +53,11 @@ export function useCollection<T extends { id: string }>(
     setLoading(true);
     
     const unsubscribe = onSnapshot(
-      stableQuery,
+      currentQuery,
       (snapshot) => {
         const result: T[] = snapshot.docs.map(doc => ({ 
           id: doc.id, 
-          ...doc.data(options?.snapshotOptions) 
+          ...doc.data(stableOptions) 
         } as T));
         
         setData(result);
@@ -68,10 +69,10 @@ export function useCollection<T extends { id: string }>(
           // Attempt to extract the path for better debugging
           let path = 'unknown path';
           try {
-              if ((stableQuery as any).path) {
-                  path = (stableQuery as any).path;
-              } else if ((stableQuery as any)._query?.path) {
-                  path = (stableQuery as any)._query.path.canonicalString();
+              if ((currentQuery as any).path) {
+                  path = (currentQuery as any).path;
+              } else if ((currentQuery as any)._query?.path) {
+                  path = (currentQuery as any)._query.path.canonicalString();
               }
           } catch (e) {}
 
@@ -89,7 +90,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [stableQuery, user, options?.snapshotOptions]);
+  }, [stableQuery.current, user?.uid, stableOptions]);
 
   return { data, loading, error };
 }

@@ -28,5 +28,5 @@ export function useUser() {
   }, [auth]);
 
   // Memoize the return value to prevent unnecessary re-renders in hooks that depend on it
-  return useMemo(() => ({ user, loading, error }), [user, loading, error]);
+  return useMemo(() => ({ user, loading, error }), [user?.uid, loading, error]);
 }

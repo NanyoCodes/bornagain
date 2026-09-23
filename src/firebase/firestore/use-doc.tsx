@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   onSnapshot, 
   refEqual, 
@@ -19,7 +19,7 @@ interface UseDocOptions {
 
 /**
  * useDoc Hook
- * Optimized with deep logical equality checks to prevent infinite re-subscription loops.
+ * Optimized with deep logical equality checks and ref-based stabilization to prevent infinite re-subscription loops.
  */
 export function useDoc<T>(
   docRef: DocumentReference<DocumentData> | null,
@@ -30,34 +30,35 @@ export function useDoc<T>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // Stabilize the document reference
-  const [stableRef, setStableRef] = useState<DocumentReference<DocumentData> | null>(null);
+  // Stabilize the document reference logically without triggering extra state updates
+  const stableRef = useRef<DocumentReference<DocumentData> | null>(null);
+  if (docRef === null) {
+      stableRef.current = null;
+  } else if (!stableRef.current || !refEqual(docRef, stableRef.current)) {
+      stableRef.current = docRef;
+  }
+
+  // Stabilize options to prevent loops when inline objects are passed
+  const snapshotOptionsJson = JSON.stringify(options?.snapshotOptions);
+  const stableOptions = useMemo(() => options?.snapshotOptions, [snapshotOptionsJson]);
 
   useEffect(() => {
-    if (!docRef) {
-      if (stableRef !== null) setStableRef(null);
-    } else if (!stableRef || !refEqual(docRef, stableRef)) {
-      setStableRef(docRef);
-    }
-  }, [docRef, stableRef]);
-
-  // Handle subscription
-  useEffect(() => {
-    if (!stableRef) {
-      setLoading(false);
+    const currentRef = stableRef.current;
+    if (!currentRef) {
       setData(null);
+      setLoading(false);
       return;
     }
 
     setLoading(true);
     
     const unsubscribe = onSnapshot(
-      stableRef,
+      currentRef,
       (doc) => {
         const newDocData = doc.exists()
           ? ({
               id: doc.id,
-              ...doc.data(options?.snapshotOptions),
+              ...doc.data(stableOptions),
             } as T)
           : null;
 
@@ -68,7 +69,7 @@ export function useDoc<T>(
       async (err) => {
         if (err.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
-              path: stableRef.path,
+              path: currentRef.path,
               operation: 'get',
             }, user);
             errorEmitter.emit('permission-error', permissionError);
@@ -81,7 +82,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  }, [stableRef, user, options?.snapshotOptions]);
+  }, [stableRef.current, user?.uid, stableOptions]);
 
   return { data, loading, error };
 }
