@@ -136,6 +136,10 @@ function ShareConvertsDialog({
             <div className="space-y-1">
                 <h3 className="text-xl sm:text-2xl font-black font-headline uppercase">Share Converts</h3>
                 <p className="text-sm font-medium mt-1">Select a convert to share their details with {targetMember.firstName}.</p>
+                <div className="flex items-center gap-2 mt-4 sm:hidden">
+                    <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" />
+                    <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span>
+                </div>
             </div>
         </div>
     );
@@ -147,7 +151,7 @@ function ShareConvertsDialog({
                 <Input 
                     placeholder="Search converts..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={e => setSearch(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner font-bold"
                 />
             </div>
@@ -257,7 +261,7 @@ function FullDevotionalDialog({
             </div>
             
             {devotional.prayer && (
-                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden">
+                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden text-left">
                     <div className="flex items-center gap-3 mb-4 text-left">
                         <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                             <HandHeart className="h-4 w-4 text-primary" />
@@ -322,7 +326,7 @@ function FullDevotionalDialog({
                 </div>
             </div>
 
-            <div ref={commentsRef} className="border-t border-dashed pt-8">
+            <div ref={commentsRef} className="border-t border-dashed pt-8 text-left">
                 <div className="flex items-center gap-3 mb-6 px-1 text-left">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                         <MessageSquare className="h-4 w-4 text-primary" />
@@ -382,7 +386,7 @@ function FullDevotionalDialog({
                     </DialogHeader>
                 </div>
                 <ScrollArea className="max-h-[70vh] text-left">
-                    <div className="p-8">
+                    <div className="p-8 text-left">
                         {content}
                     </div>
                 </ScrollArea>
@@ -842,7 +846,7 @@ export default function FellowshipPageClient() {
                 <div className="flex items-center gap-3 sm:gap-4 w-full text-left">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm hover:bg-muted/50 text-left">
                         <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6 text-left"/>
-                        <span className="sr-only text-left">Back</span>
+                        <span className="sr-only">Back</span>
                     </Button>
                     <div className="min-w-0 flex-1 text-left">
                         <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight truncate uppercase text-balance break-words [overflow-wrap:anywhere] text-left">{fellowship.name}</h1>
@@ -1048,6 +1052,10 @@ export default function FellowshipPageClient() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                               <DrawerHeader className="text-left flex-shrink-0 text-left">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
+                                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span>
+                                </div>
                                 <DrawerTitle className="text-2xl font-black font-headline text-left">Devotional Hub</DrawerTitle>
                                 <DrawerDescription className="text-sm font-medium mt-1 text-left">Arrange the Word and Prayer for your group.</DrawerDescription>
                               </DrawerHeader>
@@ -1091,6 +1099,10 @@ export default function FellowshipPageClient() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 text-left">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
+                                        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span>
+                                    </div>
                                     <DrawerTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won directly to this community.</DrawerDescription>
                                 </DrawerHeader>
@@ -1106,7 +1118,7 @@ export default function FellowshipPageClient() {
                             <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                                 <DialogHeader className="text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <div className="flex-grow overflow-y-auto p-8 text-left">

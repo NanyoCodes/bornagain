@@ -320,7 +320,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               <FormItem>
                 <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Story</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Share what the Lord has done..." className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} />
+                  <Textarea 
+                    placeholder="Share what the Lord has done..." 
+                    className="min-h-[150px] sm:min-h-[180px] rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 text-sm sm:text-base leading-relaxed bg-muted/10 border-2 border-dashed transition-all focus:border-primary/40 focus:bg-muted/20" 
+                    {...field} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
