@@ -40,7 +40,7 @@ import type { Testimony, PrayerRequest, UserProfile, AccountabilityRequest } fro
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore, useUser, useDoc, useStorage } from "@/firebase";
-import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where } from "firebase/firestore";
+import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where, getDocs } from "firebase/firestore";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { haversineDistance, safeToDate } from "@/lib/utils";
@@ -125,36 +125,6 @@ function TestimoniesContent() {
     };
   }, [setIsSearchVisible, setSearchTerm, searchParams]);
 
-  useEffect(() => {
-    if (activeTab === 'testimonies') setSearchPlaceholder("Search testimonies...");
-    else setSearchPlaceholder("Search prayer requests...");
-  }, [activeTab, setSearchPlaceholder]);
-  
-  useEffect(() => {
-    const hash = typeof window !== 'undefined' ? window.location.hash : '';
-    if (hash) {
-      const id = hash.substring(1);
-      setActiveTab("testimonies");
-      setHighlightedTestimonyId(id);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (highlightedTestimonyId && activeTab === 'testimonies' && !loadingTestimonies) {
-      const element = document.getElementById(highlightedTestimonyId);
-      if (element) {
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          element.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'transition-shadow', 'duration-1000');
-          setTimeout(() => {
-            element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
-          }, 2500);
-          setHighlightedTestimonyId(null);
-        }, 300);
-      }
-    }
-  }, [highlightedTestimonyId, activeTab, loadingTestimonies]);
-
   const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
     const withMetadata = testimonies.map(testimony => {
@@ -200,6 +170,36 @@ function TestimoniesContent() {
       req.category.toLowerCase().includes(term)
     );
   }, [prayerRequests, searchTerm, activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'testimonies') setSearchPlaceholder("Search testimonies...");
+    else setSearchPlaceholder("Search prayer requests...");
+  }, [activeTab, setSearchPlaceholder]);
+  
+  useEffect(() => {
+    const hash = typeof window !== 'undefined' ? window.location.hash : '';
+    if (hash) {
+      const id = hash.substring(1);
+      setActiveTab("testimonies");
+      setHighlightedTestimonyId(id);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (highlightedTestimonyId && activeTab === 'testimonies' && !loadingTestimonies) {
+      const element = document.getElementById(highlightedTestimonyId);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'transition-shadow', 'duration-1000');
+          setTimeout(() => {
+            element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+          }, 2500);
+          setHighlightedTestimonyId(null);
+        }, 300);
+      }
+    }
+  }, [highlightedTestimonyId, activeTab, loadingTestimonies]);
 
   const handleTestimonyCreated = () => {
     setIsTestimonyDialogOpen(false);
@@ -410,8 +410,8 @@ function TestimoniesContent() {
             <>
               <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
                 <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                  <div className="p-8 border-b shrink-0 bg-muted/10">
-                    <DialogHeader>
+                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                    <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
@@ -421,8 +421,8 @@ function TestimoniesContent() {
               </Dialog>
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10">
-                    <DialogHeader>
+                  <div className="p-8 border-b bg-muted/10 text-left">
+                    <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
@@ -432,8 +432,8 @@ function TestimoniesContent() {
               </Dialog>
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
                 <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10">
-                    <DialogHeader>
+                  <div className="p-8 border-b bg-muted/10 text-left">
+                    <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
@@ -443,8 +443,8 @@ function TestimoniesContent() {
               </Dialog>
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10">
-                    <DialogHeader>
+                  <div className="p-8 border-b bg-muted/10 text-left">
+                    <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
@@ -463,7 +463,9 @@ function TestimoniesContent() {
 export default function TestimoniesPage() {
     return (
         <AppShell>
-            <Suspense fallback={<div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>}><TestimoniesContent /></Suspense>
+            <Suspense fallback={<div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>}>
+                <TestimoniesContent />
+            </Suspense>
         </AppShell>
     );
 }

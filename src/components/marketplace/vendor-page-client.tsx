@@ -23,6 +23,7 @@ import {
     Gift,
     Package,
     ChevronRight,
+    Search,
     ShoppingBag,
     ShoppingCart,
     Minus,
@@ -121,8 +122,8 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     const orders = useMemo(() => {
         if (!rawOrders) return [];
         return [...rawOrders].sort((a, b) => {
-            const dateA = safeToDate(a.createdAt)?.getTime() ?? 0;
-            const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
+            const dateA = safeToDate(b.createdAt)?.getTime() ?? 0;
+            const dateB = safeToDate(a.createdAt)?.getTime() ?? 0;
             return dateA - dateB;
         });
     }, [rawOrders]);
@@ -185,19 +186,19 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                             </Badge>
                         </CardHeader>
                         <CardContent className="p-4 pt-0 space-y-3 text-left">
-                            <p className="text-xs text-muted-foreground italic font-medium leading-relaxed text-left text-left">
+                            <p className="text-xs text-muted-foreground italic font-medium leading-relaxed">
                                 &ldquo;{order.instructions}&rdquo;
                             </p>
-                            <div className="flex items-center justify-between pt-2 border-t border-dashed text-left text-left">
-                                <p className="text-[9px] font-bold text-muted-foreground uppercase text-left text-left">From: {order.senderName}</p>
-                                <div className="text-right text-left text-left">
-                                    <p className="text-[10px] font-bold text-primary uppercase text-left text-left">{getCurrencySymbol(order.currency)}{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
-                                    {order.deliveryFee ? <p className="text-[7px] font-black uppercase text-muted-foreground text-left text-left">Incl. Delivery</p> : null}
+                            <div className="flex items-center justify-between pt-2 border-t border-dashed">
+                                <p className="text-[9px] font-bold text-muted-foreground uppercase">From: {order.senderName}</p>
+                                <div className="text-right">
+                                    <p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(order.currency)}{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
+                                    {order.deliveryFee ? <p className="text-[7px] font-black uppercase text-muted-foreground">Incl. Delivery</p> : null}
                                 </div>
                             </div>
                         </CardContent>
                         {order.status !== 'cancelled' && (
-                            <CardFooter className="p-2 bg-muted/20 border-t flex gap-1 text-left text-left">
+                            <CardFooter className="p-2 bg-muted/20 border-t flex gap-1">
                                 {['preparing', 'delivering', 'delivered'].map((status) => (
                                     <Button 
                                         key={status}
@@ -220,9 +221,9 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                     </Card>
                 ))
             ) : (
-                <div className="text-center py-20 bg-muted/10 rounded-3xl border-2 border-dashed text-left text-left text-left text-left">
-                    <ShoppingBag className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left text-left" />
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest text-center text-left text-left text-left text-left">No orders received yet.</p>
+                <div className="text-center py-20 bg-muted/10 rounded-3xl border-2 border-dashed">
+                    <ShoppingBag className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest text-center">No orders received yet.</p>
                 </div>
             )}
         </div>
@@ -231,18 +232,18 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     if (isMobile) {
         return (
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                        <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Order Hub</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left">Manage and update deliveries for your Kingdom offerings.</DrawerDescription>
-                            <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left text-left">
-                                <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left text-left text-left text-left" />
-                                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left">Swipe down to close</span>
+                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                        <DrawerHeader className="text-left flex-shrink-0">
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Order Hub</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1">Manage and update deliveries for your Kingdom offerings.</DrawerDescription>
+                            <div className="flex items-center gap-2 mt-4">
+                                <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" />
+                                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span>
                             </div>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-grow px-8 pt-6 text-left text-left text-left text-left text-left text-left text-left">
+                    <ScrollArea className="flex-grow px-8 pt-6">
                         {listContent}
                     </ScrollArea>
                 </DrawerContent>
@@ -252,14 +253,14 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[85vh] text-left text-left text-left text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                    <DialogHeader className="text-left text-left text-left text-left text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Order Hub</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Manage and update deliveries for your Kingdom offerings.</DialogDescription>
+            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[85vh] text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Order Hub</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1">Manage and update deliveries for your Kingdom offerings.</DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left text-left">
+                <ScrollArea className="flex-grow p-8">
                     {listContent}
                 </ScrollArea>
             </DialogContent>
@@ -280,6 +281,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const { toast } = useToast();
     const isMobile = useIsMobile();
     const [mounted, setMounted] = useState(false);
+
+    const [itemSearchTerm, setItemSearchTerm] = useState('');
 
     const cartQuery = useMemo(() => (user && firestore) ? query(collection(firestore, 'users', user.uid, 'cart')) : null, [user, firestore]);
     const { data: cartDocs, loading: cartLoading } = useCollection<any>(cartQuery);
@@ -368,6 +371,17 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     }, [firestore, vendorId]);
     const { data: meals, loading: loadingMeals } = useCollection<Meal>(mealsQuery);
 
+    const filteredMeals = useMemo(() => {
+        if (!meals) return [];
+        if (!itemSearchTerm.trim()) return meals;
+        const term = itemSearchTerm.toLowerCase();
+        return meals.filter(m => 
+            m.name.toLowerCase().includes(term) || 
+            m.category?.toLowerCase().includes(term) || 
+            m.description?.toLowerCase().includes(term)
+        );
+    }, [meals, itemSearchTerm]);
+
     const loading = userLoading || loadingVendor || loadingMeals || cartLoading;
 
     const cartItems = useMemo(() => Object.values(cart), [cart]);
@@ -441,7 +455,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 const chatDocRef = await addDoc(chatsRef, newChatData);
                 chatId = chatDocRef.id;
             }
-            router.push(`/dashboard/chats/${chatId}`);
+            router.push(`/chats/${chatId}`);
         } catch (error) {
             toast({ variant: 'destructive', title: 'Chat Error' });
         } finally {
@@ -693,48 +707,60 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             )}
                         </div>
                     </div>
-                    
-                    <div className="flex items-center justify-between gap-4 px-1 text-left">
-                        {!isOwner ? (
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0" onClick={handleInitiateChat} disabled={isChatLoading}>
-                                            {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase text-left">Provider Chat</p></TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        ) : (
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0" onClick={() => setIsOrdersOpen(true)}>
-                                            <ShoppingBag className="h-5 w-5" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase text-left">Manage Orders</p></TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        )}
-                        {isOwner && (
-                            <Button variant="outline" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
-                                <Edit className="mr-2 h-4 w-4" /> MANAGE HUB
-                            </Button>
-                        )}
+
+                    <div className="flex flex-col gap-4 text-left">
+                        <div className="relative text-left">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
+                            <Input 
+                                placeholder={`Search ${itemLabel.toLowerCase()}s...`} 
+                                value={itemSearchTerm}
+                                onChange={e => setItemSearchTerm(e.target.value)}
+                                className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-left"
+                            />
+                        </div>
+                        
+                        <div className="flex items-center justify-between gap-4 px-1 text-left">
+                            {!isOwner ? (
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0" onClick={handleInitiateChat} disabled={isChatLoading}>
+                                                {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase text-left">Provider Chat</p></TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            ) : (
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0" onClick={() => setIsOrdersOpen(true)}>
+                                                <ShoppingBag className="h-5 w-5" />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase text-left">Manage Orders</p></TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            )}
+                            {isOwner && (
+                                <Button variant="outline" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
+                                    <Edit className="mr-2 h-4 w-4" /> MANAGE HUB
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
-                    {isOwner && (
+                    {isOwner && !itemSearchTerm && (
                         <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm" onClick={() => setIsAddMealOpen(true)}>
                             <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left"><Plus className="h-6 w-6 text-primary text-left" /></div>
                             <h3 className="font-black uppercase tracking-widest text-primary text-xs"> {addLabel}</h3>
                         </Card>
                     )}
 
-                    {meals?.map(meal => {
+                    {filteredMeals.map(meal => {
                         const cartItem = cart[meal.id];
                         const itemSymbol = getCurrencySymbol(meal.currency);
                         return (
@@ -780,6 +806,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         );
                     })}
                 </div>
+                
+                {filteredMeals.length === 0 && (
+                    <div className="col-span-full py-32 text-center flex flex-col items-center">
+                        <Search className="h-16 w-16 text-muted-foreground/10 mb-4" />
+                        <p className="text-base font-black uppercase tracking-tight opacity-40">No matching items</p>
+                        <p className="text-xs text-muted-foreground italic mt-2">Try a different search term.</p>
+                    </div>
+                )}
 
                 {cartCount > 0 && (
                     <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10 text-left text-left">
@@ -897,7 +931,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             ) : (
                 <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left text-left text-left"> {addLabel}</DialogTitle></DialogHeader></div>
+                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left"> {addLabel}</DialogTitle></DialogHeader></div>
                         <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left text-left text-left text-left text-left">{itemForm()}</div>
                     </DialogContent>
                 </Dialog>
@@ -943,7 +977,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             ) : (
                 <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                     <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
-                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                             <DialogHeader className="text-left text-left text-left text-left text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Edit Storefront</DialogTitle>
                             </DialogHeader>
