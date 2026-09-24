@@ -133,10 +133,10 @@ function ShareConvertsDialog({
                 <Share2 className="h-5 w-5 text-primary" />
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Collaboration</span>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 text-left">
                 <h3 className="text-xl sm:text-2xl font-black font-headline uppercase">Share Converts</h3>
                 <p className="text-sm font-medium mt-1">Select a convert to share their details with {targetMember.firstName}.</p>
-                <div className="flex items-center gap-2 mt-4 sm:hidden">
+                <div className="flex items-center gap-2 mt-4 text-left sm:hidden">
                     <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" />
                     <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span>
                 </div>
@@ -145,18 +145,18 @@ function ShareConvertsDialog({
     );
 
     const body = (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 text-left text-left">
             <div className="relative text-left">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                 <Input 
                     placeholder="Search converts..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
-                    className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner font-bold"
+                    onChange={e => setSearch(e.target.value)}
+                    className="rounded-2xl h-11 pl-10 bg-muted/20 border-none shadow-inner font-bold"
                 />
             </div>
-            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left">
-                <div className="p-2 space-y-1.5">
+            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left text-left">
+                <div className="p-2 space-y-1.5 text-left text-left">
                     {filtered.length > 0 ? (
                         filtered.map(soul => (
                             <Button 
@@ -353,7 +353,7 @@ function FullDevotionalDialog({
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
                             </SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left">
@@ -667,7 +667,7 @@ export default function FellowshipPageClient() {
                         });
                     }
                 }
-                router.push(`/chats/${fellowshipId}`);
+                router.push(`/dashboard/chats/${fellowshipId}`);
             } catch (e) {
                 console.error("Failed to join fellowship chat:", e);
                 errorEmitter.emit('permission-error', new FirestorePermissionError({ path: chatRef.path, operation: 'update' }, user));
@@ -711,7 +711,7 @@ export default function FellowshipPageClient() {
 
         try {
             await batch.commit();
-            router.push(`/chats/${fellowshipId}`);
+            router.push(`/dashboard/chats/${fellowshipId}`);
         } catch (e) {
             errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `chats/${fellowshipId}`, operation: 'create' }, user));
         } finally {
@@ -769,7 +769,7 @@ export default function FellowshipPageClient() {
 
            toast({ title: 'Shared with Member!', description: `Convert details sent to ${memberToShareWith.firstName}.` });
            setMemberToShareWith(null);
-           router.push(`/chats/${chatId}`);
+           router.push(`/dashboard/chats/${chatId}`);
        } catch (e) {
            toast({ variant: 'destructive', title: 'Share Failed' });
        }
@@ -864,7 +864,7 @@ export default function FellowshipPageClient() {
                                     <Share2 className="h-4 w-4 sm:h-5 w-5 text-left" />
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left"><p className="text-[10px] font-bold uppercase text-left text-left">Share Fellowship</p></TooltipContent>
+                            <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left text-left">Share Fellowship</p></TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
 
@@ -924,7 +924,7 @@ export default function FellowshipPageClient() {
                             </div>
                         </CardHeader>
                         <CardContent className="px-6 sm:p-10 pt-0 pb-8 sm:pb-12 space-y-8 text-left text-left">
-                            {devoLoading ? <div className="py-20 flex flex-col items-center gap-4 text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left text-left" /><p className="text-[10px] font-black uppercase tracking-widest opacity-20 text-left text-left">Accessing Records...</p></div> : activeDevotional ? (
+                            {devoLoading ? <div className="py-20 flex flex-col items-center gap-4 text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left text-left" /><p className="text-[10px) font-black uppercase tracking-widest opacity-20 text-left text-left">Accessing Records...</p></div> : activeDevotional ? (
                                 <div className="space-y-8 text-left text-left">
                                     <div className="bg-black/60 rounded-[2rem] p-6 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden text-left text-left">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl text-left text-left" />
@@ -981,7 +981,7 @@ export default function FellowshipPageClient() {
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-muted/20 text-left text-left"><CardHeader className="p-6 sm:p-10 text-left text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground text-left text-left">About this Group</CardTitle></CardHeader><CardContent className="px-6 sm:px-10 pb-8 sm:pb-12 text-left text-left"><p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words [overflow-wrap:anywhere] text-left text-left text-left">{fellowship.description}</p></CardContent></Card>
+                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-muted/20 text-left text-left"><CardHeader className="p-6 sm:p-10 text-left text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground text-left text-left">About this Group</CardTitle></CardHeader><CardContent className="px-6 sm:p-10 pb-8 sm:pb-12 text-left text-left"><p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words [overflow-wrap:anywhere] text-left text-left text-left">{fellowship.description}</p></CardContent></Card>
 
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden text-left text-left"><CardHeader className="p-6 sm:p-10 border-b bg-muted/5 text-left text-left text-left"><CardTitle className="flex items-center justify-between text-base sm:text-lg font-black uppercase tracking-[0.1em] text-left text-left text-left"><span className="flex items-center gap-2.5 text-left text-left text-left"><Users className="h-5 w-5 text-primary text-left text-left text-left" />Directory</span><Badge variant="secondary" className="rounded-full px-3 h-6 font-bold text-left text-left">{(members?.length || 0) + (isOrganizer ? (assignedSouls?.length || 0) : 0)}</Badge></CardTitle></CardHeader><CardContent className="p-0 text-left text-left">{(isMember || isOrganizer) ? <Tabs defaultValue="believers" className="w-full text-left text-left text-left text-left"><TabsList className="flex w-full bg-muted/10 h-14 p-0 rounded-none border-b overflow-x-auto no-scrollbar text-left text-left text-left"><TabsTrigger value="believers" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate px-4 text-left text-left text-left">Believers ({members?.length || 0})</TabsTrigger>
                         {isOrganizer ? (
@@ -1041,7 +1041,7 @@ export default function FellowshipPageClient() {
                 </div>
 
                 <div className="space-y-8 flex flex-col px-4 sm:px-0 pb-32 text-left text-left text-left text-left">
-                    <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10 text-left text-left text-left text-left"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4 text-left text-left text-left text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2.5 text-left text-left text-left text-left"><Calendar className="h-4 w-4 text-primary text-left text-left text-left text-left"/> Gathering Details</CardTitle></CardHeader><CardContent className="px-6 sm:p-8 pb-8 sm:pb-10 space-y-5 sm:space-y-6 pt-2 text-left text-left text-left text-left">{fellowship.schedule && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed text-left text-left text-left text-left"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2 text-left text-left text-left text-left">Schedule</p><p className="text-foreground font-black text-xs sm:text-base leading-tight text-balance break-words [overflow-wrap:anywhere] text-left text-left text-left text-left text-left">{fellowship.schedule}</p></div>}{fellowship.location && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed text-left text-left text-left text-left"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2 text-left text-left text-left text-left">Primary Location</p><p className="text-foreground font-black text-xs sm:text-base flex items-start gap-2 leading-tight break-words [overflow-wrap:anywhere] text-balance text-left text-left text-left text-left text-left text-left"><MapPin className="h-4 w-4 sm:h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left" /> {fellowship.location}</p></div>}{(isMember || isOrganizer) && fellowship.streamUrl && <Button asChild className="w-full h-14 sm:h-16 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-sm sm:text-base uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left"><NextLink href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer" className="text-left text-left text-left text-left text-left text-left text-left text-left"><PlayCircle className="mr-3 h-5 sm:h-6 w-5 sm:w-6 text-left text-left text-left text-left text-left text-left text-left text-left" />ENTER MEETING</NextLink></Button>}</CardContent></Card>
+                    <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10 text-left text-left text-left text-left"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4 text-left text-left text-left text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2.5 text-left text-left text-left text-left"><Calendar className="h-4 w-4 text-primary text-left text-left text-left text-left"/> Gathering Details</CardTitle></CardHeader><CardContent className="px-6 sm:p-8 pb-8 sm:pb-10 space-y-5 sm:space-y-6 pt-2 text-left text-left text-left text-left">{fellowship.schedule && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed text-left text-left text-left text-left"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2 text-left text-left text-left text-left">Schedule</p><p className="text-foreground font-black text-xs sm:text-base leading-tight text-balance break-words [overflow-wrap:anywhere] text-left text-left text-left text-left text-left">{fellowship.schedule}</p></div>}{fellowship.location && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed text-left text-left text-left text-left"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2 text-left text-left text-left text-left">Primary Location</p><p className="text-foreground font-black text-xs sm:text-base flex items-start gap-2 leading-tight break-words [overflow-wrap:anywhere] text-balance text-left text-left text-left text-left text-left text-left"><MapPin className="h-4 w-4 sm:h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left" /> {fellowship.location}</p></div>}{(isMember || isOrganizer) && fellowship.streamUrl && <Button asChild className="w-full h-14 sm:h-16 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-sm sm:text-base uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left" onClick={handleOpenGroupChat}><NextLink href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer" className="text-left text-left text-left text-left text-left text-left text-left text-left"><PlayCircle className="mr-3 h-5 sm:h-6 w-5 sm:w-6 text-left text-left text-left text-left text-left text-left text-left text-left" />ENTER MEETING</NextLink></Button>}</CardContent></Card>
                     <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 border-b-8 border-b-primary/5 text-left text-left text-left text-left text-left text-left text-left text-left"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4 text-left text-left text-left text-left text-left text-left text-left text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground text-left text-left text-left text-left text-left text-left text-left text-left">Organizer</CardTitle></CardHeader><CardContent className="px-6 sm:p-8 pb-8 sm:pb-12 pt-2 text-left text-left text-left text-left text-left text-left text-left text-left"><NextLink href={isOrganizer ? '/profile' : `/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 sm:p-5 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0 shadow-inner text-left text-left text-left text-left text-left text-left text-left text-left"><LiveMemberAvatar userId={fellowship.organizerId} fallbackUrl={fellowship.organizerPhotoURL} fallbackInitials={fellowship.organizerName?.charAt(0)} className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-sm shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left"><span className="font-black text-base group-hover:text-primary transition-colors block truncate uppercase text-left text-left text-left text-left text-left text-left text-left text-left"> {fellowship.organizerName}</span><div className="flex items-center gap-2 mt-1 text-left text-left text-left text-left text-left text-left text-left text-left"><Badge className="h-4 sm:h-5 text-[7px] sm:text-[8px] uppercase font-black tracking-widest px-2 text-left text-left text-left text-left" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge></div></div></NextLink></CardContent></Card>
                 </div>
             </div>
@@ -1138,7 +1138,7 @@ export default function FellowshipPageClient() {
             />
 
             <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
-                <AlertDialogContent className="rounded-3xl p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left"><AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left">Remove Member?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AccordionHeader><AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left"><AlertDialogCancel className="rounded-2xl h-12 font-bold text-left text-left text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left text-left text-left text-left text-left">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left" />}Confirm Removal</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                <AlertDialogContent className="rounded-3xl p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left"><AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left">Remove Member?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left"><AlertDialogCancel className="rounded-2xl h-12 font-bold text-left text-left text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left text-left text-left text-left text-left">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left" />}Confirm Removal</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>
@@ -1159,3 +1159,4 @@ export default function FellowshipPageClient() {
         </div>
     );
 }
+
