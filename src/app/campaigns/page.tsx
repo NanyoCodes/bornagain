@@ -3,7 +3,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Target, Loader2 } from "lucide-react";
+import { Target, Loader2, ChevronDown } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
-import type { Campaign, UserProfile, JoinedCampaign, Fellowship } from "@/lib/types";
+import type { Campaign, UserProfile, JoinedCampaign } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp } from "firebase/firestore";

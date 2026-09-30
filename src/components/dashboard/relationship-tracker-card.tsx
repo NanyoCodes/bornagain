@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -579,7 +580,7 @@ export function RelationshipTrackerCard() {
                       </div>
                       <DrawerTitle className="text-2xl font-black font-headline uppercase text-center">Message Hub</DrawerTitle>
                       <DrawerDescription className="text-sm font-medium text-center">How would you like to encourage {activeSoul?.firstName}?</DrawerDescription>
-                      <div className="flex items-center justify-center gap-2 mt-4"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
+                      <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
                   </DrawerHeader>
               </div>
               <div className="p-8 flex flex-col gap-3">
@@ -649,9 +650,9 @@ export function RelationshipTrackerCard() {
           <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
               <div className="p-8 border-b shrink-0 bg-muted/10">
                   <DrawerHeader className="text-left flex-shrink-0">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1">Describe how you supported {activeSoul?.firstName}.</DrawerDescription>
-                      <div className="flex items-center gap-2 mt-4"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1 text-left">Describe how you supported {activeSoul?.firstName}.</DrawerDescription>
+                      <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
                   </DrawerHeader>
               </div>
               <div className="p-8 space-y-6">
@@ -671,13 +672,13 @@ export function RelationshipTrackerCard() {
       <Drawer open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
           <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
               <div className="p-8 border-b shrink-0 bg-muted/10">
-                  <DrawerHeader className="text-center space-y-2">
+                  <DrawerHeader className="text-center space-y-2 text-left">
                       <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                           <Share className="h-7 w-7 text-primary" />
                       </div>
                       <DrawerTitle className="text-2xl font-black font-headline uppercase text-center">Share Details</DrawerTitle>
                       <DrawerDescription className="text-sm font-medium text-center">Where would you like to share {activeSoul?.firstName}'s info?</DrawerDescription>
-                      <div className="flex items-center justify-center gap-2 mt-4"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
+                      <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
                   </DrawerHeader>
               </div>
               <div className="p-8 flex flex-col gap-3">
@@ -693,11 +694,11 @@ export function RelationshipTrackerCard() {
 
       <Drawer open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-              <div className="p-8 border-b shrink-0 bg-muted/10">
-                  <DrawerHeader className="text-left flex-shrink-0">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1">Which partner should receive these details?</DrawerDescription>
-                      <div className="flex items-center gap-2 mt-4"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
+              <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                  <DrawerHeader className="text-left flex-shrink-0 text-left">
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1 text-left">Which partner should receive these details?</DrawerDescription>
+                      <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
                   </DrawerHeader>
               </div>
               <div className="p-8">
