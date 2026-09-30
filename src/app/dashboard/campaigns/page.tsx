@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
@@ -481,6 +482,10 @@ export default function CampaignsPage() {
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
               <SheetHeader className="text-left">
+                <div className="flex items-center gap-2 mb-4">
+                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span>
+                </div>
                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Launch New Mission</SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1 text-left">Mobilize for the harvest by setting clear mission goals.</SheetDescription>
               </SheetHeader>
@@ -518,6 +523,10 @@ export default function CampaignsPage() {
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
               <SheetHeader className="text-left">
+                <div className="flex items-center gap-2 mb-4">
+                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span>
+                </div>
                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Mission</SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1 text-left">Update mission progress and logistical details.</SheetDescription>
               </SheetHeader>
@@ -545,7 +554,9 @@ export default function CampaignsPage() {
              <div className="p-8 border-b bg-muted/10 text-left shrink-0">
                 <DialogHeader className="text-left">
                     <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Manage Mission</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">Update the details or status of your campaign.</DialogDescription>
+                    <DialogDescription className="text-sm font-medium text-left">
+                        Update the details or status of your campaign.
+                    </DialogDescription>
                 </DialogHeader>
             </div>
             <ScrollArea className="flex-1 min-h-0 text-left">
@@ -592,6 +603,10 @@ export default function CampaignsPage() {
           <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
               <SheetHeader className="text-left">
+                <div className="flex items-center gap-2 mb-4">
+                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span>
+                </div>
                 <SheetTitle className="text-2xl font-black font-headline text-left">Share Victory</SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1 text-left">What has God done during "{campaignForTestimony?.title}"?</SheetDescription>
               </SheetHeader>
@@ -640,6 +655,10 @@ export default function CampaignsPage() {
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
               <SheetHeader className="text-left">
+                <div className="flex items-center gap-2 mb-4">
+                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span>
+                </div>
                 <SheetTitle className="text-2xl font-black font-headline text-left">Log Harvest</SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1 text-left">Record a soul won in "{campaignForSoul?.title}".</SheetDescription>
               </SheetHeader>
