@@ -4,8 +4,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
-import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc, limit } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, MealGift, MealGiftStatus, Soul, Chat } from '@/lib/types';
+import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc, limit } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -90,7 +90,19 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
-// ... (keep previous functions like getYouTubeEmbedUrl, etc.)
+
+const currencyOptions = [
+    { value: 'NGN', label: 'Naira (₦)', symbol: '₦' },
+    { value: 'USD', label: 'US Dollar ($)', symbol: '$' },
+    { value: 'EUR', label: 'Euro (€)', symbol: '€' },
+    { value: 'GBP', label: 'British Pound (£)', symbol: '£' },
+    { value: 'GHS', label: 'Ghanaian Cedi (₵)', symbol: '₵' },
+    { value: 'KES', label: 'Kenyan Shilling (KSh)', symbol: 'KSh' },
+];
+
+const getCurrencySymbol = (code?: string) => {
+    return currencyOptions.find(opt => opt.value === code)?.symbol || '₦';
+};
 
 export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const searchParams = useSearchParams();
@@ -165,10 +177,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const isGiftVendor = useMemo(() => vendor?.vendorType === 'gift', [vendor]);
     const centerLabel = useMemo(() => isGiftVendor ? 'Kindness Center' : 'Meals Center', [isGiftVendor]);
     const itemLabel = useMemo(() => isGiftVendor ? 'Product' : 'Meal', [isGiftVendor]);
-    const storagePath = useMemo(() => isGiftVendor ? 'kindness-center' : 'meals-center', [isGiftVendor]);
     const addLabel = useMemo(() => isGiftVendor ? 'ADD NEW PRODUCT' : 'ADD NEW MEAL', [isGiftVendor]);
-    const categoryPlaceholder = useMemo(() => isGiftVendor ? 'e.g. Bibles' : 'e.g. Breakfast', [isGiftVendor]);
-    const descriptionPlaceholder = useMemo(() => isGiftVendor ? 'Product details...' : 'Meal ingredients and portions...', [isGiftVendor]);
 
     useEffect(() => {
         if (vendor?.location) {
@@ -183,11 +192,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         if (vendor?.photoURL) setVendorPhotoURL(vendor.photoURL);
         if (vendor?.currency) setEditCurrency(vendor.currency);
     }, [vendor]);
-
-    useEffect(() => {
-        if (itemToEdit) setItemPhotoURL(itemToEdit.photoURL || '');
-        else if (isAddMealOpen) setItemPhotoURL('');
-    }, [itemToEdit, isAddMealOpen]);
 
     const mealsQuery = useMemo(() => {
         if (!firestore || !vendorId) return null;
@@ -207,43 +211,15 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     }, [meals, itemSearchTerm]);
 
     const loading = userLoading || loadingVendor || loadingMeals || cartLoading;
-
     const cartItems = useMemo(() => Object.values(cart), [cart]);
-
-    const cartByVendor = useMemo(() => {
-        const groups: { [vId: string]: any } = {};
-        cartItems.forEach(c => {
-            const vId = c.item.vendorId;
-            if (!groups[vId]) {
-                groups[vId] = {
-                    vendorId: vId,
-                    vendorName: c.item.vendorName || 'Kingdom Provider',
-                    vendorOwnerId: c.item.vendorOwnerId || '',
-                    paymentDetails: c.item.vendorPaymentDetails || '',
-                    currency: c.item.currency || 'NGN',
-                    items: [],
-                    deliveryFee: 0,
-                    subtotal: 0
-                };
-            }
-            groups[vId].items.push(c);
-            groups[vId].subtotal += (c.item.price * c.quantity);
-            groups[vId].deliveryFee = Math.max(groups[vId].deliveryFee, c.item.deliveryFee || 0);
-        });
-        return Object.values(groups);
-    }, [cartItems]);
-
     const cartCount = useMemo(() => cartItems.reduce((acc, c) => acc + c.quantity, 0), [cartItems]);
 
     const addToCart = async (item: Meal) => {
-        if (!user?.uid || !firestore) {
-            toast({ variant: 'destructive', title: 'Login Required' });
-            return;
-        }
+        if (!user?.uid || !firestore) return;
         const itemRef = doc(firestore, 'users', user.uid, 'cart', item.id);
         const existing = cart[item.id];
         const data = { ...item, vendorName: vendor?.businessName, vendorOwnerId: vendor?.userId, vendorPaymentDetails: vendor?.paymentDetails, vendorPhotoURL: vendor?.photoURL, vendorType: vendor?.vendorType, currency: vendor?.currency || 'NGN', quantity: (existing?.quantity || 0) + 1, updatedAt: serverTimestamp() };
-        setDoc(itemRef, data, { merge: true }).catch(err => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: itemRef.path, operation: 'write' }, user)));
+        setDoc(itemRef, data, { merge: true });
     };
 
     const updateQuantity = async (itemId: string, delta: number) => {
@@ -287,9 +263,33 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         }
     };
 
+    const itemForm = (item?: Meal | null, isEdit = false) => (
+        <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal}>
+            <div className="p-8 space-y-6 text-left">
+                <div className="space-y-4">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Visual</Label>
+                  <ImageUpload initialImageUrl={itemPhotoURL} onUploadComplete={setItemPhotoURL} storagePath="marketplace-items" cropAspect={4/3} />
+                </div>
+                <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Name</Label><Input name="name" defaultValue={item?.name || ''} placeholder={`e.g. ${isGiftVendor ? 'Study Bible' : 'Full Platter'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required /></div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price ({getCurrencySymbol(vendor?.currency)})</Label><Input name="price" type="number" step="0.01" defaultValue={item?.price || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required /></div>
+                    <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Fee</Label><Input name="deliveryFee" type="number" step="0.01" defaultValue={item?.deliveryFee || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
+                </div>
+                <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
+                <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
+            </div>
+            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3">
+                <Button type="button" variant="outline" onClick={() => { setIsAddMealOpen(false); setItemToEdit(null); }} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
+                <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest">
+                    {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isEdit ? 'SAVE CHANGES' : 'ADD TO CATALOG'}
+                </Button>
+            </div>
+        </form>
+    );
+
     const handleAddMeal = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!user || !firestore || !vendor) return;
         const formData = new FormData(e.currentTarget);
         const name = formData.get('name') as string;
         const price = parseFloat(formData.get('price') as string);
@@ -298,14 +298,13 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const category = formData.get('category') as string;
         if (!name || isNaN(price)) return;
         setIsSubmittingMeal(true);
-        const mealsRef = collection(firestore, 'vendors', vendorId, 'meals');
-        const mealData = { vendorId, name, price, deliveryFee, description, category, currency: vendor?.currency || 'NGN', photoURL: itemPhotoURL || null, createdAt: serverTimestamp() };
-        addDoc(mealsRef, mealData).then(() => { toast({ title: 'Item Added' }); setIsAddMealOpen(false); }).catch(async (serverError) => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `vendors/${vendorId}/meals`, operation: 'create', requestResourceData: mealData }, user))).finally(() => setIsSubmittingMeal(false));
+        const mealsRef = collection(firestore!, 'vendors', vendorId, 'meals');
+        addDoc(mealsRef, { vendorId, name, price, deliveryFee, description, category, currency: vendor?.currency || 'NGN', photoURL: itemPhotoURL || null, createdAt: serverTimestamp() }).then(() => { toast({ title: 'Item Added' }); setIsAddMealOpen(false); }).finally(() => setIsSubmittingMeal(false));
     };
 
     const handleUpdateItem = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!user || !firestore || !itemToEdit) return;
+        if (!itemToEdit) return;
         const formData = new FormData(e.currentTarget);
         const name = formData.get('name') as string;
         const price = parseFloat(formData.get('price') as string);
@@ -314,171 +313,49 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const category = formData.get('category') as string;
         if (!name || isNaN(price)) return;
         setIsUpdatingItem(true);
-        const itemRef = doc(firestore, 'vendors', vendorId, 'meals', itemToEdit.id);
-        const updateData = { name, price, deliveryFee, description, category, photoURL: itemPhotoURL || null, updatedAt: serverTimestamp() };
-        updateDoc(itemRef, updateData).then(() => { toast({ title: 'Item Updated' }); setItemToEdit(null); }).catch(async (serverError) => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: itemRef.path, operation: 'update', requestResourceData: updateData }, user))).finally(() => setIsUpdatingItem(false));
+        updateDoc(doc(firestore!, 'vendors', vendorId, 'meals', itemToEdit.id), { name, price, deliveryFee, description, category, photoURL: itemPhotoURL || null, updatedAt: serverTimestamp() }).then(() => { toast({ title: 'Item Updated' }); setItemToEdit(null); }).finally(() => setIsUpdatingItem(false));
     };
 
-    const handleDeleteItem = () => {
-        if (!user || !firestore || !itemToDelete) return;
-        setIsDeletingItem(true);
-        const mealRef = doc(firestore, 'vendors', vendorId, 'meals', itemToDelete.id);
-        deleteDoc(mealRef).then(() => { toast({ title: 'Item Removed' }); setItemToDelete(null); }).finally(() => setIsDeletingItem(false));
-    };
-
-    const handleUpdateProfile = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!user || !firestore || !vendor) return;
-        const formData = new FormData(e.currentTarget);
-        const businessName = formData.get('businessName') as string;
-        const description = formData.get('description') as string;
-        const paymentDetails = formData.get('paymentDetails') as string;
-        const locationString = [editAddress, editCity, editState, editCountry].filter(Boolean).join(', ');
-        setIsUpdatingProfile(true);
-        const vendorRef = doc(firestore, 'vendors', vendorId);
-        const updateData = { businessName, description, location: locationString, paymentDetails, currency: editCurrency, photoURL: vendorPhotoURL || null, updatedAt: serverTimestamp() };
-        updateDoc(vendorRef, updateData).then(() => { toast({ title: 'Profile Updated' }); setIsEditProfileOpen(false); }).finally(() => setIsUpdatingProfile(false));
-    };
-
-    const handleDeleteStore = () => {
-        if (!user || !firestore || !vendor) return;
-        setIsDeletingStore(true);
-        deleteDoc(doc(firestore, 'vendors', vendorId)).then(() => router.push(vendor?.vendorType === 'gift' ? '/marketplace/gifts' : '/marketplace')).finally(() => setIsDeletingStore(false));
-    };
-
-    const handleGiftItems = async () => {
-        if (!user || !firestore || !userProfile || !vendor || cartItems.length === 0) return;
-        const finalRecipientName = soulName || manualRecipientName;
-        if (!finalRecipientName.trim() || !giftInstructions.trim()) {
-            toast({ variant: 'destructive', title: 'Details Required' });
-            return;
-        }
-        setIsProcessingOrder(true);
-        const batch = writeBatch(firestore);
-        const giftsRef = collection(firestore, 'mealGifts');
-        const logActionId = vendor?.vendorType === 'gift' ? 'gave_gift' : 'shared_meal';
-        const logEntry = { date: new Date(), note: `Logged via Kingdom Hub: FULFILLED [${cartItems.map(c => `${c.item.name} (x${c.quantity})`).join(', ')}]. Instructions: ${giftInstructions}`, actions: [logActionId], memberId: user.uid, memberName: `${userProfile?.firstName} ${userProfile?.lastName}` };
-        
-        cartItems.forEach(cartItem => {
-            for(let i = 0; i < cartItem.quantity; i++) {
-                const giftRef = doc(giftsRef);
-                batch.set(giftRef, { senderId: user.uid, senderName: `${userProfile.firstName} ${userProfile.lastName}`, recipientSoulId: soulId || null, recipientName: finalRecipientName, vendorId: cartItem.item.vendorId, vendorName: cartItem.item.vendorName || 'Kingdom Store', vendorOwnerId: cartItem.item.vendorOwnerId, vendorPhotoURL: cartItem.item.vendorPhotoURL || null, vendorType: cartItem.item.vendorType || 'meal', mealId: cartItem.item.id, mealName: cartItem.item.name, price: cartItem.item.price, deliveryFee: cartItem.item.deliveryFee || 0, currency: cartItem.item.currency || 'NGN', status: 'ordered' as MealGiftStatus, instructions: giftInstructions, createdAt: serverTimestamp() });
-            }
-            batch.delete(doc(firestore, 'users', user.uid, 'cart', cartItem.item.id));
-            if (cartItem.item.vendorOwnerId && cartItem.item.vendorOwnerId !== user.uid) {
-                const notifRef = doc(collection(firestore, `users/${cartItem.item.vendorOwnerId}/notifications`));
-                batch.set(notifRef, { userId: cartItem.item.vendorOwnerId, type: 'new_order', title: 'New Offering Order!', message: `${userProfile.firstName} ordered "${cartItem.item.name}" for ${finalRecipientName}.`, link: `/marketplace/orders`, isRead: false, createdAt: serverTimestamp() });
-            }
-        });
-
-        if (soulId) {
-            batch.update(doc(firestore, `users/${user.uid}/souls`, soulId), { followUpLog: arrayUnion(logEntry), lastUpdatedAt: serverTimestamp() });
-            batch.update(doc(firestore, 'souls', soulId), { followUpLog: arrayUnion(logEntry), lastUpdatedAt: serverTimestamp() });
-        }
-
-        const dateString = format(new Date(), 'yyyy-MM-dd');
-        batch.update(doc(firestore, 'users', user.uid), { 'dailyDiscipline.completed': arrayUnion(logActionId), 'dailyDiscipline.lastUpdated': serverTimestamp() });
-        batch.set(doc(firestore, 'users', user.uid, 'disciplineHistory', dateString), { completed: arrayUnion(logActionId), date: serverTimestamp() }, { merge: true });
-
-        batch.commit()
-            .then(() => { 
-                toast({ title: 'Offering Confirmed!' }); 
-                router.push('/souls-won'); 
-            })
-            .finally(() => setIsProcessingOrder(false));
-    };
-
-    if (loading || !vendor) return <div className="flex h-screen items-center justify-center text-left text-left text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left text-left" /></div>;
+    if (loading || !vendor) return <div className="flex h-screen items-center justify-center text-left"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
     return (
-        <div className="w-full text-left text-left text-left">
-            <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left text-left text-left">
-                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left text-left text-left">
-                    <div className="flex flex-col gap-4 text-left text-left text-left">
-                        <div className="flex items-center gap-4 text-left text-left text-left">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left text-left">
-                                <ArrowLeft className="h-6 w-6 text-left text-left text-left text-left" />
-                            </Button>
-                            <div className="flex-1 min-w-0 text-left text-left text-left">
-                                <div className="flex items-center gap-2.5 mb-1 text-left text-left text-left text-left text-left">
-                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left text-left text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left text-left text-left" />}
-                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left text-left text-left"> {centerLabel}</span>
-                                </div>
+        <div className="w-full text-left">
+            <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left">
+                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
+                    <div className="flex items-center gap-4 text-left">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6" /></Button>
+                        <div className="min-w-0 text-left">
+                            <div className="flex items-center gap-2 mb-1">
+                                {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary" /> : <Utensils className="h-3.5 w-3.5 text-primary" />}
+                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
-                        </div>
-
-                        <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left text-left text-left">
-                            {vendor.photoURL ? (
-                                <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left text-left text-left" unoptimized />
-                            ) : (
-                                <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left text-left text-left text-left">
-                                    <Store className="h-16 w-16 text-primary opacity-10 text-left text-left text-left text-left" />
-                                    <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2 text-left text-left text-left text-left">Kingdom Hub</p>
-                                </div>
-                            )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left text-left" />
-                            <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left text-left text-left">
-                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left text-left text-left text-left">{vendor.businessName}</h1>
-                                <div className="flex items-center gap-2 mt-2 opacity-80 text-left text-left text-left text-left">
-                                    <MapPin className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left" />
-                                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate text-left text-left text-left text-left">{vendor.location || 'Kingdom Network'}</p>
-                                </div>
-                            </div>
-                            {isOwner && (
-                                <Button variant="outline" size="icon" className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80 text-left text-left text-left" onClick={() => setIsEditProfileOpen(true)}><Camera className="h-5 w-5 text-left text-left text-left" /></Button>
-                            )}
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase truncate leading-tight">{vendor.businessName}</h1>
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-4 text-left text-left text-left">
-                        <div className="relative text-left text-left text-left">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left" />
-                            <Input 
-                                placeholder={`Search ${itemLabel.toLowerCase()}s...`} 
-                                value={itemSearchTerm}
-                                onChange={e => setItemSearchTerm(e.target.value)}
-                                className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-left text-left text-left"
-                            />
+                    <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
+                        {vendor.photoURL ? <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5"><Store className="h-16 w-16 text-primary opacity-10" /></div>}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%]">
+                            <div className="flex items-center gap-2 opacity-80 mb-2">
+                                <MapPin className="h-3.5 w-3.5 text-primary" />
+                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor.location || 'Kingdom Network'}</p>
+                            </div>
                         </div>
-                        
-                        <div className="flex items-center justify-between gap-4 px-1 text-left text-left text-left">
-                            {!isOwner ? (
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0 text-left text-left text-left" onClick={handleInitiateChat} disabled={isChatLoading}>
-                                                {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin text-left text-left text-left" /> : <MessagesSquare className="h-5 w-5 text-left text-left text-left" />}
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left text-left">Provider Chat</p></TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            ) : (
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0 text-left text-left text-left" onClick={() => setIsOrdersOpen(true)}>
-                                                <ShoppingBag className="h-5 w-5 text-left text-left text-left" />
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left text-left text-left text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left text-left text-left text-left">Manage Orders</p></TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            )}
-                            {isOwner && (
-                                <Button variant="outline" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary text-left text-left text-left">
-                                    <Edit className="mr-2 h-4 w-4 text-left text-left text-left" /> MANAGE HUB
-                                </Button>
-                            )}
-                        </div>
+                        {isOwner && <Button variant="outline" size="icon" className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80" onClick={() => setIsEditProfileOpen(true)}><Camera className="h-5 w-5" /></Button>}
+                    </div>
+
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
+                        <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full" />
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left text-left text-left">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
                     {isOwner && !itemSearchTerm && (
-                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left text-left text-left text-left" onClick={() => setIsAddMealOpen(true)}>
-                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left text-left text-left text-left"><Plus className="h-6 w-6 text-primary text-left text-left text-left text-left" /></div>
-                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-left text-left text-left text-left"> {addLabel}</h3>
+                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left" onClick={() => setIsAddMealOpen(true)}>
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4"><Plus className="h-6 w-6 text-primary" /></div>
+                            <h3 className="font-black uppercase tracking-widest text-primary text-xs">{addLabel}</h3>
                         </Card>
                     )}
 
@@ -486,253 +363,83 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         const cartItem = cart[meal.id];
                         const itemSymbol = getCurrencySymbol(meal.currency);
                         return (
-                            <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left text-left text-left text-left">
-                                <CardContent className="p-0 text-left text-left text-left text-left">
-                                    <div className="aspect-[4/3] relative bg-muted text-left text-left text-left text-left">
-                                        {meal.photoURL ? <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover text-left text-left text-left text-left" /> : <div className="w-full h-full flex items-center justify-center text-left text-left text-left text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left text-left text-left text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left text-left text-left text-left" />}</div>}
-                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left text-left text-left text-left">
-                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-left text-left text-left text-left">{itemSymbol}{meal.price.toLocaleString()}</Badge>
-                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-left text-left text-left text-left">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
+                            <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
+                                <CardContent className="p-0">
+                                    <div className="aspect-[4/3] relative bg-muted">
+                                        {meal.photoURL ? <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10" />}</div>}
+                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
+                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest">{itemSymbol}{meal.price.toLocaleString()}</Badge>
+                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
                                         </div>
-                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-left text-left text-left text-left"> {cartItem.quantity}</div>}
+                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in"> {cartItem.quantity}</div>}
                                     </div>
-                                    <div className="p-6 sm:p-8 space-y-4 flex-grow text-left text-left text-left text-left">
-                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight mb-1 text-left text-left text-left text-left">{meal.name}</h3>
-                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left text-left text-left text-left">{meal.description || `Verified Kingdom service item.`}</p>
+                                    <div className="p-6 sm:p-8 space-y-4 flex-grow">
+                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight mb-1">{meal.name}</h3>
+                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed">{meal.description || `Verified Kingdom service item.`}</p>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left text-left text-left text-left">
-                                    <div className="flex-1 flex flex-col gap-2 w-full text-left text-left text-left text-left">
-                                        <div className="flex flex-col sm:flex-row items-center gap-2 text-left text-left text-left text-left">
-                                            {isOwner && (
-                                                <div className="flex gap-2 w-full sm:w-auto text-left text-left text-left text-left">
-                                                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left text-left text-left text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left text-left text-left text-left" /></Button>
-                                                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left text-left text-left text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4 text-left text-left text-left text-left" /></Button>
-                                                </div>
-                                            )}
-                                            <div className="flex-1 min-w-0 w-full text-left text-left text-left text-left">
-                                                {cartItem ? (
-                                                    <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left text-left text-left text-left">
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3 text-left text-left text-left text-left"/></Button>
-                                                        <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-left text-left text-left text-left">IN PACKAGE</span>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3 text-left text-left text-left text-left"/></Button>
-                                                    </div>
-                                                ) : (
-                                                    <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95 text-left text-left text-left text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
-                                                )}
+                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2">
+                                    {isOwner && (
+                                        <>
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary" /></Button>
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4" /></Button>
+                                        </>
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        {cartItem ? (
+                                            <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3"/></Button>
+                                                <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter">IN PACKAGE</span>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3"/></Button>
                                             </div>
-                                        </div>
+                                        ) : (
+                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
+                                        )}
                                     </div>
                                 </CardFooter>
                             </Card>
                         );
                     })}
                 </div>
-                
-                {filteredMeals.length === 0 && (
-                    <div className="col-span-full py-32 text-center flex flex-col items-center text-left text-left text-left text-left">
-                        <Search className="h-16 w-16 text-muted-foreground/10 mb-4 text-left text-left text-left text-left" />
-                        <p className="text-base font-black uppercase tracking-tight opacity-40 text-left text-left text-left text-left">No matching items</p>
-                        <p className="text-xs text-muted-foreground italic mt-2 text-left text-left text-left text-left text-left text-left">Try a different search term.</p>
-                    </div>
-                )}
 
                 {cartCount > 0 && (
-                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10 text-left text-left text-left">
-                        <Button onClick={() => setIsCartOpen(true)} className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8 text-left text-left text-left">
-                            <div className="flex items-center gap-3 text-left text-left text-left"><div className="relative text-left text-left text-left"><ShoppingCart className="h-5 w-5 text-left text-left text-left" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center text-left text-left text-left"> {cartCount}</span></div><span className="text-xs text-left text-left text-left">VIEW PACKAGE</span></div>
-                            <span className="text-sm text-left text-left text-left">CHECKOUT</span>
+                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10">
+                        <Button onClick={() => setIsCartOpen(true)} className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8">
+                            <div className="flex items-center gap-3"><div className="relative"><ShoppingCart className="h-5 w-5" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center"> {cartCount}</span></div><span className="text-xs">VIEW PACKAGE</span></div>
+                            <span className="text-sm">CHECKOUT</span>
                         </Button>
                     </div>
                 )}
             </div>
-
-            <Drawer open={isCartOpen} onOpenChange={setIsCartOpen}>
-                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left"><ShoppingCart className="h-4 w-4 text-primary text-left text-left text-left text-left"/><span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Kingdom Provision</span></div>
-                        <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left text-left">Kindness Package</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Review selection for {soulName || manualRecipientName || 'Self'}.</DrawerDescription>
-                            <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left">
-                                <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left" />
-                                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left">SWIPE DOWN TO CLOSE</span>
-                            </div>
-                        </DrawerHeader>
-                    </div>
-                    <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left text-left text-left text-left text-left">
-                        <div className="p-8 space-y-10 text-left text-left text-left text-left text-left">
-                            {cartItems.length > 0 ? (
-                                <div className="space-y-10 text-left text-left text-left text-left text-left">
-                                    <div className="space-y-6 text-left text-left text-left text-left text-left">{cartByVendor.map(g => (
-                                        <div key={g.vendorId} className="space-y-3 text-left text-left text-left text-left text-left">
-                                            <div className="flex items-center justify-between px-1 text-left text-left text-left text-left text-left">
-                                                <div className="flex items-center gap-2 text-left text-left text-left text-left text-left">
-                                                    <Store className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left text-left"/>
-                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[200px] text-left text-left text-left text-left text-left"> {g.vendorName}</h4>
-                                                </div>
-                                                <div className="flex flex-col items-end text-right gap-1 text-left text-left text-left text-left text-left">
-                                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest leading-none text-left text-left text-left text-left text-left">
-                                                        Items: {getCurrencySymbol(g.currency)}{g.subtotal.toLocaleString()} + Del: {getCurrencySymbol(g.currency)}{g.deliveryFee.toLocaleString()}
-                                                    </p>
-                                                    <Badge variant="outline" className="h-5 px-1.5 font-black bg-primary/5 text-primary border-primary/20 text-left text-left text-left text-left text-left">
-                                                        {getCurrencySymbol(g.currency)}{(g.subtotal + g.deliveryFee).toLocaleString()} Total
-                                                    </Badge>
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2 text-left text-left text-left text-left text-left">{g.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group text-left text-left text-left text-left text-left text-left"><div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left text-left text-left text-left text-left text-left text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left"/> : <Utensils className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left"/>}</div><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-sm uppercase tracking-tight truncate text-left text-left text-left text-left text-left text-left text-left text-left">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase text-left text-left text-left text-left text-left text-left text-left text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2 text-left text-left text-left text-left text-left text-left text-left"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left text-left text-left text-left text-left text-left"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left text-left text-left text-left text-left text-left text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left text-left text-left text-left text-left text-left text-left"/></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center text-left text-left text-left text-left text-left text-left text-left">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left text-left text-left text-left text-left text-left text-left" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3 text-left text-left text-left text-left text-left text-left text-left"/></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left text-left text-left text-left text-left text-left text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left text-left text-left text-left text-left text-left text-left"/></Button></div></div>))}</div></div>
-                                    ))}</div>
-                                    <div className="space-y-6 text-left text-left text-left text-left text-left"><div className="space-y-2 text-left text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left text-left">Recipient Name</Label><Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left text-left text-left" /></div><div className="space-y-2 text-left text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left text-left">Logistical Instructions</Label><Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left text-left text-left text-left text-left" /></div></div>
-                                    
-                                    <div className="p-6 rounded-[2rem] bg-muted/20 border-2 border-dashed border-primary/20 relative overflow-hidden group shadow-inner text-left text-left text-left text-left text-left">
-                                        <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/text:rotate-0 transition-transform text-left text-left text-left text-left text-left">
-                                            <CreditCard className="h-20 w-20 text-primary rotate-12 text-left text-left text-left text-left text-left" />
-                                        </div>
-                                        <div className="relative z-10 space-y-4 text-left text-left text-left text-left text-left">
-                                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
-                                                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left text-left text-left text-left" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Checkout Guidance</span>
-                                            </div>
-                                            <div className="space-y-3 text-left text-left text-left text-left text-left">
-                                                <div className="flex justify-between items-center text-left text-left text-left text-left text-left">
-                                                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-left text-left text-left text-left text-left">Package subtotal</span>
-                                                    <span className="text-[11px] font-black text-foreground uppercase tracking-tight text-left text-left text-left text-left text-left">Multi-Currency Hub</span>
-                                                </div>
-                                                
-                                                <div className="space-y-2 py-2 text-left text-left text-left text-left text-left">
-                                                    {cartItems.map((c) => (
-                                                        <div key={c.item.id} className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight text-left text-left text-left text-left text-left">
-                                                            <span className="text-muted-foreground truncate mr-4 text-left text-left text-left text-left text-left">{c.item.name} x{c.quantity}</span>
-                                                            <span className="text-foreground shrink-0 text-left text-left text-left text-left text-left">{getCurrencySymbol(c.item.currency)}{(c.item.price * c.quantity).toLocaleString()}</span>
-                                                        </div>
-                                                    ))}
-                                                    {cartByVendor.length > 0 && cartByVendor[0].deliveryFee > 0 && (
-                                                        <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight pt-1 border-t border-dashed border-primary/10 text-left text-left text-left text-left text-left">
-                                                            <span className="text-muted-foreground text-left text-left text-left text-left text-left">Delivery Fee</span>
-                                                            <span className="text-foreground text-left text-left text-left text-left text-left">{getCurrencySymbol(cartByVendor[0].currency)}{cartByVendor[0].deliveryFee.toLocaleString()}</span>
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                <Separator className="bg-primary/10 text-left text-left text-left text-left text-left text-left" />
-                                                <div className="flex flex-col gap-1 text-left text-left text-left text-left text-left">
-                                                    <p className="text-lg font-black uppercase tracking-tight text-primary text-left text-left text-left text-left text-left">Action Required</p>
-                                                    <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left text-left text-left text-left text-left">
-                                                        After payment is done, dispatch your gift
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4 text-left text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left text-left text-left text-left text-left"><CreditCard className="h-3.5 w-3.5 text-left text-left text-left text-left text-left" /> FULFILLMENT GUIDE</Label><div className="space-y-3 text-left text-left text-left text-left text-left">{cartByVendor.map(v => (
-                                        <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left text-left text-left text-left text-left"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left text-left text-left text-left text-left"><Store className="h-10 w-10 text-primary text-left text-left text-left text-left text-left" /></div><div className="flex justify-between items-start mb-2 text-left text-left text-left text-left text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left text-left">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left text-left text-left text-left text-left"> {getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left text-left text-left text-left text-left">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left text-left text-left text-left text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left text-left text-left text-left text-left" /></Button></div>
-                                    ))}</div></div>
-                                </div>
-                            ) : (
-                                <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left text-left text-left text-left"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left text-left text-left text-left"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left text-left text-left text-left" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left text-left text-left text-left">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-left text-left text-left text-left text-left text-left">Add items to place an order.</p></div>
-                            )}
-                            <div className="h-24 text-left text-left text-left text-left text-left" />
-                        </div>
-                    </ScrollArea>
-                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left text-left text-left text-left text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left text-left text-left text-left text-left"><div className="flex items-center gap-2 text-left text-left text-left text-left text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left" />}DISPATCH OFFERINGS</div></Button></DrawerFooter>)}
-                </DrawerContent>
-            </Drawer>
-
-            {isMobile ? (
-                <Drawer open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                    <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left">
-                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left text-left">
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left"> {addLabel}</DrawerTitle>
-                            </DrawerHeader>
-                        </div>
-                        <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left text-left text-left">{itemForm()}</div>
-                    </DrawerContent>
-                </Drawer>
-            ) : (
-                <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left text-left text-left text-left">
-                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left text-left text-left">
-                            <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left"> {addLabel}</DialogTitle>
-                            </DialogHeader>
-                        </div>
-                        <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left text-left text-left">{itemForm()}</div>
-                    </DialogContent>
-                </Dialog>
-            )}
-
-            {isMobile ? (
-                <Drawer open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                    <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left">
-                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left text-left text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left text-left">
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Edit Offering</DrawerTitle>
-                            </DrawerHeader>
-                        </div>
-                        <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left text-left text-left">{itemForm(itemToEdit, true)}</div>
-                    </DrawerContent>
-                </Drawer>
-            ) : (
-                <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left text-left text-left text-left">
-                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left text-left text-left">
-                            <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Edit Offering</DialogTitle>
-                            </DialogHeader>
-                        </div>
-                        <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left text-left text-left">{itemForm(itemToEdit, true)}</div>
-                    </DialogContent>
-                </Dialog>
-            )}
-
-            <VendorOrdersSheet vendorId={vendorId} isOpen={isOrdersOpen} onOpenChange={setIsOrdersOpen} />
-
-            {isMobile ? (
-                <Drawer open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left">
-                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left text-left">
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Edit Storefront</DrawerTitle>
-                                <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left">
-                                    <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left" />
-                                    <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left">Swipe down to close</span>
-                                </div>
-                            </DrawerHeader>
-                        </div>
-                        <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left text-left text-left">{editProfileForm}</div>
-                    </DrawerContent>
-                </Drawer>
-            ) : (
-                <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                    <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
-                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                            <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Edit Storefront</DialogTitle>
-                            </DialogHeader>
-                        </div>
-                        <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left text-left text-left">{editProfileForm}</div>
-                    </DialogContent>
-                </Dialog>
-            )}
             
-            <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left" />}Confirm</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                        <DialogHeader className="text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight"> {addLabel}</DialogTitle>
+                        </DialogHeader>
+                    </div>
+                    <div className="flex-grow overflow-hidden">{itemForm()}</div>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                        <DialogHeader className="text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Offering</DialogTitle>
+                        </DialogHeader>
+                    </div>
+                    <div className="flex-grow overflow-hidden">{itemForm(itemToEdit, true)}</div>
+                </DialogContent>
+            </Dialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left text-left text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left text-left text-left text-left text-left text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left" />}Delete</AlertDialogAction>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                    <AlertDialogHeader className="text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6">
+                        <AlertDialogCancel className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
