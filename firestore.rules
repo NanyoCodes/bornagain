@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Fixed testimonies permission typo - 2025-06-15T15:30:00Z
+    // Deployment trigger: Fixed testimonies delete permission and unified author mapping - 2025-06-15T16:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
