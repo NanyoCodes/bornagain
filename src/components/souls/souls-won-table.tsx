@@ -856,7 +856,7 @@ function SoulProfileContent({
                                                 <div className="absolute top-0 right-0 p-3 opacity-[0.02] pointer-events-none group-hover:opacity-[0.05] transition-opacity">
                                                     <Sparkles className="h-8 w-8 text-primary rotate-12" />
                                                 </div>
-                                                <p className="text-sm sm:text-base text-muted-foreground italic font-medium leading-relaxed break-words [overflow-wrap:anywhere]">
+                                                <p className="text-sm sm:text-base text-muted-foreground italic font-medium leading-relaxed break-words">
                                                     &ldquo;{log.note}&rdquo;
                                                 </p>
                                             </div>
@@ -977,7 +977,7 @@ function SoulProfileContent({
                   </div>
                   <DrawerTitle className="text-2xl font-black font-headline uppercase text-center">Message Hub</DrawerTitle>
                   <DrawerDescription className="text-sm font-medium text-center text-balance">How would you like to encourage {soul.firstName}?</DrawerDescription>
-                  <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
+                  <div className="flex items-center justify-center gap-2 mt-4"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
                 </DrawerHeader>
               </div>
               <div className="p-8">
