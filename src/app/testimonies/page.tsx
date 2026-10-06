@@ -248,13 +248,13 @@ function TestimoniesContent() {
   return (
     <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-        <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left">
+        <div className="lg:col-span-8 space-y-6 md:space-y-10">
             <div className="bg-card border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98] text-left" onClick={() => setIsTestimonyDialogOpen(true)}>
                 <Avatar className="h-9 w-9 border shadow-sm shrink-0">
                     <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
                     <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px]">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 text-left">
                     <p className="text-[12px] font-bold text-foreground/80 leading-tight">Share God's goodness today...</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -290,7 +290,7 @@ function TestimoniesContent() {
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
                     <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 text-left">
                         <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Testimonies</TabsTrigger>
-                        <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Prayer Requests</TabsTrigger>
+                        <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">Prayer Requests</TabsTrigger>
                     </TabsList>
                     <TabsContent value="testimonies" className="outline-none text-left">
                         <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full text-left">
@@ -353,7 +353,7 @@ function TestimoniesContent() {
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                     <DrawerHeader className="text-left">
-                        <div className="flex items-center gap-2 mb-4 text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
+                        <div className="flex items-center gap-2 mb-4"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Testimony</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1">Update your shared story for the community.</DrawerDescription>
                     </DrawerHeader>
@@ -367,7 +367,7 @@ function TestimoniesContent() {
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                     <DrawerHeader className="text-left">
-                        <div className="flex items-center gap-2 mb-4 text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
+                        <div className="flex items-center gap-2 mb-4"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Prayer Request</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1">Update your request for the Body of Christ.</DrawerDescription>
                     </DrawerHeader>
@@ -381,7 +381,7 @@ function TestimoniesContent() {
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left flex-shrink-0">
                     <DrawerHeader className="text-left flex-shrink-0">
-                        <div className="flex items-center gap-2 mb-4 text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
+                        <div className="flex items-center gap-2 mb-4"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight"> {prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others with what God has done."}</DrawerDescription>
                     </DrawerHeader>
@@ -395,7 +395,7 @@ function TestimoniesContent() {
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left flex-shrink-0">
                     <DrawerHeader className="text-left flex-shrink-0">
-                        <div className="flex items-center gap-2 mb-4 text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
+                        <div className="flex items-center gap-2 mb-4"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px) font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Request Prayer</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1">Share your need with the global community.</DrawerDescription>
                     </DrawerHeader>
@@ -444,7 +444,7 @@ function TestimoniesContent() {
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left text-left">
+                    <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Share your request with the global community.</DialogDescription>
                     </DialogHeader>
@@ -462,8 +462,10 @@ function TestimoniesContent() {
 
 export default function TestimoniesStandalonePage() {
     return (
-        <Suspense fallback={<div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
-            <TestimoniesContent />
-        </Suspense>
+        <AppShell>
+            <Suspense fallback={<div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+                <TestimoniesContent />
+            </Suspense>
+        </AppShell>
     );
 }

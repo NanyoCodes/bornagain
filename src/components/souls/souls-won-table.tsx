@@ -594,7 +594,7 @@ function SoulProfileContent({
             setIsMatchmakingOpen(true);
             return;
         default:
-            await finalizeLog(soul, actionId);
+            await finalizeLog(soul, selectedActionId || '');
     }
   };
 
@@ -957,8 +957,8 @@ function SoulProfileContent({
 
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
-          <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+          <DialogHeader className="text-center space-y-2 text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                   <MessageSquare className="h-7 w-7 text-primary" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
@@ -991,7 +991,7 @@ function SoulProfileContent({
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
-          <DialogHeader className="text-center space-y-2">
+          <DialogHeader className="text-center space-y-2 text-left">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                   <Share className="h-7 w-7 text-primary" />
               </div>

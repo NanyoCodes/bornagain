@@ -146,7 +146,7 @@ function ShareConvertsDialog({
     );
 
     const body = (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 text-left">
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                 <Input 
@@ -157,7 +157,7 @@ function ShareConvertsDialog({
                 />
             </div>
             <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
-                <div className="p-2 space-y-1.5">
+                <div className="p-2 space-y-1.5 text-left">
                     {filtered.length > 0 ? (
                         filtered.map(soul => (
                             <Button 
@@ -177,7 +177,7 @@ function ShareConvertsDialog({
                             </Button>
                         ))
                     ) : (
-                        <div className="text-center py-20 px-8 space-y-3 text-left">
+                        <div className="text-center py-20 px-8 space-y-3">
                             <Heart className="h-12 w-12 text-muted-foreground/10 mx-auto" />
                             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60">No converts to share</p>
                         </div>
@@ -192,7 +192,7 @@ function ShareConvertsDialog({
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
                 <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     {header}
-                    <div className="flex-grow overflow-hidden text-left">{body}</div>
+                    <div className="flex-grow overflow-hidden">{body}</div>
                 </DrawerContent>
             </Drawer>
         );
@@ -346,7 +346,7 @@ export function FullDevotionalDialog({
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
                             </DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</DrawerDescription>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</DrawerDescription>
                         </DrawerHeader>
                     </div>
                     <ScrollArea className="flex-grow">
@@ -938,7 +938,7 @@ export default function FellowshipPageClient() {
                                         <div className="flex items-center justify-between flex-wrap gap-4 px-1 text-left">
                                             <div className="flex items-center flex-wrap gap-2 sm:gap-3 text-left">
                                                 <Button onClick={(e) => handleReaction('amen', e)} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all text-left", hasAmened && "bg-white/20 border-white/30")}>
-                                                    {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <HandHeart className={cn("h-3.5 w-3.5", hasAmened && "fill-current")} />}
+                                                    {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <HandHeart className={cn("mr-2 h-4 w-4", hasAmened && "fill-current")} />}
                                                     <span>Amen</span>
                                                 </Button>
                                                 <Button onClick={(e) => handleReaction('inspired', e)} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all text-left", hasInspired && "bg-white/20 border-white/30")} >
@@ -1128,7 +1128,7 @@ export default function FellowshipPageClient() {
             )}
 
             <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
-                <AlertDialogContent className="rounded-3xl p-8"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline">Remove Member?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium">Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Removal</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                <AlertDialogContent className="rounded-3xl p-8"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline">Remove Member?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium">Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AccordionHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Removal</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>

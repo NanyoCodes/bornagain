@@ -68,7 +68,6 @@ const iconMap: Record<string, any> = {
     'text_message': MessageSquare,
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
-    'matchmaking': HeartHandshake,
 };
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -598,8 +597,8 @@ export function RelationshipTrackerCard() {
           <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
               <div className="p-8 border-b shrink-0 bg-muted/10">
                   <DrawerHeader className="text-left flex-shrink-0">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1">Draft a powerful prayer for {activeSoul?.firstName}.</DrawerDescription>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DrawerDescription>
                       <div className="flex items-center gap-2 mt-4"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
                   </DrawerHeader>
               </div>
