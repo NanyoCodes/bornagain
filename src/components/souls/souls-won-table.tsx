@@ -683,6 +683,17 @@ function SoulProfileContent({
     return Array.from(uniqueMap.values());
   }, [currentUserProfile?.accountabilityPartners]);
 
+  const commBody = (
+    <div className="flex flex-col gap-3 pt-6 text-left">
+      <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+        <WhatsAppIcon className="h-5 w-5" /> WhatsApp
+      </Button>
+      <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+        <MessageSquare className="h-5 w-5" /> Standard SMS
+      </Button>
+    </div>
+  );
+
   return (
     <div className="space-y-6 text-left">
       <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
@@ -964,10 +975,7 @@ function SoulProfileContent({
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20"><WhatsAppIcon className="h-5 w-5" /> WhatsApp</Button>
-            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5"><MessageSquare className="h-5 w-5" /> Standard SMS</Button>
-          </div>
+          {commBody}
         </DialogContent>
       </Dialog>
 
@@ -1169,7 +1177,7 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
                         <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center">{selectedSoul.firstName} {selectedSoul.lastName}</p>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left"><Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-left">Select a record to preview identity</p></div>
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left"><Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-left">Select a record to preview identity</p></div>
                 )}
             </AnimatePresence>
         </div>
