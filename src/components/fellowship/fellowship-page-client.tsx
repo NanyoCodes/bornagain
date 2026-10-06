@@ -135,8 +135,8 @@ function ShareConvertsDialog({
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Collaboration</span>
             </div>
             <div className="space-y-1">
-                <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase">Share Converts</DrawerTitle>
-                <DrawerDescription className="text-sm font-medium mt-1">Select a convert to share their details with {targetMember.firstName}.</DrawerDescription>
+                <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase text-left">Share Converts</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-left">Select a convert to share their details with {targetMember.firstName}.</DialogDescription>
                 <div className="flex items-center gap-2 mt-4 sm:hidden">
                     <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" />
                     <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span>
@@ -190,7 +190,7 @@ function ShareConvertsDialog({
     if (isMobile) {
         return (
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     {header}
                     <div className="flex-grow overflow-hidden">{body}</div>
                 </DrawerContent>
@@ -200,7 +200,7 @@ function ShareConvertsDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                 {header}
                 {body}
             </DialogContent>
@@ -384,7 +384,7 @@ export function FullDevotionalDialog({
                     </div>
                 </ScrollArea>
                 <div className="p-6 border-t bg-muted/5 flex justify-end gap-3">
-                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold">Close Word</Button>
+                    <Button variant="outline" onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="rounded-full px-8 font-bold">Close Word</Button>
                 </div>
             </DialogContent>
         </Dialog>

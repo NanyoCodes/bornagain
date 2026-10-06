@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -308,7 +309,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 {testimony.mediaType === 'image' ? (
                     <Image src={testimony.mediaUrl} alt="Proof 1" fill className="object-contain" unoptimized />
                 ) : (
-                    <video src={testimony.mediaUrl} className="w-full h-full object-contain" controls />
+                    <video src={testimony.mediaUrl} className="w-full h-full object-contain bg-zinc-950" playsInline controls />
                 )}
               </div>
             )}
@@ -317,7 +318,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 {testimony.mediaType2 === 'image' ? (
                     <Image src={testimony.mediaUrl2} alt="Proof 2" fill className="object-contain" unoptimized />
                 ) : (
-                    <video src={testimony.mediaUrl2} className="w-full h-full object-contain" controls />
+                    <video src={testimony.mediaUrl2} className="w-full h-full object-contain bg-zinc-950" playsInline controls />
                 )}
               </div>
             )}
@@ -415,7 +416,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         {testimony.mediaType === 'image' ? (
                             <Image src={testimony.mediaUrl} alt="Proof 1" fill className="object-contain transition-transform group-hover/media:scale-105" unoptimized />
                         ) : (
-                            <video src={testimony.mediaUrl} className="w-full h-full object-contain bg-zinc-950" muted />
+                            <video src={testimony.mediaUrl} className="w-full h-full object-contain bg-zinc-950" muted playsInline autoPlay loop />
                         )}
                     </div>
                  )}
@@ -424,7 +425,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         {testimony.mediaType2 === 'image' ? (
                             <Image src={testimony.mediaUrl2} alt="Proof 2" fill className="object-contain transition-transform group-hover/media:scale-105" unoptimized />
                         ) : (
-                            <video src={testimony.mediaUrl2} className="w-full h-full object-contain bg-zinc-950" muted />
+                            <video src={testimony.mediaUrl2} className="w-full h-full object-contain bg-zinc-950" muted playsInline autoPlay loop />
                         )}
                     </div>
                  )}

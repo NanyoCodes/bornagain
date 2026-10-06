@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -268,7 +269,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     {preview.type === 'image' ? (
                         <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-contain" unoptimized />
                     ) : (
-                        <video src={preview.url} className="w-full h-full object-contain" controls />
+                        <video src={preview.url} className="w-full h-full object-contain" playsInline controls />
                     )}
                     <Button 
                         type="button" 
