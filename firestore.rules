@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Corrected testimonies and prayer response management - 2025-06-15T19:00:00Z
+    // Deployment trigger: Corrected testimony management permissions - 2025-06-16T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -225,7 +225,6 @@ service cloud.firestore {
       allow update: if isAuthenticated() && ( 
         (request.resource.data.authorId == request.auth.uid) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
-        // Allow un-answering if the status is being set to pending and the answeredTestimonyId is being deleted
         (request.resource.data.status == 'pending' && !('answeredTestimonyId' in request.resource.data))
       );
     }
