@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -66,8 +65,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState<number | null>(null);
-  const [mediaPreview1, setMediaPreview1] = setMediaPreview1(null);
-  const [mediaPreview2, setMediaPreview2] = setMediaPreview2(null);
+  const [mediaPreview1, setMediaPreview1] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
+  const [mediaPreview2, setMediaPreview2] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
   
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);

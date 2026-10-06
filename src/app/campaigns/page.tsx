@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState, useEffect, Suspense } from "react";
@@ -54,7 +53,7 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import { AppShell } from "@/components/layout/app-shell";
 
@@ -277,7 +276,7 @@ function CampaignsPageContent() {
     <div className="w-full max-w-7xl mx-auto text-left text-left">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 text-left text-left">
         <div className="lg:col-span-8 space-y-8 pb-32 text-left text-left text-left">
-            <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-3xl border-x-0 sm:border-x -mx-3 sm:mx-0 bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left">
+            <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-3xl border-x-0 sm:border-x -mx-3 sm:mx-0 bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left">
                 <CardContent className="p-3 sm:p-6 text-left text-left text-left">
                 <div className="flex flex-row items-center gap-2 sm:gap-4 w-full text-left text-left text-left">
                 <Button 

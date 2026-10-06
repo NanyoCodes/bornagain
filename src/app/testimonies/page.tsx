@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -176,7 +175,7 @@ function TestimoniesContent() {
     if (activeTab === 'testimonies') setSearchPlaceholder('Search testimonies...');
     else setSearchPlaceholder('Search prayer requests...');
   }, [activeTab, setSearchPlaceholder]);
-
+  
   useEffect(() => {
     const hash = typeof window !== 'undefined' ? window.location.hash : '';
     if (hash) {
@@ -488,7 +487,7 @@ function TestimoniesContent() {
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left">
-                    <DialogHeader className="text-left text-left text-left text-left text-left text-left">
+                    <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Edit Prayer Request</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
@@ -500,8 +499,8 @@ function TestimoniesContent() {
                 <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
-                      <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left">{testimonyFormContent}</div></ScrollArea>
@@ -509,8 +508,8 @@ function TestimoniesContent() {
               </Dialog>
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left">
-                    <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Share your request with the global community.</DialogDescription>
                     </DialogHeader>
@@ -527,17 +526,11 @@ function TestimoniesContent() {
 }
 
 export default function TestimoniesPage() {
-  return (
-    <AppShell>
-      <Suspense
-        fallback={
-          <div className="flex justify-center py-20 text-left text-left">
-            <Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left" />
-          </div>
-        }
-      >
-        <TestimoniesContent />
-      </Suspense>
-    </AppShell>
-  );
+    return (
+        <AppShell>
+            <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left" /></div>}>
+                <TestimoniesContent />
+            </Suspense>
+        </AppShell>
+    );
 }
