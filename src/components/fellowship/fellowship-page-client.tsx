@@ -152,7 +152,7 @@ function ShareConvertsDialog({
                 <Input 
                     placeholder="Search converts..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-11 pl-10 bg-muted/20 border-none shadow-inner font-bold"
                 />
             </div>
@@ -339,7 +339,7 @@ export function FullDevotionalDialog({
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                         <DrawerHeader className="text-left flex-shrink-0">
                             <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
@@ -347,7 +347,7 @@ export function FullDevotionalDialog({
                                 {devotional.title}
                             </DrawerTitle>
                             <DrawerDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</DrawerDescription>
-                        </DrawerHeader>
+                        </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow">
                         <div className="p-8 pb-32">
@@ -371,11 +371,11 @@ export function FullDevotionalDialog({
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
                     <DialogHeader>
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
                             <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                             {devotional.title}
                         </DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
                 <ScrollArea className="max-h-[70vh]">
@@ -838,7 +838,7 @@ export default function FellowshipPageClient() {
             <div className="flex flex-col gap-5 px-4 sm:px-0 text-left">
                 <div className="flex items-center gap-3 sm:gap-4 w-full text-left">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm hover:bg-muted/50 text-left">
-                        <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+                        <ArrowLeft className="h-5 w-5 text-left text-left"/>
                         <span className="sr-only text-left">Back</span>
                     </Button>
                     <div className="min-w-0 flex-1 text-left">
@@ -1044,15 +1044,15 @@ export default function FellowshipPageClient() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                               <DrawerHeader className="text-left flex-shrink-0">
-                                <div className="flex items-center gap-2 mb-4 text-left">
-                                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
+                                <div className="flex items-center gap-2 mb-4 text-left text-left">
+                                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
                                     <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span>
                                 </div>
                                 <DrawerTitle className="text-2xl font-black font-headline text-left">Devotional Hub</DrawerTitle>
                                 <DrawerDescription className="text-sm font-medium mt-1 text-left">Arrange the Word and Prayer for your group.</DrawerDescription>
                               </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow text-left"><div className="p-8 space-y-10 text-left"><Form {...form}><form id="devotional-form-mobile" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6 text-left"><FormField control={form.control} name="scheduledDate" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel><FormControl><Input type="date" min={todayStr} {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel><FormControl><Input placeholder="e.g., Favor & Grace" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="scripture" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel><FormControl><Input placeholder="e.g., Psalm 23:1" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="text" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel><FormControl><Textarea placeholder="Share the revelation..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="prayer" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel><FormControl><Textarea placeholder="Type a guided prayer..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-14 font-black shadow-xl rounded-2xl tracking-widest uppercase text-center">{isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}</Button></form></Form></div></ScrollArea>
+                            <ScrollArea className="flex-grow text-left"><div className="p-8 space-y-10 text-left"><Form {...form}><form id="devotional-form-mobile" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6 text-left"><FormField control={form.control} name="scheduledDate" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel><FormControl><Input type="date" min={todayStr} {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel><FormControl><Input placeholder="e.g., Favor & Grace" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="scripture" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel><FormControl><Input placeholder="e.g., Psalm 23:1" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="text" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel><FormControl><Textarea placeholder="Share the revelation..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="prayer" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel><FormControl><Textarea placeholder="Type a guided prayer..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-14 font-black shadow-xl rounded-2xl tracking-widest uppercase text-center">{isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}</Button></form></Form></div></ScrollArea>
                         </DrawerContent>
                     </Drawer>
                 ) : (
@@ -1096,15 +1096,15 @@ export default function FellowshipPageClient() {
             {isLogSoulOpen && (
                 isMobile ? (
                     <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left flex-shrink-0">
-                                    <DrawerTitle className="text-2xl font-black font-headline">Log Group Convert</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won directly to this community.</DrawerDescription>
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Log Group Convert</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Record a new life won directly to this community.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow px-8 text-left">
-                                <div className="py-8 text-left">
+                            <ScrollArea className="flex-grow px-8 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <div className="py-8 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                     <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />
                                 </div>
                             </ScrollArea>
@@ -1112,14 +1112,14 @@ export default function FellowshipPageClient() {
                     </Drawer>
                 ) : (
                     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                                <DialogHeader className="text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Log Group Convert</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 p-8 text-left">
+                            <ScrollArea className="flex-1 min-h-0 p-8 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />
                             </ScrollArea>
                         </DialogContent>

@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Newspaper, HandHeart, Loader2, Trash2, Edit, Camera, Flame, Sparkles, X, ChevronDown, Send, Globe } from 'lucide-react';
+import { Newspaper, HandHeart, Loader2, Trash2, Edit, Camera, Flame, Sparkles, X, ChevronDown, Send, Globe, Hourglass, UserPlus } from 'lucide-react';
 import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
 import { PrayerRequestCard } from '@/components/prayer/PrayerRequestCard';
@@ -249,7 +249,7 @@ function TestimoniesContent() {
   const prayerFormContent = <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} />;
 
   return (
-    <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
+    <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
           <div
@@ -523,7 +523,7 @@ function TestimoniesContent() {
                   <div className="p-8 border-b bg-muted/10">
                     <DialogHeader>
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Share Prayer Request</DialogTitle>
-                      <DialogDescription className="text-sm font-medium">Share your request with the global community.</DialogDescription>
+                      <DialogDescription className="text-sm font-medium">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
