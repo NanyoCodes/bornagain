@@ -152,7 +152,7 @@ function ShareConvertsDialog({
                 <Input 
                     placeholder="Search converts..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-11 pl-10 bg-muted/20 border-none shadow-inner font-bold"
                 />
             </div>
@@ -192,7 +192,7 @@ function ShareConvertsDialog({
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
                 <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     {header}
-                    <div className="flex-grow overflow-hidden">{body}</div>
+                    <div className="flex-grow overflow-hidden text-left">{body}</div>
                 </DrawerContent>
             </Drawer>
         );
@@ -365,7 +365,7 @@ export function FullDevotionalDialog({
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left">
+                <div className="p-8 border-b bg-muted/10">
                     <div className="flex items-center gap-3 mb-2 text-left">
                         <Target className="h-5 w-5 text-primary text-left" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Mission Overview</span>
@@ -799,7 +799,7 @@ export default function FellowshipPageClient() {
     const ScheduleList = (
         <div className="space-y-4">
             {loadingSchedule ? (
-                <div className="py-12 flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
+                <div className="py-12 flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div>
             ) : scheduledDevotionals && scheduledDevotionals.length > 0 ? (
                 <div className="grid gap-3 text-left">
                     {scheduledDevotionals.map(devo => {
@@ -1042,7 +1042,7 @@ export default function FellowshipPageClient() {
                 isMobile ? (
                     <Drawer open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                               <DrawerHeader className="text-left flex-shrink-0">
                                 <div className="flex items-center gap-2 mb-4 text-left">
                                     <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
@@ -1128,7 +1128,7 @@ export default function FellowshipPageClient() {
             )}
 
             <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
-                <AlertDialogContent className="rounded-3xl p-8"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline">Remove Member?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium">Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AccordionHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Removal</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                <AlertDialogContent className="rounded-3xl p-8"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline">Remove Member?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium">Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Removal</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>

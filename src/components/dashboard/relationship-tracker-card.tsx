@@ -574,7 +574,7 @@ export function RelationshipTrackerCard() {
           <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
               <div className="p-8 border-b shrink-0 bg-muted/10">
                   <DrawerHeader className="text-center space-y-2">
-                      <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+                      <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
                           <MessageSquare className="h-7 w-7 text-primary" />
                       </div>
                       <DrawerTitle className="text-2xl font-black font-headline uppercase text-center">Message Hub</DrawerTitle>
@@ -675,7 +675,7 @@ export function RelationshipTrackerCard() {
                       <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                           <Share className="h-7 w-7 text-primary" />
                       </div>
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase text-center">Share Details</DrawerTitle>
+                      <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DrawerTitle>
                       <DrawerDescription className="text-sm font-medium text-center">Where would you like to share {activeSoul?.firstName}'s info?</DrawerDescription>
                       <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
                   </DrawerHeader>

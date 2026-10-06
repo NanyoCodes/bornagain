@@ -348,7 +348,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 control={form.control}
                 name="photoURL"
                 render={({ field }) => (
-                    <FormItem className="flex flex-col items-center py-4">
+                    <FormItem className="flex flex-col items-center py-4 text-left text-left">
                         <FormControl>
                             <ImageUpload
                                 initialImageUrl={field.value}
@@ -778,8 +778,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             )}
           />
 
-          <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Save Changes'}
+          <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting}>
+            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            check for video testimonies
           </Button>
         </form>
       </Form>

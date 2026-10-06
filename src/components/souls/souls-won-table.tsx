@@ -594,7 +594,7 @@ function SoulProfileContent({
             setIsMatchmakingOpen(true);
             return;
         default:
-            await finalizeLog(soul, selectedActionId || '');
+            await finalizeLog(soul, clickedActionId || '');
     }
   };
 
@@ -690,7 +690,7 @@ function SoulProfileContent({
             <div className="relative inline-block mx-auto mb-4 text-left">
                 <Avatar className="h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 text-left">
                     <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                    <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full">{soul.firstName?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 {address && <Button size="icon" className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background" onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')} title="View Map"><MapPin className="h-5 w-5" /></Button>}
             </div>
