@@ -323,7 +323,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 <FormControl>
                   <Textarea 
                     placeholder="Share what the Lord has done..." 
-                    className="min-h-[100px] sm:min-h-[180px] rounded-[1.25rem] sm:rounded-[2rem] p-4 sm:p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed transition-all focus:border-primary/40 focus:bg-muted/20" 
+                    className="min-h-[120px] sm:min-h-[180px] rounded-[1.25rem] sm:rounded-[2rem] p-4 sm:p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed transition-all focus:border-primary/40 focus:bg-muted/20" 
                     {...field} 
                   />
                 </FormControl>
@@ -337,7 +337,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
              {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
           </div>
 
-          <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia !== null}>
+          <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting || isUploadingMedia !== null}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSubmitting ? 'PUBLISHING...' : 'PUBLISH TESTIMONY'}
           </Button>
