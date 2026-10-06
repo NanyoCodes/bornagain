@@ -133,7 +133,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isAddMealOpen, setIsAddMealOpen] = useState(false);
-    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Meal | null>(null);
     const [itemToEdit, setItemToEdit] = useState<Meal | null>(null);
     
@@ -225,18 +224,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         else updateDoc(itemRef, { quantity: newQty, updatedAt: serverTimestamp() });
     };
 
-    const handleUpdateProfile = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!user || !firestore || !vendor) return;
-        const formData = new FormData(e.currentTarget);
-        const businessName = formData.get('businessName') as string;
-        const description = formData.get('description') as string;
-        const paymentDetails = formData.get('paymentDetails') as string;
-        const location = [editAddress, editCity, editState, editCountry].filter(Boolean).join(', ');
-        setIsUpdatingProfile(true);
-        updateDoc(doc(firestore, 'vendors', vendorId), { businessName, description, location, paymentDetails, currency: editCurrency, photoURL: vendorPhotoURL || null }).then(() => { toast({ title: 'Profile Updated' }); setIsEditModalOpen(false); }).finally(() => setIsUpdatingProfile(false));
-    };
-
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const handleAddMeal = (e: React.FormEvent<HTMLFormElement>) => {
@@ -276,21 +263,21 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const itemForm = (item?: Meal | null, isEdit = false) => (
         <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal}>
             <div className="p-8 space-y-6 text-left">
-                <div className="space-y-4">
+                <div className="space-y-4 text-left">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Visual</Label>
                   <ImageUpload initialImageUrl={itemPhotoURL} onUploadComplete={setItemPhotoURL} storagePath="marketplace-items" cropAspect={4/3} />
                 </div>
-                <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Name</Label><Input name="name" defaultValue={item?.name || ''} placeholder={`e.g. ${isGiftVendor ? 'Study Bible' : 'Full Platter'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required /></div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Name</Label><Input name="name" defaultValue={item?.name || ''} placeholder={`e.g. ${isGiftVendor ? 'Study Bible' : 'Full Platter'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required /></div>
+                <div className="grid grid-cols-2 gap-4 text-left">
                     <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price ({getCurrencySymbol(vendor?.currency)})</Label><Input name="price" type="number" step="0.01" defaultValue={item?.price || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required /></div>
                     <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Fee</Label><Input name="deliveryFee" type="number" step="0.01" defaultValue={item?.deliveryFee || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
                 </div>
-                <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
-                <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
+                <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
+                <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
             </div>
-            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3">
+            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
                 <Button type="button" variant="outline" onClick={() => { setIsAddMealOpen(false); setItemToEdit(null); }} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
-                <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest">
+                <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest text-center">
                     {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isEdit ? 'SAVE CHANGES' : 'ADD TO CATALOG'}
                 </Button>
@@ -298,7 +285,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </form>
     );
 
-    if (loading || !vendor) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+    if (loading || !vendor) return <div className="flex h-screen items-center justify-center text-left"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
 
     return (
         <div className="w-full text-left">
@@ -306,8 +293,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
                     <div className="flex items-center gap-4 text-left">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6" /></Button>
-                        <div className="min-w-0 text-left">
-                            <div className="flex items-center gap-2 mb-1 text-left">
+                        <div className="min-w-0 text-left text-left">
+                            <div className="flex items-center gap-2 mb-1 text-left text-left">
                                 {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary" /> : <Utensils className="h-3.5 w-3.5 text-primary" />}
                                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
@@ -315,7 +302,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         </div>
                     </div>
 
-                    <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
+                    <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left">
                         {vendor.photoURL ? <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left"><Store className="h-16 w-16 text-primary opacity-10" /></div>}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
                         <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left">
@@ -337,7 +324,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     {isOwner && !itemSearchTerm && (
                         <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left" onClick={() => setIsAddMealOpen(true)}>
                             <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4"><Plus className="h-6 w-6 text-primary" /></div>
-                            <h3 className="font-black uppercase tracking-widest text-primary text-xs">{addLabel}</h3>
+                            <h3 className="font-black uppercase tracking-widest text-primary text-xs"> {addLabel}</h3>
                         </Card>
                     )}
 
@@ -346,14 +333,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         const itemSymbol = getCurrencySymbol(meal.currency);
                         return (
                             <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
-                                <CardContent className="p-0">
+                                <CardContent className="p-0 text-left">
                                     <div className="aspect-[4/3] relative bg-muted text-left">
                                         {meal.photoURL ? <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10" />}</div>}
                                         <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left">
-                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-left">{itemSymbol}{meal.price.toLocaleString()}</Badge>
-                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-left">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
+                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-center">{itemSymbol}{meal.price.toLocaleString()}</Badge>
+                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-center">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
                                         </div>
-                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-left text-left"> {cartItem.quantity}</div>}
+                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-center"> {cartItem.quantity}</div>}
                                     </div>
                                     <div className="p-6 sm:p-8 space-y-4 flex-grow text-left">
                                         <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight mb-1 text-left">{meal.name}</h3>
@@ -363,19 +350,19 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left">
                                     {isOwner && (
                                         <div className="flex gap-2 text-left">
-                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary" /></Button>
-                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4" /></Button>
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary" /></Button>
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4" /></Button>
                                         </div>
                                     )}
                                     <div className="flex-1 min-w-0 text-left">
                                         {cartItem ? (
                                             <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left">
                                                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3"/></Button>
-                                                <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-left">IN PACKAGE</span>
+                                                <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-center">IN PACKAGE</span>
                                                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3"/></Button>
                                             </div>
                                         ) : (
-                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95 text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
+                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95 text-center">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
                                         )}
                                     </div>
                                 </CardFooter>
@@ -386,8 +373,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
                 {cartCount > 0 && (
                     <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10 text-left">
-                        <Button onClick={() => setIsCartOpen(true)} className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8 text-left">
-                            <div className="flex items-center gap-3 text-left"><div className="relative text-left"><ShoppingCart className="h-5 w-5" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center text-left"> {cartCount}</span></div><span className="text-xs">VIEW PACKAGE</span></div>
+                        <Button onClick={() => setIsCartOpen(true)} className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8 text-center">
+                            <div className="flex items-center gap-3 text-left"><div className="relative text-left"><ShoppingCart className="h-5 w-5" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center text-center"> {cartCount}</span></div><span className="text-xs">VIEW PACKAGE</span></div>
                             <span className="text-sm">CHECKOUT</span>
                         </Button>
                     </div>
@@ -396,12 +383,12 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                 <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
+                        <DialogHeader className="text-left text-left text-left">
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left"> {addLabel}</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm()}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left text-left text-left text-left text-left">{itemForm()}</div>
                 </DialogContent>
             </Dialog>
 
@@ -421,7 +408,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <AlertDialogHeader className="text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6 text-left">
                         <AlertDialogCancel className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4" />}Delete</AlertDialogAction>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
