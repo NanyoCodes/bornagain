@@ -66,8 +66,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState<number | null>(null);
-  const [mediaPreview1, setMediaPreview1] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
-  const [mediaPreview2, setMediaPreview2] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
+  const [mediaPreview1, setMediaPreview1] = setMediaPreview1(null);
+  const [mediaPreview2, setMediaPreview2] = setMediaPreview2(null);
   
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
@@ -235,50 +235,50 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     } finally { setIsSubmitting(false); }
   }
 
-  const renderMediaSlot = (slot: 1 | 2, preview: typeof mediaPreview1, setPreview: typeof setMediaPreview1, inputRef: React.RefObject<HTMLInputElement>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
+  const renderMediaSlot = (slot: 1 | 2, preview: any, setPreview: any, inputRef: React.RefObject<HTMLInputElement>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
       return (
-        <div className="space-y-3 flex-1">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                <Camera className="h-3.5 w-3.5" /> Proof {slot} {slot === 2 && "(Optional)"}
+        <div className="space-y-3 flex-1 text-left">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
+                <Camera className="h-3.5 w-3.5 text-left" /> Proof {slot} {slot === 2 && "(Optional)"}
             </Label>
             
             {!preview ? (
                 <div 
                     className={cn(
-                        "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[120px]",
+                        "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[120px] text-left",
                         isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
                     )}
                     onClick={() => inputRef.current?.click()}
                 >
                     {isUploadingMedia === slot ? (
-                        <div className="flex flex-col items-center gap-2">
-                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                            <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
+                        <div className="flex flex-col items-center gap-2 text-left">
+                            <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
+                            <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center text-left">Optimizing...</p>
                         </div>
                     ) : (
                         <>
-                            <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                                <FileUp className="h-4 w-4 text-primary" />
+                            <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform text-left">
+                                <FileUp className="h-4 w-4 text-primary text-left" />
                             </div>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select Evidence</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Select Evidence</p>
                         </>
                     )}
                 </div>
             ) : (
-                <div className="relative rounded-2xl overflow-hidden border-2 bg-muted aspect-square shadow-inner">
+                <div className="relative rounded-2xl overflow-hidden border-2 bg-muted aspect-square shadow-inner text-left">
                     {preview.type === 'image' ? (
-                        <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-contain" unoptimized />
+                        <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-contain text-left" unoptimized />
                     ) : (
-                        <video src={preview.url} className="w-full h-full object-contain" playsInline controls />
+                        <video src={preview.url} className="w-full h-full object-contain text-left" playsInline controls />
                     )}
                     <Button 
                         type="button" 
                         variant="destructive" 
                         size="icon" 
-                        className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg" 
+                        className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg text-left" 
                         onClick={() => { setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}
                     >
-                        <X className="h-3.5 w-3.5" />
+                        <X className="h-3.5 w-3.5 text-left" />
                     </Button>
                 </div>
             )}
@@ -288,57 +288,57 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-left">
       {prayerRequest && (
-        <Card className="bg-primary/5 border-primary/20 rounded-2xl">
-          <CardHeader className="p-4">
-            <div className="text-xs font-bold uppercase tracking-widest text-primary mb-1">Answering prayer:</div>
-            <CardDescription className="italic text-sm text-muted-foreground line-clamp-2 leading-relaxed">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
+        <Card className="bg-primary/5 border-primary/20 rounded-2xl text-left">
+          <CardHeader className="p-4 text-left">
+            <div className="text-xs font-bold uppercase tracking-widest text-primary mb-1 text-left">Answering prayer:</div>
+            <CardDescription className="italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
           </CardHeader>
         </Card>
       )}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
           <FormField control={form.control} name="category" render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
+              <FormItem className="text-left">
+                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="h-12 rounded-2xl border-2">
-                        <SelectValue placeholder="Share your testimony" />
+                    <FormControl className="text-left">
+                      <SelectTrigger className="h-12 rounded-2xl border-2 text-left">
+                        <SelectValue placeholder="Share your testimony" className="text-left" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded-2xl">
-                      {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat}>{cat}</SelectItem>))}
+                    <SelectContent className="rounded-2xl text-left">
+                      {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="text-left">{cat}</SelectItem>))}
                     </SelectContent>
                   </Select>
-                <FormMessage />
+                <FormMessage className="text-left" />
               </FormItem>
             )}
           />
 
           <FormField control={form.control} name="content" render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Story</FormLabel>
-                <FormControl>
+              <FormItem className="text-left">
+                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Your Story</FormLabel>
+                <FormControl className="text-left">
                   <Textarea 
                     placeholder="Share what the Lord has done..." 
-                    className="min-h-[150px] sm:min-h-[180px] rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 text-sm sm:text-base leading-relaxed bg-muted/10 border-2 border-dashed transition-all focus:border-primary/40 focus:bg-muted/20" 
+                    className="min-h-[120px] sm:min-h-[180px] rounded-[1.25rem] sm:rounded-[2rem] p-4 sm:p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed transition-all focus:border-primary/40 focus:bg-muted/20 text-left" 
                     {...field} 
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-left" />
               </FormItem>
             )}
           />
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 text-left">
              {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
              {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
           </div>
 
-          <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia !== null}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting || isUploadingMedia !== null}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
             {isSubmitting ? 'PUBLISHING...' : 'PUBLISH TESTIMONY'}
           </Button>
         </form>

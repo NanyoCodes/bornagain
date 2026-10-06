@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Added permission for user fellowships subcollection - 2025-03-05T17:30:00Z
+    // Deployment trigger: Corrected testimonies and prayer response management - 2025-06-15T19:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -85,7 +86,7 @@ service cloud.firestore {
       }
 
       match /souls/{soulId} {
-        allow read, write: if isOwner(userId);
+        allow read, write: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
       }
       
       match /disciplineHistory/{logId} {
@@ -200,9 +201,9 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || string(resource.data.authorId).split('/').pop() == request.auth.uid);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.authorId) || 
+        (resource.data.authorId == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 
@@ -224,10 +225,8 @@ service cloud.firestore {
       allow update: if isAuthenticated() && ( 
         (request.resource.data.authorId == request.auth.uid) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
-        (resource.data.get('answeredTestimonyId', '') != '' && (
-          request.resource.data.status == 'pending' || 
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'answeredTestimonyId'])
-        ))
+        // Allow un-answering if the status is being set to pending and the answeredTestimonyId is being deleted
+        (request.resource.data.status == 'pending' && !('answeredTestimonyId' in request.resource.data))
       );
     }
 
