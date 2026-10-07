@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
@@ -152,7 +151,7 @@ function ShareConvertsDialog({
                 <Input 
                     placeholder="Search converts..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-11 pl-10 bg-muted/20 border-none shadow-inner font-bold text-left"
                 />
             </div>
@@ -1113,7 +1112,7 @@ export default function FellowshipPageClient() {
                 ) : (
                     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
+                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
                                 <DialogHeader className="text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DialogTitle>
                                     <DialogDescription className="text-sm font-medium text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>

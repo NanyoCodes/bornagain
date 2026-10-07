@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -245,7 +244,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             {!preview ? (
                 <div 
                     className={cn(
-                        "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[100px] sm:h-[120px] text-left",
+                        "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[120px] text-left",
                         isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
                     )}
                     onClick={() => inputRef.current?.click()}

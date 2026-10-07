@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -830,7 +829,7 @@ function SoulProfileContent({
             <Separator className="opacity-20 text-left" />
 
             <div className="space-y-4 pt-2 text-left">
-                <div className="flex items-center justify-between text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left text-left text-left"><History className="h-3.5 w-3.5 text-left text-left" /> Interaction History</p><Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5 text-left" onClick={() => onViewHistory(soul)}>View All</Button></div>
+                <div className="flex items-center justify-between text-left text-left text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left text-left text-left"><History className="h-3.5 w-3.5 text-left text-left" /> Interaction History</p><Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5 text-left" onClick={() => onViewHistory(soul)}>View All</Button></div>
                 <div className="space-y-4 pl-1 text-left">
                     {sortedHistory.length > 0 ? sortedHistory.slice(0, 3).map((log, index) => {
                             const logDate = safeToDate(log.date);
@@ -1037,8 +1036,8 @@ function SoulProfileContent({
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left">
-                  <DialogHeader className="text-left text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left">
+                  <DialogHeader className="text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>

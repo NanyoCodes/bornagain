@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -331,14 +330,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const handleCreateYoutubeChannel = () => {
     window.open('https://www.youtube.com/create_channel', '_blank');
   };
-
-  const MapPlaceholder = () => (
-    <div className="h-60 w-full rounded-md bg-muted/30 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
-        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <MapIcon className="h-6 w-6 text-primary opacity-50" />
-        </div>
-    </div>
-  );
 
   return (
     <div className="text-left">
@@ -734,7 +725,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                       </Button>
                     </div>
                     {!isValidKey(GOOGLE_MAPS_API_KEY) ? (
-                        <MapPlaceholder />
+                        <div className="h-60 w-full rounded-md bg-muted/30 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
+                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                <MapIcon className="h-6 w-6 text-primary opacity-50" />
+                            </div>
+                        </div>
                     ) : (
                         <PrivateLocationMap form={form} markerPosition={markerPosition} />
                     )}
