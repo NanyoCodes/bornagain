@@ -169,9 +169,9 @@ export default function LandingPage() {
                   SHARING GOD'S GOODNESS
                 </Badge>
                 <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left text-left text-left">
-                  Testify of His Power.<br className="hidden sm:block text-left text-left text-left" />
+                  Testify of The Greatness of GOD.<br className="hidden sm:block text-left text-left text-left" />
                   Organize the Harvest.<br className="hidden sm:block text-left text-left text-left" />
-                  <span className="text-primary text-left text-left text-left text-left">Glorify the King.</span>
+                  <span className="text-primary text-left text-left text-left text-left"> Glorify the King.</span>
                 </h1>
                 <p className="mt-6 text-lg sm:text-xl text-white/80 font-medium max-w-2xl italic leading-relaxed text-pretty text-left text-left text-left text-left">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11

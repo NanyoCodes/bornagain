@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: '%s | Testify Global',
   },
   description:
-    'Testify is the global platform for believers to share miracle stories, join soul-winning campaigns, and track the harvest. Join Testify Global today.',
+    'Testify is the global platform for believers to share the greatness of GOD in their lives, join soul-winning campaigns, and track the harvest. Join Testify Global today.',
   keywords: [
     'Testify',
     'Testify Global',
