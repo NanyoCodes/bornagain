@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Authorship based management for all user-generated Kingdom content - 2025-06-16T15:00:00Z
+    // Deployment trigger: Refined authorship-based management for shared content - 2025-06-17T09:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
