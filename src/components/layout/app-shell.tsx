@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -156,10 +155,10 @@ function CartButton() {
 
   const trigger = (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-        <Button variant="ghost" size="icon" className="relative group h-12 w-12 rounded-full">
-            <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
+        <Button variant="ghost" size="icon" className="relative group h-11 w-11 sm:h-12 sm:w-12 rounded-full">
+            <ShoppingCart className="h-5.5 w-5.5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110" />
             {count > 0 && (
-                <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
+                <div className="absolute top-1 right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                     {count}
                 </div>
             )}
@@ -219,7 +218,7 @@ function CartButton() {
                         <ShoppingCart className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
                     </div>
-                    <DrawerHeader className="text-left flex-shrink-0">
+                    <DrawerHeader className="text-left flex-shrink-0 p-0">
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1">Review selection for gifting.</DrawerDescription>
                     </DrawerHeader>
@@ -238,7 +237,7 @@ function CartButton() {
                 <ShoppingCart className="h-5 w-5 text-primary" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kindness Package</span>
             </div>
-            <DialogHeader className="text-left">
+            <DialogHeader className="text-left p-0">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Pending Offering</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
@@ -257,8 +256,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-
-  const showGuestButtons = isPublicRoute && !user;
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -290,11 +287,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-1 md:px-4 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4 text-left">
-      <div className="flex shrink-0 w-36 md:w-56 items-center">
+    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-2 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative text-left">
+      <div className="flex shrink-0 w-28 sm:w-36 md:w-56 items-center">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center hover:opacity-80 transition-opacity">
           {logo && (
-            <div className="relative h-10 md:h-14 w-full overflow-visible">
+            <div className="relative h-9 md:h-14 w-full overflow-visible">
                 <Image 
                     src={logo.imageUrl} 
                     alt="Testify Logo" 
@@ -308,7 +305,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
         </Link>
       </div>
 
-      <nav className="hidden md:flex flex-1 justify-center items-center h-full">
+      <nav className="hidden md:flex flex-1 justify-center items-center h-full px-4">
         <div className="flex items-center gap-1 lg:gap-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -317,7 +314,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all px-2 lg:px-4 h-11 rounded-xl whitespace-nowrap flex items-center justify-center gap-2 group relative",
+                    "transition-all px-2 lg:px-4 h-10 rounded-xl whitespace-nowrap flex items-center justify-center gap-2 group relative",
                     isActive 
                       ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105" 
                       : "text-muted-foreground hover:bg-muted/50"
@@ -336,10 +333,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0">
+      <div className="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0">
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-6 w-6" />
+          <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-11 sm:w-11 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-5.5 w-5.5 sm:h-6 sm:w-6" />
             <span className="sr-only">Search</span>
           </Button>
         )}
@@ -349,10 +346,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             <CartButton />
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-12 w-12 rounded-full">
-                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-12 sm:w-12 rounded-full">
+                      <MessagesSquare className="h-5.5 w-5.5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
+                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-[7px] sm:text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadChatCount}
                         </div>
                       )}
@@ -361,10 +358,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-12 w-12 rounded-full">
-                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-12 sm:w-12 rounded-full">
+                      <Bell className="h-5.5 w-5.5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
+                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-[7px] sm:text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadNotifCount}
                         </div>
                       )}
@@ -373,15 +370,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-12 w-12 shrink-0">
-                  <Avatar className="h-10 w-10 border shadow-sm">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 sm:h-12 sm:w-12 shrink-0">
+                  <Avatar className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
                     <AvatarFallback className="text-xs font-bold"> {user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
-                    <span className="absolute top-0 right-0 flex h-3 w-3">
+                    <span className="absolute top-0 right-0 flex h-2.5 w-2.5 sm:h-3 sm:w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-red-600 border-2 border-background"></span>
                     </span>
                   )}
                 </Button>
@@ -515,7 +512,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
               </DropdownMenuContent>
             </DropdownMenu>
           </>
-        ) : showGuestButtons ? (
+        ) : (
           <div className="flex items-center gap-2 text-left">
             <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold">
               <Link href="/login">Sign In</Link>
@@ -524,8 +521,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
               <Link href="/signup">Join Movement</Link>
             </Button>
           </div>
-        ) : (
-          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted text-left" />
         )}
       </div>
     </header>
@@ -685,7 +680,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
-        <div className="relative mb-8 mx-auto w-fit">
+        <div className="relative mb-8 mx-auto w-fit text-left">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
             <div className="absolute inset-0 flex items-center justify-center">
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
@@ -751,7 +746,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
-              <SheetHeader className="text-left flex-shrink-0">
+              <SheetHeader className="text-left flex-shrink-0 p-0">
                 <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
                 <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
@@ -765,7 +760,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
             <div className="p-6 border-b bg-muted/10 text-left">
-              <DialogHeader className="text-left">
+              <DialogHeader className="text-left p-0">
                 <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
                 <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
@@ -446,7 +445,7 @@ export function SoulsImportTemplateCard() {
                                 <AvatarImage src={contact.photoURL} />
                                 <AvatarFallback className="font-black bg-primary/10 text-primary text-xs flex items-center justify-center h-full w-full">{contact.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0">
+                            <div className="min-w-0 text-left">
                                 <p className="font-black text-sm uppercase tracking-tight truncate">{contact.firstName} {contact.lastName}</p>
                                 <div className="flex items-center gap-3 mt-1 opacity-60">
                                     {contact.phone && <p className="text-[10px] font-bold truncate flex items-center gap-1"><Smartphone className="h-2.5 w-2.5" /> {contact.phone}</p>}
@@ -458,9 +457,9 @@ export function SoulsImportTemplateCard() {
                         )}
                     </div>
                 )) : (
-                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4">
+                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4 text-left">
                         <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4" />
-                        <p className="text-sm text-muted-foreground font-medium italic">No matching contacts found.</p>
+                        <p className="text-sm text-muted-foreground font-medium italic text-center">No matching contacts found.</p>
                     </div>
                 )}
             </div>
@@ -530,16 +529,16 @@ export function SoulsImportTemplateCard() {
         <div className="space-y-4">
             <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4">
                 <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
                     Standardize your follow-up data. Import your existing contacts or use our template to organize outreach results for professional tracking.
                 </p>
             </div>
 
-            <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex items-start gap-3 text-left">
+            <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex items-start gap-3 text-left text-left">
                 <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase text-amber-700 tracking-widest">Verification Status: Testing</p>
-                    <p className="text-[9px] text-amber-700/80 leading-relaxed font-medium">
+                    <p className="text-[9px] text-amber-700/80 leading-relaxed font-medium text-left">
                         The Google Contacts import is currently in testing. If you see a warning, click <span className="font-bold">"Advanced"</span> and then <span className="font-bold">"Go to testifyglobal.com (unsafe)"</span> to proceed with the sync.
                     </p>
                 </div>
@@ -553,7 +552,7 @@ export function SoulsImportTemplateCard() {
                 <DrawerPortal>
                     <DrawerOverlay className="fixed inset-0 z-50 bg-black/80" />
                     <DrawerContent className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-[95dvh] flex-col rounded-t-[2.5rem] border bg-background sm:max-w-xl sm:mx-auto text-left">
-                        <DrawerHeader className="sr-only">
+                        <DrawerHeader className="sr-only p-0">
                             <DrawerTitle>Network Sync</DrawerTitle>
                             <DrawerDescription>Select contacts to synchronize.</DrawerDescription>
                         </DrawerHeader>

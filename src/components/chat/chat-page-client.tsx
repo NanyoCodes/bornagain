@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -526,8 +525,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             </DialogTrigger>
                             {otherParticipantInfo.photoURL && (
                                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
-                                    <DialogHeader className="sr-only">
-                                        <DialogTitle>Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
+                                    <DialogHeader className="sr-only p-0">
+                                        <DialogTitle>Profile photo</DialogTitle>
                                         <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
                                     </DialogHeader>
                                     <div className="relative h-full w-full flex items-center justify-center p-4">
