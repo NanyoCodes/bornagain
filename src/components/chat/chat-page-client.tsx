@@ -483,11 +483,11 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     <span className="sr-only text-left">Back</span>
                 </Button>
                 {chat.isGroupChat ? (
-                    <div className="flex items-center gap-3 text-left">
+                    <div className="flex items-center gap-3 text-left text-left">
                         <Avatar className="border-2 border-primary/20 shadow-sm text-left">
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-left">{chat.participantIds.length}</AvatarFallback>
                         </Avatar>
-                        <div className="text-left text-left">
+                        <div className="text-left text-left text-left">
                             <h2 className="font-black text-sm sm:text-base leading-tight uppercase tracking-tight truncate max-w-[180px] sm:max-w-xs text-left">
                                 {chat.campaignId && campaign ? (
                                     <Link href={`/campaigns/${chat.campaignId}`} className="hover:underline text-left">
@@ -511,10 +511,10 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                         </div>
                     </div>
                 ) : otherParticipantInfo && otherParticipantId ? (
-                   <div className="flex items-center gap-3 flex-grow text-left text-left">
+                   <div className="flex items-center gap-3 flex-grow text-left text-left text-left">
                         <Dialog>
                             <DialogTrigger asChild disabled={!otherParticipantInfo.photoURL}>
-                                <div className="relative text-left text-left">
+                                <div className="relative text-left text-left text-left">
                                     <LiveChatAvatar 
                                         userId={otherParticipantId} 
                                         fallbackUrl={otherParticipantInfo.photoURL} 
@@ -543,7 +543,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                 </DialogContent>
                             )}
                         </Dialog>
-                        <div className="flex-grow min-w-0 text-left text-left">
+                        <div className="flex-grow min-w-0 text-left text-left text-left">
                             <h2 className="font-black text-sm sm:text-base uppercase tracking-tight truncate leading-tight text-left">
                                 <Link href={`/profile/${otherParticipantId}`} className="hover:underline text-left">
                                     {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
@@ -569,9 +569,9 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 <div className="px-4 py-6 space-y-2 text-left">
                     <TooltipProvider>
                         {messageGroups.length > 0 ? (
-                           <div className="space-y-2 text-left text-left">
+                           <div className="space-y-2 text-left text-left text-left">
                                 {messageGroups.map((group) => (
-                                <div key={group.date.toISOString()} className="relative text-left">
+                                <div key={group.date.toISOString()} className="relative text-left text-left">
                                     <div className="sticky top-0 z-10 flex justify-center my-4 text-left">
                                         <div className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted/80 backdrop-blur-sm rounded-full border shadow-sm text-left">
                                             {format(group.date, 'PPP')}
@@ -738,12 +738,12 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             ))}
                            </div>
                         ) : (
-                            <div className="flex flex-col justify-center items-center h-[50vh] text-center px-8 text-left">
-                                <MessagesSquare className="h-12 w-12 text-muted-foreground opacity-20 mb-4 text-left" />
+                            <div className="flex flex-col justify-center items-center h-[50vh] text-center px-8 text-left text-left">
+                                <MessagesSquare className="h-12 w-12 text-muted-foreground opacity-20 mb-4 text-left text-left" />
                                 <p className="text-muted-foreground text-sm font-medium text-left">No messages yet. Start the conversation to encourage the body of Christ.</p>
                             </div>
                         )}
-                        <div ref={messagesEndRef} className="text-left" />
+                        <div ref={messagesEndRef} className="text-left text-left" />
                     </TooltipProvider>
                 </div>
 
@@ -811,7 +811,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             <p className="line-clamp-1 text-sm text-muted-foreground italic text-left">&ldquo;{messages?.find(m => m.id === editingMessageId)?.text}&rdquo;</p>
                         </div>
                     )}
-                    <form onSubmit={handleFormSubmit} className="flex gap-3 w-full items-center text-left">
+                    <form onSubmit={handleFormSubmit} className="flex gap-3 w-full items-center text-left text-left">
                         <Textarea
                             ref={textareaRef}
                             value={newMessage}

@@ -114,7 +114,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left">
                     <div className="space-y-0.5 text-left text-left text-left">
-                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left text-left">
+                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left text-left text-left">
                              <Palette className="h-4 w-4 text-primary text-left text-left text-left text-left" />
                              Theme
                         </label>
@@ -242,7 +242,7 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
   }
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
-      <CardHeader className="text-left text-left"><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left text-left"><Bell className="h-5 w-5 text-primary text-left text-left text-left text-left" /> Notifications</CardTitle></CardHeader>
+      <CardHeader className="text-left text-left"><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left text-left text-left" /> Notifications</CardTitle></CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left text-left">
@@ -322,20 +322,20 @@ export function SettingsPageContent() {
   const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto pb-32 text-left">
-      <div className="px-4 sm:px-0 space-y-1 text-left">
-        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">Settings</h1>
-        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 text-left">Identity & Kingdom Preferences</p>
+    <div className="space-y-8 max-w-4xl mx-auto pb-32 text-left text-left">
+      <div className="px-4 sm:px-0 space-y-1 text-left text-left">
+        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">Settings</h1>
+        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 text-left text-left">Identity & Kingdom Preferences</p>
       </div>
       
        {loading || !userProfile || !user ? (
-        <div className="space-y-6 px-4 sm:px-0 text-left">
+        <div className="space-y-6 px-4 sm:px-0 text-left text-left">
             <Skeleton className="h-40 w-full rounded-3xl text-left" />
             <Skeleton className="h-60 w-full rounded-3xl text-left" />
             <Skeleton className="h-40 w-full rounded-3xl text-left" />
         </div>
        ) : (
-        <div className="space-y-6 md:space-y-10 text-left">
+        <div className="space-y-6 md:space-y-10 text-left text-left">
             <ProfileSettingsCard />
             <VisualEnvironmentCard userProfile={userProfile} userId={user.uid} />
             <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />

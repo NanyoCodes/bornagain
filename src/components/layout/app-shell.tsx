@@ -291,7 +291,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-1 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4 text-left">
+    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-1 md:px-4 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4 text-left">
       <div className="flex shrink-0 w-32 md:w-40 items-center text-left">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center hover:opacity-80 transition-opacity text-left">
           {logo && (
@@ -299,8 +299,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 <Image 
                     src={logo.imageUrl} 
                     alt="Testify Logo" 
-                    width={180}
-                    height={56}
+                    width={160}
+                    height={50}
                     className="object-contain object-left h-full w-auto text-left" 
                     priority
                 />
@@ -449,7 +449,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
                         <CalendarDays className="h-3.5 w-3.5 text-primary text-left text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Events Hub</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Events Hub</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
@@ -685,11 +685,11 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
 
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
-        <div className="relative mb-8 mx-auto w-fit text-left">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
-            <div className="absolute inset-0 flex items-center justify-center text-left">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left" />
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left text-left">
+        <div className="relative mb-8 mx-auto w-fit text-left text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left text-left">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left text-left" />
             </div>
         </div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8">
@@ -707,7 +707,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
 
   return (
-    <div className={cn("flex w-full flex-col overflow-x-hidden text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+    <div className={cn("flex w-full flex-col overflow-x-hidden text-left text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
       <AnimatePresence>
           {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
       </AnimatePresence>
@@ -716,7 +716,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           initial={{ opacity: 0 }}
           animate={{ opacity: contentVisible ? 1 : 0 }}
           transition={{ duration: 1 }}
-          className="flex-1 flex flex-col min-h-0 text-left"
+          className="flex-1 flex flex-col min-h-0 text-left text-left"
       >
           {!isTakeoverPage && (
             <AppHeader 
@@ -726,16 +726,16 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
                 isProfileIncomplete={isProfileIncomplete}
             />
           )}
-          <div className="flex-1 relative min-h-0 text-left">
+          <div className="flex-1 relative min-h-0 text-left text-left">
           <main 
               ref={scrollContainerRef}
               className={cn(
-                  "absolute inset-0 text-left", 
+                  "absolute inset-0 text-left text-left", 
                   !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
               )}
           >
               <div className={cn(
-              "mx-auto h-full text-left", 
+              "mx-auto h-full text-left text-left", 
               (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
               )}>
                   <PageTransition>{children}</PageTransition>
@@ -750,28 +750,28 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left">
-              <SheetHeader className="text-left flex-shrink-0 text-left text-left">
-                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left">
+              <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
+                <SheetTitle className="text-xl font-bold text-left text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-8 text-left text-left">
+            <div className="flex-grow overflow-y-auto p-8 text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
-            <div className="p-6 border-b bg-muted/10 text-left text-left">
-              <DialogHeader className="text-left text-left">
-                <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
-                <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left">
+              <DialogHeader className="text-left text-left text-left text-left text-left">
+                <DialogTitle className="text-2xl font-bold text-left text-left text-left">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -803,9 +803,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left">
-                <div className="relative mx-auto w-fit text-left text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left text-left">
+                <div className="relative mx-auto w-fit text-left text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left" />
                 </div>
             </div>
         }>
