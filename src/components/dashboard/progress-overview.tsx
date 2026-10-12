@@ -42,15 +42,10 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
         setNewGoal(userProfile.monthlySoulsGoal ?? 10);
     }, [userProfile.monthlySoulsGoal]);
     
-    // Souls Won this month for the goal
-    const soulsThisMonth = useMemo(() => {
-      if (!souls) return 0;
-      return souls.filter((soul) => {
-        const wonDate = safeToDate(soul.wonAt);
-        if (!wonDate) return false;
-        return isSameMonth(wonDate, currentDate);
-      }).length;
-    }, [souls, currentDate]);
+    // Souls Won - Total count including all relationships (Family, Friends, Outreach)
+    const totalSouls = useMemo(() => {
+      return souls ? souls.length : 0;
+    }, [souls]);
     
     // Testimony Streak
     const testimonyStreak = useMemo(() => {
@@ -164,8 +159,8 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
         <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <CardTitle className="text-lg">Your Growth</CardTitle>
+                    <div className="flex items-center gap-2 text-left">
+                        <CardTitle className="text-lg text-left">Your Growth</CardTitle>
                         <div className="relative flex h-3 w-3">
                             <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></div>
                             <div className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></div>
@@ -186,14 +181,14 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
+                        <DialogHeader className="text-left">
                             <DialogTitle className="text-left">Set Goal for {format(currentDate, 'MMMM')}</DialogTitle>
                             <DialogDescription className="text-left">
                                 Set your personal goal for souls won for the current month.
                             </DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                          <div className="grid grid-cols-4 items-center gap-4">
+                        <div className="grid gap-4 py-4 text-left">
+                          <div className="grid grid-cols-4 items-center gap-4 text-left">
                             <Label htmlFor="goal" className="text-right">
                               Souls
                             </Label>
@@ -207,7 +202,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                             />
                           </div>
                         </div>
-                        <DialogFooter>
+                        <DialogFooter className="text-left">
                             <Button onClick={handleSaveGoal} disabled={isSavingGoal}>
                                 {isSavingGoal && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Save Goal
@@ -222,34 +217,34 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <div className="flex justify-between items-baseline">
-                    <div className="text-2xl font-bold">{soulsThisMonth}</div>
-                    <div className="text-sm text-primary-foreground/80 font-black uppercase tracking-widest">
+                  <div className="flex justify-between items-baseline text-left">
+                    <div className="text-2xl font-bold">{totalSouls}</div>
+                    <div className="text-sm text-primary-foreground/80 font-black uppercase tracking-widest text-left">
                       /{monthlyGoal} SOULS
                     </div>
                   </div>
                   <Progress
                     value={
-                      monthlyGoal > 0 ? (soulsThisMonth / monthlyGoal) * 100 : 0
+                      monthlyGoal > 0 ? (totalSouls / monthlyGoal) * 100 : 0
                     }
-                    className="h-2 bg-white/30"
+                    className="h-2 bg-white/30 text-left"
                     indicatorClassName="bg-white"
                   />
                 </div>
                 
-                <div className="flex items-center justify-around text-center">
-                     <div className="flex flex-col items-center gap-1">
-                        <div className="text-4xl font-bold flex items-center justify-center gap-2">
-                           {testimonyStreak} <Flame className="h-8 w-8" />
+                <div className="flex items-center justify-around text-center text-left">
+                     <div className="flex flex-col items-center gap-1 text-left">
+                        <div className="text-4xl font-bold flex items-center justify-center gap-2 text-left">
+                           {testimonyStreak} <Flame className="h-8 w-8 text-left" />
                         </div>
-                        <p className="text-sm opacity-80 font-medium uppercase tracking-tight text-left">Testimony Streak</p>
+                        <p className="text-sm opacity-80 font-medium uppercase tracking-tight text-center text-left">Testimony Streak</p>
                     </div>
-                    <div className="h-16 w-px bg-primary-foreground/30"></div>
-                     <div className="flex flex-col items-center gap-1">
-                        <div className="text-4xl font-bold flex items-center justify-center gap-2">
-                           {loadingDiscipline ? <div className="animate-pulse rounded-md h-8 w-10 bg-white/20" /> : disciplineStreak} <Zap className="h-8 w-8" />
+                    <div className="h-16 w-px bg-primary-foreground/30 text-left"></div>
+                     <div className="flex flex-col items-center gap-1 text-left">
+                        <div className="text-4xl font-bold flex items-center justify-center gap-2 text-left">
+                           {loadingDiscipline ? <div className="animate-pulse rounded-md h-8 w-10 bg-white/20" /> : disciplineStreak} <Zap className="h-8 w-8 text-left" />
                         </div>
-                        <p className="text-sm opacity-80 uppercase tracking-tight text-left">Discipline Streak</p>
+                        <p className="text-sm opacity-80 uppercase tracking-tight text-center text-left">Discipline Streak</p>
                     </div>
                 </div>
             </CardContent>

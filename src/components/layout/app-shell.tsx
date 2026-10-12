@@ -49,7 +49,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -476,7 +475,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left text-left">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left text-left">
                         <Package className="h-3.5 w-3.5 text-muted-foreground text-left text-left text-left text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left">Order Hub</span>

@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Authorship based management for shared content - 2025-06-18T10:00:00Z
+    // Deployment trigger: Authorship based permissions for testimonies - 2025-06-18T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -130,7 +130,7 @@ service cloud.firestore {
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
         request.auth.uid == resource.data.organizerId ||
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat', 'photoURL', 'participantIds'])
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat', 'photoURL', 'participantCount', 'participantIds'])
       );
       allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
 
@@ -206,9 +206,9 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId) == request.auth.uid);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.auth.uid || string(resource.data.authorId) == request.auth.uid) || 
+        (resource.data.authorId == request.authorId || string(resource.data.authorId).split('/').pop() == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 
@@ -306,6 +306,18 @@ service cloud.firestore {
         allow get, list: if true;
         allow create, update, delete: if isAuthenticated() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid;
       }
+    }
+
+    match /mealGifts/{giftId} {
+      allow create: if isAuthenticated();
+      allow get, list: if isAuthenticated() && (
+        request.auth.uid == resource.data.get('senderId', '') || 
+        request.auth.uid == resource.data.get('vendorOwnerId', '')
+      );
+      allow update: if isAuthenticated() && (
+        (request.auth.uid == request.resource.data.senderId && request.resource.data.status == 'cancelled' && resource.data.status == 'ordered') ||
+        (request.auth.uid == request.resource.data.vendorOwnerId && request.resource.data.status in ['preparing', 'delivering', 'delivered'] && resource.data.status != 'cancelled')
+      );
     }
 
     match /mealGifts/{giftId} {

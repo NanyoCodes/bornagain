@@ -440,11 +440,11 @@ export function SoulsImportTemplateCard() {
                                 onCheckedChange={() => handleToggleContact(contact.resourceName)}
                                 className="rounded-md border-muted-foreground/30"
                             />
-                            <Avatar className="h-10 w-10 border shadow-sm shrink-0">
+                            <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
                                 <AvatarImage src={contact.photoURL} />
                                 <AvatarFallback className="font-black bg-primary/10 text-primary text-xs flex items-center justify-center h-full w-full">{contact.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0">
+                            <div className="min-w-0 text-left">
                                 <p className="font-black text-sm uppercase tracking-tight truncate">{contact.firstName} {contact.lastName}</p>
                                 <div className="flex items-center gap-3 mt-1 opacity-60">
                                     {contact.phone && <p className="text-[10px] font-bold truncate flex items-center gap-1"><Smartphone className="h-2.5 w-2.5" /> {contact.phone}</p>}
