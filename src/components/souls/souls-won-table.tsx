@@ -696,7 +696,7 @@ function SoulProfileContent({
   return (
     <div className="space-y-6 text-left">
       <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
-        <CardHeader className="p-8 pb-4 text-center text-left text-left">
+        <CardHeader className="p-8 pb-4 text-center text-left">
             <div className="relative inline-block mx-auto mb-4 text-left">
                 <Avatar className="h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 text-left">
                     <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
@@ -970,7 +970,7 @@ function SoulProfileContent({
           <Drawer open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
             <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
               <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                <DrawerHeader className="text-center space-y-2 text-left text-left">
+                <DrawerHeader className="text-center space-y-2 text-left text-left text-left">
                   <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left">
                     <MessageSquare className="h-7 w-7 text-primary" />
                   </div>
@@ -1024,7 +1024,7 @@ function SoulProfileContent({
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
                   <Share className="h-7 w-7 text-primary" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline uppercase text-center">Share Details</DialogTitle>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-left">

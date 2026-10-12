@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refined management permissions for testimonies and prayers - 2025-06-16T13:00:00Z
+    // Deployment trigger: Authorship based permissions for testimonies - 2025-06-18T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -86,7 +85,13 @@ service cloud.firestore {
       }
 
       match /souls/{soulId} {
-        allow read, write: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
+        allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
+        allow create, delete: if isOwner(userId);
+        allow update: if isAuthenticated() && (
+          isOwner(userId) || 
+          isFellowshipMember(resource.data.get('fellowshipId', '')) || 
+          isFellowshipMember(resource.data.get('associationId', ''))
+        );
       }
       
       match /disciplineHistory/{logId} {

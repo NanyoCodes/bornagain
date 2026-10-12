@@ -157,7 +157,7 @@ function CartButton() {
 
   const trigger = (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
+        <Button variant="ghost" size="icon" className="relative group h-12 w-12 rounded-full">
             <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
             {count > 0 && (
                 <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
@@ -291,16 +291,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-2 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4">
-      <div className="flex shrink-0 w-32 md:w-40 items-center">
+    <header className="sticky top-0 z-30 flex h-16 md:h-24 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-2 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4">
+      <div className="flex shrink-0 w-44 md:w-56 items-center">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center hover:opacity-80 transition-opacity">
           {logo && (
-            <div className="relative h-8 md:h-10 w-full overflow-visible">
+            <div className="relative h-10 md:h-16 w-full overflow-visible">
                 <Image 
                     src={logo.imageUrl} 
                     alt="Testify Logo" 
-                    width={140}
-                    height={40}
+                    width={220}
+                    height={64}
                     className="object-contain object-left h-full w-auto" 
                     priority
                 />
@@ -318,13 +318,13 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all px-2 lg:px-4 h-9 rounded-xl whitespace-nowrap flex items-center justify-center gap-2 group relative",
+                    "transition-all px-2 lg:px-4 h-11 rounded-xl whitespace-nowrap flex items-center justify-center gap-2 group relative",
                     isActive 
                       ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105" 
                       : "text-muted-foreground hover:bg-muted/50"
                   )}
               >
-                <item.icon className={cn("h-3.5 w-3.5 shrink-0 transition-transform", isActive && "scale-110")} />
+                <item.icon className={cn("h-4 w-4 shrink-0 transition-transform", isActive && "scale-110")} />
                 <span className={cn(
                     "text-[10px] lg:text-[11px] font-black uppercase tracking-tight transition-all leading-none",
                     isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
@@ -339,8 +339,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
         
       <div className="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0">
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-6 w-6" />
             <span className="sr-only">Search</span>
           </Button>
         )}
@@ -350,8 +350,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             <CartButton />
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 rounded-full">
-                      <MessagesSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-12 w-12 rounded-full">
+                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadChatCount}
@@ -362,8 +362,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 rounded-full">
-                      <Bell className="h-5 w-5 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-12 w-12 rounded-full">
+                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadNotifCount}
@@ -374,15 +374,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 shrink-0">
-                  <Avatar className="h-8 w-8 border shadow-sm">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-12 w-12 shrink-0">
+                  <Avatar className="h-10 w-10 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
                     <AvatarFallback className="text-xs font-bold"> {user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
-                    <span className="absolute top-0 right-0 flex h-2.5 w-2.5">
+                    <span className="absolute top-0 right-0 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600 border-2 border-background"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background"></span>
                     </span>
                   )}
                 </Button>
