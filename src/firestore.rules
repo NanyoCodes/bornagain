@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refined authorship-based management for shared content - 2025-06-17T09:00:00Z
+    // Deployment trigger: Authorship based management for shared content - 2025-06-18T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -206,9 +206,9 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId) == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid) || 
+        (resource.data.authorId == request.auth.uid || string(resource.data.authorId) == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 

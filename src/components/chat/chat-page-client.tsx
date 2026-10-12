@@ -759,7 +759,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 )}
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background/80 backdrop-blur-md pb-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:pb-6 relative z-30 text-left">
+            <div className="shrink-0 border-t p-4 bg-background pb-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:pb-6 relative z-30 text-left">
                 {isChatFrozen ? (
                     <div className="p-4 text-center text-xs font-bold text-muted-foreground bg-muted/30 rounded-2xl border border-dashed text-left">
                         THIS CONVERSATION IS FROZEN (CAMPAIGN ENDED)
