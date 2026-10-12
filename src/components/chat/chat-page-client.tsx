@@ -529,7 +529,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                         <DialogTitle className="text-left">Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
                                         <DialogDescription className="text-left text-left">Full screen view of the user's profile photo.</DialogDescription>
                                     </DialogHeader>
-                                    <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
+                                    <div className="relative h-full w-full flex items-center justify-center p-4 text-left text-left">
                                         <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left text-left">
                                             <Image 
                                                 src={otherParticipantInfo.photoURL} 
@@ -648,7 +648,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                         setNewMessage(msg.text || '');
                                                                         setReplyingTo(null);
                                                                     }} className="text-left">
-                                                                        <Edit className="mr-2 h-4 w-4 text-left" /> Edit
+                                                                        <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit
                                                                     </DropdownMenuItem>
                                                                     <DropdownMenuItem onSelect={() => handleDeleteMessage(msg.id)} className="text-destructive focus:text-destructive text-left">
                                                                         <Trash2 className="mr-2 h-4 w-4 text-left" /> Delete
