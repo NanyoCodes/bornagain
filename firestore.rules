@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Authorship based permissions for testimonies - 2025-06-18T10:00:00Z
+    // Deployment trigger: Authorship based permissions for testimonies - 2025-06-18T18:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;

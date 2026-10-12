@@ -513,11 +513,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </DropdownMenu>
           </>
         ) : (
-          <div className="flex items-center gap-2 text-left">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-left">
+            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold">
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
+            <Button asChild size="sm" className="h-9 px-4 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
               <Link href="/signup">Join Movement</Link>
             </Button>
           </div>
@@ -813,3 +813,4 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SearchProvider>
   );
 }
+
