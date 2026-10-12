@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
@@ -478,10 +479,10 @@ export function SoulsImportTemplateCard() {
       <CardHeader className="p-6 sm:p-8">
         <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
-                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight">
+                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left">
                 <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Mobilization
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm font-medium">
+                <CardDescription className="text-xs sm:text-sm font-medium text-left">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
@@ -534,7 +535,7 @@ export function SoulsImportTemplateCard() {
                 </p>
             </div>
 
-            <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex items-start gap-3">
+            <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex items-start gap-3 text-left">
                 <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase text-amber-700 tracking-widest">Verification Status: Testing</p>
@@ -565,4 +566,3 @@ export function SoulsImportTemplateCard() {
     </Card>
   );
 }
-

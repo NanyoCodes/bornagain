@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -49,10 +50,9 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -68,7 +68,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -292,7 +291,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 
   return (
     <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-1 md:px-4 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4 text-left">
-      <div className="flex shrink-0 w-44 md:w-56 items-center">
+      <div className="flex shrink-0 w-36 md:w-56 items-center">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center hover:opacity-80 transition-opacity">
           {logo && (
             <div className="relative h-10 md:h-14 w-full overflow-visible">
@@ -309,7 +308,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
         </Link>
       </div>
 
-      <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center h-full">
+      <nav className="hidden md:flex flex-1 justify-center items-center h-full">
         <div className="flex items-center gap-1 lg:gap-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));

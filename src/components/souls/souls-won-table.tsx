@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -133,7 +134,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Input } from "@/components/ui/input";
-import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
+import { getBibleChapter, type BibleChapterOutput } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -604,9 +605,9 @@ function SoulProfileContent({
               </div>
           </div>
             <div className="space-y-2">
-                <Label htmlFor="custom-prayer" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
+                <Label htmlFor="custom-prayer-text" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
                 <Textarea 
-                    id="custom-prayer"
+                    id="custom-prayer-text"
                     value={customMessageText}
                     onChange={e => setCustomMessageText(e.target.value)}
                     className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6"
@@ -625,9 +626,9 @@ function SoulProfileContent({
   const helpNeedBody = (
       <div className="space-y-6 text-left">
           <div className="space-y-2">
-              <Label htmlFor="help-note" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
+              <Label htmlFor="help-note-text" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
               <Textarea 
-                  id="help-note"
+                  id="help-note-text"
                   placeholder="e.g. Provided food items, helped with bill..." 
                   onChange={e => setCustomMessageText(e.target.value)} 
                   className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
@@ -960,38 +961,7 @@ function SoulProfileContent({
                   </DialogHeader>
               </div>
               <div className="p-8 space-y-6 text-left">
-                <div className="space-y-3 text-left">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Focus</label>
-                    <div className="flex flex-wrap gap-2 text-left">
-                        {prayerTemplates.map(t => (
-                            <Button 
-                                key={t.id} 
-                                variant="outline" 
-                                size="sm" 
-                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary text-left"
-                                onClick={() => setCustomMessageText(resolveTemplate(t.text, soul))}
-                            >
-                                {t.label}
-                            </Button>
-                        ))}
-                    </div>
-                </div>
-                  <div className="space-y-2 text-left">
-                      <Label htmlFor="msg-custom" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Message</Label>
-                      <Textarea 
-                          id="msg-custom"
-                          value={customMessageText}
-                          onChange={e => setCustomMessageText(e.target.value)}
-                          className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left"
-                      />
-                  </div>
-                  <Button 
-                      onClick={() => handlePrayerCustomizationConfirm(customMessageText)} 
-                      disabled={!customMessageText.trim()} 
-                      className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
-                  >
-                      CONTINUE TO CHANNEL
-                  </Button>
+                {prayerCustomizationBody}
               </div>
           </DialogContent>
       </Dialog>
@@ -1018,16 +988,7 @@ function SoulProfileContent({
             </DialogHeader>
           </div>
           <div className="p-8 space-y-6 text-left">
-            <div className="space-y-2 text-left">
-                <Label htmlFor="need-note" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
-                <Textarea 
-                    id="need-note"
-                    placeholder="e.g. Provided food items, helped with bill..." 
-                    onChange={e => setCustomMessageText(e.target.value)} 
-                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
-                />
-            </div>
-            <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
+            {helpNeedBody}
           </div>
         </DialogContent>
       </Dialog>
@@ -1056,32 +1017,12 @@ function SoulProfileContent({
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
               <div className="p-8 border-b bg-muted/10 text-left text-left">
                   <DialogHeader className="text-left text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
               <div className="p-6 text-left">
-              <ScrollArea className="h-64 text-left">
-                  <div className="space-y-2 text-left">
-                      {uniquePartners.map(p => (
-                          <Button 
-                              key={p.userId} 
-                              variant="ghost" 
-                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center"
-                              onClick={() => handleShareToPartner(p)}
-                          >
-                              <Avatar className="h-8 w-8 border shrink-0">
-                                  <AvatarImage src={p.photoURL} />
-                                  <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
-                          </Button>
-                      ))}
-                      {uniquePartners.length === 0 && (
-                          <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
-                      )}
-                  </div>
-              </ScrollArea>
+                {partnerSelectionBody}
               </div>
           </DialogContent>
       </Dialog>
@@ -1160,8 +1101,9 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: {
+export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess, onAddChild }: {
   souls: Soul[];
+  allSouls: Soul[];
   loading: boolean;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
@@ -1172,6 +1114,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
   onAssess: (soul: Soul) => void;
+  onAddChild: (p1: Soul, p2?: Soul | null) => void;
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
@@ -1278,7 +1221,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                             <Sparkles className="h-4 w-4 text-primary text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
                         </div>
-                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
                         <SheetDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
@@ -1318,4 +1261,3 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
     </div>
   );
 }
-
