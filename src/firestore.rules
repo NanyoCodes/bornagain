@@ -320,18 +320,6 @@ service cloud.firestore {
       );
     }
 
-    match /mealGifts/{giftId} {
-      allow create: if isAuthenticated();
-      allow get, list: if isAuthenticated() && (
-        request.auth.uid == resource.data.get('senderId', '') || 
-        request.auth.uid == resource.data.get('vendorOwnerId', '')
-      );
-      allow update: if isAuthenticated() && (
-        (request.auth.uid == request.resource.data.senderId && request.resource.data.status == 'cancelled' && resource.data.status == 'ordered') ||
-        (request.auth.uid == request.resource.data.vendorOwnerId && request.resource.data.status in ['preparing', 'delivering', 'delivered'] && resource.data.status != 'cancelled')
-      );
-    }
-
     match /mail/{mailId} {
       allow create: if isAuthenticated();
       allow read, update, delete: if false;

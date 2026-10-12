@@ -791,7 +791,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                         <div className="relative rounded-t-[1.5rem] border-x border-t bg-primary/10 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200 border-primary/20 text-left text-left">
                             <div className="flex items-center justify-between mb-1.5 text-left text-left text-left text-left">
                                 <div className="flex items-center gap-2 text-left text-left">
-                                    <Edit className="h-3 w-3 text-primary text-left text-left" />
+                                    <Edit className="h-3 w-3 text-primary text-left text-left">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-primary text-left text-left">
                                         Editing Message
                                     </p>

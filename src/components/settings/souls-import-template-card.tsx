@@ -38,10 +38,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Label } from '@/components/ui/label';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerPortal, DrawerOverlay } from '@/components/ui/drawer';
+import { format, isToday } from 'date-fns';
 
 interface GoogleContact {
     resourceName: string;
@@ -392,28 +393,28 @@ export function SoulsImportTemplateCard() {
   const contactsListEl = (
     <div className="flex flex-col h-full text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                    <Smartphone className="h-5 w-5 text-primary" />
-                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Network Sync</span>
+            <div className="flex items-center justify-between mb-2 text-left">
+                <div className="flex items-center gap-2 text-left">
+                    <Smartphone className="h-5 w-5 text-primary text-left" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Network Sync</span>
                 </div>
                 <Button 
                     onClick={handleImportSelected} 
                     disabled={selectedContactIds.size === 0 || isUploading}
                     size="sm"
-                    className="rounded-xl h-9 px-6 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-[10px]"
+                    className="rounded-xl h-9 px-6 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-[10px] text-left"
                 >
-                    {isUploading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Send className="mr-1.5 h-3.5 w-3.5" />}
+                    {isUploading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left" /> : <Send className="mr-1.5 h-3.5 w-3.5 text-left" />}
                     IMPORT SELECTED
                 </Button>
             </div>
-            <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Select Contacts</h3>
-            <div className="flex items-center gap-2 mt-2 opacity-40">
-                <ChevronDown className="h-3 w-3 animate-bounce" />
-                <span className="text-[8px] font-bold uppercase tracking-widest">Swipe down to close</span>
+            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Contacts</h3>
+            <div className="flex items-center gap-2 mt-2 opacity-40 text-left">
+                <ChevronDown className="h-3 w-3 animate-bounce text-left" />
+                <span className="text-[8px] font-bold uppercase tracking-widest text-left">Swipe down to close</span>
             </div>
-            <div className="relative mt-6">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
+            <div className="relative mt-6 text-left">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                 <Input 
                     placeholder="Search your contacts..." 
                     value={contactSearch}
@@ -423,7 +424,7 @@ export function SoulsImportTemplateCard() {
             </div>
         </div>
 
-        <ScrollArea className="flex-grow min-h-0">
+        <ScrollArea className="flex-grow min-h-0 text-left">
             <div className="p-4 space-y-1 text-left">
                 {filteredContacts.length > 0 ? filteredContacts.map(contact => (
                     <div 
@@ -452,20 +453,20 @@ export function SoulsImportTemplateCard() {
                             </div>
                         </div>
                         {selectedContactIds.has(contact.resourceName) && (
-                            <div className="shrink-0 bg-primary/10 p-1 rounded-full text-left"><UserCheck className="h-4 w-4 text-primary text-left" /></div>
+                            <div className="shrink-0 bg-primary/10 p-1 rounded-full text-left text-left"><UserCheck className="h-4 w-4 text-primary text-left" /></div>
                         )}
                     </div>
                 )) : (
                     <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4 text-left">
                         <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4 text-left" />
-                        <p className="text-sm text-muted-foreground font-medium italic text-left">No matching contacts found.</p>
+                        <p className="text-sm text-muted-foreground font-medium italic text-left text-left">No matching contacts found.</p>
                     </div>
                 )}
             </div>
         </ScrollArea>
         <div className="p-8 border-t bg-muted/5 flex items-center justify-center gap-2 shrink-0 text-left">
             <Info className="h-3 w-3 text-muted-foreground text-left" />
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">
                 Selected: {selectedContactIds.size} / {filteredContacts.length}
             </p>
         </div>
@@ -474,20 +475,20 @@ export function SoulsImportTemplateCard() {
 
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left">
-      <CardHeader className="p-6 sm:p-8">
+      <CardHeader className="p-6 sm:p-8 text-left">
         <div className="flex items-center justify-between gap-4 text-left">
             <div className="space-y-1 text-left">
                 <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left">
-                <FileSpreadsheet className="h-5 w-5 text-primary text-left" /> Harvest Mobilization
+                <FileSpreadsheet className="h-5 w-5 text-primary text-left text-left" /> Harvest Mobilization
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm font-medium text-left">
+                <CardDescription className="text-xs sm:text-sm font-medium text-left text-left">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
             <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 h-6 px-3 font-black uppercase text-[9px] tracking-widest hidden sm:flex text-left">Bulk Sync</Badge>
         </div>
       </CardHeader>
-      <CardContent className="px-6 sm:p-8 pt-0 space-y-8 text-left">
+      <CardContent className="px-6 sm:p-8 pt-0 space-y-8 text-left text-left">
         <div className="flex flex-wrap gap-3 text-left">
             <Button onClick={handleDownloadTemplate} variant="outline" className="h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left">
                 <Download className="mr-2 h-4 w-4 text-left" />
@@ -525,7 +526,7 @@ export function SoulsImportTemplateCard() {
             </div>
         </div>
 
-        <div className="space-y-4 text-left">
+        <div className="space-y-4 text-left text-left">
             <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4 text-left">
                 <Info className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left" />
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
