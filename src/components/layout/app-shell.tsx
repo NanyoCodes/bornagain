@@ -51,6 +51,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
@@ -445,7 +446,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/events" className="flex items-center gap-3 w-full text-left text-left text-left">
-                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left text-left">
                         <CalendarDays className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left">Events Hub</span>

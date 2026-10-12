@@ -32,7 +32,7 @@ import { format, isToday, differenceInMinutes, isSameDay } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -480,7 +480,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             <div className="flex items-center gap-4 p-4 shrink-0 border-b bg-background/80 backdrop-blur-md z-20 text-left">
                 <Button variant="outline" size="icon" onClick={handleBack} className="rounded-full text-left">
                     <ArrowLeft className="h-4 w-4 text-left" />
-                    <span className="sr-only text-left">Back</span>
+                    <span className="sr-only">Back</span>
                 </Button>
                 {chat.isGroupChat ? (
                     <div className="flex items-center gap-3 text-left text-left">
@@ -761,7 +761,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
             <div className="shrink-0 border-t p-4 bg-background pb-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:pb-6 relative z-30 text-left text-left">
                 {isChatFrozen ? (
-                    <div className="p-4 text-center text-xs font-bold text-muted-foreground bg-muted/30 rounded-2xl border border-dashed text-left text-left">
+                    <div className="p-4 text-center text-xs font-bold text-muted-foreground bg-muted/30 rounded-2xl border border-dashed text-left text-left text-left">
                         THIS CONVERSATION IS FROZEN (CAMPAIGN ENDED)
                     </div>
                 ) : (
