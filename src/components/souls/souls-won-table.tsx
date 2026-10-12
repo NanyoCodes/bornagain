@@ -51,7 +51,7 @@ import {
   Lock
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput, MealGiftStatus } from "@/lib/types";
+import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
 import { useUser, useDoc, useUserProfile, useCollection, useFirestore } from "@/firebase";
 import { 
   doc, 
@@ -132,26 +132,12 @@ import { MutualConnectBadge } from "./mutual-connect-badge";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import { Input } from "../ui/input";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-
-const iconMap: Record<string, any> = {
-    'prayed_together': Sparkles,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
-    'matchmaking': HeartHandshake,
-};
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -266,6 +252,17 @@ function ShareWordDialog({
     onSelectVerse(constructInvitationMessage(selectedTexts, reference, link));
   };
 
+  const handleGoToVerse = () => {
+    const verseNum = parseInt(goToVerse, 10);
+    if (!isNaN(verseNum) && chapterContent && verseNum > 0 && verseNum <= chapterContent.verses.length) {
+        const verseElement = document.getElementById(`verse-${verseNum}`);
+        verseElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setGoToVerse('');
+    }
+  };
+
+  const [goToVerse, setGoToVerse] = useState('');
+
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
       <div className="flex items-center justify-between gap-4">
@@ -287,7 +284,7 @@ function ShareWordDialog({
 
   const body = (
     <ScrollArea className="flex-grow min-h-[300px]">
-        <div className="p-8">
+        <div className="p-8 text-left">
             {view === 'hub' && (
                 <div className="space-y-8 text-left">
                     <div className="relative">
@@ -412,7 +409,7 @@ function MatchmakingDialog({ isOpen, onOpenChange, sourceSoul, allSouls, onMatch
                 <DialogTitle className="text-2xl font-black font-headline uppercase">Find Match for {sourceSoul.firstName}</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
             </DialogHeader>
-            <div className="relative mt-6"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" /><Input placeholder="Search candidates..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="h-11 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
+            <div className="relative mt-6"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" /><Input placeholder="Search candidates..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="h-11 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
         </div>
     );
 
@@ -447,7 +444,7 @@ function MatchmakingDialog({ isOpen, onOpenChange, sourceSoul, allSouls, onMatch
     if (isMobile) {
         return (
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                     {header}
                     <div className="flex-grow overflow-hidden">{body}</div>
                 </DrawerContent>
@@ -619,6 +616,7 @@ function SoulProfileContent({
   };
 
   const handleHelpNeedConfirm = (note: string) => {
+      if (!soul) return;
       finalizeLog(soul, 'helped_with_need', `Service: ${note}`);
       setIsHelpNeedDialogOpen(false);
   };
@@ -938,9 +936,9 @@ function SoulProfileContent({
 
             <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
                 <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                    <div className="p-8 border-b bg-muted/10">
+                    <div className="p-8 border-b bg-muted/10 text-left">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
                             <DialogDescription className="text-sm font-medium">Draft a powerful prayer for {soul.firstName}.</DialogDescription>
                         </DialogHeader>
                     </div>
@@ -984,7 +982,7 @@ function SoulProfileContent({
                         </DialogHeader>
                     </div>
                     <div className="p-8 space-y-6">
-                        <div className="space-y-2">
+                        <div className="space-y-2 text-left">
                             <Label htmlFor="help-note" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
                             <Textarea id="help-note" placeholder="e.g. Provided food items, helped with bill..." onChange={e => setCustomMessageText(e.target.value)} className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                         </div>

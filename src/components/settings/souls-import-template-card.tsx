@@ -535,7 +535,7 @@ export function SoulsImportTemplateCard() {
 
             <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex items-start gap-3 text-left">
                 <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                <div className="space-y-1">
+                <div className="space-y-1 text-left">
                     <p className="text-[10px] font-black uppercase text-amber-700 tracking-widest">Verification Status: Testing</p>
                     <p className="text-[9px] text-amber-700/80 leading-relaxed font-medium">
                         The Google Contacts import is currently in testing. If you see a warning, click <span className="font-bold">"Advanced"</span> and then <span className="font-bold">"Go to testifyglobal.com (unsafe)"</span> to proceed with the sync.

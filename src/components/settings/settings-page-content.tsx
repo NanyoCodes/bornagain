@@ -266,7 +266,9 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
 function ContactCard() {
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
-      <CardHeader className="text-left"><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left"><MessageSquare className="h-5 w-5 text-primary text-left text-left" /> Ministry Support</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left"><MessageSquare className="h-5 w-5 text-primary text-left text-left" /> Ministry Support</CardTitle>
+      </CardHeader>
       <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left">
         <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left text-left">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left">

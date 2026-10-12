@@ -32,7 +32,7 @@ import { format, isToday, differenceInMinutes, isSameDay } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError } from '@/firebase/error-emitter';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -452,8 +452,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center bg-background text-left">
                 <p className="text-muted-foreground text-left">Chat not found.</p>
-                 <Button variant="outline" asChild className="mt-4 text-left">
-                    <Link href="/chats"><ArrowLeft className="mr-2 h-4 w-4 text-left" />Back to Conversations</Link>
+                 <Button variant="outline" asChild className="mt-4 text-left text-left">
+                    <Link href="/chats"><ArrowLeft className="mr-2 h-4 w-4 text-left text-left" />Back to Conversations</Link>
                 </Button>
             </div>
         );
@@ -464,9 +464,9 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         const backLabel = chat.fellowshipId || chat.campaignId || chat.eventId ? "Return to Group" : "Back to Conversations";
         return (
             <div className="flex h-full w-full flex-col items-center justify-center bg-background text-left">
-                <p className="text-muted-foreground text-left">You do not have permission to view this chat.</p>
-                <Button variant="outline" asChild className="mt-4 text-left">
-                    <Link href={backUrl}><ArrowLeft className="mr-2 h-4 w-4 text-left" />{backLabel}</Link>
+                <p className="text-muted-foreground text-left text-left">You do not have permission to view this chat.</p>
+                <Button variant="outline" asChild className="mt-4 text-left text-left">
+                    <Link href={backUrl}><ArrowLeft className="mr-2 h-4 w-4 text-left text-left" />{backLabel}</Link>
                 </Button>
             </div>
         );
@@ -487,55 +487,55 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                         <Avatar className="border-2 border-primary/20 shadow-sm text-left">
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-left">{chat.participantIds.length}</AvatarFallback>
                         </Avatar>
-                        <div className="text-left text-left text-left">
-                            <h2 className="font-black text-sm sm:text-base leading-tight uppercase tracking-tight truncate max-w-[180px] sm:max-w-xs text-left">
+                        <div className="text-left text-left text-left text-left">
+                            <h2 className="font-black text-sm sm:text-base leading-tight uppercase tracking-tight truncate max-w-[180px] sm:max-w-xs text-left text-left">
                                 {chat.campaignId && campaign ? (
-                                    <Link href={`/campaigns/${chat.campaignId}`} className="hover:underline text-left">
+                                    <Link href={`/campaigns/${chat.campaignId}`} className="hover:underline text-left text-left">
                                         {chat.campaignTitle}
                                     </Link>
                                 ) : chat.fellowshipId && fellowship ? (
-                                    <Link href={`/fellowship/${chat.fellowshipId}`} className="hover:underline text-left text-left">
+                                    <Link href={`/fellowship/${chat.fellowshipId}`} className="hover:underline text-left text-left text-left">
                                         {chat.campaignTitle}
                                     </Link>
                                 ) : chat.eventId && event ? (
-                                    <Link href={`/events`} className="hover:underline text-left text-left">
+                                    <Link href={`/events`} className="hover:underline text-left text-left text-left">
                                         {chat.campaignTitle}
                                     </Link>
                                 ) : (
-                                    <span className="text-left">{chat.campaignTitle}</span>
+                                    <span className="text-left text-left">{chat.campaignTitle}</span>
                                 )}
                             </h2>
                             <ChatParticipantsDialog chat={chat}>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left text-left">{chat.participantIds.length} members</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left text-left text-left">{chat.participantIds.length} members</p>
                             </ChatParticipantsDialog>
                         </div>
                     </div>
                 ) : otherParticipantInfo && otherParticipantId ? (
-                   <div className="flex items-center gap-3 flex-grow text-left text-left text-left">
+                   <div className="flex items-center gap-3 flex-grow text-left text-left text-left text-left">
                         <Dialog>
                             <DialogTrigger asChild disabled={!otherParticipantInfo.photoURL}>
-                                <div className="relative text-left text-left text-left">
+                                <div className="relative text-left text-left text-left text-left">
                                     <LiveChatAvatar 
                                         userId={otherParticipantId} 
                                         fallbackUrl={otherParticipantInfo.photoURL} 
                                         fallbackInitials={otherParticipantInfo.firstName?.charAt(0) || 'U'}
-                                        className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-sm text-left", otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105 active:scale-95 transition-transform text-left")}
+                                        className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-sm text-left text-left", otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105 active:scale-95 transition-transform text-left text-left")}
                                     />
                                 </div>
                             </DialogTrigger>
                             {otherParticipantInfo.photoURL && (
-                                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
-                                    <DialogHeader className="sr-only text-left">
-                                        <DialogTitle className="text-left">Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
-                                        <DialogDescription className="text-left text-left">Full screen view of the user's profile photo.</DialogDescription>
+                                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left text-left">
+                                    <DialogHeader className="sr-only text-left text-left">
+                                        <DialogTitle className="text-left text-left">Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
+                                        <DialogDescription className="text-left text-left text-left">Full screen view of the user's profile photo.</DialogDescription>
                                     </DialogHeader>
-                                    <div className="relative h-full w-full flex items-center justify-center p-4 text-left text-left">
-                                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left text-left">
+                                    <div className="relative h-full w-full flex items-center justify-center p-4 text-left text-left text-left">
+                                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left text-left text-left">
                                             <Image 
                                                 src={otherParticipantInfo.photoURL} 
                                                 alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} 
                                                 fill 
-                                                className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left text-left" 
+                                                className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left text-left text-left" 
                                                 unoptimized 
                                             />
                                         </div>
@@ -543,18 +543,18 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                 </DialogContent>
                             )}
                         </Dialog>
-                        <div className="flex-grow min-w-0 text-left text-left text-left">
-                            <h2 className="font-black text-sm sm:text-base uppercase tracking-tight truncate leading-tight text-left">
-                                <Link href={`/profile/${otherParticipantId}`} className="hover:underline text-left">
+                        <div className="flex-grow min-w-0 text-left text-left text-left text-left">
+                            <h2 className="font-black text-sm sm:text-base uppercase tracking-tight truncate leading-tight text-left text-left">
+                                <Link href={`/profile/${otherParticipantId}`} className="hover:underline text-left text-left">
                                     {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
                                 </Link>
                             </h2>
                             {chat.campaignTitle ? (
-                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest truncate max-w-[150px] sm:max-w-xs text-left">
-                                    RE: <span className="italic text-left">"{chat.campaignTitle}"</span>
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest truncate max-w-[150px] sm:max-w-xs text-left text-left">
+                                    RE: <span className="italic text-left text-left">"{chat.campaignTitle}"</span>
                                 </p>
                             ) : (
-                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest text-left">Accountability Partner</p>
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest text-left text-left">Accountability Partner</p>
                             )}
                         </div>
                     </div>
@@ -564,20 +564,20 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             <div 
                 ref={scrollContainerRef}
                 onScroll={handleScroll}
-                className="flex-1 overflow-y-auto min-h-0 bg-muted/5 relative overscroll-contain text-left"
+                className="flex-1 overflow-y-auto min-h-0 bg-muted/5 relative overscroll-contain text-left text-left"
             >
-                <div className="px-4 py-6 space-y-2 text-left">
+                <div className="px-4 py-6 space-y-2 text-left text-left">
                     <TooltipProvider>
                         {messageGroups.length > 0 ? (
-                           <div className="space-y-2 text-left text-left text-left">
+                           <div className="space-y-2 text-left text-left text-left text-left">
                                 {messageGroups.map((group) => (
-                                <div key={group.date.toISOString()} className="relative text-left text-left">
-                                    <div className="sticky top-0 z-10 flex justify-center my-4 text-left">
-                                        <div className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted/80 backdrop-blur-sm rounded-full border shadow-sm text-left">
+                                <div key={group.date.toISOString()} className="relative text-left text-left text-left">
+                                    <div className="sticky top-0 z-10 flex justify-center my-4 text-left text-left">
+                                        <div className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted/80 backdrop-blur-sm rounded-full border shadow-sm text-left text-left">
                                             {format(group.date, 'PPP')}
                                         </div>
                                     </div>
-                                    <div className="space-y-4 text-left">
+                                    <div className="space-y-4 text-left text-left">
                                         {group.messages.map(msg => {
                                             const senderInfo = chat.participantInfo[msg.senderId];
                                             const isOwnMessage = msg.senderId === user?.uid;
@@ -587,34 +587,34 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
                                             return (
                                             <div key={msg.id} id={`message-${msg.id}`} className={cn(
-                                                "group flex w-full items-end gap-2 text-left",
+                                                "group flex w-full items-end gap-2 text-left text-left",
                                                 isOwnMessage ? "justify-end" : "justify-start"
                                             )}>
                                                 {!isOwnMessage && senderInfo && (
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
-                                                            <div className="shrink-0 mb-1 text-left">
+                                                            <div className="shrink-0 mb-1 text-left text-left">
                                                                 <LiveChatAvatar 
                                                                     userId={msg.senderId} 
                                                                     fallbackUrl={senderInfo.photoURL} 
                                                                     fallbackInitials={senderInfo.firstName?.charAt(0) || 'U'}
-                                                                    className="h-7 w-7 border shadow-sm text-left"
+                                                                    className="h-7 w-7 border shadow-sm text-left text-left"
                                                                 />
                                                             </div>
                                                         </TooltipTrigger>
-                                                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left">
-                                                            <p className="font-bold text-xs text-left">{senderInfo.firstName} {senderInfo.lastName}</p>
+                                                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left text-left">
+                                                            <p className="font-bold text-xs text-left text-left">{senderInfo.firstName} {senderInfo.lastName}</p>
                                                         </TooltipContent>
                                                     </Tooltip>
                                                 )}
                                                 
-                                                <div className="relative flex items-center gap-1 group/bubble text-left">
+                                                <div className="relative flex items-center gap-1 group/bubble text-left text-left">
                                                     <div className={cn(
-                                                        "absolute top-0 flex h-full items-center justify-center transition-opacity text-left",
+                                                        "absolute top-0 flex h-full items-center justify-center transition-opacity text-left text-left",
                                                         isOwnMessage ? "right-full pr-3" : "left-full pl-3"
                                                     )}>
                                                         <Reply
-                                                            className="h-5 w-5 text-muted-foreground text-left"
+                                                            className="h-5 w-5 text-muted-foreground text-left text-left"
                                                             style={{
                                                                 opacity: Math.min(Math.abs(swipeState.id === msg.id ? swipeState.deltaX : 0) / swipeThreshold, 1)
                                                             }}
@@ -623,35 +623,35 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
                                                     {!isOwnMessage && (
                                                         <button
-                                                            className="h-7 w-7 text-muted-foreground hover:text-primary transition-all rounded-full opacity-0 group-hover/bubble:opacity-100 order-last shrink-0 text-left"
+                                                            className="h-7 w-7 text-muted-foreground hover:text-primary transition-all rounded-full opacity-0 group-hover/bubble:opacity-100 order-last shrink-0 text-left text-left"
                                                             onClick={() => setReplyingTo(msg)}
                                                             title="Reply"
                                                         >
-                                                            <Reply className="h-3.5 w-3.5 text-left" />
+                                                            <Reply className="h-3.5 w-3.5 text-left text-left" />
                                                         </button>
                                                     )}
 
                                                     {canEdit && !isEditing && (
                                                         <div className={cn(
-                                                            "opacity-0 group-hover/bubble:opacity-100 transition-opacity text-left",
+                                                            "opacity-0 group-hover/bubble:opacity-100 transition-opacity text-left text-left",
                                                             isOwnMessage ? "order-first" : "order-last"
                                                         )}>
                                                             <DropdownMenu>
                                                                 <DropdownMenuTrigger asChild>
-                                                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-muted-foreground hover:text-primary text-left">
-                                                                        <MoreHorizontal className="h-3.5 w-3.5 text-left" />
+                                                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-muted-foreground hover:text-primary text-left text-left">
+                                                                        <MoreHorizontal className="h-3.5 w-3.5 text-left text-left" />
                                                                     </Button>
                                                                 </DropdownMenuTrigger>
-                                                                <DropdownMenuContent align={isOwnMessage ? "end" : "start"} className="rounded-xl text-left">
+                                                                <DropdownMenuContent align={isOwnMessage ? "end" : "start"} className="rounded-xl text-left text-left">
                                                                     <DropdownMenuItem onSelect={() => { 
                                                                         setEditingMessageId(msg.id); 
                                                                         setNewMessage(msg.text || '');
                                                                         setReplyingTo(null);
-                                                                    }} className="text-left">
-                                                                        <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit
+                                                                    }} className="text-left text-left">
+                                                                        <Edit className="mr-2 h-4 w-4 text-primary text-left text-left" /> Edit
                                                                     </DropdownMenuItem>
-                                                                    <DropdownMenuItem onSelect={() => handleDeleteMessage(msg.id)} className="text-destructive focus:text-destructive text-left">
-                                                                        <Trash2 className="mr-2 h-4 w-4 text-left" /> Delete
+                                                                    <DropdownMenuItem onSelect={() => handleDeleteMessage(msg.id)} className="text-destructive focus:text-destructive text-left text-left">
+                                                                        <Trash2 className="mr-2 h-4 w-4 text-left text-left" /> Delete
                                                                     </DropdownMenuItem>
                                                                 </DropdownMenuContent>
                                                             </DropdownMenu>
@@ -668,13 +668,13 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                         onTouchMove={(e) => handleTouchMove(e, msg)}
                                                         onTouchEnd={() => handleTouchEnd(msg)}
                                                         className={cn(
-                                                            "relative z-10 rounded-2xl px-4 py-2.5 max-w-[280px] sm:max-w-md break-words flex flex-col shadow-sm whitespace-pre-wrap text-left",
+                                                            "relative z-10 rounded-2xl px-4 py-2.5 max-w-[280px] sm:max-w-md break-words flex flex-col shadow-sm whitespace-pre-wrap text-left text-left",
                                                             isOwnMessage ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-background border rounded-bl-sm",
                                                             isEditing && "ring-2 ring-primary border-transparent"
                                                         )}>
                                                             {msg.replyTo && (
-                                                                <div className="flex items-center gap-1 text-[9px] font-black text-muted-foreground/60 mb-1.5 uppercase tracking-widest text-left">
-                                                                    <Reply className="h-2.5 w-2.5 text-left" />
+                                                                <div className="flex items-center gap-1 text-[9px] font-black text-muted-foreground/60 mb-1.5 uppercase tracking-widest text-left text-left">
+                                                                    <Reply className="h-2.5 w-2.5 text-left text-left" />
                                                                     Reply
                                                                 </div>
                                                             )}
@@ -693,28 +693,28 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                             }, 600);
                                                                         }
                                                                     }}
-                                                                    className="mb-2 rounded-xl border-l-4 border-primary/50 bg-black/5 p-2 text-xs dark:bg-white/5 block hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer text-left text-left"
+                                                                    className="mb-2 rounded-xl border-l-4 border-primary/50 bg-black/5 p-2 text-xs dark:bg-white/5 block hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer text-left text-left text-left"
                                                                 >
-                                                                    <p className="font-black text-[9px] uppercase tracking-wider mb-0.5 text-left">{msg.replyTo.senderFirstName} {msg.replyTo.senderLastName}</p>
-                                                                    <p className="line-clamp-2 opacity-80 leading-snug text-left">{msg.replyTo.text}</p>
+                                                                    <p className="font-black text-[9px] uppercase tracking-wider mb-0.5 text-left text-left">{msg.replyTo.senderFirstName} {msg.replyTo.senderLastName}</p>
+                                                                    <p className="line-clamp-2 opacity-80 leading-snug text-left text-left">{msg.replyTo.text}</p>
                                                                 </div>
                                                             )}
 
                                                             {chat.isGroupChat && !isOwnMessage && senderInfo && (
-                                                                <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-1 text-left">
+                                                                <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-1 text-left text-left">
                                                                     {senderInfo.firstName} {senderInfo.lastName}
                                                                 </div>
                                                             )}
 
-                                                            <p className="text-sm leading-relaxed text-left">{msg.text}</p>
+                                                            <p className="text-sm leading-relaxed text-left text-left">{msg.text}</p>
 
                                                             {createdAtDate && (
                                                                 <div className={cn(
-                                                                    "flex items-center gap-1.5 mt-1 self-end text-left",
+                                                                    "flex items-center gap-1.5 mt-1 self-end text-left text-left",
                                                                     isOwnMessage ? "text-primary-foreground/60" : "text-muted-foreground/60"
                                                                 )}>
-                                                                    {msg.updatedAt && <span className="text-[8px] font-black uppercase tracking-tighter text-left">Edited</span>}
-                                                                    <p className="text-[9px] font-bold text-left">
+                                                                    {msg.updatedAt && <span className="text-[8px] font-black uppercase tracking-tighter text-left text-left">Edited</span>}
+                                                                    <p className="text-[9px] font-bold text-left text-left">
                                                                         {format(createdAtDate, 'p')}
                                                                     </p>
                                                                 </div>
@@ -723,11 +723,11 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
                                                     {isOwnMessage && (
                                                         <button
-                                                            className="h-7 w-7 text-muted-foreground hover:text-primary transition-all rounded-full opacity-0 group-hover/bubble:opacity-100 order-first shrink-0 text-left"
+                                                            className="h-7 w-7 text-muted-foreground hover:text-primary transition-all rounded-full opacity-0 group-hover/bubble:opacity-100 order-first shrink-0 text-left text-left"
                                                             onClick={() => setReplyingTo(msg)}
                                                             title="Reply"
                                                         >
-                                                            <Reply className="h-3.5 w-3.5 text-left" />
+                                                            <Reply className="h-3.5 w-3.5 text-left text-left" />
                                                         </button>
                                                     )}
                                                 </div>
@@ -738,12 +738,12 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             ))}
                            </div>
                         ) : (
-                            <div className="flex flex-col justify-center items-center h-[50vh] text-center px-8 text-left text-left">
-                                <MessagesSquare className="h-12 w-12 text-muted-foreground opacity-20 mb-4 text-left text-left" />
-                                <p className="text-muted-foreground text-sm font-medium text-left">No messages yet. Start the conversation to encourage the body of Christ.</p>
+                            <div className="flex flex-col justify-center items-center h-[50vh] text-center px-8 text-left text-left text-left">
+                                <MessagesSquare className="h-12 w-12 text-muted-foreground opacity-20 mb-4 text-left text-left text-left" />
+                                <p className="text-muted-foreground text-sm font-medium text-left text-left">No messages yet. Start the conversation to encourage the body of Christ.</p>
                             </div>
                         )}
-                        <div ref={messagesEndRef} className="text-left text-left" />
+                        <div ref={messagesEndRef} className="text-left text-left text-left" />
                     </TooltipProvider>
                 </div>
 
@@ -751,67 +751,67 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     <Button 
                         size="icon" 
                         variant="secondary" 
-                        className="fixed bottom-24 right-6 h-10 w-10 rounded-full shadow-2xl z-30 animate-in fade-in zoom-in duration-200 text-left"
+                        className="fixed bottom-24 right-6 h-10 w-10 rounded-full shadow-2xl z-30 animate-in fade-in zoom-in duration-200 text-left text-left"
                         onClick={() => scrollToBottom("smooth")}
                     >
-                        <ChevronDown className="h-5 w-5 text-left" />
+                        <ChevronDown className="h-5 w-5 text-left text-left" />
                     </Button>
                 )}
             </div>
 
-            <div className="shrink-0 border-t p-4 bg-background pb-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:pb-6 relative z-30 text-left">
+            <div className="shrink-0 border-t p-4 bg-background pb-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:pb-6 relative z-30 text-left text-left">
                 {isChatFrozen ? (
-                    <div className="p-4 text-center text-xs font-bold text-muted-foreground bg-muted/30 rounded-2xl border border-dashed text-left">
+                    <div className="p-4 text-center text-xs font-bold text-muted-foreground bg-muted/30 rounded-2xl border border-dashed text-left text-left">
                         THIS CONVERSATION IS FROZEN (CAMPAIGN ENDED)
                     </div>
                 ) : (
                     <>
                     {replyingTo && (
-                        <div className="relative rounded-t-[1.5rem] border-x border-t bg-muted/40 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200 text-left">
-                            <div className="flex items-center justify-between mb-1.5 text-left text-left">
-                                <div className="flex items-center gap-2 text-left">
-                                    <Reply className="h-3 w-3 text-primary text-left" />
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary text-left">
+                        <div className="relative rounded-t-[1.5rem] border-x border-t bg-muted/40 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200 text-left text-left">
+                            <div className="flex items-center justify-between mb-1.5 text-left text-left text-left">
+                                <div className="flex items-center gap-2 text-left text-left">
+                                    <Reply className="h-3 w-3 text-primary text-left text-left" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary text-left text-left">
                                         Replying to {chat.participantInfo[replyingTo.senderId]?.firstName || 'User'}
                                     </p>
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6 rounded-full hover:bg-background shadow-sm text-left"
+                                    className="h-6 w-6 rounded-full hover:bg-background shadow-sm text-left text-left"
                                     onClick={() => setReplyingTo(null)}
                                 >
-                                    <X className="h-3.5 w-3.5 text-left" />
+                                    <X className="h-3.5 w-3.5 text-left text-left" />
                                 </Button>
                             </div>
-                            <p className="line-clamp-1 text-sm text-muted-foreground italic text-left">&ldquo;{replyingTo.text}&rdquo;</p>
+                            <p className="line-clamp-1 text-sm text-muted-foreground italic text-left text-left">&ldquo;{replyingTo.text}&rdquo;</p>
                         </div>
                     )}
                     {editingMessageId && (
-                        <div className="relative rounded-t-[1.5rem] border-x border-t bg-primary/10 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200 border-primary/20 text-left">
-                            <div className="flex items-center justify-between mb-1.5 text-left text-left text-left">
-                                <div className="flex items-center gap-2 text-left">
-                                    <Edit className="h-3 w-3 text-primary text-left" />
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary text-left">
+                        <div className="relative rounded-t-[1.5rem] border-x border-t bg-primary/10 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200 border-primary/20 text-left text-left">
+                            <div className="flex items-center justify-between mb-1.5 text-left text-left text-left text-left">
+                                <div className="flex items-center gap-2 text-left text-left">
+                                    <Edit className="h-3 w-3 text-primary text-left text-left" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary text-left text-left">
                                         Editing Message
                                     </p>
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6 rounded-full hover:bg-background shadow-sm text-left"
+                                    className="h-6 w-6 rounded-full hover:bg-background shadow-sm text-left text-left"
                                     onClick={() => {
                                         setEditingMessageId(null);
                                         setNewMessage('');
                                     }}
                                 >
-                                    <X className="h-3.5 w-3.5 text-left" />
+                                    <X className="h-3.5 w-3.5 text-left text-left" />
                                 </Button>
                             </div>
-                            <p className="line-clamp-1 text-sm text-muted-foreground italic text-left">&ldquo;{messages?.find(m => m.id === editingMessageId)?.text}&rdquo;</p>
+                            <p className="line-clamp-1 text-sm text-muted-foreground italic text-left text-left">&ldquo;{messages?.find(m => m.id === editingMessageId)?.text}&rdquo;</p>
                         </div>
                     )}
-                    <form onSubmit={handleFormSubmit} className="flex gap-3 w-full items-center text-left text-left">
+                    <form onSubmit={handleFormSubmit} className="flex gap-3 w-full items-center text-left text-left text-left">
                         <Textarea
                             ref={textareaRef}
                             value={newMessage}
@@ -820,12 +820,12 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             placeholder={editingMessageId ? "Edit your message..." : (replyingTo ? "Type your reply..." : "Type a message...")}
                             disabled={isSending || isUpdatingMessage}
                             className={cn(
-                                "min-h-[3rem] max-h-32 py-3 px-4 rounded-2xl shadow-inner border-muted-foreground/20 text-base resize-none overflow-y-auto text-left", 
+                                "min-h-[3rem] max-h-32 py-3 px-4 rounded-2xl shadow-inner border-muted-foreground/20 text-base resize-none overflow-y-auto text-left text-left", 
                                 (replyingTo || editingMessageId) && "rounded-t-none border-t-0"
                             )}
                         />
-                        <Button type="submit" size="icon" className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 rounded-2xl shadow-xl transition-all active:scale-90 bg-primary hover:shadow-primary/20 text-left" disabled={!newMessage.trim() || isSending || isUpdatingMessage}>
-                            {isSending || isUpdatingMessage ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : (editingMessageId ? <Check className="h-5 w-5 text-left" /> : <Send className="h-5 w-5 fill-current text-left" />)}
+                        <Button type="submit" size="icon" className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 rounded-2xl shadow-xl transition-all active:scale-90 bg-primary hover:shadow-primary/20 text-left text-left" disabled={!newMessage.trim() || isSending || isUpdatingMessage}>
+                            {isSending || isUpdatingMessage ? <Loader2 className="h-5 w-5 animate-spin text-left text-left" /> : (editingMessageId ? <Check className="h-5 w-5 text-left text-left" /> : <Send className="h-5 w-5 fill-current text-left text-left" />)}
                         </Button>
                     </form>
                     </>
