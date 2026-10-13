@@ -96,12 +96,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-    Drawer,
-    DrawerContent,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerDescription,
-} from "@/components/ui/drawer";
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetDescription,
+} from "@/components/ui/sheet";
 import {
   Table,
   TableBody,
@@ -125,7 +125,7 @@ import { MutualConnectBadge } from "./mutual-connect-badge";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import { Input } from "@/components/ui/input";
+import { Input } from "../ui/input";
 import { getBibleChapter, type BibleChapterOutput } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
@@ -731,26 +731,6 @@ function SoulProfileContent({
         </CardContent>
       </Card>
 
-      <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
-          <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-                  <MessageSquare className="h-7 w-7 text-primary" />
-              </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-              <WhatsAppIcon className="h-5 w-5" /> WhatsApp
-            </Button>
-            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
-              <MessageSquare className="h-5 w-5" /> Standard SMS
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-      
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
           <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10 text-left">
@@ -796,6 +776,26 @@ function SoulProfileContent({
                   </Button>
               </div>
           </DialogContent>
+      </Dialog>
+
+      <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
+          <DialogHeader className="text-center space-y-2">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+                  <MessageSquare className="h-7 w-7 text-primary" />
+              </div>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-6">
+            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+              <WhatsAppIcon className="h-5 w-5" /> WhatsApp
+            </Button>
+            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+              <MessageSquare className="h-5 w-5" /> Standard SMS
+            </Button>
+          </div>
+        </DialogContent>
       </Dialog>
       
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
@@ -948,9 +948,8 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess, onAddChild }: {
+export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: {
   souls: Soul[];
-  allSouls: Soul[];
   loading: boolean;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
@@ -961,7 +960,6 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
   onAssess: (soul: Soul) => void;
-  onAddChild: (p1: Soul, p2?: Soul | null) => void;
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
@@ -1108,4 +1106,3 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
     </div>
   );
 }
-

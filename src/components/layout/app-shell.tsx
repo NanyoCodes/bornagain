@@ -622,24 +622,6 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   }, [pathname]);
 
   useEffect(() => {
-    if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  useEffect(() => {
-    if (!mounted) return;
-    const root = document.documentElement;
-    if (userProfile?.backgroundImage) {
-      const isGradient = userProfile.backgroundImage.startsWith('linear-gradient');
-      const bgValue = isGradient ? userProfile.backgroundImage : `url('${userProfile.backgroundImage}')`;
-      root.style.setProperty('--app-bg-image', bgValue);
-    }
-    if (userProfile?.backgroundOverlayOpacity != null) {
-      root.style.setProperty('--app-bg-overlay', userProfile.backgroundOverlayOpacity.toString());
-    }
-  }, [userProfile, mounted]);
-
-  useEffect(() => {
     if (!authLoading && !user && !isPublicRoute) router.push('/login');
   }, [authLoading, user, router, isPublicRoute]);
 

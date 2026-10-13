@@ -234,7 +234,7 @@ function FullDevotionalDialog({
             <Drawer open={isOpen} onOpenChange={setIsOpen}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                        <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                             <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
@@ -243,7 +243,7 @@ function FullDevotionalDialog({
                         </DrawerHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left">
-                        <div className="p-8 pb-32">
+                        <div className="p-8 pb-32 text-left">
                             {content}
                         </div>
                     </ScrollArea>
@@ -263,7 +263,7 @@ function FullDevotionalDialog({
                         <Target className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
-                    <DialogHeader className="text-left p-0 text-left">
+                    <DialogHeader className="text-left p-0 text-left text-left">
                         <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
                             <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                             {devotional.title}
@@ -959,7 +959,7 @@ export default function FellowshipPageClient() {
                   <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left">
                     <AlertDialogCancel className="rounded-2xl h-12 font-bold text-left text-left">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">
-                      {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                      {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                       Confirm Unassign
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -968,4 +968,3 @@ export default function FellowshipPageClient() {
         </div>
     );
 }
-
