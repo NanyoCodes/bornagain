@@ -223,8 +223,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         else updateDoc(itemRef, { quantity: newQty, updatedAt: serverTimestamp() });
     };
 
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
     const handleAddMeal = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -305,17 +303,16 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         {vendor.photoURL ? <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left text-left"><Store className="h-16 w-16 text-primary opacity-10 text-left text-left" /></div>}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
                         <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left">
-                            <div className="flex items-center gap-2 opacity-80 mb-2 text-left">
+                            <div className="flex items-center gap-2 opacity-80 mb-2 text-left text-left">
                                 <MapPin className="h-3.5 w-3.5 text-primary text-left text-left" />
                                 <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate text-left">{vendor.location || 'Kingdom Network'}</p>
                             </div>
                         </div>
-                        {isOwner && <Button variant="outline" size="icon" className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80 text-left" onClick={() => setIsEditModalOpen(true)}><Camera className="h-5 w-5 text-left" /></Button>}
                     </div>
 
                     <div className="relative text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
-                        <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-left" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left" />
+                        <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-left text-left" />
                     </div>
                 </div>
 
@@ -346,7 +343,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left text-left">{meal.description || `Verified Kingdom service item.`}</p>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left text-left">
+                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left">
                                     {isOwner && (
                                         <div className="flex gap-2 text-left">
                                             <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left text-left" /></Button>

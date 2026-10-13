@@ -21,7 +21,8 @@ import {
     User,
     ShieldCheck,
     Store,
-    Info
+    Info,
+    Globe
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -29,7 +30,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { AppShell } from '@/components/layout/app-shell';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -169,18 +169,18 @@ function CheckoutPageContent() {
 
     if (!cartItems || cartItems.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left text-left">
+            <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left">
                 <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
                     <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                 </div>
                 <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">Package is empty</h2>
-                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
-                <div className="flex gap-4 mt-8 justify-center text-left text-left text-left">
-                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left">
-                        <Link href="/marketplace" className="text-left text-left">Meals Hub</Link>
+                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
+                <div className="flex gap-4 mt-8 justify-center text-left">
+                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left">
+                        <Link href="/marketplace" className="text-left">Meals Hub</Link>
                     </Button>
-                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left text-left">
-                        <Link href="/marketplace/gifts" className="text-left text-left text-left text-left">Kindness Hub</Link>
+                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left">
+                        <Link href="/marketplace/gifts" className="text-left">Kindness Hub</Link>
                     </Button>
                 </div>
             </div>
