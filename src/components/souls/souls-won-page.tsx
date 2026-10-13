@@ -95,7 +95,7 @@ import { RelationshipCircleTracker } from "@/components/souls/relationship-circl
 import { SoulsImportTemplateCard } from "@/components/settings/souls-import-template-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Papa from 'papaparse';
-import Image from "next/image";
+import NextImage from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -160,12 +160,12 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                         {spouseObj && (
                             <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0 text-left">
                                 <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover text-left" />
-                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left">{spouseObj.firstName?.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="font-black bg-primary/10 text-primary/60 text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left">{spouseObj.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
                     </div>
                     <div className="min-w-0 flex-1 pr-1 text-left">
-                        <div className="flex items-center gap-1.5 flex-wrap text-left">
+                        <div className="flex items-center gap-2 flex-wrap text-left">
                             <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left">
                                 {s.firstName} {s.lastName}
                             </p>
@@ -788,7 +788,7 @@ export default function SoulsWonPage() {
                                         <Dialog>
                                             <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
                                                 <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-95 transition-all text-left">
-                                                    <Image 
+                                                    <NextImage 
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
                                                         fill 
@@ -813,7 +813,7 @@ export default function SoulsWonPage() {
                                                 <DialogHeader className="sr-only text-left"><DialogTitle className="text-left">Soul Photo</DialogTitle></DialogHeader>
                                                 <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left">
                                                     <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left">
-                                                        <Image 
+                                                        <NextImage 
                                                             src={s.photoURL!} 
                                                             alt={s.firstName} 
                                                             fill 
@@ -1016,7 +1016,7 @@ export default function SoulsWonPage() {
                     <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left" />
+                                <BarChart3 className="h-4 w-4 text-primary text-left text-left" />
                                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Harvest Demographic</span>
                             </div>
                             <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
@@ -1084,7 +1084,7 @@ export default function SoulsWonPage() {
             userProfile={userProfile}
         />
         <ViewHistoryDialog soul={soulForHistory} isOpen={!!historySoulId} onOpenChange={(open) => !open && setHistorySoulId(null)} />
-        <AssignFellowshipDialog soul={soulToAssign} fellowships={fellowships || []} isOpen={!!assignSoulId} onOpenChange={(open) => !open && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
+        <AssignFellowshipDialog soul={soulToAssign} fellowships={fellowships || []} isOpen={!!assignSoulId} onOpenChange={(isOpen) => !isOpen && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
         <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
         
         <ShareWordDialog 
