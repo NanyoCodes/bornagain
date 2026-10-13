@@ -310,10 +310,10 @@ function ContactCard() {
             </div>
         </div>
         <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left text-left">
                 <Phone className="h-5 w-5 text-primary text-left" />
             </div>
-            <div className="min-w-0 text-left text-left">
+            <div className="min-w-0 text-left text-left text-left">
                 <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left">Call / WhatsApp</p>
                 <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground text-left">+234 814 853 8502</a>
             </div>

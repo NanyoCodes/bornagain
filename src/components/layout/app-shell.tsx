@@ -62,14 +62,6 @@ import {
   DrawerDescription,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -317,7 +309,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
         {isSearchVisible && (
           <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full transition-transform active:scale-95 text-left" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-6 w-6 text-left" />
-            <span className="sr-only text-left">Search</span>
+            <span className="sr-only">Search</span>
           </Button>
         )}
         
