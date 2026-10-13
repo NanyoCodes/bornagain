@@ -51,6 +51,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -66,6 +67,7 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -270,18 +272,13 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 
   return (
     <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative text-left">
-      <div className="flex shrink-0 w-32 md:w-56 items-center">
-        <Link href={user ? "/testimonies" : "/"} className="flex items-center hover:opacity-80 transition-opacity w-full">
+      <div className="flex shrink-0 items-center">
+        <Link href={user ? "/testimonies" : "/"} className="flex items-center hover:opacity-80 transition-opacity">
           {logo && (
-            <div className="relative h-10 md:h-12 w-full">
-                <Image 
-                    src={logo.imageUrl} 
-                    alt="Testify Logo" 
-                    fill 
-                    className="object-contain object-left" 
-                    priority
-                />
-            </div>
+            <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-primary/20 shadow-lg ring-4 ring-primary/5">
+                <AvatarImage src={logo.imageUrl} alt="Testify" className="object-contain p-1" />
+                <AvatarFallback className="font-black bg-primary/10 text-primary">T</AvatarFallback>
+            </Avatar>
           )}
         </Link>
       </div>
