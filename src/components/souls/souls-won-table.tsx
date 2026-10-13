@@ -669,7 +669,7 @@ function SoulProfileContent({
                                 onClick={() => handleActionClick(action.id)}
                                 disabled={isActionSubmitting}
                             >
-                                {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left" /> : <Icon className="h-4 w-4 text-primary text-left" />}
+                                {isThisProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin text-primary text-left" /> : <Icon className="h-4 w-4 text-primary text-left" />}
                                 <span className="text-[11px] font-black uppercase tracking-widest truncate text-left">{action.label}</span>
                             </Button>
                         )
@@ -829,7 +829,7 @@ function SoulProfileContent({
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left">
+          <div className="flex flex-col gap-3 pt-6 text-left text-left">
             <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left">
               <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External
             </Button>
@@ -1064,16 +1064,16 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                     <SheetHeader className="text-left flex-shrink-0 text-left p-0">
                         <div className="flex items-center gap-2 mb-2 text-left">
                             <Sparkles className="h-4 w-4 text-primary text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span>
                         </div>
-                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
+                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left">
-                    <div className="p-6 pb-24 text-left">
+                    <div className="p-6 pb-24 text-left text-left">
                         {profileView}
                     </div>
                 </ScrollArea>

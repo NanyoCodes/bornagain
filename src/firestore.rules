@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refined authorship verification for testimonies - 2025-06-20T10:30:00Z
+    // Deployment trigger: Granular authorship and interaction history privacy - 2025-06-25T14:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -85,12 +85,12 @@ service cloud.firestore {
       }
 
       match /souls/{soulId} {
-        allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
+        allow read: if isOwner(userId) || 
+                    (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
         allow create, delete: if isOwner(userId);
         allow update: if isAuthenticated() && (
           isOwner(userId) || 
-          isFellowshipMember(resource.data.get('fellowshipId', '')) || 
-          isFellowshipMember(resource.data.get('associationId', ''))
+          (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))))
         );
       }
       
@@ -167,7 +167,7 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
@@ -198,8 +198,7 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated() && (
         (resource.data.get('userId', '') == request.auth.uid) || 
         (resource.data.userId == request.auth.uid) || 
-        isFellowshipMember(resource.data.get('fellowshipId', '')) ||
-        isFellowshipMember(resource.data.get('associationId', ''))
+        (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))))
       );
     }
 

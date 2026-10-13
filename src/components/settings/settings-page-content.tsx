@@ -23,7 +23,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from 'next-themes';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Bell, Lock, MessageSquare, Mail, Phone, Palette, Type, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { Loader2, User, Bell, Lock, MessageSquare, Mail, Phone, Palette, Type, Image as ImageIcon, Sparkles, Sun, Moon } from 'lucide-react';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
@@ -54,9 +54,18 @@ const notificationFormSchema = z.object({
   weeklyDigest: z.boolean().default(false),
 });
 
-const backgroundPresets = [
-  { id: 'midnight', label: 'Midnight Grace', url: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)' },
-];
+const backgroundPresets = {
+  light: [
+    { id: 'purity', label: 'Purity White', url: 'linear-gradient(135deg, #ffffff 0%, #f4f4f5 100%)' },
+    { id: 'grace', label: 'Soft Grace', url: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' },
+    { id: 'morning', label: 'Morning Light', url: 'linear-gradient(135deg, #fffcf0 0%, #fffbeb 100%)' },
+  ],
+  dark: [
+    { id: 'midnight', label: 'Midnight Grace', url: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)' },
+    { id: 'abyss', label: 'Deep Abyss', url: 'linear-gradient(135deg, #020617 0%, #0f172a 100%)' },
+    { id: 'sanctuary', label: 'Sanctuary', url: 'linear-gradient(135deg, #111827 0%, #030712 100%)' },
+  ]
+};
 
 function ProfileSettingsCard() {
   return (
@@ -78,7 +87,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
   const { user } = useUser();
   const { theme } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedUrl, setSelectedUrl] = useState(userProfile.backgroundImage || backgroundPresets[0].url);
+  const [selectedUrl, setSelectedUrl] = useState(userProfile.backgroundImage || backgroundPresets.dark[0].url);
   const [overlayOpacity, setOverlayOpacity] = useState(userProfile.backgroundOverlayOpacity ?? 0.8);
   const { fontSize, setFontSize } = useFontSize();
 
@@ -105,6 +114,35 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
         .finally(() => setIsSubmitting(false));
   };
 
+  const renderPresets = (presets: any[]) => (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left">
+        {presets.map((preset) => (
+            <button
+                key={preset.id}
+                type="button"
+                onClick={() => setSelectedUrl(preset.url)}
+                className={cn(
+                    "group relative aspect-[3/2] rounded-2xl overflow-hidden border-2 transition-all active:scale-95 flex flex-col items-center justify-center text-left",
+                    selectedUrl === preset.url ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-60 hover:opacity-100"
+                )}
+            >
+                <div className="absolute inset-0 text-left" style={{ background: preset.url }} />
+                <div className={cn(
+                  "absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity p-2 text-left",
+                  selectedUrl === preset.url ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                )}>
+                    <span className="text-[9px] font-black text-white uppercase tracking-widest text-center leading-tight">{preset.label}</span>
+                </div>
+                {selectedUrl === preset.url && (
+                    <div className="absolute top-1.5 right-1.5 bg-primary rounded-full p-0.5 z-10 shadow-lg text-left">
+                        <Sparkles className="h-3 w-3 text-white text-left" />
+                    </div>
+                )}
+            </button>
+        ))}
+    </div>
+  );
+
   return (
     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
         <CardHeader className="text-left">
@@ -116,8 +154,8 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left">
                     <div className="space-y-0.5 text-left">
-                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left">
-                             <Palette className="h-4 w-4 text-primary" />
+                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left">
+                             <Palette className="h-4 w-4 text-primary text-left" />
                              Theme
                         </label>
                         <p className="text-[10px] text-muted-foreground uppercase font-medium text-left">Mode: {theme || 'System'}</p>
@@ -149,39 +187,27 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
 
             <Separator className="opacity-50 text-left" />
 
-            {/* Background Selection */}
-            <div className="space-y-6 text-left">
-                <div className="space-y-4 text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">Select Background</Label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 text-left">
-                        {backgroundPresets.map((preset) => (
-                            <button
-                                key={preset.id}
-                                type="button"
-                                onClick={() => setSelectedUrl(preset.url)}
-                                className={cn(
-                                    "group relative aspect-video rounded-2xl overflow-hidden border-2 transition-all active:scale-95 flex flex-col items-center justify-center text-left",
-                                    selectedUrl === preset.url ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-60 hover:opacity-100"
-                                )}
-                            >
-                                <div className="absolute inset-0 text-left" style={{ background: preset.url }} />
-                                <div className={cn(
-                                  "absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity p-2 text-left",
-                                  selectedUrl === preset.url ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                                )}>
-                                    <span className="text-[9px] font-black text-white uppercase tracking-widest text-center leading-tight">{preset.label}</span>
-                                </div>
-                                {selectedUrl === preset.url && (
-                                    <div className="absolute top-1 right-1 bg-primary rounded-full p-0.5 z-10 shadow-lg text-left">
-                                        <Sparkles className="h-3 w-3 text-white text-left" />
-                                    </div>
-                                )}
-                            </button>
-                        ))}
+            {/* Categorized Background Selection */}
+            <div className="space-y-8 text-left">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-1">
+                        <Sun className="h-3.5 w-3.5 text-amber-500" />
+                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Light Atmospheres</Label>
                     </div>
+                    {renderPresets(backgroundPresets.light)}
                 </div>
 
-                <div className="space-y-8 text-left">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-1">
+                        <Moon className="h-3.5 w-3.5 text-primary" />
+                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Dark Atmospheres</Label>
+                    </div>
+                    {renderPresets(backgroundPresets.dark)}
+                </div>
+
+                <Separator className="opacity-50 text-left" />
+
+                <div className="space-y-6 text-left">
                     <div className="space-y-4 text-left">
                         <div className="flex justify-between items-center text-left">
                             <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">Overlay Intensity</Label>
@@ -203,8 +229,8 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
                 </div>
 
                 <Button onClick={handleSave} disabled={isSubmitting} className="w-full min-h-[3.5rem] h-auto rounded-[1.5rem] font-black shadow-xl shadow-primary/20 tracking-widest uppercase py-4 text-left">
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
-                    click to view
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                    Save Environment
                 </Button>
             </div>
         </CardContent>
@@ -244,11 +270,8 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
   }
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
-      <CardHeader className="text-left">
-        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left">
-          <Bell className="h-5 w-5 text-primary text-left" />
-          Notifications
-        </CardTitle>
+      <CardHeader className="text-left text-left">
+        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left"><Bell className="h-5 w-5 text-primary text-left" /> Notifications</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -287,10 +310,10 @@ function ContactCard() {
             </div>
         </div>
         <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left">
                 <Phone className="h-5 w-5 text-primary text-left" />
             </div>
-            <div className="min-w-0 text-left">
+            <div className="min-w-0 text-left text-left">
                 <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left">Call / WhatsApp</p>
                 <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground text-left">+234 814 853 8502</a>
             </div>
