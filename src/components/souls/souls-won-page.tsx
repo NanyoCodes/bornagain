@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -124,13 +125,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic text-left text-left">No souls found matching this criteria.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 pb-6 text-left text-left">
+    <div className="space-y-3 pb-6 text-left">
       {souls.map((s) => {
         const isFamilyMember = s.maritalStatus === 'Married';
         const wonAt = safeToDate(s.wonAt);
@@ -148,7 +149,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
         const initials = (s.firstName?.charAt(0) || '') + (s.lastName?.charAt(0) || '');
         
         return (
-          <div key={s.id} className="relative text-left text-left">
+          <div key={s.id} className="relative text-left">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 text-left transition-all hover:bg-card/80">
                 <button 
                     onClick={() => onShareWord(s)}
@@ -166,14 +167,14 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                             </Avatar>
                         )}
                     </div>
-                    <div className="min-w-0 flex-1 pr-1 text-left text-left">
-                        <div className="flex items-center gap-1.5 flex-wrap text-left text-left">
+                    <div className="min-w-0 flex-1 pr-1 text-left">
+                        <div className="flex items-center gap-1.5 flex-wrap text-left">
                             <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left">
                                 {s.firstName} {s.lastName}
                             </p>
                             <Badge variant="outline" className={cn("h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50 text-left", s.status === 'New' ? 'text-amber-600 border-amber-200' : s.status === 'Contacted' ? 'text-blue-600 border-blue-200' : 'text-green-600 border-green-200')}>{s.status}</Badge>
                         </div>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left text-left">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left">
                             <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left">
                                 Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                             </p>
@@ -187,33 +188,33 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left text-left" onClick={() => onShareWord(s)}>
+                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onShareWord(s)}>
                                     <BookMarked className="h-4 w-4 text-left" />
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent className="text-left text-left"><p className="text-[10px] font-black uppercase text-left">Share Word</p></TooltipContent>
+                            <TooltipContent className="text-left"><p className="text-[10px] font-black uppercase text-left">Share Word</p></TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
 
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left text-left" onClick={() => onPray(s)}>
+                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onPray(s)}>
                                     <HandHeart className="h-4 w-4 text-left" />
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent className="text-left text-left"><p className="text-[10px] font-black uppercase text-left">Intercession (Prayer)</p></TooltipContent>
+                            <TooltipContent className="text-left"><p className="text-[10px] font-black uppercase text-left">Intercession (Prayer)</p></TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
 
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left text-left" onClick={() => onMessage(s)}>
+                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onMessage(s)}>
                                     <MessageSquare className="h-4 w-4 text-left" />
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent className="text-left text-left"><p className="text-[10px] font-black uppercase text-left">Encourage</p></TooltipContent>
+                            <TooltipContent className="text-left"><p className="text-[10px] font-black uppercase text-left">Encourage</p></TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
 
@@ -223,16 +224,16 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                                 <ChevronDown className="h-4 w-4 text-left" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left text-left">
+                        <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left">
                             <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">More Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator className="text-left" />
-                            <DropdownMenuItem onSelect={() => onSelectSoul(s)} className="rounded-lg py-2.5 text-left text-left">
+                            <DropdownMenuItem onSelect={() => onSelectSoul(s)} className="rounded-lg py-2.5 text-left">
                                 <User className="mr-2 h-4 w-4 text-left" /> View Full Identity
                             </DropdownMenuItem>
                             {isFamilyMember && (
                                 <>
                                     <DropdownMenuSeparator className="text-left" />
-                                    <DropdownMenuItem onSelect={() => onAddChild(s, spouseObj)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left">
+                                    <DropdownMenuItem onSelect={() => onAddChild(s, spouseObj)} className="rounded-lg py-2.5 text-primary font-bold text-left">
                                         <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
                                     </DropdownMenuItem>
                                 </>
@@ -495,6 +496,160 @@ export default function SoulsWonPage() {
     setIsLogDialogOpen(true);
   }, []);
 
+  const getBase64Logo = useCallback(async (url: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new (window as any).Image();
+      img.crossOrigin = 'Anonymous';
+      img.src = url;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => reject('Logo load failed');
+    });
+  }, []);
+
+  const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
+    if (!souls || souls.length === 0) {
+        toast({ variant: 'destructive', title: 'Empty Harvest', description: 'No souls found to export.' });
+        return;
+    }
+    
+    toast({ title: "Exporting...", description: "Your professional Kingdom report is being generated." });
+
+    const headers = ["First Name", "Last Name", "Gender", "Status", "Won At", "Source", "Phone", "Email", "City", "Country"];
+    const body = souls.map(s => [
+        s.firstName,
+        s.lastName || '',
+        s.gender || 'N/A',
+        s.status,
+        s.wonAt ? format(s.wonAt.toDate(), 'yyyy-MM-dd') : 'N/A',
+        s.source,
+        s.phone || 'N/A',
+        s.email || 'N/A',
+        s.locationWon?.city || 'N/A',
+        s.locationWon?.country || 'N/A'
+    ]);
+
+    if (formatType === 'pdf') {
+        const { jsPDF } = await import('jspdf');
+        const { default: autoTable } = await import('jspdf-autotable');
+        const docObj = new jsPDF({ orientation: 'landscape' });
+        
+        const logo = PlaceHolderImages.find(img => img.id === 'logo');
+        if (logo) {
+            try {
+                const base64 = await getBase64Logo(logo.imageUrl);
+                docObj.addImage(base64, 'PNG', 14, 10, 15, 15);
+            } catch (e) {}
+        }
+
+        docObj.setFontSize(22);
+        docObj.setFont('helvetica', 'bold');
+        docObj.text("Testify Global: Soul Winning Harvest", 32, 21);
+
+        docObj.setFontSize(10);
+        docObj.setFont('helvetica', 'normal');
+        docObj.setTextColor(100);
+        docObj.text(`Mobilizer: ${userProfile?.firstName} ${userProfile?.lastName || ''}`, 32, 27);
+        docObj.text(`Total Impact: ${souls.length} Lives`, 14, 40);
+        docObj.text(`Export Date: ${format(new Date(), 'PPPP')}`, 283, 40, { align: 'right' });
+
+        autoTable(docObj, {
+            head: [headers],
+            body: body,
+            startY: 45,
+            styles: { fontSize: 8, font: 'helvetica' },
+            headStyles: { 
+                fillColor: [249, 116, 22],
+                textColor: [255, 255, 255],
+                fontStyle: 'bold'
+            },
+            alternateRowStyles: {
+                fillColor: [250, 245, 240]
+            },
+            margin: { top: 45 }
+        });
+
+        docObj.save(`testify-harvest-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+    } else {
+        const csv = Papa.unparse({ fields: headers, data: body });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `testify-harvest-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+    toast({ title: "Report Ready", description: "Download started." });
+  };
+
+  const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
+      const wonAt = safeToDate(soul.wonAt);
+      const data = [
+          ["First Name", soul.firstName],
+          ["Last Name", soul.lastName || ''],
+          ["Gender", soul.gender || 'N/A'],
+          ["Status", soul.status],
+          ["Date Won", wonAt ? format(wonAt, 'PPP') : 'N/A'],
+          ["Source", soul.source],
+          ["Phone", soul.phone || 'N/A'],
+          ["Email", soul.email || 'N/A'],
+          ["Home Church", soul.church || 'N/A'],
+          ["Location", [soul.locationWon?.city, soul.locationWon?.country].filter(Boolean).join(', ') || 'N/A']
+      ];
+
+      if (formatType === 'pdf') {
+          const { jsPDF } = await import('jspdf');
+          const { default: autoTable } = await import('jspdf-autotable');
+          const docObj = new jsPDF();
+          
+          const logo = PlaceHolderImages.find(img => img.id === 'logo');
+          if (logo) {
+            try {
+                const base64 = await getBase64Logo(logo.imageUrl);
+                docObj.addImage(base64, 'PNG', 14, 10, 12, 12);
+            } catch (e) {}
+          }
+
+          docObj.setFontSize(18);
+          docObj.setFont('helvetica', 'bold');
+          docObj.text(`Kingdom Identity Profile`, 28, 19);
+
+          docObj.setFontSize(10);
+          docObj.setFont('helvetica', 'normal');
+          docObj.setTextColor(100);
+          docObj.text(`Full Record: ${soul.firstName} ${soul.lastName || ''}`, 14, 32);
+          docObj.text(`Log Date: ${format(new Date(), 'PPP')}`, 196, 32, { align: 'right' });
+
+          autoTable(docObj, {
+              head: [["Attribute", "Information"]],
+              body: data,
+              startY: 38,
+              theme: 'striped',
+              headStyles: { fillColor: [249, 116, 22] },
+              styles: { cellPadding: 5 }
+          });
+          
+          docObj.save(`record-${soul.firstName.toLowerCase()}.pdf`);
+      } else {
+          const csv = Papa.unparse({ fields: ["Field", "Detail"], data });
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.setAttribute("href", url);
+          link.setAttribute("download", `record-${soul.firstName.toLowerCase()}.csv`);
+          link.click();
+          URL.revokeObjectURL(url);
+      }
+      toast({ title: "Record Exported" });
+  }, [toast, getBase64Logo]);
+
   const handleAssignGroup = (s: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => {
     if (!user || !firestore) return;
 
@@ -542,6 +697,27 @@ export default function SoulsWonPage() {
       (s.phone && s.phone.toLowerCase().includes(term))
     );
   }, [souls, searchTerm]);
+
+  const handleDeleteSoul = () => {
+    if (!soulToDelete || !user || !firestore) return;
+    setIsDeleting(true);
+
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
+    const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
+
+    const batch = writeBatch(firestore);
+    batch.delete(soulRef);
+    batch.delete(globalSoulRef);
+    
+    batch.commit().then(() => {
+        toast({ title: "Record Removed" });
+        setIsDeleting(false);
+        setDeleteSoulId(null);
+    }).catch(() => {
+        toast({ variant: 'destructive', title: "Delete Failed" });
+        setIsDeleting(false);
+    });
+  };
 
   return (
     <div className="w-full max-w-7xl mx-auto text-left">
@@ -875,7 +1051,7 @@ export default function SoulsWonPage() {
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-primary text-left">Demographic View</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left p-0 text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left"> {selectedFilterGroup?.value} Directory</DialogTitle>
