@@ -346,7 +346,7 @@ function AccountDeletionRequest({ userId }: { userId: string }) {
     };
 
     return (
-        <div className="pt-12 pb-8 flex flex-col items-center gap-4 text-center px-6 text-left">
+        <div className="pt-12 pb-8 flex flex-col items-center gap-4 text-center px-6 text-left text-left text-left">
             <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] opacity-40 text-center text-left text-left">Account Lifecycle</p>
             <Button 
                 variant="ghost" 

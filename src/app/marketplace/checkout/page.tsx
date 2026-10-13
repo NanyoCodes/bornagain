@@ -191,7 +191,7 @@ function CheckoutPageContent() {
     }
 
     return (
-        <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left text-left text-left">
+        <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left text-left text-left text-left">
             <header className="px-4 sm:px-0 space-y-4 pt-4 text-left text-left text-left">
                 <div className="flex items-center gap-4 text-left text-left text-left">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm text-left text-left text-left">
@@ -252,9 +252,9 @@ function CheckoutPageContent() {
 
                                             <div className="flex items-center gap-3 text-left text-left text-left">
                                                 <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm text-left text-left text-left text-left">
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left"><Minus className="h-3.5 w-3.5 text-left text-left text-left"/></Button>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left" onClick={() => updateQuantity(item.id, item.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left text-left text-left"/></Button>
                                                     <span className="w-6 text-center font-black text-xs text-left text-left text-left text-left"> {item.quantity}</span>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left"><Plus className="h-3.5 w-3.5 text-left text-left text-left"/></Button>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left" onClick={() => updateQuantity(item.id, item.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left text-left text-left"/></Button>
                                                 </div>
                                                 <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10 text-left text-left text-left" onClick={() => handleRemoveItem(item.id)}>
                                                     <Trash2 className="h-5 w-5 text-left text-left text-left" />

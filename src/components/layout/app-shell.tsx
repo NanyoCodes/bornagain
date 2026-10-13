@@ -85,6 +85,7 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
+import Image from "next/image";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
@@ -144,7 +145,7 @@ function CartButton() {
     return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
   }, [cartItems]);
 
-  const listContent = useMemo(() => (
+  const listContent = (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
             <div className="space-y-3">
@@ -154,29 +155,29 @@ function CartButton() {
                             <AvatarImage src={item.photoURL} />
                             <AvatarFallback>P</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0 flex-1">
+                        <div className="min-w-0 flex-1 text-left">
                             <p className="font-bold text-sm truncate uppercase tracking-tight">{item.name}</p>
                             <p className="text-[10px] font-black uppercase tracking-widest">{item.currency}{item.price.toLocaleString()} x {item.quantity}</p>
                         </div>
                     </div>
                 ))}
-                <div className="pt-4 border-t border-dashed">
+                <div className="pt-4 border-t border-dashed text-left">
                     <Button asChild className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-                        <Link href="/marketplace/checkout">PROCEED TO CHECKOUT</Link>
+                        <Link href="/marketplace/checkout" className="text-left">PROCEED TO CHECKOUT</Link>
                     </Button>
                 </div>
             </div>
         ) : (
-            <div className="py-12 text-center flex flex-col items-center">
-                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4" />
-                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Your package is empty</p>
-                <Button variant="link" asChild className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest h-auto p-0">
+            <div className="py-12 text-center flex flex-col items-center text-left">
+                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left" />
+                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center">Your package is empty</p>
+                <Button variant="link" asChild className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest h-auto p-0 text-center">
                     <Link href="/marketplace">Explore Provision Hub</Link>
                 </Button>
             </div>
         )}
     </div>
-  ), [cartItems]);
+  );
 
   const trigger = (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
@@ -197,13 +198,13 @@ function CartButton() {
             <DrawerTrigger asChild>{trigger}</DrawerTrigger>
             <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b bg-muted/10 shrink-0 flex-shrink-0 text-left">
-                    <div className="flex items-center gap-2 mb-1">
-                        <ShoppingCart className="h-5 w-5 text-primary" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
+                    <div className="flex items-center gap-2 mb-1 text-left">
+                        <ShoppingCart className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Offering</span>
                     </div>
-                    <DrawerHeader className="text-left flex-shrink-0 p-0">
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1">Review selection for gifting.</DrawerDescription>
+                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Review selection for gifting.</DrawerDescription>
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>
@@ -218,12 +219,12 @@ function CartButton() {
       <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
             <div className="flex items-center gap-2 mb-1 text-left">
-                <ShoppingCart className="h-5 w-5 text-primary" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
+                <ShoppingCart className="h-5 w-5 text-primary text-left" />
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kindness Package</span>
             </div>
-            <DialogHeader className="text-left p-0">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Pending Offering</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1">Review the provisions in your active package.</DialogDescription>
+            <DialogHeader className="text-left p-0 text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Pending Offering</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-left">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
         </div>
         <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>

@@ -717,7 +717,7 @@ function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize text-left">{soul.relationship || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
-                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p>
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize text-left">{soul.workStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
@@ -762,20 +762,23 @@ function SoulProfileContent({
 
             <div className="space-y-4 text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Relational Actions</p>
-                <div className="grid grid-cols-2 gap-2 text-left">
+                <div className="flex flex-col gap-1.5 text-left">
                     {actionItems.map(action => {
                         const Icon = iconMap[action.id] || Heart;
                         const isThisProcessing = clickedActionId === action.id && isActionSubmitting;
                         return (
                             <Button
                                 key={action.id}
-                                variant="outline"
-                                className="flex items-center justify-start gap-2 h-10 px-3 rounded-xl border-2 border-transparent bg-muted/20 hover:bg-primary/5 hover:border-primary/10 transition-all text-left group"
+                                variant="ghost"
+                                className="flex items-center justify-start gap-3 h-11 px-4 rounded-xl border border-transparent hover:bg-primary/5 hover:border-primary/10 transition-all text-left group w-full"
                                 onClick={() => handleActionClick(action.id)}
                                 disabled={isActionSubmitting}
                             >
-                                {isThisProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" /> : <Icon className="h-3.5 w-3.5 text-primary" />}
-                                <span className="text-[10px] font-bold uppercase tracking-tight truncate text-left">{action.label}</span>
+                                <div className="h-8 w-8 rounded-lg bg-muted/20 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
+                                    {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Icon className="h-4 w-4 text-primary" />}
+                                </div>
+                                <span className="text-xs font-bold uppercase tracking-tight truncate text-left flex-1">{action.label}</span>
+                                <ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity" />
                             </Button>
                         )
                     })}
@@ -800,7 +803,7 @@ function SoulProfileContent({
                 <div className="flex items-center justify-between text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onOpenAssignDialog(soul)}>
-                        <Edit className="h-4 w-4 text-left" />
+                        <Plus className="h-4 w-4 text-left" />
                     </Button>
                 </div>
                 <div className="space-y-3 text-left">
@@ -1239,7 +1242,7 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
                     ))}
                 </div>
             ) : (
-                <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left">
+                <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left text-left">
                     <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left">
                         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left">
                             <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left" />
