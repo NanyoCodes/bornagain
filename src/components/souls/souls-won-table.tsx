@@ -809,7 +809,7 @@ function SoulProfileContent({
                         <Button 
                             variant="outline" 
                             size="sm" 
-                            className="h-9 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 px-6 shadow-sm text-left" 
+                            className="h-9 rounded-xl text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 px-6 shadow-sm text-left" 
                             onClick={() => onAssess(soul)}
                         >
                             <Zap className="mr-2 h-3.5 w-3.5 text-left" />
@@ -941,7 +941,7 @@ function SoulProfileContent({
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left">
                   <DialogHeader className="text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
