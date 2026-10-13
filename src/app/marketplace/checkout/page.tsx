@@ -245,7 +245,7 @@ function CheckoutPageContent() {
                                                     <User className="h-4 w-4 text-primary text-left" />
                                                 </div>
                                                 <div className="min-w-0 text-left">
-                                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest text-left">Recipient</p>
+                                                    <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest text-left">Recipient</p>
                                                     <p className="text-xs font-bold truncate text-foreground text-left">{item.soulName || 'Kingdom Member'}</p>
                                                 </div>
                                             </div>

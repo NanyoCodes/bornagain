@@ -145,10 +145,10 @@ function CartButton() {
     return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
   }, [cartItems]);
 
-  const listContent = useMemo(() => (
+  const listContent = (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
-            <div className="space-y-3 text-left">
+            <div className="space-y-3">
                 {cartItems.map((item: any) => (
                     <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left">
                         <Avatar className="h-10 w-10 border">
@@ -162,7 +162,7 @@ function CartButton() {
                     </div>
                 ))}
                 <div className="pt-4 border-t border-dashed text-left">
-                    <Button asChild className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left">
+                    <Button asChild className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20">
                         <Link href="/marketplace/checkout">PROCEED TO CHECKOUT</Link>
                     </Button>
                 </div>
@@ -177,10 +177,10 @@ function CartButton() {
             </div>
         )}
     </div>
-  ), [cartItems]);
+  );
 
   const trigger = (
-    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
+    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
         <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-11 sm:w-11 rounded-full text-left">
             <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110 text-left" />
             {count > 0 && (
@@ -330,19 +330,19 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                     <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-11 sm:w-11 rounded-full text-left">
                       <MessagesSquare className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110 text-left" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
+                        <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center text-left">
                           {unreadChatCount}
                         </div>
                       )}
                     </Button>
                 </motion.div>
             </Link>
-            <Link href="/notifications" className="text-left">
+            <Link href="/notifications" className="text-left text-left">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
                     <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-11 sm:w-11 rounded-full text-left">
-                      <Bell className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110 text-left" />
+                      <Bell className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110 text-left text-left" />
                       {unreadNotifCount > 0 && (
-                        <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
+                        <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center text-left">
                           {unreadNotifCount}
                         </div>
                       )}
@@ -352,8 +352,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 sm:h-11 sm:w-11 shrink-0 text-left">
-                  <Avatar className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm text-left">
-                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
+                  <Avatar className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm text-left text-left">
+                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover text-left" />
                     <AvatarFallback className="text-xs font-bold text-left"> {user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
@@ -699,8 +699,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SearchProvider>
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
-                <div className="relative mx-auto w-fit text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
+                <div className="relative mx-auto w-fit text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
                 </div>
             </div>
         }>

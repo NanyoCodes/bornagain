@@ -150,7 +150,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
           <div key={s.id} className="relative text-left">
             <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl border bg-background/50 group w-full relative gap-2 text-left">
                 <button 
-                    onClick={() => onMessage(s)}
+                    onClick={() => onSelectSoul(s)}
                     className="flex flex-row items-center gap-2 sm:gap-3 min-w-0 flex-1 active:scale-[0.98] transition-all text-left text-left"
                 >
                     <div className="flex -space-x-3 sm:-space-x-4 shrink-0 text-left">
@@ -1032,7 +1032,7 @@ export default function SoulsWonPage() {
                                   allSouls={souls || []}
                                   onSelectSoul={(s) => {
                                     setSelectedFilterGroup(null);
-                                    setFollowUpSoulId(s.id);
+                                    setShareWordSoulId(s.id);
                                   }} 
                                   onAddChild={handleAddChild}
                                   onShareWord={(s) => { setSelectedFilterGroup(null); setShareWordSoulId(s.id); }}
@@ -1063,7 +1063,7 @@ export default function SoulsWonPage() {
                                   allSouls={souls || []}
                                   onSelectSoul={(s) => {
                                     setSelectedFilterGroup(null);
-                                    setFollowUpSoulId(s.id);
+                                    setShareWordSoulId(s.id);
                                   }} 
                                   onAddChild={handleAddChild}
                                   onShareWord={(s) => { setSelectedFilterGroup(null); setShareWordSoulId(s.id); }}
