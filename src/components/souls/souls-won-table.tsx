@@ -887,7 +887,7 @@ function SoulProfileContent({
             <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-left">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
+            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
               <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp
             </Button>
             <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
@@ -942,7 +942,7 @@ function SoulProfileContent({
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10 text-left">
-                  <DialogHeader className="text-left">
+                  <DialogHeader className="text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
