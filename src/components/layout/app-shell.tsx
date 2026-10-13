@@ -1,7 +1,6 @@
-
 'use client';
 
-import Link from "next/link";
+import Link from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState, useRef, useCallback, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -86,6 +85,7 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
+import NextImage from 'next/image';
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
@@ -435,7 +435,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 
                 <div className="p-1 space-y-1 text-left text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left text-left">Provision & Support</p>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/marketplace" className="flex items-center gap-3 w-full text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center text-left text-left">
                         <Utensils className="h-3.5 w-3.5 text-blue-500 text-left text-left" />

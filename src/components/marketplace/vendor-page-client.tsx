@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -303,10 +302,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left text-left">
                         {vendor.photoURL ? <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left text-left" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left text-left text-left text-left"><Store className="h-16 w-16 text-primary opacity-10 text-left text-left text-left" /></div>}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left" />
-                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left text-left">
-                            <div className="flex items-center gap-2 opacity-80 mb-2 text-left text-left text-left">
-                                <MapPin className="h-3.5 w-3.5 text-primary text-left text-left text-left" />
-                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate text-left text-left text-left">{vendor.location || 'Kingdom Network'}</p>
+                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left text-left text-left">
+                            <div className="flex items-center gap-2 opacity-80 mb-2 text-left text-left text-left text-left">
+                                <MapPin className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left" />
+                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate text-left text-left text-left text-left">{vendor.location || 'Kingdom Network'}</p>
                             </div>
                         </div>
                     </div>

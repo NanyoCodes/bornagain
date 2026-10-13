@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -146,8 +145,6 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                    (otherSpouse === sFull || otherSpouse === s.firstName.toLowerCase());
         }) : null;
 
-        const initials = (s.firstName?.charAt(0) || '') + (s.lastName?.charAt(0) || '');
-        
         return (
           <div key={s.id} className="relative text-left">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 text-left transition-all hover:bg-card/80">
@@ -513,6 +510,67 @@ export default function SoulsWonPage() {
     });
   }, []);
 
+  const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
+      const wonAt = safeToDate(soul.wonAt);
+      const data = [
+          ["First Name", soul.firstName],
+          ["Last Name", soul.lastName || ''],
+          ["Gender", soul.gender || 'N/A'],
+          ["Status", soul.status],
+          ["Date Won", wonAt ? format(wonAt, 'PPP') : 'N/A'],
+          ["Source", soul.source],
+          ["Phone", soul.phone || 'N/A'],
+          ["Email", soul.email || 'N/A'],
+          ["Home Church", soul.church || 'N/A'],
+          ["Location", [soul.locationWon?.city, soul.locationWon?.country].filter(Boolean).join(', ') || 'N/A']
+      ];
+
+      if (formatType === 'pdf') {
+          const { jsPDF } = await import('jspdf');
+          const { default: autoTable } = await import('jspdf-autotable');
+          const docObj = new jsPDF();
+          
+          const logo = PlaceHolderImages.find(img => img.id === 'logo');
+          if (logo) {
+            try {
+                const base64 = await getBase64Logo(logo.imageUrl);
+                docObj.addImage(base64, 'PNG', 14, 10, 12, 12);
+            } catch (e) {}
+          }
+
+          docObj.setFontSize(18);
+          docObj.setFont('helvetica', 'bold');
+          docObj.text(`Kingdom Identity Profile`, 28, 19);
+
+          docObj.setFontSize(10);
+          docObj.setFont('helvetica', 'normal');
+          docObj.setTextColor(100);
+          docObj.text(`Full Record: ${soul.firstName} ${soul.lastName || ''}`, 14, 32);
+          docObj.text(`Log Date: ${format(new Date(), 'PPP')}`, 196, 32, { align: 'right' });
+
+          autoTable(docObj, {
+              head: [["Attribute", "Information"]],
+              body: data,
+              startY: 38,
+              theme: 'striped',
+              headStyles: { fillColor: [249, 116, 22] },
+              styles: { cellPadding: 5 }
+          });
+          
+          docObj.save(`record-${soul.firstName.toLowerCase()}.pdf`);
+      } else {
+          const csv = Papa.unparse({ fields: ["Field", "Detail"], data });
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.setAttribute("href", url);
+          link.setAttribute("download", `record-${soul.firstName.toLowerCase()}.csv`);
+          link.click();
+          URL.revokeObjectURL(url);
+      }
+      toast({ title: "Record Exported" });
+  }, [toast, getBase64Logo]);
+
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) {
         toast({ variant: 'destructive', title: 'Empty Harvest', description: 'No souls found to export.' });
@@ -588,67 +646,6 @@ export default function SoulsWonPage() {
     }
     toast({ title: "Report Ready", description: "Download started." });
   };
-
-  const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
-      const wonAt = safeToDate(soul.wonAt);
-      const data = [
-          ["First Name", soul.firstName],
-          ["Last Name", soul.lastName || ''],
-          ["Gender", soul.gender || 'N/A'],
-          ["Status", soul.status],
-          ["Date Won", wonAt ? format(wonAt, 'PPP') : 'N/A'],
-          ["Source", soul.source],
-          ["Phone", soul.phone || 'N/A'],
-          ["Email", soul.email || 'N/A'],
-          ["Home Church", soul.church || 'N/A'],
-          ["Location", [soul.locationWon?.city, soul.locationWon?.country].filter(Boolean).join(', ') || 'N/A']
-      ];
-
-      if (formatType === 'pdf') {
-          const { jsPDF } = await import('jspdf');
-          const { default: autoTable } = await import('jspdf-autotable');
-          const docObj = new jsPDF();
-          
-          const logo = PlaceHolderImages.find(img => img.id === 'logo');
-          if (logo) {
-            try {
-                const base64 = await getBase64Logo(logo.imageUrl);
-                docObj.addImage(base64, 'PNG', 14, 10, 12, 12);
-            } catch (e) {}
-          }
-
-          docObj.setFontSize(18);
-          docObj.setFont('helvetica', 'bold');
-          docObj.text(`Kingdom Identity Profile`, 28, 19);
-
-          docObj.setFontSize(10);
-          docObj.setFont('helvetica', 'normal');
-          docObj.setTextColor(100);
-          docObj.text(`Full Record: ${soul.firstName} ${soul.lastName || ''}`, 14, 32);
-          docObj.text(`Log Date: ${format(new Date(), 'PPP')}`, 196, 32, { align: 'right' });
-
-          autoTable(docObj, {
-              head: [["Attribute", "Information"]],
-              body: data,
-              startY: 38,
-              theme: 'striped',
-              headStyles: { fillColor: [249, 116, 22] },
-              styles: { cellPadding: 5 }
-          });
-          
-          docObj.save(`record-${soul.firstName.toLowerCase()}.pdf`);
-      } else {
-          const csv = Papa.unparse({ fields: ["Field", "Detail"], data });
-          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.setAttribute("href", url);
-          link.setAttribute("download", `record-${soul.firstName.toLowerCase()}.csv`);
-          link.click();
-          URL.revokeObjectURL(url);
-      }
-      toast({ title: "Record Exported" });
-  }, [toast, getBase64Logo]);
 
   const handleAssignGroup = (s: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => {
     if (!user || !firestore) return;
@@ -1020,7 +1017,7 @@ export default function SoulsWonPage() {
                         <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Harvest Demographic</span>
+                                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Harvest Demographic</span>
                             </div>
                             <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left"> {selectedFilterGroup?.value} Directory</DrawerTitle>

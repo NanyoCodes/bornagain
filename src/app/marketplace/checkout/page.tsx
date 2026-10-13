@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -30,7 +29,7 @@ import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -176,7 +175,7 @@ function CheckoutPageContent() {
                 </div>
                 <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left">Package is empty</h2>
                 <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
-                <div className="flex gap-4 mt-8 justify-center text-left text-left">
+                <div className="flex gap-4 mt-8 justify-center text-left text-left text-left">
                     <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left">
                         <Link href="/marketplace" className="text-left text-left">Meals Hub</Link>
                     </Button>
@@ -213,15 +212,15 @@ function CheckoutPageContent() {
                             const symbol = getCurrencySymbol(item.currency);
                             return (
                                 <Card key={item.id} className="rounded-3xl border-none shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-l-4 border-l-primary/10 text-left text-left">
-                                    <CardContent className="p-5 flex flex-col gap-5 text-left text-left">
-                                        <div className="flex items-start gap-4 text-left text-left">
+                                    <CardContent className="p-5 flex flex-col gap-5 text-left text-left text-left">
+                                        <div className="flex items-start gap-4 text-left text-left text-left">
                                             <Avatar className="h-14 w-14 rounded-2xl border shadow-inner text-left text-left">
                                                 <AvatarImage src={item.photoURL} className="object-cover text-left text-left" />
                                                 <AvatarFallback className="bg-primary/5 text-primary font-bold text-left text-left"> {item.name?.charAt(0)}</AvatarFallback>
                                             </Avatar>
-                                            <div className="min-w-0 flex-1 text-left text-left">
+                                            <div className="min-w-0 flex-1 text-left text-left text-left">
                                                 <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight text-left text-left">{item.name}</h3>
-                                                <div className="flex items-center gap-2 mt-1.5 flex-wrap text-left text-left">
+                                                <div className="flex items-center gap-2 mt-1.5 flex-wrap text-left text-left text-left">
                                                     <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left text-left">
                                                         {item.vendorType === 'gift' ? <Gift className="h-2 w-2 mr-1 text-left text-left" /> : <Utensils className="h-2 w-2 mr-1 text-left text-left" />}
                                                         {item.vendorType === 'gift' ? 'GIFT' : 'MEAL'}
@@ -249,10 +248,10 @@ function CheckoutPageContent() {
                                             </div>
 
                                             <div className="flex items-center gap-3 text-left text-left">
-                                                <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm text-left text-left">
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(item.id, -1)}><Minus className="h-3.5 w-3.5 text-left text-left"/></Button>
-                                                    <span className="w-6 text-center font-black text-xs text-left text-left"> {item.quantity}</span>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(item.id, 1)}><Plus className="h-3.5 w-3.5 text-left text-left"/></Button>
+                                                <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm text-left text-left text-left">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(item.id, item.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left text-left"/></Button>
+                                                    <span className="w-6 text-center font-black text-xs text-left text-left text-left"> {item.quantity}</span>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(item.id, item.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left text-left"/></Button>
                                                 </div>
                                                 <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10 text-left text-left" onClick={() => handleRemoveItem(item.id)}>
                                                     <Trash2 className="h-5 w-5 text-left text-left" />
@@ -260,13 +259,13 @@ function CheckoutPageContent() {
                                             </div>
                                         </div>
 
-                                        <div className="space-y-2 text-left text-left">
+                                        <div className="space-y-2 text-left text-left text-left">
                                             <Label className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-1 text-left text-left">Special Instructions</Label>
                                             <Textarea 
                                                 placeholder="e.g., Please deliver by 2PM, specific message for recipient..."
                                                 value={instructions[item.id] || ''}
                                                 onChange={(e) => setInstructions(prev => ({ ...prev, [item.id]: e.target.value }))}
-                                                className="min-h-[80px] rounded-xl bg-muted/20 border-none shadow-inner text-sm text-left text-left"
+                                                className="min-h-[80px] rounded-xl bg-muted/20 border-none shadow-inner text-sm text-left text-left text-left"
                                             />
                                         </div>
                                     </CardContent>
@@ -312,7 +311,7 @@ function CheckoutPageContent() {
                         </CardFooter>
                     </Card>
 
-                    <div className="p-6 rounded-[2rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left">
+                    <div className="p-6 rounded-[2rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left">
                         <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left">
                             <Info className="h-6 w-6 text-primary text-left text-left" />
                         </div>
