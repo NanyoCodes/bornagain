@@ -775,7 +775,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
           <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : null}
-            click to view
+            Update
           </Button>
         </form>
       </Form>
