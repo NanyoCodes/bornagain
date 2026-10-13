@@ -517,7 +517,7 @@ function BottomNavBar() {
     }, [pathname]);
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#09090b] border-t border-white/5 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden text-left">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-t pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden text-left">
         <div className="flex h-16 items-stretch justify-around px-1 py-1 text-left">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -551,7 +551,7 @@ function BottomNavBar() {
                   </div>
                   <span className={cn(
                     "text-[9px] font-black uppercase tracking-tighter transition-colors duration-300 leading-none text-left",
-                    isActive ? "text-white" : "text-zinc-500"
+                    isActive ? "text-foreground font-black" : "text-zinc-500"
                   )}>
                     {item.label}
                   </span>
