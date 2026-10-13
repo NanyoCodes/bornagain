@@ -209,7 +209,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         if (!user?.uid || !firestore) return;
         const itemRef = doc(firestore, 'users', user.uid, 'cart', item.id);
         const existing = cart[item.id];
-        const data = { ...item, vendorName: vendor?.businessName, vendorOwnerId: vendor?.userId, vendorPaymentDetails: vendor?.paymentDetails, vendorPhotoURL: vendor?.photoURL, vendorType: vendor?.vendorType, currency: vendor?.currency || 'NGN', quantity: (existing?.quantity || 0) + 1, updatedAt: serverTimestamp() };
+        const data = { ...item, vendorName: vendor?.businessName, vendorOwnerId: vendor?.userId, vendorPaymentDetails: vendor?.paymentDetails, vendorPhotoURL: vendor?.photoURL, vendorType: vendor?.vendorType, currency: vendor?.currency || 'NGN', quantity: (existing?.quantity || 0) + 1, updatedAt: serverTimestamp(), soulId, soulName };
         setDoc(itemRef, data, { merge: true });
     };
 
@@ -403,11 +403,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             </Dialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+                    <AlertDialogHeader className="text-left text-left">
+                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left">Remove Offering?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
+                    </AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6 text-left">
                         <AlertDialogCancel className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}Delete</AlertDialogAction>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
