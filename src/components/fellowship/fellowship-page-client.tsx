@@ -231,24 +231,25 @@ function FullDevotionalDialog({
 
     if (isMobile) {
         return (
-            <Drawer open={isOpen} onOpenChange={setIsOpen}>
-                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
+                        <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
-                            </DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</DrawerDescription>
-                        </DrawerHeader>
+                            </SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
+                        </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left">
                         <div className="p-8 pb-32 text-left">
                             {content}
                         </div>
                     </ScrollArea>
-                </DrawerContent>
-            </Drawer>
+                </SheetContent>
+            </Sheet>
         );
     }
 
@@ -263,7 +264,7 @@ function FullDevotionalDialog({
                         <Target className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
-                    <DialogHeader className="text-left p-0 text-left text-left">
+                    <DialogHeader className="text-left p-0">
                         <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
                             <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                             {devotional.title}

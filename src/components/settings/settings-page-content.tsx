@@ -146,7 +146,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
   return (
     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
         <CardHeader className="text-left">
-            <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left"><ImageIcon className="h-5 w-5 text-primary text-left" /> Kingdom Atmosphere</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left"><ImageIcon className="h-5 w-5 text-primary text-left text-left" /> Kingdom Atmosphere</CardTitle>
             <CardDescription className="text-left">Personalize your environment and app readability.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-8 text-left">
@@ -154,7 +154,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
                 <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left">
                     <div className="space-y-0.5 text-left">
                         <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left">
-                             <Palette className="h-4 w-4 text-primary text-left" />
+                             <Palette className="h-4 w-4 text-primary text-left text-left" />
                              Theme
                         </label>
                         <p className="text-[10px] text-muted-foreground uppercase font-medium text-left">Mode: {theme || 'System'}</p>
@@ -294,11 +294,6 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
 }
 
 function ContactCard() {
-  const handleEmailRequest = () => {
-      const subject = encodeURIComponent("Ministry Support Request - Testify Global");
-      window.location.href = `mailto:testifyglobal360@gmail.com?subject=${subject}`;
-  };
-
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
       <CardHeader>
@@ -315,10 +310,10 @@ function ContactCard() {
             </div>
         </div>
         <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left">
                 <Phone className="h-5 w-5 text-primary text-left" />
             </div>
-            <div className="min-w-0 text-left text-left">
+            <div className="min-w-0 text-left">
                 <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left">Call / WhatsApp</p>
                 <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground text-left">+234 814 853 8502</a>
             </div>
