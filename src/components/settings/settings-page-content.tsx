@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -271,7 +272,9 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
       <CardHeader className="text-left text-left">
-        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left"><Bell className="h-5 w-5 text-primary text-left" /> Notifications</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left">
+            <Bell className="h-5 w-5 text-primary" /> Notifications
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
