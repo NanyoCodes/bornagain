@@ -158,27 +158,6 @@ function CartButton() {
     </motion.div>
   );
 
-  if (isMobile) {
-    return (
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
-            <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-            <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left">
-                        <ShoppingCart className="h-5 w-5 text-primary text-left" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Offering</span>
-                    </div>
-                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Review selection for gifting.</DrawerDescription>
-                    </DrawerHeader>
-                </div>
-                <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>
-            </DrawerContent>
-        </Drawer>
-    );
-  }
-
   const listContent = (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
@@ -212,6 +191,27 @@ function CartButton() {
         )}
     </div>
   );
+
+  if (isMobile) {
+    return (
+        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+            <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+            <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <div className="flex items-center gap-2 mb-1 text-left">
+                        <ShoppingCart className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Offering</span>
+                    </div>
+                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Review selection for gifting.</DrawerDescription>
+                    </DrawerHeader>
+                </div>
+                <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>
+            </DrawerContent>
+        </Drawer>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -415,7 +415,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/fellowships" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
-                        <Users className="h-3.5 w-3.5 text-primary text-left" />
+                        <Users className="h-3.5 w-3.5 text-primary font-black" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left">Fellowship Hub</span>
                     </Link>
@@ -423,7 +423,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/events" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
-                        <CalendarDays className="h-3.5 w-3.5 text-primary text-left" />
+                        <CalendarDays className="h-3.5 w-3.5 text-primary font-black" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left">Events Hub</span>
                     </Link>
