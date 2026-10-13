@@ -50,7 +50,7 @@ import { format, addDays, isSameDay, subDays, parseISO } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '../ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -74,6 +74,8 @@ import { Input } from '@/components/ui/input';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import dynamic from 'next/dynamic';
+import NextLink from 'next/link';
+import { CommentSection } from '../testimonies/comment-section';
 
 const devotionalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
@@ -150,23 +152,23 @@ function FullDevotionalDialog({
             </div>
             
             {devotional.prayer && (
-                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden text-left text-left">
-                    <div className="flex items-center gap-3 mb-4 text-left">
+                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden text-left">
+                    <div className="flex items-center gap-3 mb-4">
                         <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                             <HandHeart className="h-4 w-4 text-primary" />
                         </div>
-                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground text-left">PRAYER FOR TODAY</span>
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">PRAYER FOR TODAY</span>
                     </div>
-                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance text-left text-left">
+                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance text-left">
                         &ldquo;{devotional.prayer}&rdquo;
                     </p>
                 </div>
             )}
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-dashed pt-8 text-left">
-                <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit text-left">
+                <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit">
                     <Sparkles className="h-4 w-4 text-primary fill-current" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Messenger: {devotional.authorName}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap justify-center w-full sm:w-auto text-left">
@@ -220,7 +222,7 @@ function FullDevotionalDialog({
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                         <MessageSquare className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground text-left">GATHERED RESPONSES</span>
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">GATHERED RESPONSES</span>
                 </div>
                 <CommentSection path={commentPath} inline />
             </div>
@@ -233,7 +235,7 @@ function FullDevotionalDialog({
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left p-0">
+                        <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
@@ -256,8 +258,8 @@ function FullDevotionalDialog({
             <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left">
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
+                <div className="p-8 border-b bg-muted/10 shrink-0">
                     <div className="flex items-center gap-3 mb-2">
                         <Target className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
@@ -270,13 +272,15 @@ function FullDevotionalDialog({
                         <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="max-h-[70vh] text-left">
-                    <div className="p-8 text-left">
-                        {content}
-                    </div>
-                </ScrollArea>
-                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left">
-                    <Button variant="outline" onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="rounded-full px-8 font-bold text-left">Close Word</Button>
+                <div className="flex-1 min-h-0">
+                  <ScrollArea className="h-full">
+                      <div className="p-8">
+                          {content}
+                      </div>
+                  </ScrollArea>
+                </div>
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0">
+                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold">Close Word</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -286,7 +290,7 @@ function FullDevotionalDialog({
 export default function FellowshipPageClient() {
     const router = useRouter();
     const params = useParams();
-    const fellowshipId = params.fellowshipId as string;
+    const fellowshipId = params?.fellowshipId as string;
     const firestore = useFirestore();
     const { user } = useUser();
     const { userProfile, loading: profileLoading } = useUserProfile();
@@ -687,7 +691,7 @@ export default function FellowshipPageClient() {
         <div className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4 text-left text-left">
             <div className="flex flex-col gap-5 px-4 sm:px-0 text-left">
                 <div className="flex items-center gap-3 sm:gap-4 w-full text-left">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm hover:bg-muted/50 text-left">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm text-left">
                         <ArrowLeft className="h-5 w-5 text-left text-left"/>
                         <span className="sr-only text-left text-left">Back</span>
                     </Button>
@@ -749,7 +753,7 @@ export default function FellowshipPageClient() {
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-xl border-none bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-white/10 text-left">
                         <CardHeader className="p-6 sm:p-10 pb-6 flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between text-left">
                             <div className="space-y-1.5 min-w-0 flex-1 text-left">
-                                <div className="flex items-center gap-3 mb-1 text-left text-left">
+                                <div className="flex items-center gap-3 mb-1 text-left text-left text-left">
                                     <div className="flex items-center justify-center h-5 w-5 bg-white/10 rounded-full text-left"><BookOpen className="h-3 w-3 opacity-80 text-left" /></div>
                                     <span className="text-[10px] font-black uppercase tracking-widest opacity-80 text-left">DEVOTIONAL FOR TODAY</span>
                                     {isViewingToday && <Badge className="bg-white text-primary h-4 px-1.5 font-black uppercase text-[7px] tracking-widest animate-pulse border-none text-left">Today</Badge>}
@@ -770,7 +774,7 @@ export default function FellowshipPageClient() {
                                 <div className="space-y-8 text-left text-left">
                                     <div className="bg-black/60 rounded-[2rem] p-6 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden text-left text-left">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl text-left" />
-                                        <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 transition-transform group-hover:scale-110 text-left" />
+                                        <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12 text-left" />
                                         <div className="space-y-1 text-left">
                                             <p ref={devotionalTextRef} className="text-lg sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words text-white font-medium line-clamp-[12] sm:line-clamp-6 text-left">{activeDevotional.text}</p>
                                             {isDevotionalTruncated && (
@@ -804,7 +808,7 @@ export default function FellowshipPageClient() {
                                     
                                     <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2 text-left">
                                         <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full border border-white/10 text-left"><Sparkles className="h-4 w-4 text-white fill-current text-left" /><span className="text-[10px] font-black uppercase tracking-widest text-white truncate max-w-[200px] text-left">Messenger: {activeDevotional.authorName}</span></div>
-                                        <div className="flex items-center gap-2 bg-white/10 rounded-2xl p-1.5 border border-white/10 shadow-2xl w-full sm:w-auto text-left text-left">
+                                        <div className="flex items-center gap-2 bg-white/10 rounded-2xl p-1.5 border border-white/10 shadow-2xl w-full sm:w-auto text-left text-left text-left">
                                             <Button variant="ghost" className="flex-1 sm:flex-none h-10 px-4 text-white hover:bg-white/10 rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest text-left" onClick={() => handleDateNav('prev')}>
                                                 <ChevronLeft className="h-4 w-4 text-left" /> Prev
                                             </Button>
@@ -818,14 +822,14 @@ export default function FellowshipPageClient() {
                                     {!isViewingToday && <Button variant="ghost" className="w-full text-[11px] font-black uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/10 h-10 rounded-2xl border border-white/10 border-dashed text-left" onClick={() => setViewDate(new Date())}><CalendarDays className="mr-2 h-4 w-4 text-left" /> Jump to Today</Button>}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 sm:py-24 bg-white/5 rounded-[2.5rem] border-2 border-dashed border-white/10 mx-auto flex flex-col items-center px-8 shadow-inner text-left"><BookOpen className="h-16 w-16 opacity-10 mb-6 text-left" /><h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-center">Spiritual Silence</h4><p className="text-sm font-medium opacity-40 mt-2 italic max-w-sm text-balance leading-relaxed text-center">No word arranged for {isViewingToday ? 'today' : format(viewDate, 'MMM d')} yet.</p><div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-12 w-full sm:w-auto text-left text-left"><Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg order-2 sm:order-1 text-left" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4 text-left" /> PREVIOUS</Button>{isOrganizer && <Button variant="secondary" className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em] order-1 sm:order-2 text-center" onClick={() => { form.reset({ title: '', scripture: '', text: '', prayer: '', scheduledDate: viewDateStr }); setIsDevotionalDialogOpen(true); }}>PUBLISH WORD</Button>}<Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg order-3 text-left" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4 text-left" /></Button></div></div>
+                                <div className="text-center py-20 sm:py-24 bg-white/5 rounded-[2.5rem] border-2 border-dashed border-white/10 mx-auto flex flex-col items-center px-8 shadow-inner text-left"><BookOpen className="h-16 w-16 opacity-10 mb-6 text-left" /><h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-center">Spiritual Silence</h4><p className="text-sm font-medium opacity-40 mt-2 italic max-w-sm text-balance leading-relaxed text-center">No word arranged for {isViewingToday ? 'today' : format(viewDate, 'MMM d')} yet.</p><div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-12 w-full sm:w-auto text-left text-left text-left"><Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg order-2 sm:order-1 text-left" onClick={() => handleDateNav('prev')}><ChevronLeft className="mr-2 h-4 w-4 text-left" /> PREVIOUS</Button>{isOrganizer && <Button variant="secondary" className="font-black rounded-2xl h-12 px-10 shadow-2xl text-[10px] uppercase tracking-[0.2em] order-1 sm:order-2 text-center" onClick={() => { form.reset({ title: '', scripture: '', text: '', prayer: '', scheduledDate: viewDateStr }); setIsDevotionalDialogOpen(true); }}>PUBLISH WORD</Button>}<Button variant="outline" className="bg-white/5 border-white/10 text-white rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg order-3 text-left" onClick={() => handleDateNav('next')}>NEXT <ChevronRight className="ml-2 h-4 w-4 text-left" /></Button></div></div>
                             )}
                         </CardContent>
                     </Card>
 
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-muted/20 text-left"><CardHeader className="p-6 sm:p-10 text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground text-left">About this Group</CardTitle></CardHeader><CardContent className="px-6 sm:px-10 pb-8 sm:pb-12 text-left text-left"><p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words">{fellowship.description}</p></CardContent></Card>
 
-                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden text-left"><CardHeader className="p-6 sm:p-10 border-b bg-muted/5 text-left"><CardTitle className="flex items-center justify-between text-base sm:text-lg font-black uppercase tracking-tight text-left"><span className="flex items-center gap-2.5 text-left"><Users className="h-5 w-5 text-primary text-left" />Directory</span><Badge variant="secondary" className="rounded-full px-3 h-6 font-bold text-left">{(members?.length || 0) + (isOrganizer ? (assignedSouls?.length || 0) : 0)}</Badge></CardTitle></CardHeader><CardContent className="p-0 text-left">{(isMember || isOrganizer) ? <Tabs defaultValue="believers" className="w-full text-left"><TabsList className="flex w-full bg-muted/10 h-14 p-0 rounded-none border-b overflow-x-auto no-scrollbar text-left text-left"><TabsTrigger value="believers" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate px-4">Believers ({members?.length || 0})</TabsTrigger>
+                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden text-left"><CardHeader className="p-6 sm:p-10 border-b bg-muted/5 text-left"><CardTitle className="flex items-center justify-between text-base sm:text-lg font-black uppercase tracking-tight text-left"><span className="flex items-center gap-2.5 text-left"><Users className="h-5 w-5 text-primary text-left" />Directory</span><Badge variant="secondary" className="rounded-full px-3 h-6 font-bold text-left">{(members?.length || 0) + (isOrganizer ? (assignedSouls?.length || 0) : 0)}</Badge></CardTitle></CardHeader><CardContent className="p-0 text-left">{(isMember || isOrganizer) ? <Tabs defaultValue="believers" className="w-full text-left"><TabsList className="flex w-full bg-muted/10 h-14 p-0 rounded-none border-b overflow-x-auto no-scrollbar text-left text-left text-left"><TabsTrigger value="believers" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate px-4">Believers ({members?.length || 0})</TabsTrigger>
                         {isOrganizer ? (
                             <TabsTrigger value="souls" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate px-4">Converts ({assignedSouls?.length || 0})</TabsTrigger>
                         ) : (
@@ -866,8 +870,8 @@ export default function FellowshipPageClient() {
                 </div>
 
                 <div className="space-y-8 flex flex-col px-4 sm:px-0 text-left text-left text-left text-left text-left text-left text-left">
-                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10 text-left text-left"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4 text-left text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2.5 text-left text-left"><Calendar className="h-4 w-4 text-primary text-left"/> Gathering Details</CardTitle></CardHeader><CardContent className="px-6 sm:p-8 pb-8 sm:pb-10 space-y-5 sm:space-y-6 pt-2 text-left text-left text-left">{fellowship.schedule && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed text-left"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-widest text-muted-foreground mb-2 text-left">Schedule</p><p className="text-foreground font-black text-xs sm:text-base leading-tight text-balance break-words text-left">{fellowship.schedule}</p></div>}{fellowship.location && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed text-left"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-widest text-muted-foreground mb-2 text-left">Primary Location</p><p className="text-foreground font-black text-xs sm:text-base flex items-start gap-2 leading-tight break-words text-left"><MapPin className="h-4 w-4 sm:h-5 w-5 text-primary shrink-0 mt-0.5" /> {fellowship.location}</p></div>}{(isMember || isOrganizer) && fellowship.streamUrl && <Button asChild className="w-full h-14 sm:h-16 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-sm sm:text-base uppercase tracking-widest text-center"><NextLink href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer"><PlayCircle className="mr-3 h-5 sm:h-6 w-5 sm:w-6" />ENTER MEETING</NextLink></Button>}</CardContent></Card>
-                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 border-b-8 border-b-primary/5 text-left text-left"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4 text-left text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground text-left text-left">Organizer</CardTitle></CardHeader><CardContent className="px-6 sm:p-8 pb-8 sm:pb-12 pt-2 text-left text-left text-left"><NextLink href={isOrganizer ? '/profile' : `/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 sm:p-5 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0 shadow-inner text-left text-left"><LiveMemberAvatar userId={fellowship.organizerId} fallbackUrl={fellowship.organizerPhotoURL} fallbackInitials={fellowship.organizerName?.charAt(0)} className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left" /><div className="min-w-0 flex-1 text-left"><span className="font-black text-base group-hover:text-primary transition-colors block truncate uppercase tracking-tight text-left"> {fellowship.organizerName}</span><div className="flex items-center gap-2 mt-1 text-left"><Badge className="h-4 sm:h-5 text-[7px] sm:text-[8px] uppercase font-black tracking-widest px-2 text-left" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge></div></div></NextLink></CardContent></Card>
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10 text-left text-left text-left"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4 text-left text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2.5 text-left text-left"><Calendar className="h-4 w-4 text-primary text-left"/> Gathering Details</CardTitle></CardHeader><CardContent className="px-6 sm:p-8 pb-8 sm:pb-10 space-y-5 sm:space-y-6 pt-2 text-left text-left text-left">{fellowship.schedule && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed text-left"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-widest text-muted-foreground mb-2 text-left">Schedule</p><p className="text-foreground font-black text-xs sm:text-base leading-tight text-balance break-words text-left">{fellowship.schedule}</p></div>}{fellowship.location && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed text-left"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-widest text-muted-foreground mb-2 text-left">Primary Location</p><p className="text-foreground font-black text-xs sm:text-base flex items-start gap-2 leading-tight break-words text-left"><MapPin className="h-4 w-4 sm:h-5 w-5 text-primary shrink-0 mt-0.5" /> {fellowship.location}</p></div>}{(isMember || isOrganizer) && fellowship.streamUrl && <Button asChild className="w-full h-14 sm:h-16 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-sm sm:text-base uppercase tracking-widest text-center"><NextLink href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer"><PlayCircle className="mr-3 h-5 sm:h-6 w-5 sm:w-6" />ENTER MEETING</NextLink></Button>}</CardContent></Card>
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 border-b-8 border-b-primary/5 text-left text-left text-left text-left"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4 text-left text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground text-left text-left">Organizer</CardTitle></CardHeader><CardContent className="px-6 sm:p-8 pb-8 sm:pb-12 pt-2 text-left text-left text-left"><NextLink href={isOrganizer ? '/profile' : `/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 sm:p-5 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0 shadow-inner text-left text-left"><LiveMemberAvatar userId={fellowship.organizerId} fallbackUrl={fellowship.organizerPhotoURL} fallbackInitials={fellowship.organizerName?.charAt(0)} className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left" /><div className="min-w-0 flex-1 text-left"><span className="font-black text-base group-hover:text-primary transition-colors block truncate uppercase tracking-tight text-left"> {fellowship.organizerName}</span><div className="flex items-center gap-2 mt-1 text-left"><Badge className="h-4 sm:h-5 text-[7px] sm:text-[8px] uppercase font-black tracking-widest px-2 text-left" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge></div></div></NextLink></CardContent></Card>
                 </div>
             </div>
 
@@ -882,24 +886,24 @@ export default function FellowshipPageClient() {
                                     <span className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground text-left">Swipe down to close</span>
                                 </div>
                                 <DrawerTitle className="text-2xl font-black font-headline text-left">Devotional Hub</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Arrange the Word and Prayer for your group.</DrawerDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Arrange the Word and Prayer for your group.</DrawerDescription>
                               </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow text-left"><div className="p-8 space-y-10 text-left text-left"><Form {...form}><form id="devotional-form-mobile" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6 text-left"><FormField control={form.control} name="scheduledDate" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel><FormControl><Input type="date" min={todayStr} {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel><FormControl><Input placeholder="e.g., Favor & Grace" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="scripture" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel><FormControl><Input placeholder="e.g., Psalm 23:1" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="text" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel><FormControl><Textarea placeholder="Share the revelation..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="prayer" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel><FormControl><Textarea placeholder="Type a guided prayer..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-14 font-black shadow-xl rounded-2xl tracking-widest uppercase text-center">{isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}{activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}</Button></form></Form></div></ScrollArea>
+                            <ScrollArea className="flex-grow text-left"><div className="p-8 space-y-10 text-left text-left text-left"><Form {...form}><form id="devotional-form-mobile" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6 text-left text-left"><FormField control={form.control} name="scheduledDate" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel><FormControl><Input type="date" min={todayStr} {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel><FormControl><Input placeholder="e.g., Favor & Grace" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="scripture" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel><FormControl><Input placeholder="e.g., Psalm 23:1" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="text" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel><FormControl><Textarea placeholder="Share the revelation..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="prayer" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel><FormControl><Textarea placeholder="Type a guided prayer..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><Button type="submit" form="devotional-form-mobile" disabled={isSavingDevotional} className="w-full h-14 font-black shadow-xl rounded-2xl tracking-widest uppercase text-center">{isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}{activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}</Button></form></Form></div></ScrollArea>
                         </DrawerContent>
                     </Drawer>
                 ) : (
                     <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
-                        <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="text-left p-0 text-left">
-                                    <DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left">Devotional Hub</DialogTitle>
-                                    <DialogDescription className="text-base font-medium text-left">Prepare and schedule spiritual nourishment for your group.</DialogDescription>
+                        <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left text-left">
+                                    <DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left text-left text-left">Devotional Hub</DialogTitle>
+                                    <DialogDescription className="text-base font-medium text-left text-left text-left">Prepare and schedule spiritual nourishment for your group.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 text-left">
-                                <div className="p-8 text-left">
-                                    <Form {...form}><form id="devotional-form-desktop" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6 text-left"><div className="grid grid-cols-2 gap-4 text-left"><FormField control={form.control} name="scheduledDate" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel><FormControl><Input type="date" min={todayStr} {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel><FormControl><Input placeholder="e.g., Power of Prayer" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /></div><FormField control={form.control} name="scripture" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel><FormControl><Input placeholder="e.g., Matthew 6:33" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="text" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel><FormControl><Textarea placeholder="Type the daily word here..." className="min-h-[120px] rounded-xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="prayer" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel><FormControl><Textarea placeholder="Add a guided prayer..." className="min-h-[100px] rounded-xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><Button type="submit" form="devotional-form-desktop" disabled={isSavingDevotional} className="w-full h-12 rounded-xl font-black shadow-xl tracking-widest uppercase text-center">{isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}{activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}</Button></form></Form>
+                            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
+                                <div className="p-8 text-left text-left text-left">
+                                    <Form {...form}><form id="devotional-form-desktop" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6 text-left text-left text-left"><div className="grid grid-cols-2 gap-4 text-left text-left text-left"><FormField control={form.control} name="scheduledDate" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel><FormControl><Input type="date" min={todayStr} {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel><FormControl><Input placeholder="e.g., Power of Prayer" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /></div><FormField control={form.control} name="scripture" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel><FormControl><Input placeholder="e.g., Matthew 6:33" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="text" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel><FormControl><Textarea placeholder="Type the daily word here..." className="min-h-[120px] rounded-xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="prayer" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel><FormControl><Textarea placeholder="Add a guided prayer..." className="min-h-[100px] rounded-xl bg-muted/20 border-none text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><Button type="submit" form="devotional-form-desktop" disabled={isSavingDevotional} className="w-full h-12 rounded-xl font-black shadow-xl tracking-widest uppercase text-center">{isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}{activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}</Button></form></Form>
                                 </div>
                             </ScrollArea>
                         </DialogContent>
@@ -909,9 +913,9 @@ export default function FellowshipPageClient() {
 
             {isScheduleViewOpen && (
                 isMobile ? (
-                    <Drawer open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left"><div className="flex items-center gap-2 mb-2 text-left"><CalendarClock className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-widest text-primary text-left">Spiritual Schedule</span></div><DrawerTitle className="text-2xl font-black font-headline text-left">Planned Word</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">Browse scheduled meditations for this group.</DrawerDescription></DrawerHeader></div><ScrollArea className="flex-grow px-8 pt-6 text-left">{ScheduleList}</ScrollArea></DrawerContent></Drawer>
+                    <Drawer open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left"><DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left"><div className="flex items-center gap-2 mb-2 text-left text-left text-left"><CalendarClock className="h-4 w-4 text-primary text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-widest text-primary text-left text-left text-left text-left">Spiritual Schedule</span></div><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Planned Word</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Browse scheduled meditations for this group.</DrawerDescription></DrawerHeader></div><ScrollArea className="flex-grow px-8 pt-6 text-left text-left text-left">{ScheduleList}</ScrollArea></DrawerContent></Drawer>
                 ) : (
-                    <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left"><div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="p-0 text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Spiritual Schedule</DialogTitle><DialogDescription className="text-sm font-medium text-left">Peek ahead at scheduled meditations.</DialogDescription></DialogHeader></div><ScrollArea className="max-h-[60vh] p-6 text-left">{ScheduleList}</ScrollArea></DialogContent></Dialog>
+                    <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left"><div className="p-8 border-b bg-muted/10 text-left text-left text-left"><DialogHeader className="p-0 text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Spiritual Schedule</DialogTitle><DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Peek ahead at scheduled meditations.</DialogDescription></DialogHeader></div><ScrollArea className="max-h-[60vh] p-6 text-left text-left text-left">{ScheduleList}</ScrollArea></DialogContent></Dialog>
                 )
             )}
 
@@ -921,15 +925,15 @@ export default function FellowshipPageClient() {
             {isLogSoulOpen && (
                 isMobile ? (
                     <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium text-left">Record a new life won directly to this community.</DrawerDescription>
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Log Group Convert</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium text-left text-left text-left">Record a new life won directly to this community.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow px-8 text-left">
-                                <div className="py-8 text-left">
+                            <ScrollArea className="flex-grow px-8 text-left text-left text-left">
+                                <div className="py-8 text-left text-left text-left">
                                     <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />
                                 </div>
                             </ScrollArea>
@@ -937,14 +941,14 @@ export default function FellowshipPageClient() {
                     </Drawer>
                 ) : (
                     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
-                                <DialogHeader className="text-left text-left text-left p-0 text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
+                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left text-left text-left p-0 text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Log Group Convert</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 p-8 text-left">
+                            <ScrollArea className="flex-1 min-h-0 p-8 text-left text-left text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />
                             </ScrollArea>
                         </DialogContent>
@@ -953,22 +957,22 @@ export default function FellowshipPageClient() {
             )}
 
             <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
-                <AlertDialogContent className="rounded-3xl p-8 text-left"><AlertDialogHeader className="text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline text-left">Remove Member?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left">Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6 text-left"><AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Removal</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                <AlertDialogContent className="rounded-3xl p-8 text-left text-left text-left text-left"><AlertDialogHeader className="text-left text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Remove Member?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left">Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left"><AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-12 font-bold text-left text-left text-left">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}Confirm Removal</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>
-                <AlertDialogContent className="rounded-3xl p-8 text-left">
-                  <AlertDialogHeader className="text-left">
-                    <AlertDialogTitle className="text-2xl font-black font-headline text-left">Unassign Convert?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium text-left">Remove {soulToUnassign?.firstName} from this shared list?</AlertDialogDescription>
-                  </AccordionHeader>
-                  <AlertDialogFooter className="gap-3 mt-6 text-left">
-                    <AlertDialogCancel className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">
-                      {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+                <AlertDialogContent className="rounded-3xl p-8 text-left text-left text-left text-left text-left">
+                  <AlertDialogHeader className="text-left text-left text-left text-left">
+                    <AlertDialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Unassign Convert?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left">Remove {soulToUnassign?.firstName} from this shared list?</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left">
+                    <AlertDialogCancel className="rounded-2xl h-12 font-bold text-left text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">
+                      {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
                       Confirm Unassign
                     </AlertDialogAction>
-                  </AccordionFooter>
+                  </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
         </div>
