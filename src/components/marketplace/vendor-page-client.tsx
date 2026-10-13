@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -6,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { VendorProfile, Meal, UserProfile, MealGift, MealGiftStatus, Soul, Chat } from '@/lib/types';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc, limit } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -293,8 +292,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
                     <div className="flex items-center gap-4 text-left">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6" /></Button>
-                        <div className="min-w-0 text-left text-left">
-                            <div className="flex items-center gap-2 mb-1 text-left text-left">
+                        <div className="min-w-0 text-left">
+                            <div className="flex items-center gap-2 mb-1 text-left">
                                 {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary" /> : <Utensils className="h-3.5 w-3.5 text-primary" />}
                                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
@@ -383,19 +382,19 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                 <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
-                        <DialogHeader className="text-left text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                        <DialogHeader>
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left"> {addLabel}</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left text-left text-left text-left text-left">{itemForm()}</div>
+                    <div className="flex-grow overflow-hidden text-left">{itemForm()}</div>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
                 <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
                     <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="text-left">
+                        <DialogHeader>
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Offering</DialogTitle>
                         </DialogHeader>
                     </div>
