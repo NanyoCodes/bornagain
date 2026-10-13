@@ -294,6 +294,11 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
 }
 
 function ContactCard() {
+  const handleEmailRequest = () => {
+      const subject = encodeURIComponent("Ministry Support Request - Testify Global");
+      window.location.href = `mailto:testifyglobal360@gmail.com?subject=${subject}`;
+  };
+
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
       <CardHeader>

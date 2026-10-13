@@ -699,7 +699,7 @@ export default function FellowshipPageClient() {
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="outline" size="icon" onClick={handleShare} className="h-9 w-9 h-12 rounded-full shadow-lg bg-background border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/5 text-left">
+                                <Button variant="outline" size="icon" onClick={handleShare} className="h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg bg-background border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/5 text-left">
                                     <Share2 className="h-4 w-4 sm:h-5 w-5 text-left" />
                                 </Button>
                             </TooltipTrigger>
