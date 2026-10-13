@@ -234,7 +234,7 @@ function FullDevotionalDialog({
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                         <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
@@ -566,7 +566,7 @@ export default function FellowshipPageClient() {
                 router.push(`/chats/${fellowshipId}`);
             } catch (e) {
                 console.error("Failed to join fellowship chat:", e);
-                errorEmitter.emit('permission-error', new FirestorePermissionError({ path: chatRef.path, operation: 'update' }, user));
+                errorEmitter.emit('permission-error', new FirestorePermissionError({ chatRef: chatRef.path, operation: 'update' }, user));
             } finally {
                 setIsChatLoading(false);
             }
@@ -790,7 +790,7 @@ export default function FellowshipPageClient() {
                                                     {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <Sparkles className={cn("h-3.5 w-3.5 text-left", hasInspired && "fill-current")} />}<span>Hallelujah</span>
                                                 </Button>
                                                 <Button onClick={(e) => handleReaction('celebrate', e)} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all text-left", hasCelebrated && "bg-white/20 border-white/30")} >
-                                                    {isProcessingReaction === 'celebrate' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <PartyPopper className={cn("h-3.5 w-3.5 text-left", hasCelebrated && "fill-current")} />}<span>Celebrate</span>
+                                                    {isProcessingReaction === 'celebrate' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}<span>Celebrate</span>
                                                 </Button>
                                             </div>
                                             <Button variant="ghost" size="sm" className="h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all text-left" onClick={() => scrollToComments()}><MessageSquare className="h-3.5 w-3.5 text-left" /><span>{commentCount} Response{commentCount !== 1 && 's'}</span></Button>
@@ -934,7 +934,7 @@ export default function FellowshipPageClient() {
                     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left">
-                                <DialogHeader className="text-left text-left text-left p-0 text-left text-left">
+                                <DialogHeader className="text-left text-left text-left p-0 text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Log Group Convert</DialogTitle>
                                     <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
                                 </DialogHeader>
