@@ -113,23 +113,23 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
             {/* Appearance Controls */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left">
-                    <div className="space-y-0.5 text-left text-left text-left">
-                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left text-left text-left">
-                             <Palette className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                    <div className="space-y-0.5 text-left text-left text-left text-left">
+                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left text-left text-left text-left">
+                             <Palette className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
                              Theme
                         </label>
-                        <p className="text-[10px] text-muted-foreground uppercase font-medium text-left text-left text-left">Dark mode is default</p>
+                        <p className="text-[10px] text-muted-foreground uppercase font-medium text-left text-left text-left text-left">Dark mode is default</p>
                     </div>
                     <ThemeToggle />
                 </div>
 
                 <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left">
                     <div className="space-y-0.5 pr-2 text-left text-left text-left text-left">
-                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left text-left text-left">
-                            <Type className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left text-left text-left text-left">
+                            <Type className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
                             Text Size
                         </label>
-                        <p className="text-[10px] text-muted-foreground uppercase font-medium text-left text-left text-left">Adjust readability</p>
+                        <p className="text-[10px] text-muted-foreground uppercase font-medium text-left text-left text-left text-left">Adjust readability</p>
                     </div>
                     <Select value={fontSize} onValueChange={(val) => setFontSize(val as any)}>
                         <SelectTrigger className="w-fit min-w-[100px] h-9 text-xs font-bold uppercase gap-2 text-left">
@@ -182,7 +182,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
                 <div className="space-y-8 text-left text-left">
                     <div className="space-y-4 text-left text-left">
                         <div className="flex justify-between items-center text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left text-left">Overlay Intensity</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left text-left text-left">Overlay Intensity</Label>
                             <span className="text-[10px] font-black text-primary uppercase tracking-tighter text-left text-left">{Math.round(overlayOpacity * 100)}% Dark</span>
                         </div>
                         <div className="flex items-center gap-4 px-2 text-left text-left text-left text-left">
@@ -200,7 +200,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
                     </div>
                 </div>
 
-                <Button onClick={handleSave} disabled={isSubmitting} className="w-full min-h-[3.5rem] h-auto rounded-[1.5rem] font-black shadow-xl shadow-primary/20 tracking-widest uppercase py-4 text-left text-left">
+                <Button onClick={handleSave} disabled={isSubmitting} className="w-full min-h-[3.5rem] h-auto rounded-[1.5rem] font-black shadow-xl shadow-primary/20 tracking-widest uppercase py-4 text-left text-left text-left">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
                     click to view
                 </Button>
@@ -242,17 +242,17 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
   }
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
-      <CardHeader className="text-left text-left"><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left text-left text-left" /> Notifications</CardTitle></CardHeader>
+      <CardHeader className="text-left text-left"><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left text-left text-left"> Notifications</CardTitle></CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left text-left">
             <FormField control={form.control} name="newCampaignsInArea" render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-2xl border p-5 bg-muted/20 gap-4 text-left">
                   <div className="space-y-0.5 text-left text-left">
-                    <FormLabel className="text-sm font-black uppercase tracking-wider text-left text-left">New Campaigns</FormLabel>
-                    <FormDescription className="text-[10px] font-medium leading-tight text-left text-left">Notify me of missions in my area.</FormDescription>
+                    <FormLabel className="text-sm font-black uppercase tracking-wider text-left text-left text-left">New Campaigns</FormLabel>
+                    <FormDescription className="text-[10px] font-medium leading-tight text-left text-left text-left">Notify me of missions in my area.</FormDescription>
                   </div>
-                  <FormControl className="text-left text-left text-left"><Switch checked={field.value} onCheckedChange={field.onChange} className="text-left text-left text-left" /></FormControl>
+                  <FormControl className="text-left text-left text-left text-left"><Switch checked={field.value} onCheckedChange={field.onChange} className="text-left text-left text-left" /></FormControl>
                 </FormItem>
               )} />
             <Button type="submit" className="w-full sm:w-auto h-12 rounded-2xl font-black uppercase tracking-widest text-left text-left" disabled={isSubmitting || !form.formState.isDirty}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}Save Preferences</Button>
@@ -271,19 +271,19 @@ function ContactCard() {
       </CardHeader>
       <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left">
         <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left text-left">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left text-left">
                 <Mail className="h-5 w-5 text-primary text-left text-left" />
             </div>
-            <div className="min-w-0 text-left text-left">
+            <div className="min-w-0 text-left text-left text-left">
                 <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left text-left">Email Support</p>
                 <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-bold hover:underline truncate block text-foreground text-left text-left">testifyglobal360@gmail.com</a>
             </div>
         </div>
         <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left text-left">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left text-left">
                 <Phone className="h-5 w-5 text-primary text-left text-left" />
             </div>
-            <div className="min-w-0 text-left text-left">
+            <div className="min-w-0 text-left text-left text-left">
                 <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left text-left">Call / WhatsApp</p>
                 <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground text-left text-left">+234 814 853 8502</a>
             </div>
@@ -301,8 +301,8 @@ function AccountDeletionRequest({ userId }: { userId: string }) {
     };
 
     return (
-        <div className="pt-12 pb-8 flex flex-col items-center gap-4 text-center px-6 text-left">
-            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] opacity-40 text-center text-left text-left">Account Lifecycle</p>
+        <div className="pt-12 pb-8 flex flex-col items-center gap-4 text-center px-6 text-left text-left">
+            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] opacity-40 text-center text-left text-left text-left">Account Lifecycle</p>
             <Button 
                 variant="ghost" 
                 onClick={handleEmailRequest}
@@ -310,7 +310,7 @@ function AccountDeletionRequest({ userId }: { userId: string }) {
             >
                 Request Account Deletion
             </Button>
-            <p className="text-[9px] text-muted-foreground italic max-w-xs leading-relaxed text-center text-left text-left">
+            <p className="text-[9px] text-muted-foreground italic max-w-xs leading-relaxed text-center text-left text-left text-left">
                 Send a request to our ministry team for secure identity removal.
             </p>
         </div>
@@ -324,20 +324,20 @@ export function SettingsPageContent() {
   const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto pb-32 text-left text-left">
-      <div className="px-4 sm:px-0 space-y-1 text-left text-left">
-        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">Settings</h1>
-        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 text-left text-left">Identity & Kingdom Preferences</p>
+    <div className="space-y-8 max-w-4xl mx-auto pb-32 text-left text-left text-left">
+      <div className="px-4 sm:px-0 space-y-1 text-left text-left text-left">
+        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left text-left">Settings</h1>
+        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 text-left text-left text-left">Identity & Kingdom Preferences</p>
       </div>
       
        {loading || !userProfile || !user ? (
-        <div className="space-y-6 px-4 sm:px-0 text-left text-left">
+        <div className="space-y-6 px-4 sm:px-0 text-left text-left text-left">
             <Skeleton className="h-40 w-full rounded-3xl text-left" />
             <Skeleton className="h-60 w-full rounded-3xl text-left" />
             <Skeleton className="h-40 w-full rounded-3xl text-left" />
         </div>
        ) : (
-        <div className="space-y-6 md:space-y-10 text-left text-left">
+        <div className="space-y-6 md:space-y-10 text-left text-left text-left">
             <ProfileSettingsCard />
             <VisualEnvironmentCard userProfile={userProfile} userId={user.uid} />
             <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
@@ -351,3 +351,4 @@ export function SettingsPageContent() {
     </div>
   );
 }
+
