@@ -83,7 +83,7 @@ import { collection, doc, query, where, updateDoc, serverTimestamp } from "fireb
 import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
-import { PageTransition } from "../page-transition";
+import { PageTransition } from "./page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 
@@ -145,7 +145,7 @@ function CartButton() {
     return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
   }, [cartItems]);
 
-  const listContent = useMemo(() => (
+  const listContent = (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
             <div className="space-y-3">
@@ -177,7 +177,7 @@ function CartButton() {
             </div>
         )}
     </div>
-  ), [cartItems]);
+  );
 
   const trigger = (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
