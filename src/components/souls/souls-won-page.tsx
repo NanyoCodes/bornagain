@@ -26,7 +26,10 @@ import {
   Heart,
   User,
   Send,
-  ChevronDown
+  ChevronDown,
+  BookMarked,
+  MessageSquare,
+  HandHeart
 } from "lucide-react";
 import { 
   Dialog, 
@@ -87,6 +90,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Papa from 'papaparse';
 import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
   loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
@@ -100,7 +104,15 @@ const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').the
 const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
 
-function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls: Soul[], allSouls: Soul[], onSelectSoul: (soul: Soul) => void, onAddChild: (p1: Soul, p2?: Soul | null) => void }) {
+function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWord, onPray, onMessage }: { 
+    souls: Soul[], 
+    allSouls: Soul[], 
+    onSelectSoul: (soul: Soul) => void, 
+    onAddChild: (p1: Soul, p2?: Soul | null) => void,
+    onShareWord: (soul: Soul) => void,
+    onPray: (soul: Soul) => void,
+    onMessage: (soul: Soul) => void
+}) {
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
@@ -131,7 +143,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
           <div key={s.id} className="relative">
             <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl border bg-background/50 group w-full relative gap-2">
                 <button 
-                    onClick={() => onSelectSoul(s)}
+                    onClick={() => onShareWord(s)}
                     className="flex flex-row items-center gap-2 sm:gap-3 min-w-0 flex-1 active:scale-[0.98] transition-all text-left"
                 >
                     <div className="flex -space-x-3 sm:-space-x-4 shrink-0">
@@ -174,42 +186,61 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                     </div>
                 </button>
                 <div className="flex items-center gap-1 shrink-0 ml-1">
-                    {isFamilyMember && (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary/5 text-primary hover:bg-primary/10">
-                                    <Users className="h-3.5 w-3.5 sm:h-4 w-4" />
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-primary/5 text-primary" onClick={() => onShareWord(s)}>
+                                    <BookMarked className="h-4 w-4" />
                                 </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Members</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onSelect={() => onSelectSoul(s)} className="rounded-lg py-2.5">
-                                    <User className="mr-2 h-4 w-4" /> View {s.firstName}
-                                </DropdownMenuItem>
-                                {spouseObj && (
-                                    <DropdownMenuItem onSelect={() => onSelectSoul(spouseObj)} className="rounded-lg py-2.5">
-                                        <div className="flex items-center gap-2">
-                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouseObj.photoURL || undefined} /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate">{spouseObj.firstName} (Spouse)</span>
-                                        </div>
+                            </TooltipTrigger>
+                            <TooltipContent><p className="text-[10px] font-black uppercase">Share Word</p></TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-primary/5 text-primary" onClick={() => onPray(s)}>
+                                    <HandHeart className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent><p className="text-[10px] font-black uppercase">Intercede</p></TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-primary/5 text-primary" onClick={() => onMessage(s)}>
+                                    <MessageSquare className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent><p className="text-[10px] font-black uppercase">Encourage</p></TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30">
+                                <ChevronDown className="h-3.5 w-3.5 sm:h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl">
+                            <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">More Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={() => onSelectSoul(s)} className="rounded-lg py-2.5">
+                                <User className="mr-2 h-4 w-4" /> View Full Identity
+                            </DropdownMenuItem>
+                            {isFamilyMember && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onSelect={() => onAddChild(s, spouseObj)} className="rounded-lg py-2.5 text-primary font-bold">
+                                        <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
                                     </DropdownMenuItem>
-                                )}
-                                {householdChildren.map(child => (
-                                    <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5">
-                                        <div className="flex items-center gap-2"><Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL || undefined} /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span></div>
-                                    </DropdownMenuItem>
-                                ))}
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onSelect={() => onAddChild(s, spouseObj)} className="rounded-lg py-2.5 text-primary font-bold">
-                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    )}
-                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(s)} className="h-8 w-8 sm:h-9 sm:w-9 rounded-full text-muted-foreground hover:text-primary transition-colors">
-                        <ArrowRight className="h-4 w-4" />
-                    </Button>
+                                </>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
           </div>
@@ -237,6 +268,7 @@ export default function SoulsWonPage() {
   const [editSoulId, setEditSoulId] = useState<string | null>(null);
   const [deleteSoulId, setDeleteSoulId] = useState<string | null>(null);
   const [assessmentSoulId, setAssessmentSoulId] = useState<string | null>(null);
+  const [shareWordSoulId, setShareWordSoulId] = useState<string | null>(null);
 
   const [selectedFilterGroup, setSelectedFilterGroup] = useState<{ type: 'age' | 'gender' | 'marital', value: string } | null>(null);
   const [logSoulDefaults, setLogSoulDefaults] = useState<any>({});
@@ -422,6 +454,7 @@ export default function SoulsWonPage() {
   const soulToEdit = useMemo(() => souls?.find(s => s.id === editSoulId) || null, [souls, editSoulId]);
   const soulToDelete = useMemo(() => souls?.find(s => s.id === deleteSoulId) || null, [souls, deleteSoulId]);
   const soulToAssess = useMemo(() => souls?.find(s => s.id === assessmentSoulId) || null, [souls, assessmentSoulId]);
+  const soulForWordSharing = useMemo(() => souls?.find(s => s.id === shareWordSoulId) || null, [souls, shareWordSoulId]);
 
   const campaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -1005,6 +1038,9 @@ export default function SoulsWonPage() {
                                     setSelectedId(s.id);
                                   }} 
                                   onAddChild={handleAddChild}
+                                  onShareWord={(s) => { setSelectedFilterGroup(null); setShareWordSoulId(s.id); }}
+                                  onPray={(s) => { setSelectedFilterGroup(null); setFollowUpSoulId(s.id); }}
+                                  onMessage={(s) => { setSelectedFilterGroup(null); setFollowUpSoulId(s.id); }}
                                 />
                             </div>
                         </ScrollArea>
@@ -1033,6 +1069,9 @@ export default function SoulsWonPage() {
                                     setSelectedId(s.id);
                                   }} 
                                   onAddChild={handleAddChild}
+                                  onShareWord={(s) => { setSelectedFilterGroup(null); setShareWordSoulId(s.id); }}
+                                  onPray={(s) => { setSelectedFilterGroup(null); setFollowUpSoulId(s.id); }}
+                                  onMessage={(s) => { setSelectedFilterGroup(null); setFollowUpSoulId(s.id); }}
                                 />
                             </div>
                         </ScrollArea>
@@ -1051,6 +1090,18 @@ export default function SoulsWonPage() {
         <ViewHistoryDialog soul={soulForHistory} isOpen={!!historySoulId} onOpenChange={(isOpen) => !isOpen && setHistorySoulId(null)} />
         <AssignFellowshipDialog soul={soulToAssign} fellowships={fellowships || []} isOpen={!!assignSoulId} onOpenChange={(isOpen) => !isOpen && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
         <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
+        
+        <LogFollowUpDialog.ShareWordDialog 
+          isOpen={!!shareWordSoulId}
+          onOpenChange={(open) => !open && setShareWordSoulId(null)}
+          soul={soulForWordSharing}
+          onSelectVerse={(v) => { 
+              // Handle Word selection: opens communication channel (SMS/WhatsApp)
+              setShareWordSoulId(null);
+              toast({ title: "Word Prepared", description: "Navigating to communication channel..." });
+              setFollowUpSoulId(shareWordSoulId);
+          }}
+        />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">

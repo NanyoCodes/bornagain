@@ -53,7 +53,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
-import { useUser, useDoc, useFirestore, useUserProfile, useCollection } from "@/firebase";
+import { useUser, useFirestore, useDoc, useUserProfile, useCollection } from "@/firebase";
 import { 
   doc, 
   updateDoc, 
@@ -922,7 +922,7 @@ function SoulProfileContent({
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
           <DialogHeader className="text-center space-y-2 text-left text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left">
                   <Share className="h-7 w-7 text-primary text-left text-left" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline uppercase text-center text-left">Share Details</DialogTitle>
@@ -1200,7 +1200,9 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
                     </motion.div>
                 ) : (
                     <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left" />
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left">
+                           <UserPlus className="h-full w-full" />
+                        </Users>
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left">Select a record to preview identity</p>
                     </div>
                 )}
@@ -1209,3 +1211,5 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
     </div>
   );
 }
+
+SoulsWonTable.ShareWordDialog = ShareWordDialog;

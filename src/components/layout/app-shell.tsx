@@ -145,7 +145,7 @@ function CartButton() {
     return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
   }, [cartItems]);
 
-  const listContent = (
+  const listContent = useMemo(() => (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
             <div className="space-y-3 text-left">
@@ -177,7 +177,7 @@ function CartButton() {
             </div>
         )}
     </div>
-  );
+  ), [cartItems]);
 
   const trigger = (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
@@ -218,9 +218,9 @@ function CartButton() {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-            <div className="flex items-center gap-2 mb-1 text-left">
-                <ShoppingCart className="h-5 w-5 text-primary text-left" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kindness Package</span>
+            <div className="flex items-center gap-2 mb-1 text-left text-left text-left">
+                <ShoppingCart className="h-5 w-5 text-primary text-left text-left text-left" />
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Kindness Package</span>
             </div>
             <DialogHeader className="text-left p-0 text-left text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Pending Offering</DialogTitle>
@@ -645,28 +645,28 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left text-left">
-              <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left">
-                <SheetTitle className="text-xl font-bold text-left text-left text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left text-left text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left text-left text-left">
+              <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left">
+                <SheetTitle className="text-xl font-bold text-left text-left text-left text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left text-left text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-8 text-left text-left text-left">
+            <div className="flex-grow overflow-y-auto p-8 text-left text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left text-left text-left">
-            <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left">
-              <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
-                <DialogTitle className="text-2xl font-bold text-left text-left text-left">Complete Your Profile</DialogTitle>
-                <DialogDescription className="text-sm text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left text-left text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left">
+              <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left">
+                <DialogTitle className="text-2xl font-bold text-left text-left text-left text-left text-left">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm text-left text-left text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -698,9 +698,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left text-left">
-                <div className="relative mx-auto w-fit text-left text-left text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left text-left text-left">
+                <div className="relative mx-auto w-fit text-left text-left text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left text-left" />
                 </div>
             </div>
         }>

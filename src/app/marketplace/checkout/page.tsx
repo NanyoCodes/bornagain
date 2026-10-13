@@ -255,9 +255,9 @@ function CheckoutPageContent() {
 
                                             <div className="flex items-center gap-3 text-left">
                                                 <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm">
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(item.id, item.quantity, -1)}><Minus className="h-3.5 w-3.5"/></Button>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(item.id, -1)}><Minus className="h-3.5 w-3.5"/></Button>
                                                     <span className="w-6 text-center font-black text-xs"> {item.quantity}</span>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(item.id, item.quantity, 1)}><Plus className="h-3.5 w-3.5"/></Button>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(item.id, 1)}><Plus className="h-3.5 w-3.5"/></Button>
                                                 </div>
                                                 <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10" onClick={() => handleRemoveItem(item.id)}>
                                                     <Trash2 className="h-5 w-5" />
