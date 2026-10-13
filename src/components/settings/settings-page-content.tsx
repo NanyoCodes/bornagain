@@ -150,7 +150,6 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
             <CardDescription className="text-left">Personalize your environment and app readability.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-8 text-left">
-            {/* Appearance Controls */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left">
                     <div className="space-y-0.5 text-left">
@@ -187,7 +186,6 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
 
             <Separator className="opacity-50 text-left" />
 
-            {/* Categorized Background Selection */}
             <div className="space-y-8 text-left">
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 px-1">
@@ -271,7 +269,7 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
       <CardHeader className="text-left text-left">
-        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left text-left text-left">
+        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left">
             <Bell className="h-5 w-5 text-primary" /> Notifications
         </CardTitle>
       </CardHeader>

@@ -562,7 +562,7 @@ function SoulProfileContent({
           finalizeLog('introduced_friend', `Shared with partner: ${partner.firstName}`);
           setIsPartnerSelectionDialogOpen(false);
           setIsShareTargetDialogOpen(false);
-          router.push(`/chats/${chatId}`);
+          router.push(`/dashboard/chats/${chatId}`);
       } catch (e) {
           toast({ variant: 'destructive', title: 'Share Failed' });
       }

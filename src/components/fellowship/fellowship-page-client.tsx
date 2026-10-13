@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useDoc, useFirestore, useUser, useAuth, useCollection, useUserProfile } from '@/firebase';
+import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment, Chat } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion, getDocs, addDoc, getDoc } from 'firebase/firestore';
 import { 
@@ -416,7 +415,7 @@ export default function FellowshipPageClient() {
 
     const handleEditDevotional = (devo: DailyDevotional) => {
         form.reset({
-            title: devo.title,
+            title: dewo.title,
             scripture: devo.scripture,
             text: devo.text,
             prayer: devo.prayer || '',

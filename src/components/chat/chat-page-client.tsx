@@ -767,7 +767,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 ) : (
                     <>
                     {replyingTo && (
-                        <div className="relative rounded-t-[1.5rem] border-x border-t bg-muted/40 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200 text-left">
+                        <div className="relative rounded-t-[1.5rem] border-x border-t bg-muted/20 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200 text-left">
                             <div className="flex items-center justify-between mb-1.5">
                                 <div className="flex items-center gap-2">
                                     <Reply className="h-3 w-3 text-primary" />
