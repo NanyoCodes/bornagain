@@ -356,9 +356,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <div className="flex-1 min-w-0 text-left">
                                         {cartItem ? (
                                             <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3"/></Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3.5 w-3.5"/></Button>
                                                 <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-center">IN PACKAGE</span>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3"/></Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3.5 w-3.5"/></Button>
                                             </div>
                                         ) : (
                                             <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95 text-center">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
