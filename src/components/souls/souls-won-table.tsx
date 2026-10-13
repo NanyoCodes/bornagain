@@ -659,7 +659,7 @@ function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.firstName} {soul.lastName}</p>
                     </div>
                     <div className="space-y-1 text-left">
-                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p>
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
                 </div>
@@ -1158,27 +1158,27 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         </div>
 
         {/* Tablet/Mobile Pop-up */}
-        <Sheet open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+        <Drawer open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                    <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
+                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
                             <Sparkles className="h-4 w-4 text-primary text-left text-left text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span>
                         </div>
-                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
+                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
-                        </SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
-                    </SheetHeader>
+                        </DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
+                    </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
                     <div className="p-6 pb-24 text-left text-left text-left">
                         {profileView}
                     </div>
                 </ScrollArea>
-            </SheetContent>
-        </Sheet>
+            </DrawerContent>
+        </Drawer>
 
         {/* Desktop Detailed Preview Panel (Large screens only) */}
         <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left">
