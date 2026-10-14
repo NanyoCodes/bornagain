@@ -487,7 +487,6 @@ export default function SoulsWonPage() {
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
-      // Basic implementation for report generation
       toast({ title: "Generating Report..." });
   }, [toast]);
 

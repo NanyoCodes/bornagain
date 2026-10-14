@@ -409,7 +409,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
     const content = (
         <div className="p-6 space-y-6 text-left">
             <div className="space-y-3">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Focus Points</legend>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Focus Points</Label>
                 <div className="flex flex-wrap gap-2">
                     {prayerTemplates.map(t => (
                         <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase border-primary/20 hover:bg-primary/5" onClick={() => {
@@ -852,7 +852,7 @@ export const SoulsWonTable = React.memo(function SoulsWonTable({ souls, allSouls
             </DrawerContent>
         </Drawer>
 
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left text-left">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left text-left text-left">
             <AnimatePresence>
                 {selectedSoul ? (
                     <motion.div
@@ -869,7 +869,7 @@ export const SoulsWonTable = React.memo(function SoulsWonTable({ souls, allSouls
                     </motion.div>
                 ) : (
                     <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left text-left text-left">
-                        <div className="relative mx-auto mb-4 w-12 h-12 flex items-center justify-center text-left text-left text-left text-left text-left text-left">
+                        <div className="relative mx-auto mb-4 w-12 h-12 flex items-center justify-center text-left text-left text-left text-left text-left text-left text-left">
                             <Users className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left text-left text-left text-left text-left" />
                             <UserPlus className="absolute inset-0 m-auto h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left" />
                         </div>
