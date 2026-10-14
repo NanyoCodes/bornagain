@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from "next/navigation";
 import { 
@@ -29,7 +29,8 @@ import {
   ChevronDown,
   BookMarked,
   MessageSquare,
-  HandHeart
+  HandHeart,
+  Plus
 } from "lucide-react";
 import { 
   Dialog, 
@@ -98,6 +99,7 @@ import Papa from 'papaparse';
 import NextImage from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWord, onPray, onMessage }: { 
     souls: Soul[], 
@@ -108,6 +110,8 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
     onPray: (soul: Soul) => void,
     onMessage: (soul: Soul) => void
 }) {
+  const [openFamilyId, setOpenFamilyId] = useState<string | null>(null);
+
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10 text-left">
@@ -117,7 +121,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
   }
 
   return (
-    <div className="space-y-3 pb-6 text-left text-left">
+    <div className="space-y-3 pb-6 text-left">
       {souls.map((s) => {
         const isFamilyMember = s.maritalStatus === 'Married';
         const wonAt = safeToDate(s.wonAt);
@@ -132,100 +136,133 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                    (otherSpouse === sFull || otherSpouse === s.firstName.toLowerCase());
         }) : null;
 
+        const children = allSouls.filter(child => s.childrenIds?.includes(child.id));
+        const hasFamily = spouseObj || children.length > 0;
+
         return (
-          <div key={s.id} className="relative text-left text-left">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 text-left transition-all hover:bg-card/80 text-left">
-                <button 
-                    onClick={() => onShareWord(s)}
-                    className="flex flex-row items-center gap-3 min-w-0 flex-1 active:scale-[0.98] transition-all text-left w-full text-left"
-                >
-                    <div className="flex -space-x-3 sm:-space-x-4 shrink-0 text-left text-left">
-                        <Avatar className={cn("h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0 text-left text-left")}>
-                            <AvatarImage src={s.photoURL || undefined} className="object-cover text-left" />
-                            <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left text-left">{s.firstName?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        {spouseObj && (
-                            <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0 text-left text-left">
-                                <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover text-left" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary/60 text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left text-left">{spouseObj.firstName?.charAt(0)}</AvatarFallback>
+          <div key={s.id} className="relative text-left">
+            <Collapsible open={openFamilyId === s.id} onOpenChange={() => setOpenFamilyId(openFamilyId === s.id ? null : s.id)}>
+              <CollapsibleTrigger asChild>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 text-left transition-all hover:bg-card/80 cursor-pointer">
+                    <div className="flex flex-row items-center gap-3 min-w-0 flex-1 text-left w-full">
+                        <div className="flex -space-x-3 sm:-space-x-4 shrink-0">
+                            <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0">
+                                <AvatarImage src={s.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs flex items-center justify-center h-full w-full">{s.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                        )}
-                    </div>
-                    <div className="min-w-0 flex-1 pr-1 text-left text-left">
-                        <div className="flex items-center gap-2 flex-wrap text-left text-left">
-                            <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left text-left">
-                                {s.firstName} {s.lastName}
-                            </p>
-                            <Badge variant="outline" className={cn("h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50 text-left text-left", s.status === 'New' ? 'text-amber-600 border-amber-200' : s.status === 'Contacted' ? 'text-blue-600 border-blue-200' : 'text-green-600 border-green-200')}>{s.status}</Badge>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left text-left">
-                            <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left text-left">
-                                Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
-                            </p>
-                            {isFamilyMember && (
-                                <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none text-left text-left">Family Unit</Badge>
+                            {spouseObj && (
+                                <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0">
+                                    <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover" />
+                                    <AvatarFallback className="font-black bg-primary/10 text-primary/60 text-[10px] sm:text-xs flex items-center justify-center h-full w-full">{spouseObj.firstName?.charAt(0)}</AvatarFallback>
+                                </Avatar>
                             )}
                         </div>
+                        <div className="min-w-0 flex-1 pr-1 text-left">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate">
+                                    {s.firstName} {s.lastName}
+                                </p>
+                                <Badge variant="outline" className={cn("h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50", s.status === 'New' ? 'text-amber-600 border-amber-200' : s.status === 'Contacted' ? 'text-blue-600 border-blue-200' : 'text-green-600 border-green-200')}>{s.status}</Badge>
+                                {hasFamily && (
+                                    <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform duration-200", openFamilyId === s.id && "rotate-180")} />
+                                )}
+                            </div>
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
+                                <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
+                                    Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
+                                </p>
+                                {isFamilyMember && (
+                                    <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none">Family Unit</Badge>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                </button>
-                <div className="flex items-center gap-2 sm:gap-2 shrink-0 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-none border-dashed border-primary/10 text-left text-left">
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left text-left" onClick={() => onShareWord(s)}>
-                                    <BookMarked className="h-4 w-4 text-left text-left" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="text-left text-left text-left"><p className="text-[10px] font-black uppercase text-left text-left text-left">Share Word</p></TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    <div className="flex items-center gap-2 sm:gap-2 shrink-0 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-none border-dashed border-primary/10">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary" onClick={(e) => { e.stopPropagation(); onShareWord(s); }}>
+                                        <BookMarked className="h-4 w-4" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-black uppercase">Share Word</p></TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
 
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left text-left" onClick={() => onPray(s)}>
-                                    <HandHeart className="h-4 w-4 text-left text-left" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="text-left text-left text-left"><p className="text-[10px] font-black uppercase text-left text-left text-left">Intercession (Prayer)</p></TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary" onClick={(e) => { e.stopPropagation(); onPray(s); }}>
+                                        <HandHeart className="h-4 w-4" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-black uppercase">Intercession</p></TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
 
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left text-left" onClick={() => onMessage(s)}>
-                                    <MessageSquare className="h-4 w-4 text-left text-left" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="text-left text-left text-left"><p className="text-[10px] font-black uppercase text-left text-left text-left text-left">Encourage</p></TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary" onClick={(e) => { e.stopPropagation(); onMessage(s); }}>
+                                        <MessageSquare className="h-4 w-4" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-black uppercase">Encourage</p></TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
 
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30 text-left text-left text-left">
-                                <ChevronDown className="h-4 w-4 text-left text-left text-left" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left text-left text-left">
-                            <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">More Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator className="text-left text-left text-left" />
-                            <DropdownMenuItem onSelect={() => onSelectSoul(s)} className="rounded-lg py-2.5 text-left text-left text-left">
-                                <User className="mr-2 h-4 w-4 text-left text-left text-left" /> View Full Identity
-                            </DropdownMenuItem>
-                            {isFamilyMember && (
-                                <>
-                                    <DropdownMenuSeparator className="text-left text-left text-left" />
-                                    <DropdownMenuItem onSelect={() => onAddChild(s, spouseObj)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left text-left">
-                                        <PlusCircle className="mr-2 h-4 w-4 text-left text-left text-left" /> Add Child to Household
-                                    </DropdownMenuItem>
-                                </>
-                            )}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30">
+                                    <ChevronDown className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl">
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">More Actions</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onSelect={() => onSelectSoul(s)} className="rounded-lg py-2.5">
+                                    <User className="mr-2 h-4 w-4" /> View Full Identity
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
-            </div>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="px-4 pb-4">
+                  <div className="pt-3 space-y-2">
+                      <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2">Household Members</p>
+                      {spouseObj && (
+                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4">
+                              <Avatar className="h-8 w-8 border">
+                                  <AvatarImage src={spouseObj.photoURL || undefined} />
+                                  <AvatarFallback>{spouseObj.firstName?.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                  <p className="font-bold text-xs uppercase truncate leading-none">{spouseObj.firstName} {spouseObj.lastName}</p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Spouse</p>
+                              </div>
+                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => onSelectSoul(spouseObj)}>View</Button>
+                          </div>
+                      )}
+                      {children.map(child => (
+                           <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4">
+                              <Avatar className="h-8 w-8 border">
+                                  <AvatarImage src={child.photoURL || undefined} />
+                                  <AvatarFallback>{child.firstName?.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                  <p className="font-bold text-xs uppercase truncate leading-none">{child.firstName} {child.lastName}</p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Child</p>
+                              </div>
+                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => onSelectSoul(child)}>View</Button>
+                          </div>
+                      ))}
+                      <Button variant="outline" className="w-[calc(100%-1rem)] ml-4 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase" onClick={() => onAddChild(s, spouseObj)}>
+                          <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> Add Child to Household
+                      </Button>
+                  </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         );
       })}
@@ -942,7 +979,7 @@ export default function SoulsWonPage() {
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Family & Status Insights</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left">
                             <CardContent className="p-6 sm:p-8 text-left text-left text-left">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left text-left">
                                     {[
@@ -1125,7 +1162,7 @@ export default function SoulsWonPage() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left text-left text-left text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left">Add New Soul</DrawerTitle>
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left text-left">Add New Soul</DrawerTitle>
                                     <DrawerDescription className="text-sm text-left text-left text-left text-left text-left text-left">Record a new life won for Christ.</DrawerDescription>
                                 </DrawerHeader>
                             </div>

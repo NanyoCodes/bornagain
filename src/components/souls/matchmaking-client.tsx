@@ -125,7 +125,7 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
                         <ArrowLeft className="h-6 w-6" />
                     </Button>
                     <div className="min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 text-left">
                             <HeartHandshake className="h-4 w-4 text-primary" />
                             <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Alliance</span>
                         </div>
@@ -223,7 +223,7 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
                     </Card>
                 )) : (
                     <div className="col-span-full py-24 text-center flex flex-col items-center border-2 border-dashed rounded-[3rem] bg-muted/5">
-                        <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                        <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
                             <HeartHandshake className="h-10 w-10 text-primary opacity-10" />
                         </div>
                         <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40">No Potential Matches</h3>
@@ -242,3 +242,4 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
         </div>
     );
 }
+
