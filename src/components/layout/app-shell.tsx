@@ -51,6 +51,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -142,7 +143,7 @@ function CartButton() {
     return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
   }, [cartItems]);
 
-  const listContent = (
+  const listContent = useMemo(() => (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
             <div className="space-y-3">
@@ -174,7 +175,7 @@ function CartButton() {
             </div>
         )}
     </div>
-  );
+  ), [cartItems]);
 
   const trigger = (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
