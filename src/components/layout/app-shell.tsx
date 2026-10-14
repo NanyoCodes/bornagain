@@ -82,7 +82,7 @@ import { collection, doc, query, where, updateDoc, serverTimestamp } from "fireb
 import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
-import { PageTransition } from "../page-transition";
+import { PageTransition } from "./page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 
@@ -147,21 +147,21 @@ function CartButton() {
   const listContent = useMemo(() => (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3 text-left">
                 {cartItems.map((item: any) => (
                     <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left">
-                        <Avatar className="h-10 w-10 border">
+                        <Avatar className="h-10 w-10 border text-left">
                             <AvatarImage src={item.photoURL} />
                             <AvatarFallback>P</AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1 text-left">
-                            <p className="font-bold text-sm truncate uppercase tracking-tight">{item.name}</p>
-                            <p className="text-[10px] font-black uppercase tracking-widest">{item.currency}{item.price.toLocaleString()} x {item.quantity}</p>
+                            <p className="font-bold text-sm truncate uppercase tracking-tight text-left">{item.name}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-left">{item.currency}{item.price.toLocaleString()} x {item.quantity}</p>
                         </div>
                     </div>
                 ))}
                 <div className="pt-4 border-t border-dashed text-left">
-                    <Button asChild className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                    <Button asChild className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center">
                         <Link href="/marketplace/checkout" onClick={() => setIsOpen(false)}>PROCEED TO CHECKOUT</Link>
                     </Button>
                 </div>
@@ -180,7 +180,7 @@ function CartButton() {
 
   const trigger = (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
+        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
             <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
             {count > 0 && (
                 <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
