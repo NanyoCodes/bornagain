@@ -7,7 +7,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { doc, collection, query, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, HeartHandshake, Loader2, Sparkles, MapPin, Search, User, MessageSquare, ChevronDown } from 'lucide-react';
+import { ArrowLeft, HeartHandshake, Loader2, Sparkles, MapPin, Search, User, MessageSquare, ChevronDown, Quote } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -118,7 +118,7 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 pb-32">
+        <div className="max-w-4xl mx-auto space-y-8 pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                 <div className="flex items-center gap-4">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm">
@@ -185,14 +185,14 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
                                 </div>
                             </div>
                         </CardHeader>
-                        <CardContent className="px-6 pb-4 flex-grow">
+                        <CardContent className="px-6 pb-4 flex-grow text-left">
                              {match.hobbies && (
                                 <div className="p-3 rounded-xl bg-muted/30 border border-dashed text-xs text-muted-foreground italic font-medium leading-relaxed mb-4 relative overflow-hidden group/text">
                                     <Quote className="absolute -top-1 right-2 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover/text:rotate-0" />
                                     <p className="relative z-10">&ldquo;{match.hobbies}&rdquo;</p>
                                 </div>
                              )}
-                             <div className="grid grid-cols-2 gap-4">
+                             <div className="grid grid-cols-2 gap-4 text-left">
                                 <div className="space-y-1">
                                     <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Work Status</p>
                                     <p className="text-xs font-bold truncate">{match.workStatus || 'N/A'}</p>
