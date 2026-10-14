@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -8,6 +7,7 @@ import {
   Heart, 
   ArrowRight,
   Church,
+  HeartHandshake
 } from "lucide-react";
 import type { Soul } from "@/lib/types";
 import { 
@@ -18,6 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription 
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -91,7 +98,6 @@ SoulTableRow.displayName = "SoulTableRow";
 
 export function SoulsWonTable({ souls, loading, selectedId, onSelect }: {
   souls: Soul[];
-  allSouls: Soul[];
   loading: boolean;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
