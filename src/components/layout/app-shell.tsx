@@ -79,7 +79,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
-import type { Notification, VendorProfile } from "@/lib/types";
+import type { Notification, UserProfile, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";

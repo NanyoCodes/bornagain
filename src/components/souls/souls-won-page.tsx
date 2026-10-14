@@ -1045,7 +1045,7 @@ export default function SoulsWonPage() {
             ) : (
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left text-left text-left">Demographic View</span>
@@ -1175,7 +1175,7 @@ export default function SoulsWonPage() {
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left">Edit Record</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-sm text-left text-left text-left text-left text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>

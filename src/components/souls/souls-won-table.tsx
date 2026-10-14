@@ -139,6 +139,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Input } from "@/components/ui/input";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -435,7 +436,7 @@ export function ShareWordDialog({
             {view === 'chapters' && renderChapters}
             {view === 'verses' && renderVerses}
         </div>
-  </ScrollArea>
+    </ScrollArea>
   );
 
   const footer = view === 'verses' && (
@@ -722,7 +723,7 @@ export function SoulProfileContent({
                     <DialogTrigger asChild disabled={!soul.photoURL}>
                         <Avatar className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95 text-left", soul.photoURL && "cursor-pointer hover:scale-105")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                            <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                     </DialogTrigger>
                     {soul.photoURL && (
@@ -802,7 +803,7 @@ export function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.workStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Rel. Status</p>
+                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest">Rel. Status</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.maritalStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1">
@@ -943,11 +944,11 @@ export function SoulProfileContent({
                             const date = safeToDate(log.date);
                             return (
                                 <div key={index} className="relative pl-4 border-l-2 border-primary/20 text-left">
-                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left">
+                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">
                                         {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                         {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName.split(' ')[0]}</span>}
                                     </p>
-                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left">
+                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic">
                                         &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                     </p>
                                 </div>
@@ -1056,7 +1057,7 @@ export function SoulProfileContent({
                     </div>
                 </div>
                   <div className="space-y-2 text-left">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Message</Label>
                       <Textarea 
                           value={customMessageText}
                           onChange={e => setCustomMessageText(e.target.value)}
@@ -1077,7 +1078,7 @@ export function SoulProfileContent({
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
           <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                   <MessageSquare className="h-7 w-7 text-primary" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
@@ -1104,7 +1105,7 @@ export function SoulProfileContent({
           </div>
           <div className="p-8 space-y-6 text-left">
             <div className="space-y-2 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 
@@ -1138,8 +1139,8 @@ export function SoulProfileContent({
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
-                  <DialogHeader className="text-left text-left text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left">
+                  <DialogHeader className="text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
@@ -1180,7 +1181,7 @@ export function SoulProfileContent({
   );
 }
 
-const SoulCard = React.memo(({ soul, onClick }: { 
+export const SoulCard = React.memo(({ soul, onClick }: { 
   soul: Soul; 
   onClick: () => void;
 }) => {
@@ -1213,7 +1214,7 @@ const SoulCard = React.memo(({ soul, onClick }: {
 });
 SoulCard.displayName = "SoulCard";
 
-const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: { 
+export const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: { 
   soul: Soul; 
   isSelected: boolean;
   onSelect: () => void;
@@ -1292,8 +1293,8 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
                     <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20">
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
                     </div>
-                    <h3 className="text-xl font-black font-headline uppercase tracking-tight">Your Harvest Field</h3>
-                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-center">Your Harvest Field</h3>
+                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>
         </Card>
