@@ -148,7 +148,7 @@ function CartButton() {
   const listContent = useMemo(() => (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
-            <div className="space-y-3 text-left">
+            <div className="space-y-3">
                 {cartItems.map((item: any) => (
                     <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left">
                         <Avatar className="h-10 w-10 border">
