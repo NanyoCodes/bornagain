@@ -9,7 +9,8 @@ import {
   Church,
   HeartHandshake,
   PlusCircle,
-  Loader2
+  Loader2,
+  MoreHorizontal
 } from "lucide-react";
 import type { Soul } from "@/lib/types";
 import { 
@@ -100,9 +101,18 @@ SoulTableRow.displayName = "SoulTableRow";
 
 export function SoulsWonTable({ souls, loading, selectedId, onSelect }: {
   souls: Soul[];
+  allSouls: Soul[];
   loading: boolean;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
+  onFollowUp: (soul: Soul) => void;
+  onViewHistory: (soul: Soul) => void;
+  onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
+  onOpenAssignDialog: (soul: Soul) => void;
+  onEdit: (soul: Soul) => void;
+  onDelete: (soul: Soul) => void;
+  onAssess: (soul: Soul) => void;
+  onAddChild: (p1: Soul, p2?: Soul | null) => void;
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
