@@ -21,14 +21,31 @@ import {
   X,
   Target,
   Share,
-  HeartHandshake
+  HeartHandshake,
+  Search,
+  BookMarked,
+  Clock,
+  Edit,
+  Gift,
+  History,
+  Home,
+  Lock,
+  MoreVertical,
+  PlusCircle,
+  Quote,
+  Send,
+  Users,
+  Utensils,
+  Download,
+  ClipboardList
 } from "lucide-react";
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
-import { useUser, useFirestore, useUserProfile } from "@/firebase";
+import { useUser, useFirestore, useUserProfile, useCollection, useDoc } from "@/firebase";
 import { 
   doc, 
   updateDoc, 
   arrayUnion, 
+  arrayRemove, 
   collection, 
   query, 
   serverTimestamp, 
@@ -75,6 +92,18 @@ import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import Image from 'next/image';
+import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MutualConnectBadge } from "./mutual-connect-badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -822,7 +851,6 @@ export function SoulProfileContent({
                         const Icon = iconMap[action.id] || Heart;
                         const isThisProcessing = clickedActionId === action.id && isActionSubmitting;
                         
-                        // Exclusion logic for married persons in matchmaking
                         if (action.id === 'matchmaking' && soul.maritalStatus === 'Married') return null;
                         
                         return (
@@ -1023,8 +1051,8 @@ export function SoulProfileContent({
         <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
           <div className="p-8 border-b bg-muted/10">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DialogTitle>
-              <DialogDescription className="text-sm font-medium">Describe how you supported {soul.firstName}.</DialogDescription>
+              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
+              <DialogDescription className="text-sm font-medium text-left">Describe how you supported {soul.firstName}.</DialogDescription>
             </DialogHeader>
           </div>
           <div className="p-8 space-y-6">
