@@ -132,6 +132,7 @@ import { MutualConnectBadge } from "./mutual-connect-badge";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import { Input } from "../ui/input";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
@@ -836,7 +837,7 @@ export const SoulsWonTable = React.memo(function SoulsWonTable({ souls, allSouls
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
                             <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Identity Hub</span>
                         </div>
                         <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
@@ -844,7 +845,7 @@ export const SoulsWonTable = React.memo(function SoulsWonTable({ souls, allSouls
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                     </DrawerHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left text-left">
                     <div className="p-6 pb-24 text-left text-left text-left text-left text-left text-left">
                         {profileView}
                     </div>
@@ -870,7 +871,7 @@ export const SoulsWonTable = React.memo(function SoulsWonTable({ souls, allSouls
                 ) : (
                     <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left text-left text-left">
                         <div className="relative mx-auto mb-4 w-12 h-12 flex items-center justify-center text-left text-left text-left text-left text-left text-left text-left">
-                            <Users className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left text-left text-left text-left text-left" />
+                            <Users className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left text-left text-left text-left text-left text-left" />
                             <UserPlus className="absolute inset-0 m-auto h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left" />
                         </div>
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left text-left text-left text-left">Select a record to preview identity</p>
