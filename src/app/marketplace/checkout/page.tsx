@@ -160,27 +160,27 @@ function CheckoutPageContent() {
 
     if (loading) {
         return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-32 text-left">
-                <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
-                <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-primary animate-pulse text-left">Organizing package...</p>
+            <div className="flex h-full w-full flex-col items-center justify-center py-32 text-left text-left">
+                <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
+                <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-primary animate-pulse text-left text-left">Organizing package...</p>
             </div>
         );
     }
 
     if (!cartItems || cartItems.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left">
+            <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left text-left">
                 <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
                     <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                 </div>
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">Package is empty</h2>
-                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left">Package is empty</h2>
+                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
                 <div className="flex gap-4 mt-8 justify-center text-left">
                     <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left">
-                        <Link href="/marketplace" className="text-left">Meals Hub</Link>
+                        <Link href="/marketplace" className="text-left text-left">Meals Hub</Link>
                     </Button>
                     <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left">
-                        <Link href="/marketplace/gifts" className="text-left">Kindness Hub</Link>
+                        <Link href="/marketplace/gifts" className="text-left text-left">Kindness Hub</Link>
                     </Button>
                 </div>
             </div>
@@ -249,9 +249,9 @@ function CheckoutPageContent() {
 
                                             <div className="flex items-center gap-3 text-left">
                                                 <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm text-left">
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(item.id, -1)}><Minus className="h-3.5 w-3.5 text-left"/></Button>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(item.id, item.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left"/></Button>
                                                     <span className="w-6 text-center font-black text-xs text-left"> {item.quantity}</span>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(item.id, 1)}><Plus className="h-3.5 w-3.5 text-left"/></Button>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(item.id, item.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left"/></Button>
                                                 </div>
                                                 <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10 text-left" onClick={() => handleRemoveItem(item.id)}>
                                                     <Trash2 className="h-5 w-5 text-left" />
@@ -278,46 +278,46 @@ function CheckoutPageContent() {
                 <div className="space-y-6 text-left">
                     <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left">
                         <CardHeader className="p-8 pb-4 text-left">
-                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Summary</CardTitle>
-                            <CardDescription className="text-primary-foreground/70 font-medium text-left">Finalize your spiritual investment.</CardDescription>
+                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Summary</CardTitle>
+                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left">Finalize your spiritual investment.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-8 pt-0 space-y-6 text-left">
-                            <div className="space-y-4 text-left">
+                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left">
+                            <div className="space-y-4 text-left text-left">
                                 {Object.entries(subtotalByCurrency).map(([curr, total]) => (
-                                    <div key={curr} className="flex justify-between items-baseline border-b border-white/10 pb-4 last:border-0 text-left">
-                                        <span className="text-xs font-bold uppercase tracking-widest opacity-70 text-left">Total in {curr}</span>
-                                        <span className="text-2xl font-black tracking-tighter text-left">{getCurrencySymbol(curr)}{total.toLocaleString()}</span>
+                                    <div key={curr} className="flex justify-between items-baseline border-b border-white/10 pb-4 last:border-0 text-left text-left">
+                                        <span className="text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left">Total in {curr}</span>
+                                        <span className="text-2xl font-black tracking-tighter text-left text-left">{getCurrencySymbol(curr)}{total.toLocaleString()}</span>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="bg-white/10 p-4 rounded-2xl border border-white/10 flex items-start gap-3 text-left">
-                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left" />
-                                <p className="text-[10px] leading-relaxed font-medium text-left">
+                            <div className="bg-white/10 p-4 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left">
+                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left" />
+                                <p className="text-[10px] leading-relaxed font-medium text-left text-left">
                                     Finalizing this order notifies providers immediately. Please coordinate payments directly using their saved details.
                                 </p>
                             </div>
                         </CardContent>
-                        <CardFooter className="p-8 pt-0 text-left">
+                        <CardFooter className="p-8 pt-0 text-left text-left text-left">
                             <Button 
                                 onClick={handleFinalizeOffering} 
                                 disabled={isSubmitting} 
                                 size="lg" 
-                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center text-left"
+                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center text-left text-left"
                             >
-                                {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left" />}
+                                {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left text-left text-left" />}
                                 FINALIZE OFFERING
                             </Button>
                         </CardFooter>
                     </Card>
 
-                    <div className="p-6 rounded-[2rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left">
-                            <Info className="h-6 w-6 text-primary text-left" />
+                    <div className="p-6 rounded-[2rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left">
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left">
+                            <Info className="h-6 w-6 text-primary text-left text-left" />
                         </div>
-                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left">
+                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left">
                             "God loves a cheerful giver. Let each one give as he has decided in his heart." <br/>
-                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center">- 2 Cor 9:7</span>
+                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left">- 2 Cor 9:7</span>
                         </p>
                     </div>
                 </div>
