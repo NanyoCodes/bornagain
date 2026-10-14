@@ -201,12 +201,12 @@ function CartButton() {
                         <ShoppingCart className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
                     </div>
-                    <DrawerHeader className="text-left flex-shrink-0 p-0">
+                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1">Review selection for gifting.</DrawerDescription>
                     </DrawerHeader>
                 </div>
-                <ScrollArea className="flex-grow">{listContent}</ScrollArea>
+                <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>
             </DrawerContent>
         </Drawer>
     );
@@ -216,17 +216,17 @@ function CartButton() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
-        <div className="p-8 border-b bg-muted/10 shrink-0">
-            <div className="flex items-center gap-2 mb-1">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <div className="flex items-center gap-2 mb-1 text-left">
                 <ShoppingCart className="h-5 w-5 text-primary" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kindness Package</span>
             </div>
-            <DialogHeader className="text-left p-0">
+            <DialogHeader className="text-left p-0 text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Pending Offering</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
         </div>
-        <ScrollArea className="flex-grow">{listContent}</ScrollArea>
+        <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -252,7 +252,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   if (showMobileSearch) {
     return (
       <header className="sticky top-0 z-50 flex h-dvh w-full flex-col bg-background pt-[env(safe-area-inset-top)] animate-in fade-in duration-300 text-left">
-        <div className="flex h-16 items-center gap-3 px-4 border-b shrink-0">
+        <div className="flex h-16 items-center gap-3 px-4 border-b shrink-0 text-left">
           <Button variant="ghost" size="icon" onClick={() => { setShowMobileSearch(false); setSearchTerm(''); }} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors">
             <ArrowLeft className="h-6 w-6" />
           </Button>
@@ -277,7 +277,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
       <div className="flex shrink-0 w-auto">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
-            <Avatar className="h-11 w-11 md:h-14 md:w-14 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95">
+            <Avatar className="h-11 w-11 md:h-14 md:w-14 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 text-left">
                 <AvatarImage src={logo.imageUrl} alt="Testify" className="object-cover" />
                 <AvatarFallback>T</AvatarFallback>
             </Avatar>
@@ -286,7 +286,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
       </div>
 
       <nav className="hidden md:flex flex-1 justify-center items-center h-full min-w-0">
-        <div className="flex items-center gap-1 lg:gap-2 h-full max-w-full overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1 lg:gap-2 h-full max-w-full overflow-x-auto no-scrollbar text-left">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -358,7 +358,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   {isProfileIncomplete && (
                     <span className="absolute top-0 right-0 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background text-left"></span>
                     </span>
                   )}
                 </Button>

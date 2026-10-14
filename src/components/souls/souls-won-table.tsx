@@ -139,29 +139,10 @@ import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
-export function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-    </svg>
-  );
-}
-
-export const iconMap: Record<string, any> = {
-    'prayed_together': HandHeart,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
-    'matchmaking': HeartHandshake,
-};
-
-const getStatusClasses = (status: FollowUpStatus | undefined): string => {
+/**
+ * Shared status and address formatting helpers
+ */
+export const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
     switch (status) {
         case 'New':
@@ -173,14 +154,25 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
         default:
             return 'bg-secondary text-secondary-foreground border-border';
     }
-}
+};
 
-const getSoulAddress = (soul: Soul) => {
+export const getSoulAddress = (soul: Soul) => {
   const loc = soul.locationWon;
   if (!loc) return '';
   return [loc.street, loc.city, loc.state, loc.country].filter(Boolean).join(', ');
 };
 
+export function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  );
+}
+
+/**
+ * Action Dialogs exported for dynamic loading
+ */
 export function ShareWordDialog({ 
   isOpen, 
   onOpenChange, 
@@ -394,18 +386,21 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
     const [customText, setCustomText] = useState('');
     const isMobile = useIsMobile();
     
+    const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
+        const gender = targetSoul.gender?.toLowerCase() || 'other';
+        const pronouns = {
+            subject: gender === 'female' ? 'she' : 'he',
+            object: gender === 'female' ? 'her' : 'him',
+            possessive: gender === 'female' ? 'her' : 'his'
+        };
+        return template.replace(/{name}/g, targetSoul.firstName).replace(/{subject}/g, pronouns.subject).replace(/{object}/g, pronouns.object).replace(/{possessive}/g, pronouns.possessive);
+    }, []);
+
     useEffect(() => {
         if (isOpen && soul) {
-            const template = prayerTemplates[0].text;
-            const gender = soul.gender?.toLowerCase() || 'other';
-            const pronouns = {
-                subject: gender === 'female' ? 'she' : 'he',
-                object: gender === 'female' ? 'her' : 'him',
-                possessive: gender === 'female' ? 'her' : 'his'
-            };
-            setCustomText(template.replace(/{name}/g, soul.firstName).replace(/{subject}/g, pronouns.subject).replace(/{object}/g, pronouns.object).replace(/{possessive}/g, pronouns.possessive));
+            setCustomText(resolveTemplate(prayerTemplates[0].text, soul));
         }
-    }, [isOpen, soul]);
+    }, [isOpen, soul, resolveTemplate]);
 
     const content = (
         <div className="p-6 space-y-6 text-left">
@@ -414,9 +409,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
                 <div className="flex flex-wrap gap-2">
                     {prayerTemplates.map(t => (
                         <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase border-primary/20 hover:bg-primary/5" onClick={() => {
-                            const gender = soul?.gender?.toLowerCase() || 'other';
-                            const pronouns = { subject: gender === 'female' ? 'she' : 'he', object: gender === 'female' ? 'her' : 'him', possessive: gender === 'female' ? 'her' : 'his' };
-                            setCustomText(t.text.replace(/{name}/g, soul?.firstName || 'friend').replace(/{subject}/g, pronouns.subject).replace(/{object}/g, pronouns.object).replace(/{possessive}/g, pronouns.possessive));
+                            if(soul) setCustomText(resolveTemplate(t.text, soul));
                         }}>{t.label}</Button>
                     ))}
                 </div>
@@ -481,123 +474,9 @@ export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }
     );
 }
 
-export function SoulProfileContent({ 
-  soul, 
-  onFollowUp, 
-  onViewHistory, 
-  onEdit, 
-  onAssess, 
-  onOpenAssignDialog, 
-  onExportSingle, 
-  onDelete 
-}: { 
-  soul: Soul; 
-  onFollowUp: (s: Soul) => void;
-  onViewHistory: (s: Soul) => void;
-  onEdit: (s: Soul) => void;
-  onAssess: (s: Soul) => void;
-  onOpenAssignDialog: (s: Soul) => void;
-  onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
-  onDelete: (s: Soul) => void;
-}) {
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const { userProfile: currentUserProfile } = useUserProfile();
-  const router = useRouter();
-
-  const address = getSoulAddress(soul);
-  const needs = soul.needsAssessment;
-
-  const sortedHistory = React.useMemo(() => {
-    if (!soul.followUpLog || soul.followUpLog.length === 0) return [];
-    return [...soul.followUpLog].sort((a, b) => {
-      const dateB = safeToDate(b.date)?.getTime() ?? 0;
-      const dateA = safeToDate(a.date)?.getTime() ?? 0;
-      return dateB - dateA;
-    });
-  }, [soul.followUpLog]);
-
-  const handleActionClick = async (actionId: string) => {
-    if (!soul) return;
-    switch (actionId) {
-        case 'matchmaking': router.push(`/matchmaking?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}`); return;
-        case 'phone_call': window.location.href = `tel:${soul.phone}`; return;
-        case 'visited_home': if (address) { window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank'); } return;
-        case 'invited_to_event': router.push('/dashboard/events'); return;
-        case 'shared_meal':
-        case 'gave_gift': router.push(`${actionId === 'shared_meal' ? '/marketplace' : '/marketplace/gifts'}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`); return;
-        default: onFollowUp(soul);
-    }
-  };
-
-  return (
-    <div className="space-y-6 text-left">
-      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
-        <CardHeader className="p-8 pb-4 text-center">
-            <div className="relative inline-block mx-auto mb-4">
-                <Dialog>
-                    <DialogTrigger asChild disabled={!soul.photoURL}>
-                        <Avatar className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
-                            <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                            <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                    </DialogTrigger>
-                    {soul.photoURL && (
-                        <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                            <DialogHeader className="sr-only text-left"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
-                            <div className="relative h-full w-full flex items-center justify-center p-4">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
-                                    <NextImage src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
-                                </div>
-                            </div>
-                        </DialogContent>
-                    )}
-                </Dialog>
-                {address && (
-                    <Button size="icon" className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background" onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')} title="View Map"><MapPin className="h-5 w-5" /></Button>
-                )}
-            </div>
-            <div className="flex flex-col items-center gap-2">
-                <CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center truncate w-full">{soul.firstName} {soul.lastName}</CardTitle>
-                <div className="flex gap-2 justify-center items-center"><Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge><MutualConnectBadge soul={soul} /></div>
-            </div>
-        </CardHeader>
-        <CardContent className="p-8 pt-0 space-y-6 text-left">
-            <Separator className="opacity-50" />
-            <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Spiritual Identity</p>
-                    <div className="flex items-center gap-1">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild><Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10"><Download className="h-4 w-4" /></Button></DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl"><DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select Format</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>CSV Export</DropdownMenuItem><DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem></DropdownMenuContent>
-                        </DropdownMenu>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}><Edit className="h-4 w-4" /></Button>
-                    </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Full Name</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.firstName} {soul.lastName}</p></div>
-                    <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Gender/Age</p><p className="text-[11px] sm:text-xs font-bold">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p></div>
-                    <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Relationship</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.relationship || 'N/A'}</p></div>
-                    <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Work Status</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.workStatus || 'N/A'}</p></div>
-                    <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Rel. Status</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.maritalStatus || 'N/A'}</p></div>
-                    <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Nickname</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.nickname || 'N/A'}</p></div>
-                </div>
-            </div>
-            <Separator className="opacity-20" /><div className="space-y-3 text-left"><div className="flex items-center justify-between"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Contact Identity</p><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}><Edit className="h-4 w-4" /></Button></div><div className="space-y-2">{soul.phone ? (<div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground"><Phone className="h-3.5 w-3.5 text-primary shrink-0" />{soul.phone}</div>) : (<p className="text-[9px] text-muted-foreground/40 italic">No phone recorded</p>)}{soul.email && (<div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground"><Mail className="h-3.5 w-3.5 text-primary shrink-0" />{soul.email}</div>)}</div></div>
-            <Separator className="opacity-20" /><div className="space-y-4 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Relational Actions</p><div className="flex flex-col gap-1.5">{actionItems.filter(a => a.id !== 'matchmaking' || soul.maritalStatus !== 'Married').map(action => { const Icon = iconMap[action.id] || Heart; return (<Button key={action.id} variant="ghost" className="flex items-center justify-start gap-3 h-11 px-4 rounded-xl border border-transparent hover:bg-primary/5 hover:border-primary/10 transition-all text-left group w-full" onClick={() => handleActionClick(action.id)}><div className="h-8 w-8 rounded-lg bg-muted/20 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors"><Icon className="h-4 w-4 text-primary" /></div><span className="text-xs font-bold uppercase tracking-tight truncate flex-1">{action.label}</span><ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity" /></Button>) })}</div></div>
-            <Separator className="opacity-20" /><div className="space-y-4 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Harvest Context</p><div className="space-y-1"><p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate"><Target className="h-3.5 w-3.5 text-primary" />Source: {soul.source}</p></div></div>
-            <Separator className="opacity-20" /><div className="space-y-4 text-left"><div className="flex items-center justify-between"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onOpenAssignDialog(soul)}><PlusCircle className="h-4 w-4" /></Button></div><div className="space-y-3"><div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10"><HeartHandshake className="h-4 w-4 text-primary shrink-0" /><div className="min-w-0 flex-1"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Fellowship</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.fellowshipName || 'No Fellowship'}</p></div></div><div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10"><Users className="h-4 w-4 text-blue-500 shrink-0" /><div className="min-w-0 flex-1"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Association</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.associationName || 'No Association'}</p></div></div></div></div>
-            <Separator className="opacity-20" /><div className="space-y-4 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Spiritual Milestones</p><div className="grid grid-cols-2 gap-2">{[{ label: 'Church', val: soul.attendingChurch, icon: Church }, { label: 'Word Study', val: soul.inBibleStudy, icon: BookOpen }, { label: 'Prayer', val: soul.attendingPrayer, icon: Zap }, { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck }].map(milestone => (<div key={milestone.label} className={cn("flex items-center gap-2 p-2 rounded-xl border transition-all", milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40")}><milestone.icon className="h-3 w-3" /><span className="text-[10px] font-black uppercase tracking-tight">{milestone.label}</span></div>))}</div></div>
-            <Separator className="opacity-20" /><div className="space-y-4 text-left"><div className="flex items-center justify-between"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2"><History className="h-3.5 w-3.5" /> Interaction History</p><Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5" onClick={() => onViewHistory(soul)}>View All</Button></div><div className="space-y-4 pl-1">{sortedHistory.length > 0 ? sortedHistory.slice(0, 3).map((log, index) => { const date = safeToDate(log.date); return (<div key={index} className="relative"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">{date ? format(date, "MMM d, yyyy") : 'Recently'}{log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName.split(' ')[0]}</span>}</p><p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic">&ldquo;{log.note || 'Interaction logged.'}&rdquo;</p></div>); }) : (<div className="py-4 text-center border border-dashed rounded-xl bg-muted/5"><p className="text-sm text-muted-foreground/40 italic">No interactions recorded.</p></div>)}</div></div>
-            <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner"><div className="flex items-center justify-between"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1"><ClipboardList className="h-3.5 w-3.5" /> Assessed Needs</p><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onAssess(soul)}><Edit className="h-4 w-4" /></Button></div>{needs ? (<div className="space-y-4">{needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance">&ldquo;{needs.generalImpression}&rdquo;</p>}<div className="grid grid-cols-2 gap-3">{needs.emotionalNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.emotionalNeeds}</p></div>)}{needs.physicalNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.physicalNeeds}</p></div>)}{needs.financialNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.financialNeeds}</p></div>)}{needs.socialNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.socialNeeds}</p></div>)}</div>{needs.followUpPlan && (<div className="pt-2 border-t border-primary/10"><p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5"><Target className="h-2.5 w-2.5" /> Strategy</p><p className="text-[10px] text-muted-foreground leading-relaxed italic">{needs.followUpPlan}</p></div>)}</div>) : (<div className="py-4 text-center"><Button variant="outline" size="sm" className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5" onClick={() => onAssess(soul)}>BEGIN ASSESSMENT</Button></div>)}</div>
-            <div className="pt-2 text-left space-y-3"><Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20" onClick={() => onFollowUp(soul)}>LOG FOLLOW-UP</Button><Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px]" onClick={() => onDelete(soul)}><Trash2 className="mr-2 h-4 w-4" /> DELETE RECORD</Button></div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
+/**
+ * Main Table Components
+ */
 const SoulCard = React.memo(({ soul, onClick }: { 
   soul: Soul; 
   onClick: () => void;
@@ -684,10 +563,6 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
     setMounted(true); 
   }, []);
 
-  const selectedSoul = React.useMemo(() => 
-    allSouls.find(s => s.id === selectedId) || null
-  , [allSouls, selectedId]);
-
   if (loading || !mounted) {
     return (
         <div className="space-y-4 text-left">
@@ -717,19 +592,6 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
         </Card>
     );
   }
-
-  const profileView = selectedSoul && (
-    <SoulProfileContent 
-        soul={selectedSoul} 
-        onFollowUp={onFollowUp} 
-        onViewHistory={onViewHistory}
-        onEdit={onEdit} 
-        onAssess={onAssess} 
-        onOpenAssignDialog={onOpenAssignDialog} 
-        onExportSingle={onExportSingle} 
-        onDelete={onDelete}
-    />
-  );
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
@@ -773,55 +635,6 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
                 </Card>
             )}
         </div>
-
-        <Drawer open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 p-0">
-                        <div className="flex items-center gap-2 mb-2 text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span>
-                        </div>
-                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
-                            {selectedSoul?.firstName} {selectedSoul?.lastName}
-                        </DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
-                    </DrawerHeader>
-                </div>
-                <ScrollArea className="flex-grow min-h-0 text-left">
-                    <div className="p-6 pb-24 text-left">
-                        {profileView}
-                    </div>
-                </ScrollArea>
-            </DrawerContent>
-        </Drawer>
-
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left">
-            <AnimatePresence>
-                {selectedSoul ? (
-                    <motion.div
-                        key={selectedId}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        className="space-y-6 text-left"
-                    >
-                        {profileView}
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left">
-                            {selectedSoul.firstName} {selectedSoul.lastName}
-                        </p>
-                    </motion.div>
-                ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
-                        <div className="relative mx-auto mb-4 w-12 h-12 flex items-center justify-center">
-                            <Users className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
-                            <UserPlus className="absolute inset-0 m-auto h-5 w-5 text-primary text-left" />
-                        </div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left">Select a record to preview identity</p>
-                    </div>
-                )}
-            </AnimatePresence>
-        </div>
     </div>
   );
-});
+}
