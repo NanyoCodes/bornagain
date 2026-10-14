@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
@@ -24,12 +25,10 @@ import {
   Users,
   Heart,
   User,
-  Send,
-  ChevronDown,
-  BookMarked,
   MessageSquare,
   HandHeart,
-  Plus,
+  BookMarked,
+  ChevronDown,
   Zap
 } from "lucide-react";
 import { 
@@ -97,10 +96,9 @@ import { SoulsImportTemplateCard } from "@/components/settings/souls-import-temp
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Papa from 'papaparse';
 import NextImage from "next/image";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { getStatusClasses } from "./souls-won-table";
+import { SoulProfileContent, getStatusClasses } from "./soul-profile-content";
 
 function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWord, onPray, onMessage }: { 
     souls: Soul[], 
@@ -282,9 +280,9 @@ const AssignFellowshipDialogLazy = dynamic(() => import('@/components/souls/assi
 const LogSoulFormLazy = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
 const EditSoulFormLazy = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const SoulAssessmentDialogLazy = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
-const ShareWordDialogLazy = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.ShareWordDialog), { ssr: false });
-const IntercessionHubDialogLazy = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.IntercessionHubDialog), { ssr: false });
-const MessageHubDialogLazy = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.MessageHubDialog), { ssr: false });
+const ShareWordDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.ShareWordDialog), { ssr: false });
+const IntercessionHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.IntercessionHubDialog), { ssr: false });
+const MessageHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.MessageHubDialog), { ssr: false });
 
 export default function SoulsWonPage() {
   const { user } = useUser();
