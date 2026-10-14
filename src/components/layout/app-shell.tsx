@@ -1,7 +1,6 @@
 'use client';
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState, useRef, useCallback, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -52,7 +51,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -68,7 +66,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -83,7 +80,7 @@ import { collection, doc, query, where, updateDoc, serverTimestamp } from "fireb
 import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
-import { PageTransition } from "./page-transition";
+import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 

@@ -50,10 +50,11 @@ import {
   Smartphone,
   Lock,
   Plus,
-  UserPlus
+  UserPlus,
+  Reply
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
+import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput, ChatMessage } from "@/lib/types";
 import { useUser, useDoc, useUserProfile, useCollection, useFirestore } from "@/firebase";
 import { 
   doc, 
@@ -434,7 +435,7 @@ export function ShareWordDialog({
             {view === 'chapters' && renderChapters}
             {view === 'verses' && renderVerses}
         </div>
-  </ScrollArea>
+    </ScrollArea>
   );
 
   const footer = view === 'verses' && (
@@ -941,7 +942,7 @@ export function SoulProfileContent({
                         sortedHistory.slice(0, 3).map((log, index) => {
                             const date = safeToDate(log.date);
                             return (
-                                <div key={index} className="relative text-left">
+                                <div key={index} className="relative pl-4 border-l-2 border-primary/20 text-left">
                                     <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left">
                                         {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                         {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName.split(' ')[0]}</span>}
@@ -1323,7 +1324,7 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
                 </div>
             ) : (
                 <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left">
                         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
                             <Heart className="h-6 w-6 text-primary fill-current text-left" />
                             Harvest Dashboard
@@ -1357,12 +1358,12 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
 
         {/* Tablet/Mobile Pop-up */}
         <Drawer open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span>
+                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span>
                         </div>
                         <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
@@ -1371,7 +1372,7 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left text-left">
                         {profileView}
                     </div>
                 </ScrollArea>
@@ -1400,7 +1401,7 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
                             <Users className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left text-left" />
                             <UserPlus className="absolute inset-0 m-auto h-5 w-5 text-primary text-left text-left text-left" />
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left text-left">Select a record to preview identity</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left text-left text-left">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>
@@ -1408,4 +1409,3 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
     </div>
   );
 }
-
