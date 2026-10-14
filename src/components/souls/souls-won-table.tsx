@@ -43,13 +43,13 @@ const SoulCard = React.memo(({ soul, onClick }: {
             <div className="flex items-center justify-between p-4 gap-4 text-left">
                 <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                     <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 text-left")}>
-                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                        <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">
                             {soul.firstName?.charAt(0) || 'S'}
                         </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-left">
-                        <div className="flex items-center gap-2 text-left flex-wrap">
+                        <div className="flex items-center gap-2 text-left flex-wrap text-left">
                             <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight text-left">
                               {soul.firstName || 'Unknown'} {soul.lastName || ''}
                             </p>
@@ -80,7 +80,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
             <TableCell className="font-medium p-4 text-left">
                 <div className="flex items-center gap-4 text-left">
                     <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 text-left")}>
-                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                        <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">
                             {soul.firstName?.charAt(0) || 'S'}
                         </AvatarFallback>
@@ -128,7 +128,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect }: {
   if (souls.length === 0) {
     return (
         <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left">
-            <CardContent className="text-left">
+            <CardContent className="text-left text-left">
                 <div className="text-center py-24 flex flex-col items-center text-left">
                     <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20 text-left">
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left" />
