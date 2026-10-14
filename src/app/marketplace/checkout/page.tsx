@@ -312,7 +312,7 @@ function CheckoutPageContent() {
                     </Card>
 
                     <div className="p-6 rounded-[2rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left">
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left text-left">
                             <Info className="h-6 w-6 text-primary text-left text-left text-left" />
                         </div>
                         <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left">

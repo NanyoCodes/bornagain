@@ -771,26 +771,21 @@ export default function SoulsWonPage() {
           isOpen={!!shareWordSoulId}
           onOpenChange={(open) => !open && setShareWordSoulId(null)}
           soul={soulForWordSharing}
-          onSelectVerse={(v) => { 
-              setShareWordSoulId(null);
-          }}
+          onSelectVerse={(v) => { setShareWordSoulId(null); setSelectedId(null); }}
         />
 
         <IntercessionHubDialog 
           isOpen={!!prayerSoulId}
           onOpenChange={(open) => !open && setPrayerSoulId(null)}
           soul={soulForPrayer}
-          onComplete={(msg) => {
-              setPrayerSoulId(null);
-          }}
+          onComplete={(msg) => { setPrayerSoulId(null); setSelectedId(null); }}
         />
 
         <MessageHubDialog 
           isOpen={!!messageSoulId}
           onOpenChange={(open) => !open && setMessageSoulId(null)}
           soul={soulForMessage}
-          onChannelSelect={(channel) => {
-          }}
+          onChannelSelect={(channel) => { setMessageSoulId(null); setSelectedId(null); }}
         />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
@@ -813,7 +808,7 @@ export default function SoulsWonPage() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left text-left">Add New Soul</DrawerTitle>
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left text-left text-left">Add New Soul</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left text-left">Record a new life won for Christ.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
@@ -826,7 +821,7 @@ export default function SoulsWonPage() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left text-left">Edit Record</DrawerTitle>
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Edit Record</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left text-left">Update soul identity and mission details.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
