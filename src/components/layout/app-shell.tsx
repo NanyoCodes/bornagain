@@ -85,7 +85,6 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
-import Image from "next/image";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
@@ -222,9 +221,9 @@ function CartButton() {
                 <ShoppingCart className="h-5 w-5 text-primary text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kindness Package</span>
             </div>
-            <DialogHeader className="text-left p-0">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Pending Offering</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left">Review the provisions in your active package.</DialogDescription>
+            <DialogHeader className="text-left p-0 text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Pending Offering</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
         </div>
         <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>
@@ -327,8 +326,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             <CartButton />
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
-                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110 text-left" />
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left text-left">
+                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110 text-left text-left" />
                       {unreadChatCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadChatCount}
@@ -339,8 +338,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
-                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110 text-left" />
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left text-left">
+                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110 text-left text-left" />
                       {unreadNotifCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadNotifCount}
@@ -410,8 +409,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold text-left">
               <Link href="/login" className="text-left">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
-              <Link href="/signup" className="text-left">Join Movement</Link>
+            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left text-left">
+              <Link href="/signup" className="text-left text-left">Join Movement</Link>
             </Button>
           </div>
         ) : (
@@ -576,9 +575,9 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
         <div className="relative mb-8 mx-auto w-fit text-left">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
-            <div className="absolute inset-0 flex items-center justify-center text-left">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left" />
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left text-left">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left text-left" />
             </div>
         </div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8 text-left">
@@ -642,8 +641,8 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
               <SheetHeader className="text-left flex-shrink-0">
-                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
+                <SheetTitle className="text-xl font-bold text-left text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8 text-left">
@@ -655,9 +654,9 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
             <div className="p-6 border-b bg-muted/10 text-left">
-              <DialogHeader className="text-left">
-                <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
-                <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+              <DialogHeader className="text-left p-0 text-left">
+                <DialogTitle className="text-2xl font-bold text-left text-left text-left">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
             <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
@@ -694,7 +693,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
                 <div className="relative mx-auto w-fit text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
                 </div>
             </div>
         }>
