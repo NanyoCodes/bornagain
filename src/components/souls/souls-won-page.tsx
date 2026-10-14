@@ -1017,11 +1017,11 @@ export default function SoulsWonPage() {
                 <Drawer open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                         <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left text-left" />
                                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Harvest Demographic</span>
                             </div>
-                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
+                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left text-left text-left"> {selectedFilterGroup?.value} Directory</DrawerTitle>
                                 <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                             </DrawerHeader>
@@ -1046,9 +1046,9 @@ export default function SoulsWonPage() {
                 </Drawer>
             ) : (
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
-                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
+                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Demographic View</span>
                             </div>
@@ -1124,7 +1124,7 @@ export default function SoulsWonPage() {
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left">Add New Soul</DrawerTitle>
                                     <DrawerDescription className="text-sm text-left text-left text-left text-left text-left">Record a new life won for Christ.</DrawerDescription>
                                 </DrawerHeader>
@@ -1158,8 +1158,8 @@ export default function SoulsWonPage() {
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                                <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left">
-                                    <DialogTitle className="text-2xl font-bold font-headline text-left text-left text-left text-left text-left text-left">Add New Soul</DialogTitle>
+                                <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-bold font-headline text-left text-left text-left text-left text-left text-left">Add New Soul</DrawerTitle>
                                     <DialogDescription className="text-sm text-left text-left text-left text-left text-left text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>

@@ -911,7 +911,7 @@ export function SoulProfileContent({
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left">
-                        <Users className="h-4 w-4 text-blue-500 shrink-0 text-left text-left" />
+                        <Users className="h-4 w-4 text-blue-500 shrink-0 text-left" />
                         <div className="min-w-0 flex-1 text-left text-left">
                             <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Association</p>
                             <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left">{soul.associationName || 'No Association'}</p>
@@ -1133,7 +1133,7 @@ export function SoulProfileContent({
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left text-left">
-          <DialogHeader className="text-center space-y-2 text-left text-left text-left">
+          <DialogHeader className="text-center space-y-2 text-left text-left text-left text-left">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left">
                   <Share className="h-7 w-7 text-primary text-left text-left text-left" />
               </div>
