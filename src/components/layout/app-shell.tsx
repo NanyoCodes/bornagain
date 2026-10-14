@@ -79,7 +79,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
-import type { Notification, UserProfile, VendorProfile } from "@/lib/types";
+import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
@@ -88,6 +88,18 @@ import { SplashScreen } from "../common/splash-screen";
 import Image from "next/image";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
+
+const inspirationalMessages = [
+  "GOD FIRST",
+  "SEEK THE KINGDOM",
+  "POWER IN TESTIMONY",
+  "GLORY TO THE MOST HIGH",
+  "EMPOWERING THE HARVEST",
+  "JESUS IS LORD",
+  "THE HARVEST IS PLENTIFUL",
+  "STAND FIRM IN FAITH",
+  "REJOICE ALWAYS"
+];
 
 const navItems = [
   { href: "/growth", label: "Growth", icon: TrendingUp, color: "bg-orange-500" },
@@ -104,18 +116,6 @@ const itemColors: Record<string, string> = {
   "/campaigns": "from-rose-500 to-rose-600",
   "/victory-hub": "from-indigo-600 to-violet-700",
 };
-
-const inspirationalMessages = [
-  "GOD FIRST",
-  "SEEK THE KINGDOM",
-  "POWER IN TESTIMONY",
-  "GLORY TO THE MOST HIGH",
-  "EMPOWERING THE HARVEST",
-  "JESUS IS LORD",
-  "THE HARVEST IS PLENTIFUL",
-  "STAND FIRM IN FAITH",
-  "REJOICE ALWAYS"
-];
 
 const SYSTEM_NOTIFICATION_TYPES = [
   'campaign_join', 
@@ -148,7 +148,7 @@ function CartButton() {
   const listContent = useMemo(() => (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3 text-left">
                 {cartItems.map((item: any) => (
                     <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left">
                         <Avatar className="h-10 w-10 border">
@@ -172,7 +172,7 @@ function CartButton() {
                 <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left" />
                 <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center">Your package is empty</p>
                 <Button variant="link" asChild className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest h-auto p-0 text-center">
-                    <Link href="/marketplace" onClick={() => setIsOpen(false)}>Explore Provision Hub</Link>
+                    <Link href="/marketplace" onClick={() => setIsOpen(false)}>Explore Hub</Link>
                 </Button>
             </div>
         )}
@@ -382,18 +382,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/marketplace">
-                    <Store className="mr-2 h-4 w-4" />
-                    <span>Meals Hub</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/marketplace/gifts">
-                    <Gift className="mr-2 h-4 w-4" />
-                    <span>Kindness Hub</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
