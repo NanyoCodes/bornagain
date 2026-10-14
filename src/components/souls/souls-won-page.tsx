@@ -69,8 +69,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest, SoulRelationship } from "@/lib/types";
 import { useCollection, useFirestore, useUser, useUserProfile } from "@/firebase";
-import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment, arrayUnion } from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment, arrayUnion } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -166,7 +165,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                                 )}
                             </div>
                             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left">
-                                <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
+                                <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left">
                                     Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                                 </p>
                                 {isFamilyMember && (
@@ -226,7 +225,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                     </div>
                 </div>
               </CollapsibleTrigger>
-              <CollapsibleContent className="px-4 pb-4">
+              <CollapsibleContent className="px-4 pb-4 text-left">
                   <div className="pt-3 space-y-2 text-left">
                       <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2 text-left">Household Members</p>
                       {spouseObj && (
@@ -244,9 +243,9 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                       )}
                       {children.map(child => (
                            <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left text-left">
-                              <Avatar className="h-8 w-8 border">
-                                  <AvatarImage src={child.photoURL || undefined} />
-                                  <AvatarFallback> {child.firstName?.charAt(0)}</AvatarFallback>
+                              <Avatar className="h-8 w-8 border text-left">
+                                  <AvatarImage src={child.photoURL || undefined} className="text-left" />
+                                  <AvatarFallback className="text-left"> {child.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <div className="flex-1 min-w-0 text-left text-left">
                                   <p className="font-bold text-xs uppercase truncate leading-none text-left">{child.firstName} {child.lastName}</p>
@@ -469,19 +468,6 @@ export default function SoulsWonPage() {
     setIsLogDialogOpen(true);
   }, []);
 
-  const handleFinalizeLog = async (soul: Soul, actionId: string, noteAddendum: string = '') => {
-    if (!user || !firestore || !userProfile) return;
-    const batch = writeBatch(firestore);
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
-    const globalSoulRef = doc(firestore, 'souls', soul.id);
-    const memberName = `${userProfile.firstName} ${userProfile.lastName}`.trim() || user.displayName || 'Member';
-    const logEntry = { date: new Date(), note: `Logged via Identity Hub: Quick Action${noteAddendum ? ` - ${noteAddendum}` : ''}`, actions: [actionId], memberId: user.uid, memberName: memberName };
-    batch.update(soulRef, { followUpLog: arrayUnion(logEntry), lastUpdatedAt: serverTimestamp(), status: 'Contacted' });
-    batch.update(globalSoulRef, { followUpLog: arrayUnion(logEntry), lastUpdatedAt: serverTimestamp(), status: 'Contacted' });
-    try { await batch.commit(); }
-    catch (err) { console.warn("Background log failure", err); }
-  };
-
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
     if (!userProfile) return;
     const wonAt = safeToDate(soul.wonAt);
@@ -565,7 +551,7 @@ export default function SoulsWonPage() {
             <div className="lg:col-span-8 space-y-8 pb-32 text-left">
                 <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
-                        <div className="space-y-1 text-left">
+                        <div className="space-y-1 text-left text-left">
                             <div className="flex items-center gap-3 text-left">
                                 <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY HARVEST</h1>
                                 <Badge variant="secondary" className="h-7 sm:h-9 px-3 rounded-full font-black text-xs sm:text-sm bg-primary/10 text-primary border-primary/20 shrink-0">{totalSoulsCount}</Badge>
@@ -597,7 +583,7 @@ export default function SoulsWonPage() {
 
                 {soulsWithPhotos.length > 0 && (
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700 text-left">
-                        <div className="flex items-center justify-between mb-4 px-1 text-left">
+                        <div className="flex items-center justify-between mb-4 px-1 text-left text-left">
                             <div className="flex items-center gap-2 text-left">
                                 <ImageIcon className="h-4 w-4 text-primary" />
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">GALLERY OF MY SOULS</h3>
@@ -629,7 +615,7 @@ export default function SoulsWonPage() {
                             <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">DEMOGRAPHICS</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Age Analysis</p></div>
                         </div>
                         <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
-                            <CardContent className="p-6 sm:p-8 space-y-6 text-left">
+                            <CardContent className="p-6 sm:p-8 space-y-6 text-left text-left">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                                     {[
                                         { label: 'Children (0-12)', count: ageGroups.children.count, color: 'bg-blue-500', icon: Sparkles },
@@ -678,7 +664,7 @@ export default function SoulsWonPage() {
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left"><Heart className="h-5 w-5 text-primary text-left" /></div>
-                            <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">MARITAL DEMOGRAPHICS</h2><p className="text-[10px) font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Family & Status Insights</p></div>
+                            <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">MARITAL DEMOGRAPHICS</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Family & Status Insights</p></div>
                         </div>
                         <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
                             <CardContent className="p-6 sm:p-8 text-left text-left text-left">

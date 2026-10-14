@@ -7,7 +7,9 @@ import {
   Heart, 
   ArrowRight,
   Church,
-  HeartHandshake
+  HeartHandshake,
+  PlusCircle,
+  Loader2
 } from "lucide-react";
 import type { Soul } from "@/lib/types";
 import { 

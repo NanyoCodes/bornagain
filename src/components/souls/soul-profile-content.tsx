@@ -97,11 +97,11 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
 } from "@/components/ui/drawer";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -110,7 +110,7 @@ import { Badge } from "@/components/ui/badge";
 import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { MutualConnectBadge } from "./mutual-connect-badge";
@@ -639,9 +639,6 @@ export function SoulProfileContent({
         case 'invited_to_event':
             await finalizeLog(actionId, 'Redirected to Events Hub');
             router.push('/dashboard/events');
-            return;
-        case 'matchmaking':
-            router.push(`/dashboard/matchmaking?soulId=${soul.id}`);
             return;
         case 'shared_meal':
         case 'gave_gift':
