@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -53,6 +52,7 @@ import {
   doc, 
   updateDoc, 
   arrayUnion, 
+  arrayRemove, 
   collection, 
   query, 
   setDoc, 
@@ -90,6 +90,13 @@ import {
   DialogTrigger 
 } from "@/components/ui/dialog";
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import {
   Drawer,
   DrawerContent,
   DrawerHeader,
@@ -116,20 +123,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-
-const iconMap: Record<string, any> = {
-    'prayed_together': Sparkles,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
-    'matchmaking': HeartHandshake,
-};
 
 export const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -443,18 +436,41 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
 }
 
 export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }: { isOpen: boolean, onOpenChange: (open: boolean) => void, soul: Soul | null, onChannelSelect: (channel: 'whatsapp' | 'sms') => void }) {
+    const isMobile = useIsMobile();
+
+    const header = (
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <DialogHeader className="text-center space-y-2 p-0">
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2"><MessageSquare className="h-7 w-7 text-primary" /></div>
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Message Hub</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-left">How would you like to encourage {soul?.firstName}?</DialogDescription>
+            </DialogHeader>
+        </div>
+    );
+
+    const content = (
+        <div className="flex flex-col gap-3 p-8">
+            <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest shadow-lg shadow-primary/20"><WhatsAppIcon className="h-5 w-5" /> WhatsApp</Button>
+            <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest border-2 border-primary/20 text-primary hover:bg-primary/5"><MessageSquare className="h-5 w-5" /> Standard SMS</Button>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
+                    {header}
+                    {content}
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
-                <DialogHeader className="text-center space-y-2 p-0">
-                    <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2"><MessageSquare className="h-7 w-7 text-primary" /></div>
-                    <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Message Hub</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">How would you like to encourage {soul?.firstName}?</DialogDescription>
-                </DialogHeader>
-                <div className="flex flex-col gap-3 pt-6">
-                    <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest shadow-lg shadow-primary/20"><WhatsAppIcon className="h-5 w-5" /> WhatsApp</Button>
-                    <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest border-2 border-primary/20 text-primary hover:bg-primary/5"><MessageSquare className="h-5 w-5" /> Standard SMS</Button>
-                </div>
+            <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-center text-left">
+                {header}
+                {content}
             </DialogContent>
         </Dialog>
     );
@@ -609,15 +625,6 @@ export function SoulProfileContent({
             return;
         case 'shared_meal':
         case 'gave_gift':
-            const provisionKey = `testify_pending_provisions_${user?.uid}`;
-            const stored = localStorage.getItem(provisionKey);
-            let current = stored ? JSON.parse(stored) : [];
-            if (!Array.isArray(current)) current = [];
-            if (!current.some((p: any) => p.soulId === soul.id && p.actionId === actionId)) {
-                current.push({ soulId: soul.id, soulName: `${soul.firstName} ${soul.lastName}`, actionId: actionId, timestamp: Date.now() });
-                localStorage.setItem(provisionKey, JSON.stringify(current));
-                window.dispatchEvent(new Event('testify_pending_action_update'));
-            }
             const mPath = actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
             router.push(`${mPath}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`);
             return;
@@ -1031,85 +1038,35 @@ export function SoulProfileContent({
         </CardContent>
       </Card>
 
-      <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
-          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left">
-                  <DialogHeader>
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left">Draft a powerful prayer for {soul.firstName}.</DialogDescription>
-                  </DialogHeader>
-              </div>
-              <div className="p-8 space-y-6 text-left">
-                <div className="space-y-3 text-left">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Focus</label>
-                    <div className="flex flex-wrap gap-2 text-left">
-                        {prayerTemplates.map(t => (
-                            <Button 
-                                key={t.id} 
-                                variant="outline" 
-                                size="sm" 
-                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary text-left"
-                                onClick={() => setCustomMessageText(resolveTemplate(t.text, soul))}
-                            >
-                                {t.label}
-                            </Button>
-                        ))}
-                    </div>
-                </div>
-                  <div className="space-y-2 text-left">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Message</Label>
-                      <Textarea 
-                          value={customMessageText}
-                          onChange={e => setCustomMessageText(e.target.value)}
-                          className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left"
-                      />
-                  </div>
-                  <Button 
-                      onClick={() => handlePrayerCustomizationConfirm(customMessageText)} 
-                      disabled={!customMessageText.trim()} 
-                      className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
-                  >
-                      CONTINUE TO CHANNEL
-                  </Button>
-              </div>
-          </DialogContent>
-      </Dialog>
+      <IntercessionHubDialog 
+        isOpen={isPrayerCustomizationOpen} 
+        onOpenChange={setIsPrayerCustomizationOpen} 
+        soul={soul} 
+        onComplete={(text) => handlePrayerCustomizationConfirm(text)} 
+      />
 
-      <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
-          <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
-                  <MessageSquare className="h-7 w-7 text-primary" />
-              </div>
-            <DialogTitle className="text-2xl font-black font-headline uppercase text-center">Message Hub</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-              <WhatsAppIcon className="h-5 w-5" /> WhatsApp
-            </Button>
-            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
-              <MessageSquare className="h-5 w-5" /> Standard SMS
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <MessageHubDialog 
+        isOpen={isCommChannelDialogOpen} 
+        onOpenChange={setIsCommChannelDialogOpen} 
+        soul={soul} 
+        onChannelSelect={(channel) => handleCommChoice(channel)} 
+      />
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
         <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-          <div className="p-8 border-b bg-muted/10 text-left">
-            <DialogHeader>
+          <div className="p-8 border-b bg-muted/10">
+            <DialogHeader className="text-left">
               <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
               <DialogDescription className="text-sm font-medium text-left">Describe how you supported {soul.firstName}.</DialogDescription>
             </DialogHeader>
           </div>
-          <div className="p-8 space-y-6 text-left">
-            <div className="space-y-2 text-left">
+          <div className="p-8 space-y-6">
+            <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 
-                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
+                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
                 />
             </div>
             <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
@@ -1118,36 +1075,30 @@ export function SoulProfileContent({
       </Dialog>
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
-          <DialogHeader className="text-center space-y-2 text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
-                  <Share className="h-7 w-7 text-primary" />
-              </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Share Details</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
+          <DialogHeader className="text-center space-y-2 p-0">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2"><Share className="h-7 w-7 text-primary" /></div>
+            <DialogTitle className="text-2xl font-black font-headline uppercase text-center">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
-              <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External
-            </Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
-              <HeartHandshake className="h-5 w-5 text-left" /> Partner on App
-            </Button>
+          <div className="flex flex-col gap-3 pt-6">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20"><WhatsAppIcon className="h-5 w-5" /> WhatsApp External</Button>
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5"><HeartHandshake className="h-5 w-5" /> Partner on App</Button>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left">
-                  <DialogHeader className="text-left text-left">
+              <div className="p-8 border-b bg-muted/10">
+                  <DialogHeader className="text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-6 text-left">
-              <ScrollArea className="h-64 text-left">
-                  <div className="space-y-2 text-left">
+              <div className="p-6">
+              <ScrollArea className="h-64">
+                  <div className="space-y-2">
                       {uniquePartners.map(p => (
                           <Button 
                               key={p.userId} 
@@ -1155,9 +1106,9 @@ export function SoulProfileContent({
                               className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center text-left"
                               onClick={() => handleShareToPartner(p)}
                           >
-                              <Avatar className="h-8 w-8 border shrink-0 text-left">
+                              <Avatar className="h-8 w-8 border shrink-0">
                                   <AvatarImage src={p.photoURL} />
-                                  <AvatarFallback className="font-bold text-[10px] text-left">{p.firstName?.charAt(0)}</AvatarFallback>
+                                  <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
                           </Button>
@@ -1179,4 +1130,139 @@ export function SoulProfileContent({
       />
     </div>
   );
+}
+
+export function IntercessionHubDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onComplete 
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  soul: Soul | null; 
+  onComplete: (msg: string) => void;
+}) {
+    const [customText, setCustomText] = useState('');
+    const isMobile = useIsMobile();
+    
+    const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
+        const gender = targetSoul.gender?.toLowerCase() || 'other';
+        const pronouns = {
+            subject: gender === 'female' ? 'she' : 'he',
+            object: gender === 'female' ? 'her' : 'him',
+            possessive: gender === 'female' ? 'her' : 'his'
+        };
+        return template.replace(/{name}/g, targetSoul.firstName).replace(/{subject}/g, pronouns.subject).replace(/{object}/g, pronouns.object).replace(/{possessive}/g, pronouns.possessive);
+    }, []);
+
+    useEffect(() => {
+        if (isOpen && soul) {
+            setCustomText(resolveTemplate(prayerTemplates[0].text, soul));
+        }
+    }, [isOpen, soul, resolveTemplate]);
+
+    const header = (
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <DialogHeader className="text-left p-0">
+                <div className="flex items-center gap-3 mb-2">
+                    <HandHeart className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Intercession</span>
+                </div>
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Prayer for {soul?.firstName}</DialogTitle>
+                <DialogDescription className="text-sm font-medium">Draft a powerful word of blessing.</DialogDescription>
+            </DialogHeader>
+        </div>
+    );
+
+    const contentBody = (
+        <div className="p-6 space-y-6 text-left">
+            <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Focus Points</Label>
+                <div className="flex flex-wrap gap-2">
+                    {prayerTemplates.map(t => (
+                        <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase border-primary/20 hover:bg-primary/5" onClick={() => {
+                            if(soul) setCustomText(resolveTemplate(t.text, soul));
+                        }}>{t.label}</Button>
+                    ))}
+                </div>
+            </div>
+            <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Personalize Revelation</Label>
+                <Textarea value={customText} onChange={e => setCustomText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
+            </div>
+            <Button onClick={() => onComplete(customText)} disabled={!customText.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg uppercase tracking-widest">PROCEED TO HUB</Button>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    {header}
+                    <ScrollArea className="flex-grow">{contentBody}</ScrollArea>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                {header}
+                {contentBody}
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+export function MessageHubDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onChannelSelect 
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  soul: Soul | null; 
+  onChannelSelect: (channel: 'whatsapp' | 'sms') => void;
+}) {
+    const isMobile = useIsMobile();
+
+    const header = (
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <DialogHeader className="text-center space-y-2 p-0">
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2"><MessageSquare className="h-7 w-7 text-primary" /></div>
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-center text-left">Message Hub</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DialogDescription>
+            </DialogHeader>
+        </div>
+    );
+
+    const contentBody = (
+        <div className="flex flex-col gap-3 p-8">
+            <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest shadow-lg shadow-primary/20"><WhatsAppIcon className="h-5 w-5" /> WhatsApp</Button>
+            <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest border-2 border-primary/20 text-primary hover:bg-primary/5"><MessageSquare className="h-5 w-5" /> Standard SMS</Button>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
+                    {header}
+                    {contentBody}
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-center text-left">
+                {header}
+                {contentBody}
+            </DialogContent>
+        </Dialog>
+    );
 }
