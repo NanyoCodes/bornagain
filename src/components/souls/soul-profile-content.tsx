@@ -48,6 +48,7 @@ import {
   MapPin,
   Info
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,6 +56,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import Image from 'next/image';
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
 import { 
@@ -95,6 +98,7 @@ import {
     DrawerHeader,
     DrawerTitle,
     DrawerDescription,
+    DrawerFooter,
 } from "@/components/ui/drawer";
 import {
     Sheet,
@@ -103,11 +107,9 @@ import {
     SheetTitle,
     SheetDescription,
 } from "@/components/ui/sheet";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { cn, safeToDate } from "@/lib/utils";
-import Image from 'next/image';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
@@ -115,7 +117,8 @@ import { bibleData } from "@/lib/bible-data";
 import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-data";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { useRouter } from "next/navigation";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { MutualConnectBadge } from "./mutual-connect-badge";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -208,7 +211,7 @@ export function ShareWordDialog({
   
   const [selectedBook, setSelectedBook] = useState<string | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
-  const [chapterContent, setChapterContent] = useState<BibleChapterOutput | null>(null);
+  const [chapterContent, setChapterContent] = setChapterContent = useState<BibleChapterOutput | null>(null);
   const [loadingVerses, setLoadingVerses] = useState(false);
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
 
@@ -468,7 +471,7 @@ export function IntercessionHubDialog({
             <DialogHeader className="text-left p-0">
                 <div className="flex items-center gap-3 mb-2 text-left">
                     <HandHeart className="h-5 w-5 text-primary text-left" />
-                    <span className="text-[10px) font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Intercession</span>
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Intercession</span>
                 </div>
                 <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Prayer for {soul?.firstName}</DialogTitle>
                 <DialogDescription className="text-sm font-medium text-left">Draft a powerful word of blessing.</DialogDescription>
@@ -869,19 +872,19 @@ export function SoulProfileContent({
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.relationship || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.relationship || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.workStatus || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.workStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Rel. Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.maritalStatus || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.maritalStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nickname</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.nickname || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.nickname || 'N/A'}</p>
                     </div>
                 </div>
             </div>
@@ -1151,8 +1154,8 @@ export function SoulProfileContent({
             <DialogDescription className="text-sm font-medium text-center text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-left">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left"><WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External</Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left"><HeartHandshake className="h-5 w-5 text-left" /> Partner on App</Button>
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left"><WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External</Button>
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest border-2 border-primary/20 text-primary hover:bg-primary/5 text-left"><HeartHandshake className="h-5 w-5 text-left" /> Partner on App</Button>
           </div>
         </DialogContent>
       </Dialog>
