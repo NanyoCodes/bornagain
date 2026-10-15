@@ -139,7 +139,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect }: {
     return (
         <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left">
             <CardContent className="text-left">
-                <div className="text-center py-24 flex flex-col items-center text-left text-left">
+                <div className="text-center py-24 flex flex-col items-center text-left">
                     <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20 text-left">
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left" />
                     </div>
@@ -162,7 +162,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect }: {
                 </div>
             ) : (
                 <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left">
                         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
                             <Heart className="h-6 w-6 text-primary fill-current text-left" />
                             Harvest Dashboard

@@ -18,7 +18,8 @@ export default function LegacyDashboardRedirectLayout({ children }: { children: 
       setIsRedirecting(true);
       const newPath = pathname.replace('/dashboard', '');
       const queryParams = typeof window !== 'undefined' ? window.location.search : '';
-      router.replace((newPath || '/testimonies') + queryParams);
+      const finalTarget = (newPath || '/testimonies') + queryParams;
+      router.replace(finalTarget);
     }
   }, [pathname, router]);
 
