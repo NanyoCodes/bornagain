@@ -98,6 +98,7 @@ import { cn, safeToDate } from "@/lib/utils";
 import Image from 'next/image';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { CommentSection } from "./comment-section";
 import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
@@ -119,15 +120,19 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
-function getYouTubeEmbedUrl(url: string | undefined) {
-  if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  if (match && match[2].length === 11) {
-    return `https://www.youtube.com/embed/${match[2]}`;
-  }
-  return null;
-}
+const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+    'matchmaking': HeartHandshake,
+};
 
 export const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -444,7 +449,7 @@ export function IntercessionHubDialog({
     const contentBody = (
         <div className="p-6 space-y-6 text-left">
             <div className="space-y-3 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Focus Points</Label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Focus Points</label>
                 <div className="flex flex-wrap gap-2 text-left">
                     {prayerTemplates.map(t => (
                         <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase border-primary/20 hover:bg-primary/5 text-left" onClick={() => {
@@ -511,7 +516,7 @@ export function MessageHubDialog({
     const header = (
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
             <DialogHeader className="text-center space-y-2 p-0 text-left">
-                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left"><MessageSquare className="h-7 w-7 text-primary text-left" /></div>
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left"><MessageSquare className="h-7 w-7 text-primary text-left" /></div>
                 <DialogTitle className="text-2xl font-black font-headline uppercase text-center text-left">Message Hub</DialogTitle>
                 <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DialogDescription>
             </DialogHeader>
@@ -1198,4 +1203,3 @@ export function SoulProfileContent({
     </div>
   );
 }
-
