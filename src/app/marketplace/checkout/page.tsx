@@ -89,7 +89,7 @@ function CheckoutPageContent() {
                 };
             }
             groups[vId].items.push(item);
-            // Consolidated delivery fee logic: use the highest delivery fee from the vendor's items in the cart
+            // Pay only one delivery fee per provider (the highest one)
             if ((item.deliveryFee || 0) > groups[vId].deliveryFee) {
                 groups[vId].deliveryFee = item.deliveryFee;
             }
@@ -206,51 +206,31 @@ function CheckoutPageContent() {
     if (loading) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-32 text-left">
-                <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
-                <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-primary animate-pulse text-left text-left">Organizing package...</p>
-            </div>
-        );
-    }
-
-    if (!cartItems || cartItems.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left text-left text-left">
-                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left text-left">
-                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left" />
-                </div>
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left">Package is empty</h2>
-                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left text-left text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
-                <div className="flex gap-4 mt-8 justify-center text-left text-left text-left">
-                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left text-left">
-                        <Link href="/marketplace" className="text-left text-left text-left">Meals Hub</Link>
-                    </Button>
-                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left text-left">
-                        <Link href="/marketplace/gifts" className="text-left text-left text-left">Kindness Hub</Link>
-                    </Button>
-                </div>
+                <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
+                <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-primary animate-pulse text-left">Organizing package...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left text-left">
-            <header className="px-4 sm:px-0 space-y-4 pt-4 text-left text-left">
-                <div className="flex items-center gap-4 text-left text-left">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm text-left text-left">
-                        <ArrowLeft className="h-6 w-6 text-left text-left" />
+        <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left">
+            <header className="px-4 sm:px-0 space-y-4 pt-4 text-left">
+                <div className="flex items-center gap-4 text-left">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm text-left">
+                        <ArrowLeft className="h-6 w-6 text-left" />
                     </Button>
-                    <div className="min-w-0 text-left text-left">
-                        <div className="flex items-center gap-2 mb-1 text-left text-left">
-                            <ShoppingCart className="h-3.5 w-3.5 text-primary text-left text-left" />
-                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Kingdom Offering</span>
+                    <div className="min-w-0 text-left">
+                        <div className="flex items-center gap-2 mb-1 text-left">
+                            <ShoppingCart className="h-3.5 w-3.5 text-primary text-left" />
+                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Offering</span>
                         </div>
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase truncate leading-tight text-left text-left">Checkout Hub</h1>
+                        <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase truncate leading-tight text-left">Checkout Hub</h1>
                     </div>
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left text-left">
-                <div className="lg:col-span-2 space-y-10 text-left text-left">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
+                <div className="lg:col-span-2 space-y-10 text-left">
                     {groupedByVendor.map((group) => {
                         const symbol = getCurrencySymbol(group.currency);
                         return (
@@ -335,7 +315,7 @@ function CheckoutPageContent() {
                                             </div>
                                             <div className="flex items-start gap-2 px-1 text-left">
                                                 <Info className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0 text-left" />
-                                                <p className="text-[10px] text-muted-foreground font-medium italic leading-relaxed text-left text-left">
+                                                <p className="text-[10px] text-muted-foreground font-medium italic leading-relaxed text-left">
                                                     Transfer the exact amount to the details above. The provider will be notified once you finalize.
                                                 </p>
                                             </div>
@@ -347,63 +327,63 @@ function CheckoutPageContent() {
                     })}
                 </div>
 
-                <div className="space-y-6 text-left text-left text-left">
-                    <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left text-left">
-                        <CardHeader className="p-8 pb-4 text-left text-left text-left text-left">
-                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left">Summary</CardTitle>
-                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left text-left">Consolidated Kingdom Offering.</CardDescription>
+                <div className="space-y-6 text-left">
+                    <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left">
+                        <CardHeader className="p-8 pb-4 text-left">
+                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Summary</CardTitle>
+                            <CardDescription className="text-primary-foreground/70 font-medium text-left">Consolidated Kingdom Offering.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left text-left">
-                            <div className="space-y-6 text-left text-left text-left">
+                        <CardContent className="p-8 pt-0 space-y-6 text-left">
+                            <div className="space-y-6 text-left">
                                 {Object.entries(totalsByCurrency).map(([curr, values]) => {
                                     const symbol = getCurrencySymbol(curr);
                                     return (
-                                        <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0 text-left text-left text-left">
-                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left text-left">
-                                                <span className="text-left text-left text-left">Items Total</span>
-                                                <span className="text-left text-left text-left">{symbol}{values.subtotal.toLocaleString()}</span>
+                                        <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0 text-left">
+                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left">
+                                                <span className="text-left">Items Total</span>
+                                                <span className="text-left">{symbol}{values.subtotal.toLocaleString()}</span>
                                             </div>
-                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left text-left">
-                                                <span className="text-left text-left text-left">Delivery (Grouped)</span>
-                                                <span className="text-left text-left text-left">{symbol}{values.delivery.toLocaleString()}</span>
+                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left">
+                                                <span className="text-left">Delivery (Grouped)</span>
+                                                <span className="text-left">{symbol}{values.delivery.toLocaleString()}</span>
                                             </div>
-                                            <Separator className="bg-white/10 text-left text-left text-left" />
-                                            <div className="flex justify-between items-baseline text-left text-left text-left">
-                                                <span className="text-xs font-black uppercase tracking-[0.2em] text-left text-left text-left text-left">Grand Total</span>
-                                                <span className="text-3xl font-black tracking-tighter text-left text-left text-left text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
+                                            <Separator className="bg-white/10 text-left" />
+                                            <div className="flex justify-between items-baseline text-left">
+                                                <span className="text-xs font-black uppercase tracking-[0.2em] text-left">Grand Total</span>
+                                                <span className="text-3xl font-black tracking-tighter text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
                                             </div>
                                         </div>
                                     )
                                 })}
                             </div>
 
-                            <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left text-left text-left">
-                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left text-left text-left" />
-                                <p className="text-[11px] leading-relaxed font-bold text-left text-left text-left text-left">
+                            <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left">
+                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left" />
+                                <p className="text-[11px] leading-relaxed font-bold text-left">
                                     Finalizing confirms your intent to gift. Please ensure payment is transferred to the account details shown above.
                                 </p>
                             </div>
                         </CardContent>
-                        <CardFooter className="p-8 pt-0 text-left text-left text-left text-left">
+                        <CardFooter className="p-8 pt-0 text-left">
                             <Button 
                                 onClick={handleFinalizeOffering} 
                                 disabled={isSubmitting} 
                                 size="lg" 
-                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center text-left text-left"
+                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center text-left"
                             >
-                                {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left text-left text-left" />}
+                                {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left" />}
                                 FINALIZE OFFERING
                             </Button>
                         </CardFooter>
                     </Card>
 
-                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left text-left text-left">
-                            <Heart className="h-6 w-6 text-primary text-left text-left text-left text-left" />
+                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left">
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left">
+                            <Heart className="h-6 w-6 text-primary text-left" />
                         </div>
-                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left text-left">
+                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left">
                             "Let us not love with words or speech but with actions and in truth." <br/>
-                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left text-left">- 1 John 3:18</span>
+                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left">- 1 John 3:18</span>
                         </p>
                     </div>
                 </div>
@@ -419,3 +399,4 @@ export default function CheckoutPage() {
         </AppShell>
     );
 }
+
