@@ -5,60 +5,60 @@
       "id": "logo",
       "description": "Testify logo",
       "imageUrl": "https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3",
-      "imageHint": "testify logo"
+      "imageHint": "testify flame logo"
     },
     {
       "id": "auth-background",
       "description": "Person thanking God with raised hands",
-      "imageUrl": "https://picsum.photos/seed/faith/800/1200",
+      "imageUrl": "https://images.unsplash.com/photo-1656073629723-03fbcbc951ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRoYW5rJTIwR09EfGVufDB8fDB8fHww",
       "imageHint": "thanking god"
     },
     {
       "id": "gospel-collage",
       "description": "Expression of spiritual gratitude and praise",
-      "imageUrl": "https://picsum.photos/seed/praise/800/1200",
-      "imageHint": "gratitude praise"
+      "imageUrl": "https://images.unsplash.com/photo-1656073629723-03fbcbc951ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRoYW5rJTIwR09EfGVufDB8fDB8fHww",
+      "imageHint": "thanking god"
     },
     {
       "id": "white-gospel",
       "description": "Bright, white-toned photography of a community space",
-      "imageUrl": "https://picsum.photos/seed/space/1200/800",
-      "imageHint": "community space"
+      "imageUrl": "https://images.unsplash.com/photo-1510673398445-94f476ef2793?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "white space"
     },
     {
       "id": "user-1",
       "description": "User avatar 1",
-      "imageUrl": "https://picsum.photos/seed/u1/400/400",
+      "imageUrl": "https://images.unsplash.com/photo-1610655507808-a59293f4e332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman portrait"
     },
     {
       "id": "user-2",
       "description": "User avatar 2",
-      "imageUrl": "https://picsum.photos/seed/u2/400/400",
+      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzEyNjI5ODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
     },
     {
       "id": "user-3",
       "description": "User avatar 3",
-      "imageUrl": "https://picsum.photos/seed/u3/400/400",
+      "imageUrl": "https://images.unsplash.com/photo-1656338997878-279d71d48f6e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGVyc29uJTIwc21pbGluZ3xlbnwwfHx8fDE3NzEyNDMyNTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person smiling"
     },
     {
       "id": "user-4",
       "description": "User avatar 4",
-      "imageUrl": "https://picsum.photos/seed/u4/400/400",
+      "imageUrl": "https://images.unsplash.com/photo-1664813495783-a7b19be83624?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMG91dGRvb3JzfGVufDB8fHx8MTc3MTM0MTI2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman outdoors"
     },
     {
       "id": "profile-cover-1",
       "description": "Abstract gradient profile cover",
-      "imageUrl": "https://picsum.photos/seed/cover/1200/400",
+      "imageUrl": "https://images.unsplash.com/photo-1707130869369-c00812966290?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3QlMjBncmFkaWVudHxlbnwwfHx8fDE3NzEzMzcxOTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "abstract gradient"
     },
     {
       "id": "feature-glory",
       "description": "Joyful believer sharing a testimony",
-      "imageUrl": "https://picsum.photos/seed/glory/800/600",
+      "imageUrl": "https://images.unsplash.com/photo-1650852706530-3192c48137c6?q=80&w=1080&auto=format&fit=crop",
       "imageHint": "happy person"
     },
     {
@@ -76,32 +76,32 @@
     {
       "id": "feature-provision",
       "description": "Diverse group of friends smiling around a dinner table",
-      "imageUrl": "https://picsum.photos/seed/provision/800/600",
+      "imageUrl": "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1080&auto=format&fit=crop",
       "imageHint": "happy meal"
     },
     {
       "id": "feature-kindness",
       "description": "Happy people sharing joy and kindness",
-      "imageUrl": "https://picsum.photos/seed/kindness/800/600",
+      "imageUrl": "https://images.unsplash.com/photo-1469571486070-21f01fe73b80?q=80&w=1080&auto=format&fit=crop",
       "imageHint": "kindness smile"
     },
     {
       "id": "feature-disciplines",
       "description": "A young woman smiling while reading a book in natural light",
-      "imageUrl": "https://picsum.photos/seed/discipline/800/600",
+      "imageUrl": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1080&auto=format&fit=crop",
       "imageHint": "happy reading"
     },
     {
       "id": "feature-fellowship",
       "description": "Friends sitting on a bench together laughing",
-      "imageUrl": "https://picsum.photos/seed/fellowship/800/600",
+      "imageUrl": "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=1080&auto=format&fit=crop",
       "imageHint": "happy friends"
     },
     {
       "id": "feature-intercession",
-      "description": "Group of joyful people in a prayer circle",
+      "description": "Close up of diverse hands joined in unity and prayer",
       "imageUrl": "https://i.ibb.co/DPbPzLvh/elianna-gill-A5b-GGBLAhn4-unsplash.jpg",
-      "imageHint": "prayer circle"
+      "imageHint": "happy unity"
     },
     {
       "id": "ad-placeholder-1",
