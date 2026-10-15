@@ -290,7 +290,7 @@ function CheckoutPageContent() {
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <div className="text-right shrink-0 text-left text-left">
+                                                    <div className="text-right shrink-0 text-left text-left text-left">
                                                         <p className="text-xl font-black text-primary tracking-tighter text-left text-left">{symbol}{item.price.toLocaleString()}</p>
                                                         <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter text-right text-left text-left">Per Unit</p>
                                                     </div>
@@ -324,11 +324,11 @@ function CheckoutPageContent() {
                                             <Label className="text-[10px] font-black uppercase text-primary tracking-[0.3em] flex items-center gap-2 text-left text-left">
                                                 <CreditCard className="h-4 w-4 text-left text-left" /> ACCOUNT DETAILS FOR {group.vendorName}
                                             </Label>
-                                            <div className="p-6 rounded-[1.5rem] bg-background border-2 border-primary/10 shadow-inner relative overflow-hidden group/pay text-left text-left">
+                                            <div className="p-6 rounded-[1.5rem] bg-background border-2 border-primary/10 shadow-inner relative overflow-hidden group/pay text-left text-left text-left">
                                                 <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/pay:opacity-10 transition-opacity text-left text-left">
                                                     <ShieldCheck className="h-16 w-16 text-primary rotate-12 text-left text-left" />
                                                 </div>
-                                                <p className="text-sm sm:text-base font-black text-foreground whitespace-pre-wrap leading-relaxed relative z-10 text-balance text-left text-left">
+                                                <p className="text-sm sm:text-base font-black text-foreground whitespace-pre-wrap leading-relaxed relative z-10 text-balance text-left text-left text-left">
                                                     {group.paymentDetails || 'Contact provider directly for payment coordinates.'}
                                                 </p>
                                             </div>
@@ -346,30 +346,30 @@ function CheckoutPageContent() {
                     })}
                 </div>
 
-                <div className="space-y-6 text-left text-left">
+                <div className="space-y-6 text-left text-left text-left">
                     <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left">
-                        <CardHeader className="p-8 pb-4 text-left text-left text-left">
-                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Summary</CardTitle>
-                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left">Consolidated Kingdom Offering.</CardDescription>
+                        <CardHeader className="p-8 pb-4 text-left text-left text-left text-left">
+                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left">Summary</CardTitle>
+                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left text-left">Consolidated Kingdom Offering.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left">
+                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left text-left">
                             <div className="space-y-6 text-left text-left text-left">
                                 {Object.entries(totalsByCurrency).map(([curr, values]) => {
                                     const symbol = getCurrencySymbol(curr);
                                     return (
                                         <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0 text-left text-left">
                                             <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left">
-                                                <span className="text-left">Items Total</span>
-                                                <span className="text-left">{symbol}{values.subtotal.toLocaleString()}</span>
+                                                <span className="text-left text-left">Items Total</span>
+                                                <span className="text-left text-left">{symbol}{values.subtotal.toLocaleString()}</span>
                                             </div>
                                             <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left">
-                                                <span className="text-left">Delivery (Grouped)</span>
-                                                <span className="text-left">{symbol}{values.delivery.toLocaleString()}</span>
+                                                <span className="text-left text-left">Delivery (Grouped)</span>
+                                                <span className="text-left text-left">{symbol}{values.delivery.toLocaleString()}</span>
                                             </div>
                                             <Separator className="bg-white/10 text-left text-left" />
-                                            <div className="flex justify-between items-baseline text-left text-left">
-                                                <span className="text-xs font-black uppercase tracking-[0.2em] text-left">Grand Total</span>
-                                                <span className="text-3xl font-black tracking-tighter text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
+                                            <div className="flex justify-between items-baseline text-left text-left text-left">
+                                                <span className="text-xs font-black uppercase tracking-[0.2em] text-left text-left">Grand Total</span>
+                                                <span className="text-3xl font-black tracking-tighter text-left text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
                                             </div>
                                         </div>
                                     )
@@ -377,7 +377,7 @@ function CheckoutPageContent() {
                             </div>
 
                             <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left text-left">
-                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left" />
+                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left text-left" />
                                 <p className="text-[11px] leading-relaxed font-bold text-left text-left">
                                     Finalizing confirms your intent to gift. Please ensure payment is transferred to the account details shown above.
                                 </p>
@@ -388,16 +388,16 @@ function CheckoutPageContent() {
                                 onClick={handleFinalizeOffering} 
                                 disabled={isSubmitting} 
                                 size="lg" 
-                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center text-left text-left"
+                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center text-left"
                             >
-                                {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left text-left" />}
+                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
                                 FINALIZE OFFERING
                             </Button>
                         </CardFooter>
                     </Card>
 
                     <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left text-left">
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left text-left text-left">
                             <Heart className="h-6 w-6 text-primary text-left text-left text-left" />
                         </div>
                         <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left">
