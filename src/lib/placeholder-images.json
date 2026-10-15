@@ -55,16 +55,52 @@
       "imageHint": "abstract gradient"
     },
     {
-      "id": "campaign-image-1",
-      "description": "Image for community outreach campaign",
-      "imageUrl": "https://images.unsplash.com/photo-1740065592719-052d3e5ec6fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb21tdW5pdHklMjBoYW5kc3xlbnwwfHx8fDE3NzEzNDE1NDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "community hands"
+      "id": "feature-glory",
+      "description": "Joyful believer sharing a testimony",
+      "imageUrl": "https://images.unsplash.com/photo-1650852706530-3192c48137c6?q=80&w=1080&auto=format&fit=crop",
+      "imageHint": "happy person"
     },
     {
-      "id": "campaign-image-2",
-      "description": "Image for evangelism event",
-      "imageUrl": "https://images.unsplash.com/photo-1531537571171-a707bf2683da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZW9wbGUlMjBsaXN0ZW5pbmd8ZW58MHx8fHwxNzcxMzQxNTQyfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "people listening"
+      "id": "feature-mission",
+      "description": "Joyful group in an outdoor community outreach mission",
+      "imageUrl": "https://i.ibb.co/jvF1tjxC/daniel-gutko-Bt-J09u2-R-CM-unsplash.jpg",
+      "imageHint": "happy mission"
+    },
+    {
+      "id": "feature-victory",
+      "description": "A person with raised hands celebrating in a field",
+      "imageUrl": "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "happy freedom"
+    },
+    {
+      "id": "feature-provision",
+      "description": "Diverse group of friends smiling around a dinner table",
+      "imageUrl": "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1974&auto=format&fit=crop",
+      "imageHint": "happy meal"
+    },
+    {
+      "id": "feature-kindness",
+      "description": "Two people sharing a friendly gift and smiling",
+      "imageUrl": "https://images.unsplash.com/photo-1513151233558-0293e4767cc2?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "happy gift"
+    },
+    {
+      "id": "feature-disciplines",
+      "description": "A young woman smiling while reading a book in natural light",
+      "imageUrl": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop",
+      "imageHint": "happy reading"
+    },
+    {
+      "id": "feature-fellowship",
+      "description": "Friends sitting on a bench together laughing",
+      "imageUrl": "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "happy friends"
+    },
+    {
+      "id": "feature-intercession",
+      "description": "Close up of diverse hands joined in unity and prayer",
+      "imageUrl": "https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=2071&auto=format&fit=crop",
+      "imageHint": "happy unity"
     },
     {
       "id": "ad-placeholder-1",
