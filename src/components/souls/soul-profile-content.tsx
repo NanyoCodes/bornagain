@@ -48,7 +48,7 @@ import {
   MapPin,
   Info
 } from "lucide-react";
-import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput, DailyDevotional } from "@/lib/types";
+import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
 import { 
   doc, 
@@ -322,7 +322,7 @@ export function ShareWordDialog({
   );
 
   const header = (
-    <div className="p-6 border-b bg-muted/10 shrink-0 text-left">
+    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0 text-left">
           <div className="flex items-center gap-3 mb-2 text-left">
@@ -404,7 +404,7 @@ export function IntercessionHubDialog({
         <div className="p-6 space-y-6 text-left">
             <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Focus Points</Label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 text-left">
                     {prayerTemplates.map(t => (
                         <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase border-primary/20 hover:bg-primary/5" onClick={() => {
                             if(soul) setCustomText(resolveTemplate(t.text, soul));
@@ -1113,15 +1113,15 @@ export function SoulProfileContent({
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left">
-                  <DialogHeader className="text-left text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                  <DialogHeader className="text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
               <div className="p-6 text-left text-left">
               <ScrollArea className="h-64 text-left text-left">
-                  <div className="space-y-2 text-left text-left">
+                  <div className="space-y-2 text-left text-left text-left">
                       {uniquePartners.map(p => (
                           <Button 
                               key={p.userId} 
