@@ -232,36 +232,36 @@ function CheckoutPageContent() {
     }
 
     return (
-        <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left text-left">
+        <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left text-left text-left">
             <header className="px-4 sm:px-0 space-y-4 pt-4 text-left text-left text-left">
                 <div className="flex items-center gap-4 text-left text-left text-left">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm text-left text-left text-left text-left">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm text-left text-left text-left">
                         <ArrowLeft className="h-6 w-6 text-left text-left" />
                     </Button>
-                    <div className="min-w-0 text-left text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-1 text-left text-left text-left text-left">
-                            <ShoppingCart className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left" />
-                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Kingdom Offering</span>
+                    <div className="min-w-0 text-left text-left text-left text-left">
+                        <div className="flex items-center gap-2 mb-1 text-left text-left text-left">
+                            <ShoppingCart className="h-3.5 w-3.5 text-primary text-left text-left text-left" />
+                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Kingdom Offering</span>
                         </div>
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase truncate leading-tight text-left text-left text-left text-left">Checkout Hub</h1>
+                        <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase truncate leading-tight text-left text-left text-left">Checkout Hub</h1>
                     </div>
                 </div>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left text-left">
-                <div className="lg:col-span-2 space-y-10 text-left text-left text-left">
+                <div className="lg:col-span-2 space-y-10 text-left text-left">
                     {groupedByVendor.map((group) => {
                         const symbol = getCurrencySymbol(group.currency);
                         return (
                             <div key={group.vendorId} className="space-y-4 text-left text-left">
                                 <div className="flex items-center justify-between px-2 text-left text-left">
-                                    <div className="flex items-center gap-3 text-left text-left text-left">
-                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm text-left text-left text-left text-left">
-                                            <Store className="h-5 w-5 text-primary text-left text-left text-left text-left" />
+                                    <div className="flex items-center gap-3 text-left text-left">
+                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm text-left text-left">
+                                            <Store className="h-5 w-5 text-primary text-left text-left" />
                                         </div>
-                                        <div className="min-w-0 text-left text-left text-left">
-                                            <h2 className="font-black text-sm sm:text-base uppercase tracking-tight truncate text-left text-left text-left">{group.vendorName}</h2>
-                                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left">Consolidated Delivery Enabled</p>
+                                        <div className="min-w-0 text-left text-left">
+                                            <h2 className="font-black text-sm sm:text-base uppercase tracking-tight truncate text-left text-left">{group.vendorName}</h2>
+                                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">Consolidated Delivery Enabled</p>
                                         </div>
                                     </div>
                                     <Badge variant="outline" className="h-6 px-3 text-[10px] font-black uppercase bg-background border-primary/20 text-primary shadow-sm text-left text-left">
@@ -270,44 +270,44 @@ function CheckoutPageContent() {
                                 </div>
 
                                 <Card className="rounded-[2.5rem] bg-card/30 border-none shadow-sm overflow-hidden border-l-8 border-l-primary/10 text-left text-left">
-                                    <CardContent className="p-0 divide-y divide-dashed text-left text-left text-left text-left">
+                                    <CardContent className="p-0 divide-y divide-dashed text-left text-left">
                                         {group.items.map((item) => (
-                                            <div key={item.id} className="p-6 flex flex-col gap-5 text-left text-left text-left">
-                                                <div className="flex items-start gap-4 text-left text-left text-left">
-                                                    <Avatar className="h-14 w-14 rounded-2xl border shadow-inner text-left text-left text-left">
+                                            <div key={item.id} className="p-6 flex flex-col gap-5 text-left text-left">
+                                                <div className="flex items-start gap-4 text-left text-left">
+                                                    <Avatar className="h-14 w-14 rounded-2xl border shadow-inner text-left text-left">
                                                         <AvatarImage src={item.photoURL} className="object-cover text-left text-left" />
                                                         <AvatarFallback className="bg-primary/5 text-primary font-bold text-left text-left"> {item.name?.charAt(0)}</AvatarFallback>
                                                     </Avatar>
-                                                    <div className="min-w-0 flex-1 text-left text-left text-left text-left">
-                                                        <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight text-left text-left text-left">{item.name}</h3>
-                                                        <div className="flex items-center gap-2 mt-1.5 flex-wrap text-left text-left text-left text-left">
-                                                            <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left text-left text-left">
+                                                    <div className="min-w-0 flex-1 text-left text-left text-left">
+                                                        <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight text-left text-left">{item.name}</h3>
+                                                        <div className="flex items-center gap-2 mt-1.5 flex-wrap text-left text-left text-left">
+                                                            <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left text-left">
                                                                 {item.vendorType === 'gift' ? <Gift className="h-2 w-2 mr-1 text-left text-left" /> : <Utensils className="h-2 w-2 mr-1 text-left text-left" />}
                                                                 {item.vendorType === 'gift' ? 'GIFT' : 'MEAL'}
                                                             </Badge>
-                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left text-left text-left text-left">
-                                                                <User className="h-2.5 w-2.5 text-left text-left text-left" /> For: {item.soulName || 'Kingdom Member'}
+                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left text-left text-left">
+                                                                <User className="h-2.5 w-2.5 text-left text-left" /> For: {item.soulName || 'Kingdom Member'}
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <div className="text-right shrink-0 text-left text-left text-left text-left text-left">
-                                                        <p className="text-xl font-black text-primary tracking-tighter text-left text-left text-left text-left">{symbol}{item.price.toLocaleString()}</p>
-                                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter text-right text-left text-left text-left">Per Unit</p>
+                                                    <div className="text-right shrink-0 text-left text-left">
+                                                        <p className="text-xl font-black text-primary tracking-tighter text-left text-left">{symbol}{item.price.toLocaleString()}</p>
+                                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter text-right text-left text-left">Per Unit</p>
                                                     </div>
                                                 </div>
 
                                                 <div className="flex items-center justify-between gap-4 pt-4 border-t border-muted/20 text-left text-left">
-                                                    <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm text-left text-left text-left">
+                                                    <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm text-left text-left">
                                                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(item.id, item.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left text-left"/></Button>
                                                         <span className="w-8 text-center font-black text-xs text-left text-left"> {item.quantity}</span>
                                                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(item.id, item.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left text-left"/></Button>
                                                     </div>
-                                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-destructive hover:bg-destructive/10 text-left text-left text-left text-left" onClick={() => handleRemoveItem(item.id)}>
+                                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-destructive hover:bg-destructive/10 text-left text-left text-left" onClick={() => handleRemoveItem(item.id)}>
                                                         <Trash2 className="h-4 w-4 text-left text-left text-left" />
                                                     </Button>
                                                 </div>
 
-                                                <div className="space-y-2 text-left text-left text-left">
+                                                <div className="space-y-2 text-left text-left">
                                                     <Label className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-1 text-left text-left">Special Instructions</Label>
                                                     <Textarea 
                                                         placeholder="e.g., Please deliver by 2PM, specific message for recipient..."
@@ -319,8 +319,8 @@ function CheckoutPageContent() {
                                             </div>
                                         ))}
                                     </CardContent>
-                                    <CardFooter className="bg-muted/30 p-8 flex flex-col gap-6 text-left">
-                                        <div className="space-y-3 w-full text-left">
+                                    <CardFooter className="bg-muted/30 p-8 flex flex-col gap-6 text-left text-left">
+                                        <div className="space-y-3 w-full text-left text-left">
                                             <Label className="text-[10px] font-black uppercase text-primary tracking-[0.3em] flex items-center gap-2 text-left text-left">
                                                 <CreditCard className="h-4 w-4 text-left text-left" /> ACCOUNT DETAILS FOR {group.vendorName}
                                             </Label>
@@ -346,13 +346,13 @@ function CheckoutPageContent() {
                     })}
                 </div>
 
-                <div className="space-y-6 text-left text-left text-left">
+                <div className="space-y-6 text-left text-left">
                     <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left">
-                        <CardHeader className="p-8 pb-4 text-left text-left text-left text-left">
-                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left">Summary</CardTitle>
-                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left text-left">Consolidated Kingdom Offering.</CardDescription>
+                        <CardHeader className="p-8 pb-4 text-left text-left text-left">
+                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Summary</CardTitle>
+                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left">Consolidated Kingdom Offering.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left text-left">
+                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left">
                             <div className="space-y-6 text-left text-left text-left">
                                 {Object.entries(totalsByCurrency).map(([curr, values]) => {
                                     const symbol = getCurrencySymbol(curr);
@@ -377,7 +377,7 @@ function CheckoutPageContent() {
                             </div>
 
                             <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left text-left">
-                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left text-left" />
+                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left" />
                                 <p className="text-[11px] leading-relaxed font-bold text-left text-left">
                                     Finalizing confirms your intent to gift. Please ensure payment is transferred to the account details shown above.
                                 </p>
