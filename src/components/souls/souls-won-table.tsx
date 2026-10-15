@@ -25,7 +25,8 @@ import {
   CardContent, 
   CardHeader, 
   CardTitle, 
-  CardDescription 
+  CardDescription,
+  CardFooter
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Skeleton } from "../ui/skeleton";
