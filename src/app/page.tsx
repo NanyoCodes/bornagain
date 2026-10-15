@@ -154,7 +154,7 @@ export default function LandingPage() {
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
             {logo && (
               <Avatar className="h-10 w-10 sm:h-11 sm:w-11">
-                <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
+                <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
                 <AvatarFallback>T</AvatarFallback>
               </Avatar>
             )}
@@ -182,7 +182,7 @@ export default function LandingPage() {
                   className="object-cover opacity-40"
                   priority
                   unoptimized
-                  data-ai-hint="happy person"
+                  data-ai-hint={heroImage.imageHint}
                 />
              )}
              <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-zinc-950/80 to-zinc-950" />
@@ -383,7 +383,7 @@ export default function LandingPage() {
       <footer className="bg-muted/50 border-t py-16">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12">
-            <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
                 {logo && (
                   <Avatar className="h-12 w-12">
