@@ -124,6 +124,7 @@ export default function LandingPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
+  const heroImage = PlaceHolderImages.find((img) => img.id === 'feature-glory');
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -150,7 +151,7 @@ export default function LandingPage() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
             {logo && (
               <Avatar className="h-10 w-10 sm:h-11 sm:w-11">
                 <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
@@ -172,7 +173,20 @@ export default function LandingPage() {
       <main className="flex-grow pt-16">
         {/* Hero Section */}
         <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent" />
+          <div className="absolute inset-0 z-0">
+             {heroImage && (
+                <NextImage 
+                  src={heroImage.imageUrl} 
+                  alt="Testify Joy" 
+                  fill 
+                  className="object-cover opacity-40"
+                  priority
+                  unoptimized
+                  data-ai-hint="happy person"
+                />
+             )}
+             <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-zinc-950/80 to-zinc-950" />
+          </div>
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
             <div className="max-w-4xl space-y-8 text-center sm:text-left">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
@@ -370,7 +384,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
                 {logo && (
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={logo.imageUrl} alt="Logo" className="object-cover" />
@@ -378,11 +392,11 @@ export default function LandingPage() {
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty">
+              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty text-left">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
               <div className="flex gap-4">
-                <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm">
+                <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left">
                   <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer">
                     <Instagram className="h-4 w-4" />
                     <span className="sr-only">Instagram</span>
@@ -391,7 +405,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Platform</h4>
               <ul className="space-y-3">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Testimonies</Link></li>
@@ -401,23 +415,23 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Ministry</h4>
               <ul className="space-y-3">
-                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Our Story</Link></li>
-                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Partner With Us</Link></li>
-                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">App Guide</Link></li>
-                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Resources</Link></li>
-                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Terms</Link></li>
-                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Privacy</Link></li>
+                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Our Story</Link></li>
+                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Partner With Us</Link></li>
+                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">App Guide</Link></li>
+                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Resources</Link></li>
+                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Terms</Link></li>
+                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Privacy</Link></li>
               </ul>
             </div>
           </div>
           
           <div className="h-px w-full bg-muted opacity-50 mb-8" />
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-            <p className="text-center md:text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left">
+            <p className="text-center md:text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>
             <div className="flex gap-6">
               <Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms</Link>
               <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy</Link>
