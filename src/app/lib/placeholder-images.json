@@ -1,3 +1,4 @@
+
 {
   "placeholderImages": [
     {
@@ -9,14 +10,14 @@
     {
       "id": "auth-background",
       "description": "Person thanking God with raised hands",
-      "imageUrl": "https://images.unsplash.com/photo-1510936111840-65e151ad71bb?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "joyful prayer"
+      "imageUrl": "https://images.unsplash.com/photo-1656073629723-03fbcbc951ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRoYW5rJTIwR09EfGVufDB8fDB8fHww",
+      "imageHint": "thanking god"
     },
     {
       "id": "gospel-collage",
       "description": "Expression of spiritual gratitude and praise",
-      "imageUrl": "https://images.unsplash.com/photo-1544427920-c49ccfb85579?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "happy community"
+      "imageUrl": "https://images.unsplash.com/photo-1656073629723-03fbcbc951ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRoYW5rJTIwR09EfGVufDB8fDB8fHww",
+      "imageHint": "thanking god"
     },
     {
       "id": "white-gospel",
@@ -68,39 +69,39 @@
     },
     {
       "id": "feature-victory",
-      "description": "Pexels photo of a joyful believer",
-      "imageUrl": "https://i.ibb.co/xyc90mM/pexels-photo-10845336.avif",
-      "imageHint": "happy victory"
+      "description": "A person with raised hands celebrating in a field",
+      "imageUrl": "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "happy freedom"
     },
     {
       "id": "feature-provision",
-      "description": "Group of friends enjoying a meal with joy",
-      "imageUrl": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?q=80&w=2070&auto=format&fit=crop",
+      "description": "Diverse group of friends smiling around a dinner table",
+      "imageUrl": "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1974&auto=format&fit=crop",
       "imageHint": "happy meal"
     },
     {
       "id": "feature-kindness",
-      "description": "Two people sharing a joyful gift",
-      "imageUrl": "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "happy gift"
+      "description": "Happy people sharing joy and kindness",
+      "imageUrl": "https://images.unsplash.com/photo-1469571486070-21f01fe73b80?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "kindness smile"
     },
     {
       "id": "feature-disciplines",
-      "description": "Person smiling while reading the Word",
-      "imageUrl": "https://images.unsplash.com/photo-1491841573634-28140fc7ced7?q=80&w=2070&auto=format&fit=crop",
+      "description": "A young woman smiling while reading a book in natural light",
+      "imageUrl": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop",
       "imageHint": "happy reading"
     },
     {
       "id": "feature-fellowship",
-      "description": "Happy group of believers in fellowship",
-      "imageUrl": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop",
+      "description": "Friends sitting on a bench together laughing",
+      "imageUrl": "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=2070&auto=format&fit=crop",
       "imageHint": "happy friends"
     },
     {
       "id": "feature-intercession",
-      "description": "Group of joyful people praying in unity",
-      "imageUrl": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2064&auto=format&fit=crop",
-      "imageHint": "happy unity"
+      "description": "Group of joyful people in a prayer circle",
+      "imageUrl": "https://i.ibb.co/DPbPzLvh/elianna-gill-A5b-GGBLAhn4-unsplash.jpg",
+      "imageHint": "prayer circle"
     },
     {
       "id": "ad-placeholder-1",
