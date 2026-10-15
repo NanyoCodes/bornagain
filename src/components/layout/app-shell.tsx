@@ -149,7 +149,7 @@ function CartButton() {
             <div className="space-y-3">
                 {cartItems.map((item: any) => (
                     <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left">
-                        <Avatar className="h-10 w-10 border text-left">
+                        <Avatar className="h-10 w-10 border">
                             <AvatarImage src={item.photoURL} />
                             <AvatarFallback>P</AvatarFallback>
                         </Avatar>
@@ -178,7 +178,7 @@ function CartButton() {
   );
 
   const trigger = (
-    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
+    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
         <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
             <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
             {count > 0 && (
@@ -201,8 +201,8 @@ function CartButton() {
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
                     </div>
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Review selection for gifting.</DrawerDescription>
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1">Review selection for gifting.</DrawerDescription>
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>
@@ -221,8 +221,8 @@ function CartButton() {
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kindness Package</span>
             </div>
             <DialogHeader className="text-left p-0 text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Pending Offering</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left">Review the provisions in your active package.</DialogDescription>
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Pending Offering</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
         </div>
         <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>

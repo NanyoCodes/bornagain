@@ -3,11 +3,11 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useUser, useDoc, useFirestore, useCollection } from '@/firebase';
 import type { Soul } from '@/lib/types';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, Suspense } from 'react';
 import { doc, collection, query, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, HeartHandshake, Loader2, Sparkles, MapPin, Search, User, MessageSquare, ChevronDown, Quote } from 'lucide-react';
+import { ArrowLeft, HeartHandshake, Loader2, Sparkles, MapPin, Search, User, MessageSquare, ChevronDown, Quote, Smartphone } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,7 @@ function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export default function MatchmakingClient({ soulId }: { soulId: string | null }) {
+function MatchmakingInner({ soulId }: { soulId?: string | null }) {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { user } = useUser();
@@ -33,11 +33,12 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
 
     useEffect(() => { setMounted(true); }, []);
 
+    const effectiveSoulId = useMemo(() => soulId || searchParams.get('soulId'), [soulId, searchParams]);
+
     const soulDocRef = useMemo(() => {
-        const id = soulId || searchParams.get('soulId');
-        if (!id || !user?.uid || !firestore) return null;
-        return doc(firestore, `users/${user.uid}/souls`, id);
-    }, [soulId, searchParams, user?.uid, firestore]);
+        if (!effectiveSoulId || !user?.uid || !firestore) return null;
+        return doc(firestore, `users/${user.uid}/souls`, effectiveSoulId);
+    }, [effectiveSoulId, user?.uid, firestore]);
 
     const { data: targetSoul, loading: targetLoading } = useDoc<Soul>(soulDocRef);
 
@@ -87,7 +88,7 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
         const message = `Hi ${match.firstName}, I'm reaching out from Testify. I'd love to introduce you to a brother/sister in our community for fellowship. Let me know if you're open to a connection!`;
         
         if (channel === 'whatsapp') {
-            window.open(`https://wa.me/${cleanPhone.replace('+', '')}?text=${encodeURIComponent(message)}`, '_blank');
+            window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
         } else {
             window.location.href = `sms:${cleanPhone}?body=${encodeURIComponent(message)}`;
         }
@@ -121,11 +122,11 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
         <div className="max-w-4xl mx-auto space-y-8 pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                 <div className="flex items-center gap-4 text-left">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm text-left">
                         <ArrowLeft className="h-6 w-6" />
                     </Button>
                     <div className="min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 text-left">
                             <HeartHandshake className="h-4 w-4 text-primary" />
                             <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Alliance</span>
                         </div>
@@ -139,7 +140,7 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
                     </div>
                     <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-background shadow-xl shrink-0">
                         <AvatarImage src={targetSoul.photoURL || undefined} className="object-cover" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xl">{targetSoul.firstName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xl"> {targetSoul.firstName.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1 text-left">
                         <p className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-tight">Finding a match for {targetSoul.firstName}</p>
@@ -160,7 +161,7 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
                         placeholder="Filter potential matches by name..." 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="h-14 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-lg font-bold w-full"
+                        className="h-14 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-lg font-bold w-full text-left"
                     />
                 </div>
             </header>
@@ -171,16 +172,16 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
                         <CardHeader className="p-6 pb-4 flex flex-row items-center gap-4 text-left">
                             <Avatar className="h-16 w-16 border-2 border-primary/20 shadow-lg shrink-0">
                                 <AvatarImage src={match.photoURL || undefined} className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/5 text-primary text-lg">{match.firstName.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="font-black bg-primary/5 text-primary text-lg"> {match.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 flex-1">
+                            <div className="min-w-0 flex-1 text-left">
                                 <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight mb-1 text-left">{match.firstName} {match.lastName}</h3>
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                    <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20">
+                                <div className="flex items-center gap-1.5 flex-wrap text-left">
+                                    <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left">
                                         {match.gender}
                                     </Badge>
-                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1">
-                                        <MapPin className="h-2.5 w-2.5" /> {match.locationWon?.city || 'Global'}
+                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left">
+                                        <MapPin className="h-2.5 w-2.5 text-left" /> {match.locationWon?.city || 'Global'}
                                     </span>
                                 </div>
                             </div>
@@ -189,25 +190,25 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
                              {match.hobbies && (
                                 <div className="p-3 rounded-xl bg-muted/30 border border-dashed text-xs text-muted-foreground italic font-medium leading-relaxed mb-4 relative overflow-hidden group/text text-left">
                                     <Quote className="absolute -top-1 right-2 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover/text:rotate-0" />
-                                    <p className="relative z-10">&ldquo;{match.hobbies}&rdquo;</p>
+                                    <p className="relative z-10 text-left">&ldquo;{match.hobbies}&rdquo;</p>
                                 </div>
                              )}
-                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Work Status</p>
-                                    <p className="text-xs font-bold truncate">{match.workStatus || 'N/A'}</p>
+                             <div className="grid grid-cols-2 gap-4 text-left">
+                                <div className="space-y-1 text-left">
+                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p>
+                                    <p className="text-xs font-bold truncate text-left">{match.workStatus || 'N/A'}</p>
                                 </div>
                                 <div className="space-y-1 text-right">
-                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Age</p>
-                                    <p className="text-xs font-bold">{match.age ? `${match.age} yrs` : 'N/A'}</p>
+                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-right">Age</p>
+                                    <p className="text-xs font-bold text-right">{match.age ? `${match.age} yrs` : 'N/A'}</p>
                                 </div>
                              </div>
                         </CardContent>
-                        <CardFooter className="p-4 bg-muted/10 border-t flex flex-col sm:flex-row gap-2">
+                        <CardFooter className="p-4 bg-muted/10 border-t flex flex-col sm:flex-row gap-2 text-left">
                             <Button 
                                 onClick={() => handleContact(match, 'whatsapp')} 
                                 disabled={!match.phone}
-                                className="flex-1 h-11 rounded-xl gap-2 font-black uppercase tracking-widest text-[10px] shadow-lg transition-all active:scale-95"
+                                className="flex-1 h-11 rounded-xl gap-2 font-black uppercase tracking-widest text-[10px] shadow-lg transition-all active:scale-95 text-left"
                             >
                                 <WhatsAppIcon className="h-4 w-4" /> WhatsApp
                             </Button>
@@ -215,30 +216,38 @@ export default function MatchmakingClient({ soulId }: { soulId: string | null })
                                 onClick={() => handleContact(match, 'sms')} 
                                 disabled={!match.phone}
                                 variant="outline"
-                                className="flex-1 h-11 rounded-xl gap-2 font-black uppercase tracking-widest text-[10px] border-2 border-primary/20 text-primary hover:bg-primary/5 transition-all active:scale-95"
+                                className="flex-1 h-11 rounded-xl gap-2 font-black uppercase tracking-widest text-[10px] border-2 border-primary/20 text-primary hover:bg-primary/5 transition-all active:scale-95 text-left"
                             >
                                 <MessageSquare className="h-4 w-4" /> SMS Intro
                             </Button>
                         </CardFooter>
                     </Card>
                 )) : (
-                    <div className="col-span-full py-24 text-center flex flex-col items-center border-2 border-dashed rounded-[3rem] bg-muted/5">
-                        <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                    <div className="col-span-full py-24 text-center flex flex-col items-center border-2 border-dashed rounded-[3rem] bg-muted/5 text-left">
+                        <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
                             <HeartHandshake className="h-10 w-10 text-primary opacity-10" />
                         </div>
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40">No Potential Matches</h3>
-                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance px-12 text-center">
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-left">No Potential Matches</h3>
+                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance px-12 text-center text-left">
                             We couldn't find any other single converts of the opposite gender in your harvest. Keep sharing the Light!
                         </p>
                     </div>
                 )}
             </div>
             
-            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
-                <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center">
+            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left">
+                <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center text-left">
                     "Two are better than one, because they have a good reward for their toil." — Ecclesiastes 4:9
                 </p>
             </footer>
         </div>
+    );
+}
+
+export default function MatchmakingClient({ soulId }: { soulId?: string | null }) {
+    return (
+        <Suspense fallback={<div className="flex h-full w-full items-center justify-center py-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary text-left" /></div>}>
+            <MatchmakingInner soulId={soulId} />
+        </Suspense>
     );
 }

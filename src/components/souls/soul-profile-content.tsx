@@ -89,7 +89,7 @@ import {
     SheetTitle,
     SheetDescription,
 } from "@/components/ui/sheet";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
@@ -651,11 +651,11 @@ export function SoulProfileContent({
             return;
         case 'shared_meal':
         case 'gave_gift':
-            const mPath = actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+            const mPath = actionId === 'shared_meal' ? '/marketplace' : '/marketplace/gifts';
             router.push(`${mPath}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`);
             return;
         case 'matchmaking':
-            router.push(`/dashboard/matchmaking?soulId=${soul.id}`);
+            router.push(`/matchmaking?soulId=${soul.id}`);
             return;
         default:
             await finalizeLog(actionId);
@@ -1120,8 +1120,8 @@ export function SoulProfileContent({
                   </DialogHeader>
               </div>
               <div className="p-6 text-left text-left">
-              <ScrollArea className="h-64 text-left text-left">
-                  <div className="space-y-2 text-left text-left text-left">
+              <ScrollArea className="h-64 text-left text-left text-left">
+                  <div className="space-y-2 text-left text-left text-left text-left">
                       {uniquePartners.map(p => (
                           <Button 
                               key={p.userId} 
@@ -1153,4 +1153,138 @@ export function SoulProfileContent({
       />
     </div>
   );
+}
+
+export function IntercessionHubDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onComplete 
+}: { 
+  isOpen: boolean, 
+  onOpenChange: (open: boolean) => void, 
+  soul: Soul | null, 
+  onComplete: (msg: string) => void 
+}) {
+    const [customText, setCustomText] = useState('');
+    const isMobile = useIsMobile();
+    
+    const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
+        const gender = targetSoul.gender?.toLowerCase() || 'other';
+        const pronouns = {
+            subject: gender === 'female' ? 'she' : 'he',
+            object: gender === 'female' ? 'her' : 'him',
+            possessive: gender === 'female' ? 'her' : 'his'
+        };
+        return template.replace(/{name}/g, targetSoul.firstName).replace(/{subject}/g, pronouns.subject).replace(/{object}/g, pronouns.object).replace(/{possessive}/g, pronouns.possessive);
+    }, []);
+
+    useEffect(() => {
+        if (isOpen && soul) {
+            setCustomText(resolveTemplate(prayerTemplates[0].text, soul));
+        }
+    }, [isOpen, soul, resolveTemplate]);
+
+    const contentBody = (
+        <div className="p-6 space-y-6 text-left">
+            <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Focus Points</Label>
+                <div className="flex flex-wrap gap-2 text-left">
+                    {prayerTemplates.map(t => (
+                        <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase border-primary/20 hover:bg-primary/5" onClick={() => {
+                            if(soul) setCustomText(resolveTemplate(t.text, soul));
+                        }}>{t.label}</Button>
+                    ))}
+                </div>
+            </div>
+            <div className="space-y-2 text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Personalize Revelation</Label>
+                <Textarea value={customText} onChange={e => setCustomText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
+            </div>
+            <Button onClick={() => onComplete(customText)} disabled={!customText.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg uppercase tracking-widest">PROCEED TO HUB</Button>
+        </div>
+    );
+
+    const header = (
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <DialogHeader className="text-left p-0">
+                <div className="flex items-center gap-3 mb-2 text-left">
+                    <HandHeart className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Intercession</span>
+                </div>
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Prayer for {soul?.firstName}</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-left">Draft a powerful word of blessing.</DialogDescription>
+            </DialogHeader>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    {header}
+                    <ScrollArea className="flex-grow">{contentBody}</ScrollArea>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                {header}
+                {contentBody}
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+export function MessageHubDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onChannelSelect 
+}: { 
+  isOpen: boolean, 
+  onOpenChange: (open: boolean) => void, 
+  soul: Soul | null, 
+  onChannelSelect: (channel: 'whatsapp' | 'sms') => void 
+}) {
+    const isMobile = useIsMobile();
+
+    const header = (
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <DialogHeader className="text-center space-y-2 p-0 text-left">
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2"><MessageSquare className="h-7 w-7 text-primary" /></div>
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-center">Message Hub</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul?.firstName}?</DialogDescription>
+            </DialogHeader>
+        </div>
+    );
+
+    const contentBody = (
+        <div className="flex flex-col gap-3 p-8 text-left">
+            <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest shadow-lg shadow-primary/20"><WhatsAppIcon className="h-5 w-5" /> WhatsApp</Button>
+            <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest border-2 border-primary/20 text-primary hover:bg-primary/5"><MessageSquare className="h-5 w-5" /> Standard SMS</Button>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
+                    {header}
+                    {contentBody}
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-center text-left">
+                {header}
+                {contentBody}
+            </DialogContent>
+        </Dialog>
 }
