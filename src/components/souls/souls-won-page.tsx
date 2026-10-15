@@ -738,7 +738,7 @@ export default function SoulsWonPage() {
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left"><BarChart3 className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span></div>
+                            <div className="flex items-center gap-2 mb-2 text-left"><BarChart3 className="h-4 w-4 text-primary text-left" /><span className="text-[10px) font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span></div>
                             <DialogHeader className="text-left p-0">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left"> {selectedFilterGroup?.value} Directory</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this demographic group.</DialogDescription>
@@ -835,7 +835,7 @@ export default function SoulsWonPage() {
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="text-left p-0 text-left">
                                     <DialogTitle className="text-2xl font-bold font-headline text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-sm font-medium text-left">Record a new life won for Christ.</DialogDescription>
@@ -851,7 +851,7 @@ export default function SoulsWonPage() {
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="text-left p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DrawerDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8 text-left">

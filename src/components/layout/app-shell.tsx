@@ -59,7 +59,6 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import {
   Sheet,
@@ -143,6 +142,19 @@ function CartButton() {
     return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
   }, [cartItems]);
 
+  const trigger = (
+    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
+        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
+            <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
+            {count > 0 && (
+                <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
+                    {count}
+                </div>
+            )}
+        </Button>
+    </motion.div>
+  );
+
   const listContent = (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
@@ -175,19 +187,6 @@ function CartButton() {
             </div>
         )}
     </div>
-  );
-
-  const trigger = (
-    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
-        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
-            <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
-            {count > 0 && (
-                <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
-                    {count}
-                </div>
-            )}
-        </Button>
-    </motion.div>
   );
 
   if (isMobile) {
