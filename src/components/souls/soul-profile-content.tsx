@@ -41,7 +41,9 @@ import {
   Camera,
   Smartphone,
   ChevronRight,
-  Calendar
+  Calendar,
+  Church,
+  ShieldCheck
 } from "lucide-react";
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
@@ -84,7 +86,7 @@ import {
     SheetTitle,
     SheetDescription,
 } from "@/components/ui/sheet";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
@@ -306,7 +308,7 @@ export function ShareWordDialog({
           </p>
        </div>
        <div className="space-y-1 font-serif">
-         {loadingVerses ? <div className="flex justify-center py-10 text-left"><Loader2 className="h-6 w-6 animate-spin text-primary opacity-20" /></div> : chapterContent?.verses.map(v => (
+         {loadingVerses ? <div className="flex justify-center py-10 text-left"><Loader2 className="h-6 w-6 animate-spin text-primary opacity-20 text-left" /></div> : chapterContent?.verses.map(v => (
            <div key={v.verse} className={cn("p-2.5 rounded-xl transition-all cursor-pointer border-2", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => handleVerseClick(v.verse)}>
               <sup className="text-[9px] font-black mr-2 opacity-40">{v.verse}</sup>
               <span className="text-sm leading-relaxed">{v.text}</span>
