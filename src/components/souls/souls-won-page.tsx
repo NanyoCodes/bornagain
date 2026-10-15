@@ -592,7 +592,7 @@ export default function SoulsWonPage() {
                             <motion.div className="flex gap-4 w-max text-left" animate={{ x: isGalleryPaused ? undefined : ["0%", "-33.3333333%"] }} transition={{ x: { duration: 30, repeat: Infinity, ease: "linear", repeatType: "loop" } }}>
                                 {duplicatedSouls.map((s, idx) => (
                                     <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0 text-left">
-                                        <div onClick={() => setSelectedId(s.id)} className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-95 transition-all text-left">
+                                        <div onClick={() => setSelectedId(s.id)} className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-[0.98] transition-all text-left">
                                             <NextImage src={s.photoURL!} alt={s.firstName} fill className="object-cover transition-transform group-hover:scale-110 duration-500 text-left" unoptimized />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
                                             <div className="absolute bottom-3 left-3 right-3 text-white text-left">

@@ -516,7 +516,7 @@ function BottomNavBar() {
     }, [pathname]);
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#09090b] border-t border-white/5 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-lg border-t border-white/5 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden">
         <div className="flex h-16 items-stretch justify-around px-1 py-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
