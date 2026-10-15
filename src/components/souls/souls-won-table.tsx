@@ -41,7 +41,7 @@ const SoulCard = React.memo(({ soul, onClick }: {
     return (
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left">
             <div className="flex items-center justify-between p-4 gap-4 text-left">
-                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left">
                     <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 text-left")}>
                         <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">
@@ -136,14 +136,14 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect }: {
   
   if (souls.length === 0) {
     return (
-        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left">
-            <CardContent className="text-left text-left">
-                <div className="text-center py-24 flex flex-col items-center text-left">
-                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20 text-left">
+        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left text-left">
+            <CardContent className="text-left text-left text-left">
+                <div className="text-center py-24 flex flex-col items-center text-left text-left">
+                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20 text-left text-left">
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left" />
                     </div>
-                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Your Harvest Field</h3>
-                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left text-left">Your Harvest Field</h3>
+                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center text-left text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>
         </Card>

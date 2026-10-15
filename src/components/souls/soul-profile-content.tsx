@@ -37,7 +37,11 @@ import {
   Users,
   Utensils,
   Download,
-  ClipboardList
+  ClipboardList,
+  Camera,
+  Smartphone,
+  ChevronRight,
+  Calendar
 } from "lucide-react";
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
@@ -53,7 +57,8 @@ import {
   getDoc, 
   getDocs, 
   where,
-  writeBatch
+  writeBatch,
+  setDoc
 } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import {
@@ -109,6 +114,20 @@ import { MutualConnectBadge } from "./mutual-connect-badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
+export const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+    'matchmaking': HeartHandshake,
+};
+
 export const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
     switch (status) {
@@ -156,7 +175,7 @@ export function ShareWordDialog({
   
   const [selectedBook, setSelectedBook] = useState<string | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
-  const [chapterContent, setChapterContent] = useState<BibleChapterOutput | null>(null);
+  const [chapterContent, setChapterContent] = setChapterContent<BibleChapterOutput | null>(null);
   const [loadingVerses, setLoadingVerses] = useState(false);
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
 
@@ -237,7 +256,7 @@ export function ShareWordDialog({
                             <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
                             <Send className="h-3.5 w-3.5 text-primary opacity-40" />
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed italic line-clamp-3">"{res.text.trim()}"</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed italic line-clamp-3 text-left">"{res.text.trim()}"</p>
                     </Button>
                 ))}
             </div>
@@ -287,7 +306,7 @@ export function ShareWordDialog({
           </p>
        </div>
        <div className="space-y-1 font-serif">
-         {loadingVerses ? <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-primary opacity-20" /></div> : chapterContent?.verses.map(v => (
+         {loadingVerses ? <div className="flex justify-center py-10 text-left"><Loader2 className="h-6 w-6 animate-spin text-primary opacity-20" /></div> : chapterContent?.verses.map(v => (
            <div key={v.verse} className={cn("p-2.5 rounded-xl transition-all cursor-pointer border-2", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => handleVerseClick(v.verse)}>
               <sup className="text-[9px] font-black mr-2 opacity-40">{v.verse}</sup>
               <span className="text-sm leading-relaxed">{v.text}</span>
@@ -388,7 +407,7 @@ export function IntercessionHubDialog({
                     ))}
                 </div>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Personalize Revelation</Label>
                 <Textarea value={customText} onChange={e => setCustomText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
             </div>
@@ -805,7 +824,7 @@ export function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.relationship || 'N/A'}</p>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Work Status</p>
+                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest">Work Status</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.workStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1">
@@ -1129,4 +1148,139 @@ export function SoulProfileContent({
       />
     </div>
   );
+}
+
+export function IntercessionHubDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onComplete 
+}: { 
+  isOpen: boolean, 
+  onOpenChange: (open: boolean) => void, 
+  soul: Soul | null, 
+  onComplete: (msg: string) => void 
+}) {
+    const [customText, setCustomText] = useState('');
+    const isMobile = useIsMobile();
+    
+    const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
+        const gender = targetSoul.gender?.toLowerCase() || 'other';
+        const pronouns = {
+            subject: gender === 'female' ? 'she' : 'he',
+            object: gender === 'female' ? 'her' : 'him',
+            possessive: gender === 'female' ? 'her' : 'his'
+        };
+        return template.replace(/{name}/g, targetSoul.firstName).replace(/{subject}/g, pronouns.subject).replace(/{object}/g, pronouns.object).replace(/{possessive}/g, pronouns.possessive);
+    }, []);
+
+    useEffect(() => {
+        if (isOpen && soul) {
+            setCustomText(resolveTemplate(prayerTemplates[0].text, soul));
+        }
+    }, [isOpen, soul, resolveTemplate]);
+
+    const contentBody = (
+        <div className="p-6 space-y-6 text-left">
+            <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Focus Points</Label>
+                <div className="flex flex-wrap gap-2">
+                    {prayerTemplates.map(t => (
+                        <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase border-primary/20 hover:bg-primary/5" onClick={() => {
+                            if(soul) setCustomText(resolveTemplate(t.text, soul));
+                        }}>{t.label}</Button>
+                    ))}
+                </div>
+            </div>
+            <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Personalize Revelation</Label>
+                <Textarea value={customText} onChange={e => setCustomText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
+            </div>
+            <Button onClick={() => onComplete(customText)} disabled={!customText.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg uppercase tracking-widest">PROCEED TO HUB</Button>
+        </div>
+    );
+
+    const header = (
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <DialogHeader className="text-left p-0">
+                <div className="flex items-center gap-3 mb-2">
+                    <HandHeart className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Intercession</span>
+                </div>
+                <DialogTitle className="text-2xl font-black font-headline uppercase">Prayer for {soul?.firstName}</DialogTitle>
+                <DialogDescription className="text-sm font-medium">Draft a powerful word of blessing.</DialogDescription>
+            </DialogHeader>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    {header}
+                    <ScrollArea className="flex-grow">{contentBody}</ScrollArea>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                {header}
+                {contentBody}
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+export function MessageHubDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onChannelSelect 
+}: { 
+  isOpen: boolean, 
+  onOpenChange: (open: boolean) => void, 
+  soul: Soul | null, 
+  onChannelSelect: (channel: 'whatsapp' | 'sms') => void 
+}) {
+    const isMobile = useIsMobile();
+
+    const header = (
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <DialogHeader className="text-center space-y-2 p-0">
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2"><MessageSquare className="h-7 w-7 text-primary" /></div>
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-center">Message Hub</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul?.firstName}?</DialogDescription>
+            </DialogHeader>
+        </div>
+    );
+
+    const contentBody = (
+        <div className="flex flex-col gap-3 p-8">
+            <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest shadow-lg shadow-primary/20"><WhatsAppIcon className="h-5 w-5" /> WhatsApp</Button>
+            <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest border-2 border-primary/20 text-primary hover:bg-primary/5"><MessageSquare className="h-5 w-5" /> Standard SMS</Button>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
+                    {header}
+                    {contentBody}
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-center text-left">
+                {header}
+                {contentBody}
+            </DialogContent>
+        </Dialog>
+    );
 }
