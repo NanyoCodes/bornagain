@@ -155,7 +155,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                             )}
                         </div>
                         <div className="min-w-0 flex-1 pr-1 text-left">
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-2 flex-wrap text-left">
                                 <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate">
                                     {s.firstName} {s.lastName}
                                 </p>
@@ -586,7 +586,7 @@ export default function SoulsWonPage() {
 
                 {soulsWithPhotos.length > 0 && (
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700 text-left">
-                        <div className="flex items-center justify-between mb-4 px-1 text-left text-left">
+                        <div className="flex items-center justify-between mb-4 px-1 text-left text-left text-left">
                             <div className="flex items-center gap-2 text-left">
                                 <ImageIcon className="h-4 w-4 text-primary text-left" />
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left">GALLERY OF MY SOULS</h3>
@@ -616,12 +616,12 @@ export default function SoulsWonPage() {
                 <div className="px-4 sm:px-0 space-y-12 text-left">
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left"><BarChart3 className="h-5 w-5 text-primary text-left" /></div>
-                            <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">DEMOGRAPHICS</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Age Analysis</p></div>
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left"><BarChart3 className="h-5 w-5 text-primary text-left" /></div>
+                            <div className="min-w-0 text-left text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">DEMOGRAPHICS</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Age Analysis</p></div>
                         </div>
                         <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
-                            <CardContent className="p-6 sm:p-8 space-y-6 text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left text-left">
+                            <CardContent className="p-6 sm:p-8 space-y-6 text-left text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left text-left text-left text-left">
                                     {[
                                         { label: 'Children (0-12)', count: ageGroups.children.count, color: 'bg-blue-500', icon: Sparkles },
                                         { label: 'Teens (13-19)', count: ageGroups.teens.count, color: 'bg-green-500', icon: Zap },
@@ -633,9 +633,9 @@ export default function SoulsWonPage() {
                                         const percent = totalSoulsCount > 0 ? (group.count / totalSoulsCount) * 100 : 0;
                                         const Icon = group.icon;
                                         return (
-                                            <div key={group.label} className={cn("space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left", "hover:border-primary/20")} onClick={() => setSelectedFilterGroup({ type: 'age', value: group.label })}>
-                                                <div className="flex items-center justify-between text-left text-left"><div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left"><Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left text-left" /></div><span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span></div>
-                                                <div className="space-y-1 text-left text-left"><div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left"><span>{group.label}</span><span>{Math.round(percent)}%</span></div><Progress value={percent} className="h-1.5 bg-muted text-left text-left" indicatorClassName={group.color} /></div>
+                                            <div key={group.label} className={cn("space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left text-left", "hover:border-primary/20")} onClick={() => setSelectedFilterGroup({ type: 'age', value: group.label })}>
+                                                <div className="flex items-center justify-between text-left text-left text-left"><div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left text-left text-left text-left"><Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left text-left text-left text-left" /></div><span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span></div>
+                                                <div className="space-y-1 text-left text-left text-left"><div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left"><span>{group.label}</span><span>{Math.round(percent)}%</span></div><Progress value={percent} className="h-1.5 bg-muted text-left text-left text-left" indicatorClassName={group.color} /></div>
                                             </div>
                                         );
                                     })}
@@ -646,18 +646,18 @@ export default function SoulsWonPage() {
 
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left"><Users className="h-5 w-5 text-primary text-left" /></div>
-                            <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">GENDER BALANCE</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Kingdom Workforce Diversity</p></div>
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left text-left"><Users className="h-5 w-5 text-primary text-left" /></div>
+                            <div className="min-w-0 text-left text-left text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">GENDER BALANCE</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Kingdom Workforce Diversity</p></div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
-                            <CardContent className="p-6 sm:p-8 text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left text-left">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left">
+                            <CardContent className="p-6 sm:p-8 text-left text-left text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left text-left text-left text-left text-left">
                                     {[ { label: 'Male', count: genderStats.male.count, color: 'bg-blue-600' }, { label: 'Female', count: genderStats.female.count, color: 'bg-rose-500' }, { label: 'Not Assigned', count: genderStats.unassigned.count, color: 'bg-slate-400' } ].map(stat => {
                                         const percent = genderStats.total > 0 ? (stat.count / genderStats.total) * 100 : 0;
                                         return (
-                                            <div key={stat.label} className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left text-left" onClick={() => setSelectedFilterGroup({ type: 'gender', value: stat.label })}>
-                                                <div className="flex justify-between items-baseline text-left text-left"><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">{stat.label}</p><span className="text-2xl font-black text-primary tracking-tighter text-left text-left">{stat.count}</span></div>
-                                                <div className="space-y-1.5 text-left text-left"><Progress value={percent} className="h-2 bg-muted text-left text-left" indicatorClassName={stat.color} /><p className="text-right text-[9px] font-black text-muted-foreground/60 uppercase text-left text-left">{Math.round(percent)}% OF HARVEST</p></div>
+                                            <div key={stat.label} className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left text-left text-left text-left" onClick={() => setSelectedFilterGroup({ type: 'gender', value: stat.label })}>
+                                                <div className="flex justify-between items-baseline text-left text-left text-left text-left"><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">{stat.label}</p><span className="text-2xl font-black text-primary tracking-tighter text-left text-left text-left">{stat.count}</span></div>
+                                                <div className="space-y-1.5 text-left text-left text-left"><Progress value={percent} className="h-2 bg-muted text-left text-left text-left" indicatorClassName={stat.color} /><p className="text-right text-[9px] font-black text-muted-foreground/60 uppercase text-left text-left text-left">{Math.round(percent)}% OF HARVEST</p></div>
                                             </div>
                                         );
                                     })}
@@ -668,18 +668,18 @@ export default function SoulsWonPage() {
 
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left"><Heart className="h-5 w-5 text-primary text-left" /></div>
-                            <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left">MARITAL DEMOGRAPHICS</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Family & Status Insights</p></div>
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left text-left text-left"><Heart className="h-5 w-5 text-primary text-left" /></div>
+                            <div className="min-w-0 text-left text-left text-left text-left text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left">MARITAL DEMOGRAPHICS</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left">Family & Status Insights</p></div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
-                            <CardContent className="p-6 sm:p-8 text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left text-left">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left text-left">
+                            <CardContent className="p-6 sm:p-8 text-left text-left text-left text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left text-left text-left text-left text-left text-left">
                                     {[ { label: 'Families', count: maritalStats.married.count, color: 'bg-emerald-500', icon: Target }, { label: 'Singles', count: maritalStats.single.count, color: 'bg-primary', icon: Sparkles }, { label: 'Divorced', count: maritalStats.divorced.count, color: 'bg-slate-500', icon: HelpCircle }, { label: 'Widowers', count: maritalStats.widowed.count, color: 'bg-indigo-600', icon: Award } ].map(stat => {
                                         const percent = totalSoulsCount > 0 ? (stat.count / totalSoulsCount) * 100 : 0;
                                         return (
-                                            <div key={stat.label} className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left text-left" onClick={() => setSelectedFilterGroup({ type: 'marital', value: stat.label })}>
-                                                <div className="flex justify-between items-center text-left text-left text-left"><p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">{stat.label}</p><span className="text-xl font-black text-primary tracking-tighter text-left text-left text-left">{stat.count}</span></div>
-                                                <div className="space-y-1.5 text-left text-left text-left text-left"><Progress value={percent} className="h-1.5 bg-muted text-left text-left text-left text-left" indicatorClassName={stat.color} /><p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left text-left text-left text-left">{Math.round(percent)}%</p></div>
+                                            <div key={stat.label} className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left text-left text-left text-left text-left" onClick={() => setSelectedFilterGroup({ type: 'marital', value: stat.label })}>
+                                                <div className="flex justify-between items-center text-left text-left text-left text-left text-left"><p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">{stat.label}</p><span className="text-xl font-black text-primary tracking-tighter text-left text-left text-left text-left">{stat.count}</span></div>
+                                                <div className="space-y-1.5 text-left text-left text-left text-left text-left"><Progress value={percent} className="h-1.5 bg-muted text-left text-left text-left text-left text-left" indicatorClassName={stat.color} /><p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left text-left text-left text-left text-left">{Math.round(percent)}%</p></div>
                                             </div>
                                         );
                                     })}
@@ -690,7 +690,7 @@ export default function SoulsWonPage() {
                 </div>
 
                 <div className="px-4 sm:px-0 text-left"><RelationshipCircleTracker souls={souls || []} campaigns={campaigns || []} fellowships={fellowships || []} className="rounded-3xl text-left" /></div>
-                <div className="px-4 sm:px-0 text-left text-left"><SoulsImportTemplateCard /></div>
+                <div className="px-4 sm:px-0 text-left text-left text-left"><SoulsImportTemplateCard /></div>
 
                 <div className="-mx-4 sm:mx-0 text-left">
                     <SoulsWonTableLazy 
@@ -870,7 +870,7 @@ export default function SoulsWonPage() {
         )}
         
         <Drawer open={!!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span></div>
@@ -881,7 +881,7 @@ export default function SoulsWonPage() {
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
                                 soul={souls.find(s => s.id === selectedId)!} 
