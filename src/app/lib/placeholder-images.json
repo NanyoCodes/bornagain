@@ -1,0 +1,95 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "logo",
+      "description": "Testify logo",
+      "imageUrl": "https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3",
+      "imageHint": "testify flame logo"
+    },
+    {
+      "id": "auth-background",
+      "description": "Person thanking God with raised hands",
+      "imageUrl": "https://images.unsplash.com/photo-1656073629723-03fbcbc951ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRoYW5rJTIwR09EfGVufDB8fDB8fHww",
+      "imageHint": "thanking god"
+    },
+    {
+      "id": "gospel-collage",
+      "description": "Expression of spiritual gratitude and praise",
+      "imageUrl": "https://images.unsplash.com/photo-1656073629723-03fbcbc951ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRoYW5rJTIwR09EfGVufDB8fDB8fHww",
+      "imageHint": "thanking god"
+    },
+    {
+      "id": "white-gospel",
+      "description": "Bright, white-toned photography of a community space",
+      "imageUrl": "https://images.unsplash.com/photo-1510673398445-94f476ef2793?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "white space"
+    },
+    {
+      "id": "user-1",
+      "description": "User avatar 1",
+      "imageUrl": "https://images.unsplash.com/photo-1610655507808-a59293f4e332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MTM0MTI2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "user-2",
+      "description": "User avatar 2",
+      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzEyNjI5ODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "feature-glory",
+      "description": "Happy believer sharing a testimony",
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop",
+      "imageHint": "happy person testifying"
+    },
+    {
+      "id": "feature-mission",
+      "description": "Diverse team of believers on a mission",
+      "imageUrl": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1932&auto=format&fit=crop",
+      "imageHint": "christian outreach team"
+    },
+    {
+      "id": "feature-victory",
+      "description": "Group celebrating spiritual victory",
+      "imageUrl": "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "victory celebration group"
+    },
+    {
+      "id": "feature-provision",
+      "description": "Believers sharing a meal in unity",
+      "imageUrl": "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1974&auto=format&fit=crop",
+      "imageHint": "sharing meal happy"
+    },
+    {
+      "id": "feature-kindness",
+      "description": "Giving a spiritual gift with a smile",
+      "imageUrl": "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "giving gift smile"
+    },
+    {
+      "id": "feature-disciplines",
+      "description": "Peaceful believer reading the Word",
+      "imageUrl": "https://images.unsplash.com/photo-1504052434569-70ad5839ad6a?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "reading bible happy"
+    },
+    {
+      "id": "feature-fellowship",
+      "description": "Small group laughing together",
+      "imageUrl": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "church fellowship laughing"
+    },
+    {
+      "id": "feature-intercession",
+      "description": "Hand-in-hand group prayer",
+      "imageUrl": "https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=2071&auto=format&fit=crop",
+      "imageHint": "group prayer hands"
+    },
+    {
+      "id": "ad-placeholder-1",
+      "description": "Placeholder for an advertisement",
+      "imageUrl": "https://picsum.photos/seed/ad1/600/400",
+      "imageHint": "advertisement product"
+    }
+  ]
+}
