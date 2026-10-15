@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useUser, useCollection, useUserProfile, useDoc, useFirestore } from '@/firebase';
+import { useUser, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, serverTimestamp, writeBatch, arrayUnion, updateDoc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -68,6 +68,7 @@ function CheckoutPageContent() {
             vendorName: string; 
             vendorPhotoURL?: string; 
             paymentDetails?: string; 
+            vendorOwnerId: string;
             items: any[]; 
             deliveryFee: number; 
             currency: string 
@@ -79,6 +80,7 @@ function CheckoutPageContent() {
                 groups[vId] = {
                     vendorId: vId,
                     vendorName: item.vendorName,
+                    vendorOwnerId: item.vendorOwnerId,
                     vendorPhotoURL: item.vendorPhotoURL,
                     paymentDetails: item.vendorPaymentDetails,
                     items: [],
@@ -87,6 +89,7 @@ function CheckoutPageContent() {
                 };
             }
             groups[vId].items.push(item);
+            // Consolidated delivery fee logic: use the highest delivery fee from the vendor's items in the cart
             if ((item.deliveryFee || 0) > groups[vId].deliveryFee) {
                 groups[vId].deliveryFee = item.deliveryFee;
             }
@@ -211,7 +214,7 @@ function CheckoutPageContent() {
 
     if (!cartItems || cartItems.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left text-left">
+            <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left text-left text-left">
                 <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left text-left">
                     <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left" />
                 </div>
@@ -263,7 +266,7 @@ function CheckoutPageContent() {
                                         </div>
                                     </div>
                                     <Badge variant="outline" className="h-6 px-3 text-[10px] font-black uppercase bg-background border-primary/20 text-primary shadow-sm text-left">
-                                        FEE: {symbol}{group.deliveryFee.toLocaleString()}
+                                        DELIVERY FEE: {symbol}{group.deliveryFee.toLocaleString()}
                                     </Badge>
                                 </div>
 
@@ -344,63 +347,63 @@ function CheckoutPageContent() {
                     })}
                 </div>
 
-                <div className="space-y-6 text-left">
-                    <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left">
-                        <CardHeader className="p-8 pb-4 text-left">
-                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Summary</CardTitle>
-                            <CardDescription className="text-primary-foreground/70 font-medium text-left">Consolidated Kingdom Offering.</CardDescription>
+                <div className="space-y-6 text-left text-left text-left">
+                    <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left text-left">
+                        <CardHeader className="p-8 pb-4 text-left text-left text-left text-left">
+                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left">Summary</CardTitle>
+                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left text-left">Consolidated Kingdom Offering.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-8 pt-0 space-y-6 text-left">
-                            <div className="space-y-6 text-left">
+                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left text-left">
+                            <div className="space-y-6 text-left text-left text-left">
                                 {Object.entries(totalsByCurrency).map(([curr, values]) => {
                                     const symbol = getCurrencySymbol(curr);
                                     return (
-                                        <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0 text-left">
-                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left">
-                                                <span className="text-left">Items Total</span>
-                                                <span className="text-left">{symbol}{values.subtotal.toLocaleString()}</span>
+                                        <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0 text-left text-left text-left">
+                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left text-left">
+                                                <span className="text-left text-left text-left">Items Total</span>
+                                                <span className="text-left text-left text-left">{symbol}{values.subtotal.toLocaleString()}</span>
                                             </div>
-                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left">
-                                                <span className="text-left">Delivery (Grouped)</span>
-                                                <span className="text-left">{symbol}{values.delivery.toLocaleString()}</span>
+                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left text-left">
+                                                <span className="text-left text-left text-left">Delivery (Grouped)</span>
+                                                <span className="text-left text-left text-left">{symbol}{values.delivery.toLocaleString()}</span>
                                             </div>
-                                            <Separator className="bg-white/10 text-left" />
-                                            <div className="flex justify-between items-baseline text-left">
-                                                <span className="text-xs font-black uppercase tracking-[0.2em] text-left">Grand Total</span>
-                                                <span className="text-3xl font-black tracking-tighter text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
+                                            <Separator className="bg-white/10 text-left text-left text-left" />
+                                            <div className="flex justify-between items-baseline text-left text-left text-left">
+                                                <span className="text-xs font-black uppercase tracking-[0.2em] text-left text-left text-left text-left">Grand Total</span>
+                                                <span className="text-3xl font-black tracking-tighter text-left text-left text-left text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
                                             </div>
                                         </div>
                                     )
                                 })}
                             </div>
 
-                            <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left">
-                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left" />
-                                <p className="text-[11px] leading-relaxed font-bold text-left">
+                            <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left text-left text-left">
+                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left text-left text-left" />
+                                <p className="text-[11px] leading-relaxed font-bold text-left text-left text-left text-left">
                                     Finalizing confirms your intent to gift. Please ensure payment is transferred to the account details shown above.
                                 </p>
                             </div>
                         </CardContent>
-                        <CardFooter className="p-8 pt-0 text-left">
+                        <CardFooter className="p-8 pt-0 text-left text-left text-left text-left">
                             <Button 
                                 onClick={handleFinalizeOffering} 
                                 disabled={isSubmitting} 
                                 size="lg" 
-                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center text-left"
+                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center text-left text-left"
                             >
-                                {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left" />}
+                                {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left text-left text-left" />}
                                 FINALIZE OFFERING
                             </Button>
                         </CardFooter>
                     </Card>
 
-                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left">
-                            <Heart className="h-6 w-6 text-primary text-left" />
+                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left text-left">
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left text-left text-left">
+                            <Heart className="h-6 w-6 text-primary text-left text-left text-left text-left" />
                         </div>
-                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left">
+                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left text-left">
                             "Let us not love with words or speech but with actions and in truth." <br/>
-                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left">- 1 John 3:18</span>
+                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left text-left">- 1 John 3:18</span>
                         </p>
                     </div>
                 </div>
