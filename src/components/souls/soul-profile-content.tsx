@@ -40,7 +40,7 @@ import {
   ClipboardList
 } from "lucide-react";
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
-import { useUser, useFirestore, useUserProfile, useCollection, useDoc } from "@/firebase";
+import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
 import { 
   doc, 
   updateDoc, 
@@ -62,6 +62,8 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogDescription, 
+  DialogTrigger,
+  DialogFooter
 } from "@/components/ui/dialog";
 import {
     Drawer,
@@ -77,6 +79,7 @@ import {
     SheetTitle,
     SheetDescription,
 } from "@/components/ui/sheet";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
@@ -862,7 +865,7 @@ export function SoulProfileContent({
                                 onClick={() => handleActionClick(action.id)}
                                 disabled={isActionSubmitting}
                             >
-                                {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Icon className="h-4 w-4 text-primary" />}
+                                {isThisProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" /> : <Icon className="h-4 w-4 text-primary" />}
                                 <span className="text-[11px] font-black uppercase tracking-widest truncate">{action.label}</span>
                             </Button>
                         )
@@ -1058,7 +1061,7 @@ export function SoulProfileContent({
           </div>
           <div className="p-8 space-y-6">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 
