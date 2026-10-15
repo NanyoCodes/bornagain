@@ -15,12 +15,15 @@ export default function LegacyDashboardRedirectLayout({ children }: { children: 
 
   useEffect(() => {
     if (pathname.startsWith('/dashboard')) {
+      const searchParams = typeof window !== 'undefined' ? window.location.search : '';
       setIsRedirecting(true);
-      const newPath = pathname.replace('/dashboard', '');
-      const queryParams = typeof window !== 'undefined' ? window.location.search : '';
-      // Ensure we don't end up with an empty string or leading double slash
-      const targetPath = newPath || '/testimonies';
-      router.replace(targetPath + queryParams);
+      
+      const parts = pathname.split('/').filter(Boolean);
+      // parts[0] is 'dashboard'
+      const hubPath = parts.slice(1).join('/');
+      const targetPath = hubPath ? `/${hubPath}` : '/testimonies';
+      
+      router.replace(targetPath + searchParams);
     }
   }, [pathname, router]);
 
@@ -30,13 +33,13 @@ export default function LegacyDashboardRedirectLayout({ children }: { children: 
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
-      <div className="relative mb-8 mx-auto w-fit">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+      <div className="relative mb-8 mx-auto w-fit text-left">
+        <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
+        <div className="absolute inset-0 flex items-center justify-center text-left text-left">
+            <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left" />
         </div>
       </div>
-      <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-8">
+      <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-8 text-left text-left">
         Optimizing Kingdom Network...
       </p>
     </div>
