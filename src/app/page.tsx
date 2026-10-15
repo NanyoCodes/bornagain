@@ -46,7 +46,7 @@ import NextImage from 'next/image';
 
 const features = [
   {
-    title: "Glory Feed",
+    title: "Testimony Feed",
     description: "Share and read real-time miracle stories. Your testimony is a weapon that overcomes the enemy.",
     icon: Newspaper,
     color: "text-orange-500",
@@ -264,10 +264,10 @@ export default function LandingPage() {
                                         {feature.description}
                                     </p>
                                 </CardContent>
-                                <CardFooter className="px-6 sm:p-8 pt-0 mt-auto">
-                                    <Button variant="ghost" asChild className="p-0 text-primary font-black uppercase tracking-widest text-[10px] group/btn">
-                                        <Link href={feature.link} className="flex items-center gap-1.5">
-                                            Open Hub <ChevronRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1" />
+                                <CardFooter className="px-6 sm:p-8 pt-0 mt-auto justify-end">
+                                    <Button variant="ghost" size="icon" asChild className="rounded-full text-primary hover:bg-primary/5 transition-all group/btn">
+                                        <Link href={feature.link}>
+                                            <ArrowRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
                                         </Link>
                                     </Button>
                                 </CardFooter>

@@ -38,52 +38,70 @@
       "imageHint": "man portrait"
     },
     {
+      "id": "user-3",
+      "description": "User avatar 3",
+      "imageUrl": "https://images.unsplash.com/photo-1656338997878-279d71d48f6e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGVyc29uJTIwc21pbGluZ3xlbnwwfHx8fDE3NzEyNDMyNTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person smiling"
+    },
+    {
+      "id": "user-4",
+      "description": "User avatar 4",
+      "imageUrl": "https://images.unsplash.com/photo-1664813495783-a7b19be83624?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMG91dGRvb3JzfGVufDB8fHx8MTc3MTM0MTI2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman outdoors"
+    },
+    {
+      "id": "profile-cover-1",
+      "description": "Abstract gradient profile cover",
+      "imageUrl": "https://images.unsplash.com/photo-1707130869369-c00812966290?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3QlMjBncmFkaWVudHxlbnwwfHx8fDE3NzEzMzcxOTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract gradient"
+    },
+    {
       "id": "feature-glory",
-      "description": "Happy believer sharing a testimony",
-      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop",
-      "imageHint": "happy person testifying"
+      "description": "A group of young people laughing and sharing stories",
+      "imageUrl": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "happy sharing"
     },
     {
       "id": "feature-mission",
-      "description": "Diverse team of believers on a mission",
+      "description": "Joyful group in an outdoor community outreach mission",
       "imageUrl": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1932&auto=format&fit=crop",
-      "imageHint": "christian outreach team"
+      "imageHint": "happy mission"
     },
     {
       "id": "feature-victory",
-      "description": "Group celebrating spiritual victory",
-      "imageUrl": "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "victory celebration group"
+      "description": "A person with raised hands celebrating in a field",
+      "imageUrl": "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "happy freedom"
     },
     {
       "id": "feature-provision",
-      "description": "Believers sharing a meal in unity",
+      "description": "Diverse group of friends smiling around a dinner table",
       "imageUrl": "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1974&auto=format&fit=crop",
-      "imageHint": "sharing meal happy"
+      "imageHint": "happy meal"
     },
     {
       "id": "feature-kindness",
-      "description": "Giving a spiritual gift with a smile",
+      "description": "Two people sharing a friendly gift and smiling",
       "imageUrl": "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "giving gift smile"
+      "imageHint": "happy gift"
     },
     {
       "id": "feature-disciplines",
-      "description": "Peaceful believer reading the Word",
-      "imageUrl": "https://images.unsplash.com/photo-1504052434569-70ad5839ad6a?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "reading bible happy"
+      "description": "A young woman smiling while reading a book in natural light",
+      "imageUrl": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop",
+      "imageHint": "happy reading"
     },
     {
       "id": "feature-fellowship",
-      "description": "Small group laughing together",
-      "imageUrl": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "church fellowship laughing"
+      "description": "Friends sitting on a bench together laughing",
+      "imageUrl": "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "happy friends"
     },
     {
       "id": "feature-intercession",
-      "description": "Hand-in-hand group prayer",
+      "description": "Close up of diverse hands joined in unity and prayer",
       "imageUrl": "https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=2071&auto=format&fit=crop",
-      "imageHint": "group prayer hands"
+      "imageHint": "happy unity"
     },
     {
       "id": "ad-placeholder-1",
