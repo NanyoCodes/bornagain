@@ -143,19 +143,6 @@ function CartButton() {
     return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
   }, [cartItems]);
 
-  const trigger = (
-    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
-        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
-            <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
-            {count > 0 && (
-                <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
-                    {count}
-                </div>
-            )}
-        </Button>
-    </motion.div>
-  );
-
   const listContent = (
     <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
@@ -188,6 +175,19 @@ function CartButton() {
             </div>
         )}
     </div>
+  );
+
+  const trigger = (
+    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
+        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
+            <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
+            {count > 0 && (
+                <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
+                    {count}
+                </div>
+            )}
+        </Button>
+    </motion.div>
   );
 
   if (isMobile) {
@@ -728,8 +728,8 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
               <SheetHeader className="text-left flex-shrink-0 text-left">
-                <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8 text-left">
@@ -741,7 +741,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
             <div className="p-6 border-b bg-muted/10 text-left">
-              <DialogHeader className="text-left p-0">
+              <DialogHeader className="text-left p-0 text-left">
                 <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
                 <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>

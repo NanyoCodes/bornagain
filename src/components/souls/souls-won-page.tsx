@@ -851,7 +851,7 @@ export default function SoulsWonPage() {
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="text-left p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium text-left">Update soul identity and mission details.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8 text-left">
