@@ -23,7 +23,8 @@ import {
     Store,
     Info,
     Globe,
-    CreditCard
+    CreditCard,
+    Heart
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -33,7 +34,6 @@ import { useToast } from '@/hooks/use-toast';
 import { cn, safeToDate } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { AppShell } from '@/components/layout/app-shell';
 import { Separator } from '@/components/ui/separator';
 
 const currencyOptions = [
@@ -211,6 +211,26 @@ function CheckoutPageContent() {
         );
     }
 
+    if (!cartItems || cartItems.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left text-left">
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left">
+                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left" />
+                </div>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left">Package is empty</h2>
+                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
+                <div className="flex gap-4 mt-8 justify-center text-left text-left">
+                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left">
+                        <Link href="/marketplace" className="text-left text-left">Meals Hub</Link>
+                    </Button>
+                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left">
+                        <Link href="/marketplace/gifts" className="text-left text-left">Kindness Hub</Link>
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left text-left">
             <header className="px-4 sm:px-0 space-y-4 pt-4 text-left text-left text-left">
@@ -236,7 +256,7 @@ function CheckoutPageContent() {
                             <div key={group.vendorId} className="space-y-4 text-left text-left">
                                 <div className="flex items-center justify-between px-2 text-left text-left">
                                     <div className="flex items-center gap-3 text-left text-left text-left">
-                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm text-left text-left text-left">
+                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm text-left text-left text-left text-left">
                                             <Store className="h-5 w-5 text-primary text-left text-left text-left text-left" />
                                         </div>
                                         <div className="min-w-0 text-left text-left text-left">
@@ -250,9 +270,9 @@ function CheckoutPageContent() {
                                 </div>
 
                                 <Card className="rounded-[2.5rem] bg-card/30 border-none shadow-sm overflow-hidden border-l-8 border-l-primary/10 text-left text-left">
-                                    <CardContent className="p-0 divide-y divide-dashed text-left text-left text-left">
+                                    <CardContent className="p-0 divide-y divide-dashed text-left text-left text-left text-left">
                                         {group.items.map((item) => (
-                                            <div key={item.id} className="p-6 flex flex-col gap-5 text-left text-left">
+                                            <div key={item.id} className="p-6 flex flex-col gap-5 text-left text-left text-left">
                                                 <div className="flex items-start gap-4 text-left text-left text-left">
                                                     <Avatar className="h-14 w-14 rounded-2xl border shadow-inner text-left text-left text-left">
                                                         <AvatarImage src={item.photoURL} className="object-cover text-left text-left" />
@@ -326,14 +346,14 @@ function CheckoutPageContent() {
                     })}
                 </div>
 
-                <div className="space-y-6 text-left text-left">
+                <div className="space-y-6 text-left text-left text-left">
                     <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left">
-                        <CardHeader className="p-8 pb-4 text-left text-left">
-                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Summary</CardTitle>
-                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left">Consolidated Kingdom Offering.</CardDescription>
+                        <CardHeader className="p-8 pb-4 text-left text-left text-left text-left">
+                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left">Summary</CardTitle>
+                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left text-left">Consolidated Kingdom Offering.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left">
-                            <div className="space-y-6 text-left text-left">
+                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left text-left">
+                            <div className="space-y-6 text-left text-left text-left">
                                 {Object.entries(totalsByCurrency).map(([curr, values]) => {
                                     const symbol = getCurrencySymbol(curr);
                                     return (
@@ -356,14 +376,14 @@ function CheckoutPageContent() {
                                 })}
                             </div>
 
-                            <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left">
-                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left" />
+                            <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left text-left">
+                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left text-left" />
                                 <p className="text-[11px] leading-relaxed font-bold text-left text-left">
                                     Finalizing confirms your intent to gift. Please ensure payment is transferred to the account details shown above.
                                 </p>
                             </div>
                         </CardContent>
-                        <CardFooter className="p-8 pt-0 text-left text-left">
+                        <CardFooter className="p-8 pt-0 text-left text-left text-left">
                             <Button 
                                 onClick={handleFinalizeOffering} 
                                 disabled={isSubmitting} 
@@ -376,9 +396,9 @@ function CheckoutPageContent() {
                         </CardFooter>
                     </Card>
 
-                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left">
-                            <Heart className="h-6 w-6 text-primary text-left text-left" />
+                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left">
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left text-left">
+                            <Heart className="h-6 w-6 text-primary text-left text-left text-left" />
                         </div>
                         <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left">
                             "Let us not love with words or speech but with actions and in truth." <br/>
