@@ -22,7 +22,7 @@ import {
   Target,
   Share,
   HeartHandshake,
-  Search,
+  Search as SearchIcon,
   BookMarked,
   Clock,
   Edit,
@@ -46,8 +46,7 @@ import {
   ShieldCheck,
   Trash2,
   MapPin,
-  Info,
-  Input
+  Info
 } from "lucide-react";
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
@@ -101,6 +100,7 @@ import { useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -247,7 +247,7 @@ export function ShareWordDialog({
     <div className="space-y-8 text-left">
       <div className="space-y-4 text-left">
         <div className="relative text-left">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
             <Input placeholder="Search Bible..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
             <Button onClick={handleSearch} disabled={isSearching || !bibleSearch.trim()} variant="ghost" size="sm" className="absolute right-1.5 top-1/2 -translate-y-1/2 h-8 px-3 rounded-xl font-black text-[9px] uppercase text-primary">
                 {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : 'SEARCH'}

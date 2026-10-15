@@ -363,7 +363,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar text-left" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal p-4">
+                <DropdownMenuLabel className="font-normal p-4 text-left">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-black leading-none truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
                     <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{user.email}</p>

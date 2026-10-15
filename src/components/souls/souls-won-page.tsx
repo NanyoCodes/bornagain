@@ -166,38 +166,15 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                         </div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-2 shrink-0 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-none border-dashed border-primary/10">
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary" onClick={(e) => { e.stopPropagation(); onShareWord(s); }}>
-                                        <BookMarked className="h-4 w-4" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-black uppercase">Share Word</p></TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary" onClick={(e) => { e.stopPropagation(); onPray(s); }}>
-                                        <HandHeart className="h-4 w-4" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-black uppercase">Intercession</p></TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary" onClick={(e) => { e.stopPropagation(); onMessage(s); }}>
-                                        <MessageSquare className="h-4 w-4" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-black uppercase">Encourage</p></TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary" onClick={(e) => { e.stopPropagation(); onShareWord(s); }}>
+                            <BookMarked className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary" onClick={(e) => { e.stopPropagation(); onPray(s); }}>
+                            <HandHeart className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary" onClick={(e) => { e.stopPropagation(); onMessage(s); }}>
+                            <MessageSquare className="h-4 w-4" />
+                        </Button>
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -496,6 +473,7 @@ export default function SoulsWonPage() {
         });
         docObj.save(`record-${soul.firstName.toLowerCase()}.pdf`);
     } else {
+        const { default: Papa } = await import('papaparse');
         const csv = Papa.unparse(data);
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
@@ -562,7 +540,7 @@ export default function SoulsWonPage() {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
-                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black">Select Format</DropdownMenuLabel>
+                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Select Format</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onSelect={() => toast({ title: 'Export in Progress' })} className="rounded-lg py-2.5"><Download className="mr-2 h-4 w-4 opacity-40" /> CSV (Excel)</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => toast({ title: 'Export in Progress' })} className="rounded-lg py-2.5"><Download className="mr-2 h-4 w-4 text-primary" /> PDF Report</DropdownMenuItem>
@@ -590,7 +568,7 @@ export default function SoulsWonPage() {
                                         <div onClick={() => setSelectedId(s.id)} className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-[0.98] transition-all">
                                             <NextImage src={s.photoURL!} alt={s.firstName} fill className="object-cover transition-transform group-hover:scale-110 duration-500" unoptimized />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                                            <div className="absolute bottom-3 left-3 right-3 text-white">
+                                            <div className="absolute bottom-3 left-3 right-3 text-white text-left">
                                                 <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight">
                                                     {s.nickname || s.firstName} {s.age && <span className="opacity-60 ml-1 font-bold">({s.age})</span>}
                                                 </p>
@@ -625,8 +603,8 @@ export default function SoulsWonPage() {
                                         const Icon = group.icon;
                                         return (
                                             <div key={group.label} className={cn("space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden", "hover:border-primary/20")} onClick={() => setSelectedFilterGroup({ type: 'age', value: group.label })}>
-                                                <div className="flex items-center justify-between"><div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10"><Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" /></div><span className="font-black text-lg text-primary tracking-tighter">{group.count}</span></div>
-                                                <div className="space-y-1"><div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground"><span>{group.label}</span><span>{Math.round(percent)}%</span></div><Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} /></div>
+                                                <div className="flex items-center justify-between text-left"><div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10"><Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" /></div><span className="font-black text-lg text-primary tracking-tighter">{group.count}</span></div>
+                                                <div className="space-y-1 text-left"><div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground"><span>{group.label}</span><span>{Math.round(percent)}%</span></div><Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} /></div>
                                             </div>
                                         );
                                     })}
@@ -709,7 +687,7 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <Drawer open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10">
+                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2"><BarChart3 className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Harvest Demographic</span></div>
                             <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight"> {selectedFilterGroup?.value} Directory</DrawerTitle>
@@ -793,7 +771,7 @@ export default function SoulsWonPage() {
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Removal</AlertDialogAction>
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Removal</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
@@ -892,3 +870,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+
