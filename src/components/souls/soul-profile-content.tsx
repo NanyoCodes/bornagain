@@ -49,6 +49,11 @@ import {
   Info
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
@@ -67,7 +72,6 @@ import {
   writeBatch,
   setDoc
 } from "firebase/firestore";
-import { Button } from "@/components/ui/button";
 import { 
   Dialog, 
   DialogContent, 
@@ -77,6 +81,14 @@ import {
   DialogTrigger,
   DialogFooter
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import {
     Drawer,
     DrawerContent,
@@ -91,15 +103,12 @@ import {
     SheetTitle,
     SheetDescription,
 } from "@/components/ui/sheet";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { cn, safeToDate } from "@/lib/utils";
 import Image from 'next/image';
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { CommentSection } from "./comment-section";
-import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { bibleData } from "@/lib/bible-data";
@@ -107,18 +116,6 @@ import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-dat
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import { MutualConnectBadge } from "./mutual-connect-badge";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -358,7 +355,7 @@ export function ShareWordDialog({
        </div>
        <div className="space-y-1 font-serif text-left">
          {loadingVerses ? <div className="flex justify-center py-10 text-left"><Loader2 className="h-6 w-6 animate-spin text-primary opacity-20 text-left" /></div> : chapterContent?.verses.map(v => (
-           <div key={v.verse} className={cn("p-2.5 rounded-xl transition-all cursor-pointer border-2 text-left", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => handleVerseClick(v.verse)}>
+           <div key={v.verse} className={cn("p-2.5 rounded-xl transition-all cursor-pointer border-2 text-left", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => toggleVerse(v.verse)}>
               <sup className="text-[9px] font-black mr-2 opacity-40 text-left">{v.verse}</sup>
               <span className="text-sm leading-relaxed text-left">{v.text}</span>
            </div>
@@ -471,7 +468,7 @@ export function IntercessionHubDialog({
             <DialogHeader className="text-left p-0">
                 <div className="flex items-center gap-3 mb-2 text-left">
                     <HandHeart className="h-5 w-5 text-primary text-left" />
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Intercession</span>
+                    <span className="text-[10px) font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Intercession</span>
                 </div>
                 <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Prayer for {soul?.firstName}</DialogTitle>
                 <DialogDescription className="text-sm font-medium text-left">Draft a powerful word of blessing.</DialogDescription>
@@ -622,7 +619,7 @@ export function SoulProfileContent({
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    const memberName = `${currentUserProfile?.firstName || ''} ${currentUserProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+    const memberName = `${currentUserProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
         note: `Logged via Identity Hub: ${action?.label}${noteAddendum ? ` - ${noteAddendum}` : ''}`,
@@ -931,7 +928,7 @@ export function SoulProfileContent({
                             <Button
                                 key={action.id}
                                 variant="outline"
-                                className="flex items-center justify-start gap-3 h-12 px-4 rounded-xl border-2 border-transparent bg-muted/20 hover:bg-primary/5 hover:border-primary/10 transition-all text-left group text-left"
+                                className="flex items-center justify-start gap-3 h-12 px-4 rounded-xl border-2 border-transparent bg-muted/20 hover:bg-primary/5 hover:border-primary/10 transition-all text-left group"
                                 onClick={() => handleActionClick(action.id)}
                                 disabled={isActionSubmitting}
                             >

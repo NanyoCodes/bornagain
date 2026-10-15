@@ -121,7 +121,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
             const sSpouse = (s.spouseName || "").toLowerCase();
             const otherSpouse = (other.spouseName || "").toLowerCase();
             return (sSpouse === otherFull || sSpouse === other.firstName.toLowerCase()) &&
-                   (otherSpouse === sFull || otherSpouse === s.firstName.toLowerCase());
+                   (otherSpouse === sFull || otherSpouse === soul.firstName.toLowerCase());
         }) : null;
 
         const children = allSouls.filter(child => s.childrenIds?.includes(child.id));
