@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react';
 
 /**
  * @fileOverview Redirection logic for legacy /dashboard routes.
- * Updated to preserve search parameters (e.g., soulId) during path flattening.
+ * Preserves search parameters (e.g., soulId) to ensure context is maintained across hubs.
  */
 export default function LegacyDashboardRedirectLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -18,8 +18,9 @@ export default function LegacyDashboardRedirectLayout({ children }: { children: 
       setIsRedirecting(true);
       const newPath = pathname.replace('/dashboard', '');
       const queryParams = typeof window !== 'undefined' ? window.location.search : '';
-      const finalTarget = (newPath || '/testimonies') + queryParams;
-      router.replace(finalTarget);
+      // Ensure we don't end up with an empty string or leading double slash
+      const targetPath = newPath || '/testimonies';
+      router.replace(targetPath + queryParams);
     }
   }, [pathname, router]);
 
