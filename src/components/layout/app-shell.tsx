@@ -85,8 +85,6 @@ import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 
-const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
-
 const navItems = [
   { href: "/growth", label: "Growth", icon: TrendingUp, color: "bg-orange-500" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "bg-amber-500" },
