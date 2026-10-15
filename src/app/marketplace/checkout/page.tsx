@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useUser, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useUser, useCollection, useUserProfile, useDoc, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, serverTimestamp, writeBatch, arrayUnion, updateDoc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -203,116 +203,136 @@ function CheckoutPageContent() {
     if (loading) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-32 text-left">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-primary animate-pulse">Organizing package...</p>
+                <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
+                <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-primary animate-pulse text-left text-left">Organizing package...</p>
+            </div>
+        );
+    }
+
+    if (!cartItems || cartItems.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left text-left">
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left text-left">
+                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left" />
+                </div>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left">Package is empty</h2>
+                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left text-left text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
+                <div className="flex gap-4 mt-8 justify-center text-left text-left text-left">
+                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left text-left">
+                        <Link href="/marketplace" className="text-left text-left text-left">Meals Hub</Link>
+                    </Button>
+                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left text-left">
+                        <Link href="/marketplace/gifts" className="text-left text-left text-left">Kindness Hub</Link>
+                    </Button>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left">
-            <header className="px-4 sm:px-0 space-y-4 pt-4">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm">
-                        <ArrowLeft className="h-6 w-6" />
+        <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left text-left">
+            <header className="px-4 sm:px-0 space-y-4 pt-4 text-left text-left">
+                <div className="flex items-center gap-4 text-left text-left">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm text-left text-left">
+                        <ArrowLeft className="h-6 w-6 text-left text-left" />
                     </Button>
-                    <div className="min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                            <ShoppingCart className="h-3.5 w-3.5 text-primary" />
-                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
+                    <div className="min-w-0 text-left text-left">
+                        <div className="flex items-center gap-2 mb-1 text-left text-left">
+                            <ShoppingCart className="h-3.5 w-3.5 text-primary text-left text-left" />
+                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Kingdom Offering</span>
                         </div>
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase truncate leading-tight">Checkout Hub</h1>
+                        <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase truncate leading-tight text-left text-left">Checkout Hub</h1>
                     </div>
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 sm:px-0">
-                <div className="lg:col-span-2 space-y-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left text-left">
+                <div className="lg:col-span-2 space-y-10 text-left text-left">
                     {groupedByVendor.map((group) => {
                         const symbol = getCurrencySymbol(group.currency);
                         return (
-                            <div key={group.vendorId} className="space-y-4">
-                                <div className="flex items-center justify-between px-2">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
-                                            <Store className="h-5 w-5 text-primary" />
+                            <div key={group.vendorId} className="space-y-4 text-left">
+                                <div className="flex items-center justify-between px-2 text-left">
+                                    <div className="flex items-center gap-3 text-left">
+                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm text-left">
+                                            <Store className="h-5 w-5 text-primary text-left" />
                                         </div>
-                                        <div className="min-w-0">
-                                            <h2 className="font-black text-sm sm:text-base uppercase tracking-tight truncate">{group.vendorName}</h2>
-                                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Consolidated Delivery Enabled</p>
+                                        <div className="min-w-0 text-left">
+                                            <h2 className="font-black text-sm sm:text-base uppercase tracking-tight truncate text-left">{group.vendorName}</h2>
+                                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">Consolidated Delivery Enabled</p>
                                         </div>
                                     </div>
-                                    <Badge variant="outline" className="h-6 px-3 text-[10px] font-black uppercase bg-background border-primary/20 text-primary shadow-sm">
+                                    <Badge variant="outline" className="h-6 px-3 text-[10px] font-black uppercase bg-background border-primary/20 text-primary shadow-sm text-left">
                                         FEE: {symbol}{group.deliveryFee.toLocaleString()}
                                     </Badge>
                                 </div>
 
-                                <Card className="rounded-[2.5rem] bg-card/30 border-none shadow-sm overflow-hidden border-l-8 border-l-primary/10">
-                                    <CardContent className="p-0 divide-y divide-dashed">
+                                <Card className="rounded-[2.5rem] bg-card/30 border-none shadow-sm overflow-hidden border-l-8 border-l-primary/10 text-left">
+                                    <CardContent className="p-0 divide-y divide-dashed text-left">
                                         {group.items.map((item) => (
-                                            <div key={item.id} className="p-6 flex flex-col gap-5">
-                                                <div className="flex items-start gap-4">
-                                                    <Avatar className="h-14 w-14 rounded-2xl border shadow-inner">
-                                                        <AvatarImage src={item.photoURL} className="object-cover" />
-                                                        <AvatarFallback className="bg-primary/5 text-primary font-bold"> {item.name?.charAt(0)}</AvatarFallback>
+                                            <div key={item.id} className="p-6 flex flex-col gap-5 text-left">
+                                                <div className="flex items-start gap-4 text-left">
+                                                    <Avatar className="h-14 w-14 rounded-2xl border shadow-inner text-left">
+                                                        <AvatarImage src={item.photoURL} className="object-cover text-left" />
+                                                        <AvatarFallback className="bg-primary/5 text-primary font-bold text-left"> {item.name?.charAt(0)}</AvatarFallback>
                                                     </Avatar>
-                                                    <div className="min-w-0 flex-1">
-                                                        <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight">{item.name}</h3>
-                                                        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                                                            <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20">
-                                                                {item.vendorType === 'gift' ? <Gift className="h-2 w-2 mr-1" /> : <Utensils className="h-2 w-2 mr-1" />}
+                                                    <div className="min-w-0 flex-1 text-left">
+                                                        <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight text-left">{item.name}</h3>
+                                                        <div className="flex items-center gap-2 mt-1.5 flex-wrap text-left">
+                                                            <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left">
+                                                                {item.vendorType === 'gift' ? <Gift className="h-2 w-2 mr-1 text-left" /> : <Utensils className="h-2 w-2 mr-1 text-left" />}
                                                                 {item.vendorType === 'gift' ? 'GIFT' : 'MEAL'}
                                                             </Badge>
-                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1">
-                                                                <User className="h-2.5 w-2.5" /> For: {item.soulName || 'Kingdom Member'}
+                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left">
+                                                                <User className="h-2.5 w-2.5 text-left" /> For: {item.soulName || 'Kingdom Member'}
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <div className="text-right shrink-0">
-                                                        <p className="text-xl font-black text-primary tracking-tighter">{symbol}{item.price.toLocaleString()}</p>
-                                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter text-right">Per Unit</p>
+                                                    <div className="text-right shrink-0 text-left">
+                                                        <p className="text-xl font-black text-primary tracking-tighter text-left">{symbol}{item.price.toLocaleString()}</p>
+                                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter text-right text-left">Per Unit</p>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center justify-between gap-4 pt-4 border-t border-muted/20">
-                                                    <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm">
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(item.id, item.quantity, -1)}><Minus className="h-3.5 w-3.5"/></Button>
-                                                        <span className="w-8 text-center font-black text-xs"> {item.quantity}</span>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(item.id, item.quantity, 1)}><Plus className="h-3.5 w-3.5"/></Button>
+                                                <div className="flex items-center justify-between gap-4 pt-4 border-t border-muted/20 text-left">
+                                                    <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm text-left">
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(item.id, item.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left"/></Button>
+                                                        <span className="w-8 text-center font-black text-xs text-left"> {item.quantity}</span>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(item.id, item.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left"/></Button>
                                                     </div>
-                                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-destructive hover:bg-destructive/10" onClick={() => handleRemoveItem(item.id)}>
-                                                        <Trash2 className="h-4 w-4" />
+                                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-destructive hover:bg-destructive/10 text-left" onClick={() => handleRemoveItem(item.id)}>
+                                                        <Trash2 className="h-4 w-4 text-left" />
                                                     </Button>
                                                 </div>
 
-                                                <div className="space-y-2">
-                                                    <Label className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-1">Special Instructions</Label>
+                                                <div className="space-y-2 text-left">
+                                                    <Label className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-1 text-left">Special Instructions</Label>
                                                     <Textarea 
                                                         placeholder="e.g., Please deliver by 2PM, specific message for recipient..."
                                                         value={instructions[item.id] || ''}
                                                         onChange={(e) => setInstructions(prev => ({ ...prev, [item.id]: e.target.value }))}
-                                                        className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner text-sm"
+                                                        className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner text-sm text-left"
                                                     />
                                                 </div>
                                             </div>
                                         ))}
                                     </CardContent>
-                                    <CardFooter className="bg-muted/30 p-8 flex flex-col gap-6">
-                                        <div className="space-y-3 w-full">
-                                            <Label className="text-[10px] font-black uppercase text-primary tracking-[0.3em] flex items-center gap-2">
-                                                <CreditCard className="h-4 w-4" /> ACCOUNT DETAILS FOR {group.vendorName}
+                                    <CardFooter className="bg-muted/30 p-8 flex flex-col gap-6 text-left">
+                                        <div className="space-y-3 w-full text-left">
+                                            <Label className="text-[10px] font-black uppercase text-primary tracking-[0.3em] flex items-center gap-2 text-left">
+                                                <CreditCard className="h-4 w-4 text-left" /> ACCOUNT DETAILS FOR {group.vendorName}
                                             </Label>
-                                            <div className="p-6 rounded-[1.5rem] bg-background border-2 border-primary/10 shadow-inner relative overflow-hidden group/pay">
-                                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/pay:opacity-10 transition-opacity">
-                                                    <ShieldCheck className="h-16 w-16 text-primary rotate-12" />
+                                            <div className="p-6 rounded-[1.5rem] bg-background border-2 border-primary/10 shadow-inner relative overflow-hidden group/pay text-left">
+                                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/pay:opacity-10 transition-opacity text-left">
+                                                    <ShieldCheck className="h-16 w-16 text-primary rotate-12 text-left" />
                                                 </div>
-                                                <p className="text-sm sm:text-base font-black text-foreground whitespace-pre-wrap leading-relaxed relative z-10 text-balance">
+                                                <p className="text-sm sm:text-base font-black text-foreground whitespace-pre-wrap leading-relaxed relative z-10 text-balance text-left">
                                                     {group.paymentDetails || 'Contact provider directly for payment coordinates.'}
                                                 </p>
                                             </div>
-                                            <div className="flex items-start gap-2 px-1">
-                                                <Info className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
-                                                <p className="text-[10px] text-muted-foreground font-medium italic leading-relaxed text-left">
+                                            <div className="flex items-start gap-2 px-1 text-left">
+                                                <Info className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0 text-left" />
+                                                <p className="text-[10px] text-muted-foreground font-medium italic leading-relaxed text-left text-left">
                                                     Transfer the exact amount to the details above. The provider will be notified once you finalize.
                                                 </p>
                                             </div>
@@ -324,63 +344,63 @@ function CheckoutPageContent() {
                     })}
                 </div>
 
-                <div className="space-y-6">
-                    <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground">
-                        <CardHeader className="p-8 pb-4">
-                            <CardTitle className="text-xl font-black uppercase tracking-tight">Summary</CardTitle>
-                            <CardDescription className="text-primary-foreground/70 font-medium">Consolidated Kingdom Offering.</CardDescription>
+                <div className="space-y-6 text-left">
+                    <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left">
+                        <CardHeader className="p-8 pb-4 text-left">
+                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Summary</CardTitle>
+                            <CardDescription className="text-primary-foreground/70 font-medium text-left">Consolidated Kingdom Offering.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-8 pt-0 space-y-6">
-                            <div className="space-y-6">
+                        <CardContent className="p-8 pt-0 space-y-6 text-left">
+                            <div className="space-y-6 text-left">
                                 {Object.entries(totalsByCurrency).map(([curr, values]) => {
                                     const symbol = getCurrencySymbol(curr);
                                     return (
-                                        <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0">
-                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70">
-                                                <span>Items Total</span>
-                                                <span>{symbol}{values.subtotal.toLocaleString()}</span>
+                                        <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0 text-left">
+                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left">
+                                                <span className="text-left">Items Total</span>
+                                                <span className="text-left">{symbol}{values.subtotal.toLocaleString()}</span>
                                             </div>
-                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70">
-                                                <span>Delivery (Grouped)</span>
-                                                <span>{symbol}{values.delivery.toLocaleString()}</span>
+                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left">
+                                                <span className="text-left">Delivery (Grouped)</span>
+                                                <span className="text-left">{symbol}{values.delivery.toLocaleString()}</span>
                                             </div>
-                                            <Separator className="bg-white/10" />
-                                            <div className="flex justify-between items-baseline">
-                                                <span className="text-xs font-black uppercase tracking-[0.2em]">Grand Total</span>
-                                                <span className="text-3xl font-black tracking-tighter">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
+                                            <Separator className="bg-white/10 text-left" />
+                                            <div className="flex justify-between items-baseline text-left">
+                                                <span className="text-xs font-black uppercase tracking-[0.2em] text-left">Grand Total</span>
+                                                <span className="text-3xl font-black tracking-tighter text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
                                             </div>
                                         </div>
                                     )
                                 })}
                             </div>
 
-                            <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3">
-                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60" />
-                                <p className="text-[11px] leading-relaxed font-bold">
+                            <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left">
+                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left" />
+                                <p className="text-[11px] leading-relaxed font-bold text-left">
                                     Finalizing confirms your intent to gift. Please ensure payment is transferred to the account details shown above.
                                 </p>
                             </div>
                         </CardContent>
-                        <CardFooter className="p-8 pt-0">
+                        <CardFooter className="p-8 pt-0 text-left">
                             <Button 
                                 onClick={handleFinalizeOffering} 
                                 disabled={isSubmitting} 
                                 size="lg" 
-                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center"
+                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center text-left"
                             >
-                                {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                                {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left" />}
                                 FINALIZE OFFERING
                             </Button>
                         </CardFooter>
                     </Card>
 
-                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4">
-                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto shadow-inner">
-                            <Heart className="h-6 w-6 text-primary" />
+                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left">
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left">
+                            <Heart className="h-6 w-6 text-primary text-left" />
                         </div>
-                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center">
+                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left">
                             "Let us not love with words or speech but with actions and in truth." <br/>
-                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center">- 1 John 3:18</span>
+                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left">- 1 John 3:18</span>
                         </p>
                     </div>
                 </div>
