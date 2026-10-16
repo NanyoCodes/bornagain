@@ -94,7 +94,7 @@ import { RelationshipCircleTracker } from "@/components/souls/relationship-circl
 import { SoulsImportTemplateCard } from "@/components/settings/souls-import-template-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { SoulProfileContent, getStatusClasses, IntercessionHubDialog, MessageHubDialog, ShareWordDialog } from "./soul-profile-content";
+import { SoulProfileContent, getStatusClasses } from "./soul-profile-content";
 import { Checkbox } from "@/components/ui/checkbox";
 
 function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWord, onPray, onMessage }: { 
@@ -257,6 +257,9 @@ const AssignFellowshipDialogLazy = dynamic(() => import('@/components/souls/assi
 const LogSoulFormLazy = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
 const EditSoulFormLazy = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const SoulAssessmentDialogLazy = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
+const ShareWordDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.ShareWordDialog), { ssr: false });
+const IntercessionHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.IntercessionHubDialog), { ssr: false });
+const MessageHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.MessageHubDialog), { ssr: false });
 
 export default function SoulsWonPage() {
   const { user } = useUser();
@@ -362,12 +365,12 @@ export default function SoulsWonPage() {
           if (!processedIds.has(soul.id)) {
               const spouse = souls.find(other => {
                 if (other.id === soul.id || other.maritalStatus !== 'Married') return false;
-                const otherFull = `${other.firstName} ${other.lastName}`.toLowerCase();
-                const soulFull = `${soul.firstName} ${soul.lastName}`.toLowerCase();
+                const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
+                const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
                 const soulSpouse = (soul.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
-                return (soulSpouse === otherFull || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFull || otherSpouse === soul.firstName.toLowerCase());
+                return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
+                       (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
               });
               if (spouse) { processedIds.add(spouse.id); stats.married.list.push({ ...soul, spouseRecord: spouse }); }
               else { stats.married.list.push(soul); }
