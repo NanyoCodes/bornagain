@@ -156,22 +156,22 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                                 </Avatar>
                             )}
                         </div>
-                        <div className="min-w-0 flex-1 pr-1">
+                        <div className="min-w-0 flex-1 pr-1 text-left">
                             <div className="flex items-center gap-2 flex-wrap">
-                                <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate">
+                                <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left">
                                     {soul.firstName} {soul.lastName}
                                 </p>
-                                <Badge variant="outline" className={cn("h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50", getStatusClasses(soul.status))}>{soul.status}</Badge>
+                                <Badge variant="outline" className={cn("h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50 text-left", getStatusClasses(soul.status))}>{soul.status}</Badge>
                                 {hasFamily && (
                                     <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform duration-200", openFamilyId === soul.id && "rotate-180")} />
                                 )}
                             </div>
-                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
-                                <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left">
+                                <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left">
                                     Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                                 </p>
                                 {isFamilyMember && (
-                                    <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none">Family Unit</Badge>
+                                    <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none text-left">Family Unit</Badge>
                                 )}
                             </div>
                         </div>
@@ -205,36 +205,36 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                 </div>
               </CollapsibleTrigger>
               <CollapsibleContent className="px-4 pb-4">
-                  <div className="pt-3 space-y-2">
-                      <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2">Household Members</p>
+                  <div className="pt-3 space-y-2 text-left">
+                      <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2 text-left">Household Members</p>
                       {spouseObj && (
-                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4">
-                              <Avatar className="h-8 w-8 border">
-                                  <AvatarImage src={spouseObj.photoURL || undefined} />
-                                  <AvatarFallback> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
+                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left">
+                              <Avatar className="h-8 w-8 border text-left">
+                                  <AvatarImage src={spouseObj.photoURL || undefined} className="text-left" />
+                                  <AvatarFallback className="text-left"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0">
-                                  <p className="font-bold text-xs uppercase truncate leading-none">{spouseObj.firstName} {spouseObj.lastName}</p>
-                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Spouse</p>
+                              <div className="flex-1 min-w-0 text-left">
+                                  <p className="font-bold text-xs uppercase truncate leading-none text-left">{spouseObj.firstName} {spouseObj.lastName}</p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5 text-left">Spouse</p>
                               </div>
-                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => onSelectSoul(spouseObj)}>View Profile</Button>
+                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-left" onClick={() => onSelectSoul(spouseObj)}>View Profile</Button>
                           </div>
                       )}
                       {children.map(child => (
-                           <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4">
-                              <Avatar className="h-8 w-8 border">
-                                  <AvatarImage src={child.photoURL || undefined} />
-                                  <AvatarFallback> {child.firstName?.charAt(0)}</AvatarFallback>
+                           <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left">
+                              <Avatar className="h-8 w-8 border text-left">
+                                  <AvatarImage src={child.photoURL || undefined} className="text-left" />
+                                  <AvatarFallback className="text-left"> {child.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0">
-                                  <p className="font-bold text-xs uppercase truncate leading-none">{child.firstName} {child.lastName}</p>
-                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Child</p>
+                              <div className="flex-1 min-w-0 text-left">
+                                  <p className="font-bold text-xs uppercase truncate leading-none text-left">{child.firstName} {child.lastName}</p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5 text-left">Child</p>
                               </div>
-                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => onSelectSoul(child)}>View Profile</Button>
+                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-left" onClick={() => onSelectSoul(child)}>View Profile</Button>
                           </div>
                       ))}
-                      <Button variant="outline" className="w-[calc(100%-1rem)] ml-4 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase" onClick={() => onAddChild(soul, spouseObj)}>
-                          <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> Add Child to Household
+                      <Button variant="outline" className="w-[calc(100%-1rem)] ml-4 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase text-left" onClick={() => onAddChild(soul, spouseObj)}>
+                          <PlusCircle className="mr-1.5 h-3.5 w-3.5 text-left" /> Add Child to Household
                       </Button>
                   </div>
               </CollapsibleContent>
@@ -247,7 +247,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
 }
 
 const SoulsWonTableLazy = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
-  loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>,
+  loading: () => <div className="flex justify-center p-12 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>,
   ssr: false
 });
 
@@ -799,7 +799,7 @@ export default function SoulsWonPage() {
         />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
                 <AlertDialogHeader className="text-left text-left text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left">Delete Record?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left">This will permanently remove the record from your Kingdom journal. This action cannot be undone.</AlertDialogDescription>
@@ -818,12 +818,12 @@ export default function SoulsWonPage() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Add New Soul</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Record a new life won for Christ.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow px-8 text-left">
-                                <div className="py-8 text-left text-left">
+                            <ScrollArea className="flex-grow px-8 text-left text-left text-left">
+                                <div className="py-8 text-left text-left text-left">
                                     <LogSoulFormLazy onSoulLogged={() => { setIsLogDialogOpen(false); setLogSoulDefaults({}); }} fellowships={fellowships || []} campaigns={campaigns || []} {...logSoulDefaults} />
                                 </div>
                             </ScrollArea>
@@ -833,11 +833,11 @@ export default function SoulsWonPage() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DrawerDescription>
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Edit Record</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Update soul identity and mission details.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left">
                                 {soulToEdit && <EditSoulFormLazy soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DrawerContent>
@@ -876,7 +876,7 @@ export default function SoulsWonPage() {
         )}
         
         <Drawer open={!!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0">
                         <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span></div>
