@@ -347,7 +347,7 @@ function CheckoutPageContent() {
                 </div>
 
                 <div className="space-y-6 text-left text-left text-left text-left">
-                    <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left text-left">
+                    <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left text-left text-left text-left">
                         <CardHeader className="p-8 pb-4 text-left text-left text-left text-left text-left">
                             <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left text-left">Summary</CardTitle>
                             <CardDescription className="text-primary-foreground/70 font-medium text-left text-left text-left text-left">Consolidated Kingdom Offering.</CardDescription>

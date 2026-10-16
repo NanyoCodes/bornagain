@@ -110,36 +110,36 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
 
   return (
     <div className="space-y-3 pb-6 text-left">
-      {souls.map((s) => {
-        const isFamilyMember = s.maritalStatus === 'Married';
-        const wonAt = safeToDate(s.wonAt);
+      {souls.map((soul) => {
+        const isFamilyMember = soul.maritalStatus === 'Married';
+        const wonAt = safeToDate(soul.wonAt);
         
         const spouseObj = isFamilyMember ? allSouls.find(other => {
-            if (other.id === s.id || other.maritalStatus !== 'Married') return false;
+            if (other.id === soul.id || other.maritalStatus !== 'Married') return false;
             const otherFull = `${other.firstName} ${other.lastName}`.toLowerCase();
-            const sFull = `${s.firstName} ${s.lastName}`.toLowerCase();
-            const sSpouse = (s.spouseName || "").toLowerCase();
+            const sFull = `${soul.firstName} ${soul.lastName}`.toLowerCase();
+            const sSpouse = (soul.spouseName || "").toLowerCase();
             const otherSpouse = (other.spouseName || "").toLowerCase();
             return (sSpouse === otherFull || sSpouse === other.firstName.toLowerCase()) &&
-                   (otherSpouse === sFull || otherSpouse === s.firstName.toLowerCase());
+                   (otherSpouse === sFull || otherSpouse === soul.firstName.toLowerCase());
         }) : null;
 
-        const children = allSouls.filter(child => s.childrenIds?.includes(child.id));
+        const children = allSouls.filter(child => soul.childrenIds?.includes(child.id));
         const hasFamily = spouseObj || children.length > 0;
 
         return (
-          <div key={s.id} className="relative text-left">
-            <Collapsible open={openFamilyId === s.id} onOpenChange={() => setOpenFamilyId(openFamilyId === s.id ? null : s.id)} className="text-left">
+          <div key={soul.id} className="relative text-left">
+            <Collapsible open={openFamilyId === soul.id} onOpenChange={() => setOpenFamilyId(openFamilyId === soul.id ? null : soul.id)} className="text-left">
               <CollapsibleTrigger asChild className="text-left">
                 <div 
-                    onClick={() => onShareWord(s)}
+                    onClick={() => onShareWord(soul)}
                     className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 transition-all hover:bg-card/40 cursor-pointer text-left"
                 >
                     <div className="flex flex-row items-center gap-3 min-w-0 flex-1 w-full text-left">
                         <div className="flex -space-x-3 sm:-space-x-4 shrink-0 text-left">
                             <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0 text-left">
-                                <AvatarImage src={s.photoURL || undefined} className="object-cover text-left" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left"> {s.firstName?.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left"> {soul.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             {spouseObj && (
                                 <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0 text-left">
@@ -151,11 +151,11 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                         <div className="min-w-0 flex-1 pr-1 text-left">
                             <div className="flex items-center gap-2 flex-wrap text-left">
                                 <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left">
-                                    {s.firstName} {s.lastName}
+                                    {soul.firstName} {soul.lastName}
                                 </p>
-                                <Badge variant="outline" className={cn("h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50 text-left", getStatusClasses(s.status))}>{s.status}</Badge>
+                                <Badge variant="outline" className={cn("h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50 text-left", getStatusClasses(soul.status))}>{soul.status}</Badge>
                                 {hasFamily && (
-                                    <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 text-left", openFamilyId === s.id && "rotate-180")} />
+                                    <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 text-left", openFamilyId === soul.id && "rotate-180")} />
                                 )}
                             </div>
                             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left">
@@ -169,13 +169,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                         </div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-2 shrink-0 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-none border-dashed border-primary/10 text-left" onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onShareWord(s)}>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onShareWord(soul)}>
                             <BookMarked className="h-4 w-4 text-left" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onPray(s)}>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onPray(soul)}>
                             <HandHeart className="h-4 w-4 text-left" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onMessage(s)}>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onMessage(soul)}>
                             <MessageSquare className="h-4 w-4 text-left" />
                         </Button>
 
@@ -188,7 +188,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                             <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left">
                                 <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">More Actions</DropdownMenuLabel>
                                 <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onSelect={() => onSelectSoul(s)} className="rounded-lg py-2.5 text-left">
+                                <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
                                     <User className="mr-2 h-4 w-4 text-left" /> View Full Identity
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -225,7 +225,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                               <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-left" onClick={() => onSelectSoul(child)}>View Profile</Button>
                           </div>
                       ))}
-                      <Button variant="outline" className="w-[calc(100%-1rem)] ml-4 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase text-left" onClick={() => onAddChild(s, spouseObj)}>
+                      <Button variant="outline" className="w-[calc(100%-1rem)] ml-4 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase text-left" onClick={() => onAddChild(soul, spouseObj)}>
                           <PlusCircle className="mr-1.5 h-3.5 w-3.5 text-left" /> Add Child to Household
                       </Button>
                   </div>
@@ -339,10 +339,10 @@ export default function SoulsWonPage() {
   const genderStats = useMemo(() => {
     const stats = { male: { count: 0, list: [] as Soul[] }, female: { count: 0, list: [] as Soul[] }, unassigned: { count: 0, list: [] as Soul[] }, total: 0 };
     if (!souls) return stats;
-    souls.forEach(s => {
-      if (s.gender === 'Male') { stats.male.count++; stats.male.list.push(s); }
-      else if (s.gender === 'Female') { stats.female.count++; stats.female.list.push(s); }
-      else { stats.unassigned.count++; stats.unassigned.list.push(s); }
+    souls.forEach(soul => {
+      if (soul.gender === 'Male') { stats.male.count++; stats.male.list.push(soul); }
+      else if (soul.gender === 'Female') { stats.female.count++; stats.female.list.push(soul); }
+      else { stats.unassigned.count++; stats.unassigned.list.push(soul); }
       stats.total++;
     });
     return stats;
@@ -442,6 +442,31 @@ export default function SoulsWonPage() {
     setLogSoulDefaults({ defaultLastName: p1.lastName, defaultLocation: p1.locationWon, defaultParentIds: parentIds, defaultParentNames: parentNames, defaultRelationship: 'Family' as any });
     setIsLogDialogOpen(true);
   }, []);
+
+  const handleExportHistory = async (formatType: 'csv' | 'pdf') => {
+    if (!souls || souls.length === 0) return;
+    const headers = ["First Name", "Last Name", "Gender", "Status", "Won At", "Source", "Phone", "Email", "City", "Country"];
+    const body = souls.map(s => [s.firstName, s.lastName || '', s.gender || 'N/A', s.status, s.wonAt ? format(s.wonAt.toDate(), 'yyyy-MM-dd') : 'N/A', s.source, s.phone || 'N/A', s.email || 'N/A', s.locationWon?.city || 'N/A', s.locationWon?.country || 'N/A']);
+    if (formatType === 'pdf') {
+        const { jsPDF } = await import('jspdf');
+        const { default: autoTable } = await import('jspdf-autotable');
+        const docObj = new jsPDF({ orientation: 'landscape' });
+        docObj.setFontSize(22);
+        docObj.text("Soul Winning Harvest", 14, 20);
+        autoTable(docObj, { head: [headers], body: body, startY: 25, headStyles: { fillColor: [249, 116, 22] } });
+        docObj.save(`harvest-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+    } else {
+        const { default: Papa } = await import('papaparse');
+        const csv = Papa.unparse({ fields: headers, data: body });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `harvest-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+  };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
     const wonAt = safeToDate(soul.wonAt);
@@ -815,7 +840,7 @@ export default function SoulsWonPage() {
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left p-0 text-left">
                                 <DialogHeader className="text-left p-0 text-left">
                                     <DialogTitle className="text-2xl font-bold font-headline text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DialogDescription>
@@ -828,10 +853,10 @@ export default function SoulsWonPage() {
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left p-0 text-left">
                                 <DialogHeader className="text-left p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DrawerDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8 text-left">
