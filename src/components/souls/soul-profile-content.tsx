@@ -155,14 +155,6 @@ export const getStatusClasses = (status: FollowUpStatus | undefined): string => 
     }
 }
 
-function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-    </svg>
-  );
-}
-
 export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
     const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
@@ -791,7 +783,7 @@ export function SoulProfileContent({
                         <div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95 text-left", soul.photoURL && "cursor-pointer hover:scale-105")}>
                             <Avatar className="h-full w-full border shadow-sm text-left">
                                 <AvatarImage src={soul.photoURL || undefined} className="object-contain text-left" />
-                                <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left"> {soul.firstName?.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-left"> {soul.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         </div>
                     </DialogTrigger>
@@ -1049,25 +1041,25 @@ export function SoulProfileContent({
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                             {needs.emotionalNeeds && (
                                 <div className="space-y-1 text-left text-left text-left">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left text-left">Emotional</Badge>
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left text-left text-left text-left text-left text-left">Emotional</Badge>
                                     <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.emotionalNeeds}</p>
                                 </div>
                             )}
                             {needs.physicalNeeds && (
                                 <div className="space-y-1 text-left text-left text-left">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left text-left">Physical</Badge>
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left text-left text-left text-left text-left text-left">Physical</Badge>
                                     <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.physicalNeeds}</p>
                                 </div>
                             )}
                             {needs.financialNeeds && (
                                 <div className="space-y-1 text-left text-left text-left">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left text-left">Financial</Badge>
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left text-left text-left text-left text-left text-left">Financial</Badge>
                                     <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.financialNeeds}</p>
                                 </div>
                             )}
                             {needs.socialNeeds && (
                                 <div className="space-y-1 text-left text-left text-left">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left text-left">Social</Badge>
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left text-left text-left text-left text-left text-left">Social</Badge>
                                     <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.socialNeeds}</p>
                                 </div>
                             )}
@@ -1083,7 +1075,7 @@ export function SoulProfileContent({
                         )}
                     </div>
                 ) : (
-                    <div className="py-4 text-center text-left text-left text-left">
+                    <div className="py-4 text-center text-left text-left text-left text-left text-left text-left">
                         <Button variant="outline" size="sm" className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-left" onClick={() => onAssess(soul)}>
                             BEGIN ASSESSMENT
                         </Button>
@@ -1164,7 +1156,7 @@ export function SoulProfileContent({
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
                   <DialogHeader className="text-left text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left text-left text-left">Which partner should receive these details?</DialogDescription>
@@ -1204,139 +1196,4 @@ export function SoulProfileContent({
       />
     </div>
   );
-}
-
-export function IntercessionHubDialog({ 
-  isOpen, 
-  onOpenChange, 
-  soul, 
-  onComplete 
-}: { 
-  isOpen: boolean, 
-  onOpenChange: (open: boolean) => void, 
-  soul: Soul | null, 
-  onComplete: (msg: string) => void 
-}) {
-    const [customText, setCustomText] = useState('');
-    const isMobile = useIsMobile();
-    
-    const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
-        const gender = targetSoul.gender?.toLowerCase() || 'other';
-        const pronouns = {
-            subject: gender === 'female' ? 'she' : 'he',
-            object: gender === 'female' ? 'her' : 'him',
-            possessive: gender === 'female' ? 'her' : 'his'
-        };
-        return template.replace(/{name}/g, targetSoul.firstName).replace(/{subject}/g, pronouns.subject).replace(/{object}/g, pronouns.object).replace(/{possessive}/g, pronouns.possessive);
-    }, []);
-
-    useEffect(() => {
-        if (isOpen && soul) {
-            setCustomText(resolveTemplate(prayerTemplates[0].text, soul));
-        }
-    }, [isOpen, soul, resolveTemplate]);
-
-    const contentBody = (
-        <div className="p-6 space-y-6 text-left">
-            <div className="space-y-3 text-left">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Focus Points</label>
-                <div className="flex flex-wrap gap-2 text-left">
-                    {prayerTemplates.map(t => (
-                        <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase border-primary/20 hover:bg-primary/5 text-left" onClick={() => {
-                            if(soul) setCustomText(resolveTemplate(t.text, soul));
-                        }}>{t.label}</Button>
-                    ))}
-                </div>
-            </div>
-            <div className="space-y-2 text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Personalize Revelation</Label>
-                <Textarea value={customText} onChange={e => setCustomText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" />
-            </div>
-            <Button onClick={() => onComplete(customText)} disabled={!customText.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg uppercase tracking-widest text-center">PROCEED TO HUB</Button>
-        </div>
-    );
-
-    const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <DialogHeader className="text-left p-0 text-left">
-                <div className="flex items-center gap-3 mb-2 text-left">
-                    <HandHeart className="h-5 w-5 text-primary text-left" />
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Intercession</span>
-                </div>
-                <DialogTitle className="text-2xl font-black font-headline uppercase text-left text-left">Prayer for {soul?.firstName}</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-left text-left">Draft a powerful word of blessing.</DialogDescription>
-            </DialogHeader>
-        </div>
-    );
-
-    if (isMobile) {
-        return (
-            <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    {header}
-                    <ScrollArea className="flex-grow text-left">{contentBody}</ScrollArea>
-                </DrawerContent>
-            </Drawer>
-        );
-    }
-
-    return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                {header}
-                {contentBody}
-            </DialogContent>
-        </Dialog>
-    );
-}
-
-export function MessageHubDialog({ 
-  isOpen, 
-  onOpenChange, 
-  soul, 
-  onChannelSelect 
-}: { 
-  isOpen: boolean, 
-  onOpenChange: (open: boolean) => void, 
-  soul: Soul | null, 
-  onChannelSelect: (channel: 'whatsapp' | 'sms') => void 
-}) {
-    const isMobile = useIsMobile();
-
-    const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <DialogHeader className="text-center space-y-2 p-0 text-left">
-                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left"><MessageSquare className="h-7 w-7 text-primary" /></div>
-                <DialogTitle className="text-2xl font-black font-headline uppercase text-center text-left">Message Hub</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DialogDescription>
-            </DialogHeader>
-        </div>
-    );
-
-    const contentBody = (
-        <div className="flex flex-col gap-3 p-8 text-left">
-            <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center"><WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp</Button>
-            <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest border-2 border-primary/20 text-primary hover:bg-primary/5 text-center"><MessageSquare className="h-5 w-5 text-left" /> Standard SMS</Button>
-        </div>
-    );
-
-    if (isMobile) {
-        return (
-            <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
-                    {header}
-                    {contentBody}
-                </DrawerContent>
-            </Drawer>
-        );
-    }
-
-    return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
-                {header}
-                {contentBody}
-            </DialogContent>
-        </Dialog>
-    );
 }
