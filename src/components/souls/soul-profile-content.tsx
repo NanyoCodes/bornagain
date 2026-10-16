@@ -122,7 +122,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, safeToDate } from "@/lib/utils";
 
-// --- Components ---
+// --- Icons ---
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -131,6 +131,8 @@ function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+// --- Utils ---
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -146,7 +148,7 @@ const iconMap: Record<string, any> = {
     'matchmaking': HeartHandshake,
 };
 
-const getStatusClasses = (status: FollowUpStatus | undefined): string => {
+export const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
     switch (status) {
         case 'New':
@@ -160,35 +162,7 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     }
 }
 
-function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
-    const firestore = useFirestore();
-    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
-    const { data: profile } = useDoc<UserProfile>(userRef);
-    const photoURL = profile?.photoURL;
-    
-    return (
-        <Dialog>
-            <DialogTrigger asChild disabled={!photoURL}>
-                <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
-                    <Avatar className="h-full w-full border shadow-sm">
-                        <AvatarImage src={photoURL} className="object-cover" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full">{fallbackInitials || 'U'}</AvatarFallback>
-                    </Avatar>
-                </div>
-            </DialogTrigger>
-            {photoURL && (
-                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
-                    <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
-                            <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
-                        </div>
-                    </div>
-                </DialogContent>
-            )}
-        </Dialog>
-    );
-}
+// --- Dialog Components ---
 
 export function ShareWordDialog({ 
   isOpen, 
@@ -553,6 +527,8 @@ export function MessageHubDialog({
     );
 }
 
+// --- Main Content ---
+
 export function SoulProfileContent({ 
   soul, 
   onFollowUp,
@@ -847,7 +823,7 @@ export function SoulProfileContent({
                                 <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select Format</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>CSV Export</DropdownMenuItem>
-                                <DropdownMenuItem onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}>
@@ -865,6 +841,7 @@ export function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
                     <div className="space-y-1">
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.relationship || 'N/A'}</p>
                     </div>
                     <div className="space-y-1">
@@ -872,6 +849,7 @@ export function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.workStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1">
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Rel. Status</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.maritalStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1">
@@ -1101,6 +1079,103 @@ export function SoulProfileContent({
             </div>
         </CardContent>
       </Card>
+
+      <ShareWordDialog 
+          isOpen={isStudyWordOpen}
+          onOpenChange={setIsStudyWordOpen}
+          soul={soul}
+          onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setIsCommChannelDialogOpen(true); }}
+      />
+
+      <IntercessionHubDialog 
+          isOpen={isPrayerCustomizationOpen}
+          onOpenChange={setIsPrayerCustomizationOpen}
+          soul={soul}
+          onComplete={(v) => { setCustomMessageText(v); setIsPrayerCustomizationOpen(false); setIsCommChannelDialogOpen(true); }}
+      />
+
+      <MessageHubDialog 
+          isOpen={isCommChannelDialogOpen}
+          onOpenChange={setIsCommChannelDialogOpen}
+          soul={soul}
+          onChannelSelect={handleCommChoice}
+      />
+
+      <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+          <div className="p-8 border-b bg-muted/10 text-left">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
+              <DialogDescription className="text-sm font-medium text-left">Describe how you supported {soul.firstName}.</DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="p-8 space-y-6 text-left">
+            <div className="space-y-2 text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
+                <Textarea 
+                    placeholder="e.g. Provided food items, helped with bill..." 
+                    onChange={e => setCustomMessageText(e.target.value)} 
+                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
+                />
+            </div>
+            <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
+          <DialogHeader className="text-center space-y-2">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+                  <Share className="h-7 w-7 text-primary" />
+              </div>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-6 text-left">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+              <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
+            </Button>
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+              <HeartHandshake className="h-5 w-5" /> Partner on App
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+              <div className="p-8 border-b bg-muted/10 text-left">
+                  <DialogHeader className="text-left">
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
+                  </DialogHeader>
+              </div>
+              <div className="p-6 text-left">
+              <ScrollArea className="h-64 text-left">
+                  <div className="space-y-2 text-left">
+                      {uniquePartners.map(p => (
+                          <Button 
+                              key={p.userId} 
+                              variant="ghost" 
+                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center text-left"
+                              onClick={() => handleShareToPartner(p)}
+                          >
+                              <Avatar className="h-8 w-8 border shrink-0 text-left">
+                                  <AvatarImage src={p.photoURL} />
+                                  <AvatarFallback className="font-bold text-[10px] text-left">{p.firstName?.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                              <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
+                          </Button>
+                      ))}
+                      {uniquePartners.length === 0 && (
+                          <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
+                      )}
+                  </div>
+              </ScrollArea>
+              </div>
+          </DialogContent>
+      </Dialog>
     </div>
   );
 }
