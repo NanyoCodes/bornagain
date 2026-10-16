@@ -282,8 +282,8 @@ function CheckoutPageContent() {
                                                         <AvatarFallback className="bg-primary/5 text-primary font-bold text-left text-left"> {item.name?.charAt(0)}</AvatarFallback>
                                                     </Avatar>
                                                     <div className="min-w-0 flex-1 text-left">
-                                                        <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight text-left">{item.name}</h3>
-                                                        <div className="flex items-center gap-2 mt-1.5 flex-wrap text-left">
+                                                        <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight text-left text-left">{item.name}</h3>
+                                                        <div className="flex items-center gap-2 mt-1.5 flex-wrap text-left text-left text-left">
                                                             <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left text-left">
                                                                 {item.vendorType === 'gift' ? <Gift className="h-2 w-2 mr-1 text-left text-left" /> : <Utensils className="h-2 w-2 mr-1 text-left text-left" />}
                                                                 {item.vendorType === 'gift' ? 'GIFT' : 'MEAL'}
