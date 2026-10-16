@@ -242,9 +242,9 @@ function CheckoutPageContent() {
                     <div className="min-w-0 text-left text-left">
                         <div className="flex items-center gap-2 mb-1 text-left text-left">
                             <ShoppingCart className="h-3.5 w-3.5 text-primary text-left text-left" />
-                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Kingdom Offering</span>
+                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Kingdom Offering</span>
                         </div>
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase truncate leading-tight text-left text-left">Checkout Hub</h1>
+                        <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase truncate leading-tight text-left text-left text-left">Checkout Hub</h1>
                     </div>
                 </div>
             </header>
@@ -281,17 +281,17 @@ function CheckoutPageContent() {
                                                     </Avatar>
                                                     <div className="min-w-0 flex-1 text-left text-left">
                                                         <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight text-left text-left">{item.name}</h3>
-                                                        <div className="flex items-center gap-2 mt-1.5 flex-wrap text-left text-left">
+                                                        <div className="flex items-center gap-2 mt-1.5 flex-wrap text-left text-left text-left">
                                                             <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left text-left">
                                                                 {item.vendorType === 'gift' ? <Gift className="h-2 w-2 mr-1 text-left" /> : <Utensils className="h-2 w-2 mr-1 text-left" />}
                                                                 {item.vendorType === 'gift' ? 'GIFT' : 'MEAL'}
                                                             </Badge>
-                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left text-left">
+                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left text-left text-left">
                                                                 <User className="h-2.5 w-2.5 text-left" /> For: {item.soulName || 'Kingdom Member'}
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <div className="text-right shrink-0 text-left text-left">
+                                                    <div className="text-right shrink-0 text-left text-left text-left">
                                                         <p className="text-xl font-black text-primary tracking-tighter text-left text-left">{symbol}{item.price.toLocaleString()}</p>
                                                         <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter text-right text-left text-left">Per Unit</p>
                                                     </div>
@@ -349,61 +349,61 @@ function CheckoutPageContent() {
 
                 <div className="space-y-6 text-left text-left">
                     <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left text-left">
-                        <CardHeader className="p-8 pb-4 text-left text-left text-left">
-                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Summary</CardTitle>
-                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left">Consolidated Kingdom Offering.</CardDescription>
+                        <CardHeader className="p-8 pb-4 text-left text-left text-left text-left">
+                            <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left">Summary</CardTitle>
+                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left text-left text-left">Consolidated Kingdom Offering.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left">
-                            <div className="space-y-6 text-left text-left text-left">
+                        <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left text-left">
+                            <div className="space-y-6 text-left text-left text-left text-left">
                                 {Object.entries(totalsByCurrency).map(([curr, values]) => {
                                     const symbol = getCurrencySymbol(curr);
                                     return (
-                                        <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0 text-left text-left text-left">
-                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left">
+                                        <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0 text-left text-left text-left text-left">
+                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left text-left">
                                                 <span>Items Total</span>
                                                 <span>{symbol}{values.subtotal.toLocaleString()}</span>
                                             </div>
-                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left">
+                                            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left text-left">
                                                 <span>Delivery (Grouped)</span>
                                                 <span>{symbol}{values.delivery.toLocaleString()}</span>
                                             </div>
-                                            <Separator className="bg-white/10 text-left text-left" />
-                                            <div className="flex justify-between items-baseline text-left text-left text-left">
-                                                <span className="text-xs font-black uppercase tracking-[0.2em] text-left text-left">Grand Total</span>
-                                                <span className="text-3xl font-black tracking-tighter text-left text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
+                                            <Separator className="bg-white/10 text-left text-left text-left" />
+                                            <div className="flex justify-between items-baseline text-left text-left text-left text-left">
+                                                <span className="text-xs font-black uppercase tracking-[0.2em] text-left text-left text-left">Grand Total</span>
+                                                <span className="text-3xl font-black tracking-tighter text-left text-left text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
                                             </div>
                                         </div>
                                     )
                                 })}
                             </div>
 
-                            <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left">
-                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left" />
-                                <p className="text-[11px] leading-relaxed font-bold text-left text-left">
+                            <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left text-left">
+                                <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left text-left text-left" />
+                                <p className="text-[11px] leading-relaxed font-bold text-left text-left text-left">
                                     Finalizing confirms your intent to gift. Please ensure payment is transferred to the provider's account.
                                 </p>
                             </div>
                         </CardContent>
-                        <CardFooter className="p-8 pt-0 text-left text-left">
+                        <CardFooter className="p-8 pt-0 text-left text-left text-left">
                             <Button 
                                 onClick={handleFinalizeOffering} 
                                 disabled={isSubmitting} 
                                 size="lg" 
-                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-left text-center"
+                                className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-left text-center text-left"
                             >
-                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
                                 FINALIZE OFFERING
                             </Button>
                         </CardFooter>
                     </Card>
 
-                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left">
-                            <Heart className="h-6 w-6 text-primary text-left text-left" />
+                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left text-left">
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left text-left">
+                            <Heart className="h-6 w-6 text-primary text-left text-left text-left" />
                         </div>
-                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left">
+                        <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left text-left">
                             "Let us not love with words or speech but with actions and in truth." <br/>
-                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left">- 1 John 3:18</span>
+                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left text-left">- 1 John 3:18</span>
                         </p>
                     </div>
                 </div>
