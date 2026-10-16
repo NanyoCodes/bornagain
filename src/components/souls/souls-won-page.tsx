@@ -49,12 +49,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -363,7 +363,7 @@ export default function SoulsWonPage() {
                 const sSpouse = (soul.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
                 return (sSpouse === otherFull || sSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === sFull || otherSpouse === s.firstName.toLowerCase());
+                       (otherSpouse === sFull || otherSpouse === soul.firstName.toLowerCase());
               });
               if (spouse) { processedIds.add(spouse.id); stats.married.list.push({ ...soul, spouseRecord: spouse }); }
               else { stats.married.list.push(soul); }
@@ -545,8 +545,8 @@ export default function SoulsWonPage() {
                                 <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl text-left">
                                     <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Select Format</DropdownMenuLabel>
                                     <DropdownMenuSeparator className="text-left" />
-                                    <DropdownMenuItem onSelect={() => toast({ title: 'Export in Progress' })} className="rounded-lg py-2.5 text-left"><Download className="mr-2 h-4 w-4 opacity-40 text-left" /> CSV (Excel)</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => toast({ title: 'Export in Progress' })} className="rounded-lg py-2.5 text-left"><Download className="mr-2 h-4 w-4 text-primary text-left" /> PDF Report</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left"><Download className="mr-2 h-4 w-4 opacity-40 text-left" /> CSV (Excel)</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5 text-left"><Download className="mr-2 h-4 w-4 text-primary text-left" /> PDF Report</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                             <Button onClick={() => { setLogSoulDefaults({}); setIsLogDialogOpen(true); }} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none text-left">
@@ -691,7 +691,7 @@ export default function SoulsWonPage() {
                 <Drawer open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left"><BarChart3 className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span></div>
+                            <div className="flex items-center gap-2 mb-2 text-left"><BarChart3 className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Harvest Demographic</span></div>
                             <DrawerHeader className="text-left flex-shrink-0 p-0">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left"> {selectedFilterGroup?.value} Directory</DrawerTitle>
                                 <DrawerDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
@@ -716,7 +716,7 @@ export default function SoulsWonPage() {
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left"><BarChart3 className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span></div>
+                            <div className="flex items-center gap-2 mb-2 text-left"><BarChart3 className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Demographic View</span></div>
                             <DialogHeader className="text-left p-0">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left"> {selectedFilterGroup?.value} Directory</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this demographic group.</DialogDescription>
@@ -743,7 +743,7 @@ export default function SoulsWonPage() {
         <LogFollowUpDialogLazy soul={soulForFollowUp} isOpen={!!followUpSoulId} onOpenChange={(isOpen) => !isOpen && setFollowUpSoulId(null)} onFollowUpLogged={() => setFollowUpSoulId(null)} userProfile={profileData} />
         <ViewHistoryDialogLazy soul={soulForHistory} isOpen={!!historySoulId} onOpenChange={(open) => !open && setHistorySoulId(null)} />
         <AssignFellowshipDialogLazy soul={soulToAssign} fellowships={fellowships || []} isOpen={!!assignSoulId} onOpenChange={(isOpen) => !isOpen && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
-        <SoulAssessmentDialogLazy soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
+        <SoulAssessmentDialogLazy soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(open) => !open && setAssessmentSoulId(null)} />
         
         <ShareWordDialogLazy 
           isOpen={!!shareWordSoulId}
@@ -847,7 +847,7 @@ export default function SoulsWonPage() {
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left"><Sparkles className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span></div>
+                        <div className="flex items-center gap-2 mb-2 text-left"><Sparkles className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span></div>
                         <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                             {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                         </DrawerTitle>
@@ -875,4 +875,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-

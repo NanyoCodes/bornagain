@@ -234,7 +234,7 @@ function CheckoutPageContent() {
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left text-left text-left">
             <header className="px-4 sm:px-0 space-y-4 pt-4 text-left text-left text-left">
-                <div className="flex items-center gap-4 text-left text-left text-left text-left">
+                <div className="flex items-center gap-4 text-left text-left text-left text-left text-left">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm text-left text-left text-left text-left">
                         <ArrowLeft className="h-6 w-6 text-left text-left" />
                     </Button>
@@ -285,7 +285,7 @@ function CheckoutPageContent() {
                                                                 {item.vendorType === 'gift' ? <Gift className="h-2 w-2 mr-1 text-left text-left text-left" /> : <Utensils className="h-2 w-2 mr-1 text-left text-left text-left" />}
                                                                 {item.vendorType === 'gift' ? 'GIFT' : 'MEAL'}
                                                             </Badge>
-                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left text-left text-left text-left">
+                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left text-left text-left text-left text-left">
                                                                 <User className="h-2.5 w-2.5 text-left text-left text-left" /> For: {item.soulName || 'Kingdom Member'}
                                                             </span>
                                                         </div>
@@ -307,7 +307,7 @@ function CheckoutPageContent() {
                                                     </Button>
                                                 </div>
 
-                                                <div className="space-y-2 text-left text-left text-left">
+                                                <div className="space-y-2 text-left text-left text-left text-left">
                                                     <Label className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-1 text-left text-left text-left">Special Instructions</Label>
                                                     <Textarea 
                                                         placeholder="e.g., Please deliver by 2PM, specific message for recipient..."
