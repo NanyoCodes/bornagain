@@ -176,13 +176,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                         </div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-2 shrink-0 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-none border-dashed border-primary/10 text-left" onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onShareWord(soul)}>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary text-left" onClick={() => onShareWord(soul)}>
                             <BookMarked className="h-4 w-4 text-left" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onPray(soul)}>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary text-left" onClick={() => onPray(soul)}>
                             <HandHeart className="h-4 w-4 text-left" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/5 text-primary text-left" onClick={() => onMessage(soul)}>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary text-left" onClick={() => onMessage(soul)}>
                             <MessageSquare className="h-4 w-4 text-left" />
                         </Button>
 
