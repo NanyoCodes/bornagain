@@ -256,7 +256,7 @@ function CheckoutPageContent() {
                             <div key={group.vendorId} className="space-y-4 text-left text-left text-left">
                                 <div className="flex items-center justify-between px-2 text-left text-left text-left">
                                     <div className="flex items-center gap-3 text-left text-left text-left">
-                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm text-left text-left text-left">
+                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm text-left text-left text-left text-left">
                                             <Store className="h-5 w-5 text-primary text-left text-left text-left text-left" />
                                         </div>
                                         <div className="min-w-0 text-left text-left text-left">
@@ -383,7 +383,7 @@ function CheckoutPageContent() {
                                 </p>
                             </div>
                         </CardContent>
-                        <CardFooter className="p-8 pt-0 text-left text-left text-left text-left">
+                        <CardFooter className="p-8 pt-0 text-left text-left text-left text-left text-left">
                             <Button 
                                 onClick={handleFinalizeOffering} 
                                 disabled={isSubmitting} 
@@ -396,9 +396,9 @@ function CheckoutPageContent() {
                         </CardFooter>
                     </Card>
 
-                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left text-left">
+                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left text-left text-left">
                         <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left text-left text-left text-left">
-                            <Heart className="h-6 w-6 text-primary text-left text-left text-left text-left" />
+                            <Heart className="h-6 w-6 text-primary text-left text-left text-left text-left text-left" />
                         </div>
                         <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left text-left">
                             "Let us not love with words or speech but with actions and in truth." <br/>
