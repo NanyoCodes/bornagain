@@ -81,7 +81,6 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogDescription, 
-  DialogTrigger,
   DialogFooter
 } from "@/components/ui/dialog";
 import {
@@ -114,10 +113,10 @@ import { bibleData } from "@/lib/bible-data";
 import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-data";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { MutualConnectBadge } from "./mutual-connect-badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn, safeToDate } from "@/lib/utils";
 
 export const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -145,6 +144,14 @@ export const getStatusClasses = (status: FollowUpStatus | undefined): string => 
         default:
             return 'bg-secondary text-secondary-foreground border-border';
     }
+}
+
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  );
 }
 
 export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
@@ -672,7 +679,7 @@ export function SoulProfileContent({
             return;
         case 'shared_meal':
         case 'gave_gift':
-            const mPath = actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+            const mPath = actionId === 'shared_meal' ? '/marketplace' : '/marketplace/gifts';
             router.push(`${mPath}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`);
             return;
         case 'matchmaking':
@@ -1039,7 +1046,7 @@ export function SoulProfileContent({
                                 </div>
                             )}
                             {needs.physicalNeeds && (
-                                <div className="space-y-1 text-left">
+                                <div className="space-y-1 text-left text-left">
                                     <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge>
                                     <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.physicalNeeds}</p>
                                 </div>
@@ -1086,246 +1093,6 @@ export function SoulProfileContent({
             </div>
         </CardContent>
       </Card>
-
-      <IntercessionHubDialog 
-        isOpen={isPrayerCustomizationOpen} 
-        onOpenChange={setIsPrayerCustomizationOpen} 
-        soul={soul} 
-        onComplete={(text) => finalizeLog('prayed_together', text)} 
-      />
-
-      <MessageHubDialog 
-        isOpen={isCommChannelDialogOpen} 
-        onOpenChange={setIsCommChannelDialogOpen} 
-        soul={soul} 
-        onChannelSelect={(channel) => handleCommChoice(channel)} 
-      />
-
-      <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-          <div className="p-8 border-b bg-muted/10 text-left">
-            <DialogHeader className="text-left">
-              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
-              <DialogDescription className="text-sm font-medium text-left">Describe how you supported {soul.firstName}.</DialogDescription>
-            </DialogHeader>
-          </div>
-          <div className="p-8 space-y-6 text-left">
-            <div className="space-y-2 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
-                <Textarea 
-                    placeholder="e.g. Provided food items, helped with bill..." 
-                    onChange={e => setCustomMessageText(e.target.value)} 
-                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
-                />
-            </div>
-            <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
-          <DialogHeader className="text-center space-y-2 text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left"><Share className="h-7 w-7 text-primary text-left" /></div>
-            <DialogTitle className="text-2xl font-black font-headline uppercase text-center text-left">Share Details</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left"><WhatsAppIcon className="h-5 w-5" /> WhatsApp External</Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest border-2 border-primary/20 text-primary hover:bg-primary/5 text-left"><HeartHandshake className="h-5 w-5" /> Partner on App</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
-                  <DialogHeader className="text-left text-left text-left text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left text-left">Which partner should receive these details?</DialogDescription>
-                  </DialogHeader>
-              </div>
-              <div className="p-6 text-left text-left">
-              <ScrollArea className="h-64 text-left">
-                  <div className="space-y-2 text-left">
-                      {uniquePartners.map(p => (
-                          <Button 
-                              key={p.userId} 
-                              variant="ghost" 
-                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center text-left"
-                              onClick={() => handleShareToPartner(p)}
-                          >
-                              <Avatar className="h-8 w-8 border shrink-0 text-left">
-                                  <AvatarImage src={p.photoURL} className="text-left" />
-                                  <AvatarFallback className="font-bold text-[10px] text-left">{p.firstName?.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
-                          </Button>
-                      ))}
-                      {uniquePartners.length === 0 && (
-                          <p className="text-center text-xs text-muted-foreground py-12 text-left">No partners found. Connect with some in Settings!</p>
-                      )}
-                  </div>
-              </ScrollArea>
-              </div>
-          </DialogContent>
-      </Dialog>
-
-      <ShareWordDialog 
-          isOpen={isStudyWordOpen}
-          onOpenChange={setIsStudyWordOpen}
-          soul={soul}
-          onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setIsCommChannelDialogOpen(true); }}
-      />
-
-      {isPrayerCustomizationOpen && !isMobile && (
-          <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
-              <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
-                      <DialogHeader className="text-left">
-                          <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
-                          <DialogDescription className="text-sm font-medium">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
-                      </DialogHeader>
-                  </div>
-                  <div className="p-8">
-                      {prayerContent}
-                  </div>
-              </DialogContent>
-          </Dialog>
-      )}
-
-      <MessageHubDialog 
-        isOpen={isCommChannelDialogOpen} 
-        onOpenChange={setIsCommChannelDialogOpen} 
-        soul={soul} 
-        onChannelSelect={(channel) => handleCommChoice(channel)} 
-      />
-
-      {isHelpNeedDialogOpen && !isMobile && (
-          <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-              <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10">
-                      <DialogHeader className="text-left">
-                          <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
-                          <DialogDescription className="text-sm font-medium text-left">Describe how you supported {soul?.firstName}.</DialogDescription>
-                      </DialogHeader>
-                  </div>
-                  <div className="p-8">
-                      {helpContent}
-                  </div>
-              </DialogContent>
-          </Dialog>
-      )}
-
-      {isShareTargetDialogOpen && !isMobile && (
-          <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-              <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
-                  <DialogHeader className="text-center space-y-2 text-left">
-                      <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
-                          <Share className="h-7 w-7 text-primary text-left" />
-                      </div>
-                      <DialogTitle className="text-2xl font-black font-headline uppercase text-center">Share Details</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul?.firstName}'s info?</DialogDescription>
-                  </DialogHeader>
-                  {shareTargetBody}
-              </DialogContent>
-          </Dialog>
-      )}
-
-      {isPartnerSelectionDialogOpen && !isMobile && (
-          <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-              <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left">
-                      <DialogHeader className="text-left text-left">
-                          <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
-                          <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
-                      </DialogHeader>
-                  </div>
-                  <div className="p-8">
-                      {partnerSelectionBody}
-                  </div>
-              </DialogContent>
-          </Dialog>
-      )}
     </div>
   );
 }
-
-function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-    </svg>
-  );
-}
-
-const prayerContent = (
-    <div className="space-y-6 text-left">
-        <div className="space-y-3 text-left">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Prayer Focus</label>
-            <div className="flex flex-wrap gap-2 text-left">
-                {prayerTemplates.map(t => (
-                    <Button 
-                        key={t.id} 
-                        variant="outline" 
-                        size="sm" 
-                        className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary"
-                        onClick={() => {}}
-                    >
-                        {t.label}
-                    </Button>
-                ))}
-            </div>
-        </div>
-
-        <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label>
-            <Textarea 
-                value={""}
-                onChange={() => {}}
-                className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6"
-            />
-        </div>
-
-        <Button 
-            onClick={() => {}} 
-            disabled={true} 
-            className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
-        >
-            CONTINUE TO CHANNEL
-        </Button>
-    </div>
-);
-
-const helpContent = (
-    <div className="space-y-6 text-left">
-      <div className="space-y-2 text-left">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
-          <Textarea 
-              placeholder="e.g. Provided food items, helped with bill..." 
-              onChange={() => {}}
-              className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
-          />
-      </div>
-      <Button onClick={() => {}} className="w-full h-14 rounded-2xl font-black shadow-lg uppercase tracking-widest">CONFIRM SERVICE</Button>
-    </div>
-);
-
-const shareTargetBody = (
-    <div className="flex flex-col gap-3 pt-6 text-left">
-      <Button onClick={() => {}} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-        <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
-      </Button>
-      <Button onClick={() => {}} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
-        <HeartHandshake className="h-5 w-5" /> Partner on App
-      </Button>
-    </div>
-);
-
-const partnerSelectionBody = (
-    <ScrollArea className="h-64 text-left">
-        <div className="space-y-2 text-left">
-            <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
-        </div>
-    </ScrollArea>
-);
