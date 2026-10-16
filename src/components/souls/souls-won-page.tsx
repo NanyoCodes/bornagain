@@ -579,7 +579,7 @@ export default function SoulsWonPage() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl text-left">
                                     <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Select Format</DropdownMenuLabel>
-                                    <DropdownMenuSeparator className="text-left" />
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem onSelect={() => handleExportHistory('csv')} className="text-left"><Download className="mr-2 h-4 w-4 opacity-40 text-left" /> CSV (Excel)</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => handleExportHistory('pdf')} className="text-left"><Download className="mr-2 h-4 w-4 text-primary text-left" /> PDF Report</DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -851,7 +851,7 @@ export default function SoulsWonPage() {
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="text-left p-0 text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-bold font-headline text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
@@ -864,7 +864,7 @@ export default function SoulsWonPage() {
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="text-left p-0 text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
@@ -910,4 +910,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-
