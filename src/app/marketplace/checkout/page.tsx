@@ -402,7 +402,7 @@ function CheckoutPageContent() {
                         </div>
                         <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                             "Let us not love with words or speech but with actions and in truth." <br/>
-                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">- 1 John 3:18</span>
+                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">- 1 John 3:18</span>
                         </p>
                     </div>
                 </div>
@@ -418,4 +418,3 @@ export default function CheckoutPage() {
         </AppShell>
     );
 }
-

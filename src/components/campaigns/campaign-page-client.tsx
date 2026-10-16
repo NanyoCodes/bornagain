@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
+import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Campaign, UserProfile, CampaignParticipant, Testimony, Fellowship, AccountabilityRequest, Soul } from '@/lib/types';
 import {
   Dialog,
@@ -51,7 +51,8 @@ import {
     Search,
     Globe,
     X,
-    ChevronDown
+    ChevronDown,
+    Trash2
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -79,6 +80,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
     const [isTestimonyOpen, setIsTestimonyOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
 
     useEffect(() => { setMounted(true); }, []);
 
@@ -211,6 +213,23 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         if (end < now) return "Past";
         return start > now ? "Upcoming" : "Ongoing";
     }, [campaign]);
+
+    const handleDeleteCampaign = async () => {
+        if (!user || !firestore || !campaign) return;
+        setIsDeleting(true);
+        const campaignRef = doc(firestore, 'campaigns', campaign.id);
+        const deleteData = { status: 'deleted', deletedAt: serverTimestamp() };
+        try {
+            await updateDoc(campaignRef, deleteData);
+            toast({ title: 'Mission Deleted' });
+            router.push('/campaigns');
+        } catch (error: any) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: campaignRef.path, operation: 'update', requestResourceData: deleteData }, user));
+        } finally {
+            setIsDeleting(false);
+            setIsDeleteAlertOpen(false);
+        }
+    };
 
     if (loading || !mounted) return <div className="flex items-center justify-center h-full py-20 text-left text-left"><Loader2 className="animate-spin text-primary text-left" /></div>;
     if (campaignError || !campaign || campaign.status === 'deleted') return <div className="text-center p-12 text-left text-left"><h2 className="text-xl font-bold text-left text-left">Campaign Not Found</h2><Button asChild variant="outline" className="mt-4 text-left"><Link href="/campaigns" className="text-left">Return to Campaigns</Link></Button></div>;
@@ -349,7 +368,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 {participants?.map(p => (
                                     <Link key={p.id} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-all text-left text-left text-left text-left text-left">
                                         <Avatar className="h-9 w-9 border shadow-sm text-left text-left text-left text-left"><AvatarImage src={p.photoURL} className="text-left text-left text-left text-left" /><AvatarFallback className="font-bold text-xs text-left text-left text-left text-left"> {p.firstName?.charAt(0)}</AvatarFallback></Avatar>
-                                        <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left"><p className="font-bold text-sm truncate uppercase tracking-tight text-left text-left text-left text-left text-left">{p.firstName} {p.lastName}</p></div>
+                                        <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><p className="font-bold text-sm truncate uppercase tracking-tight text-left text-left text-left text-left text-left">{p.firstName} {p.lastName}</p></div>
                                     </Link>
                                 ))}
                             </div>
@@ -382,7 +401,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
                 <div className="space-y-8 flex flex-col px-4 sm:px-0 text-left text-left text-left text-left text-left text-left text-left">
                     <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-indigo-600 text-white overflow-hidden text-left text-left text-left text-left text-left text-left text-left">
-                        <CardHeader className="pb-4 text-left text-left text-left text-left text-left text-left text-left">
+                        <CardHeader className="pb-4 text-left text-left text-left text-left text-left text-left text-left text-left">
                             <div className="flex items-center justify-between mb-2 text-left text-left text-left text-left text-left text-left text-left">
                                 <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center text-left text-left text-left text-left text-left text-left text-left">
                                     <Target className="h-5 w-5 text-white text-left text-left text-left text-left text-left text-left text-left" />
@@ -418,9 +437,14 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 </Button>
                             )}
                             {isOwner && (
-                                <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-black/10 text-white hover:bg-black/20 border-white/10 text-left text-left text-left text-left text-left text-left text-left" onClick={() => setIsManageOpen(true)}>
-                                    <Edit className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left" /> MANAGE MISSION
-                                </Button>
+                                <>
+                                  <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-black/10 text-white hover:bg-black/20 border-white/10 text-left text-left text-left text-left text-left text-left text-left" onClick={() => setIsManageOpen(true)}>
+                                      <Edit className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left" /> MANAGE MISSION
+                                  </Button>
+                                  <Button variant="destructive" className="w-full h-12 font-black rounded-2xl shadow-lg uppercase tracking-widest text-xs" onClick={() => setIsDeleteAlertOpen(true)}>
+                                      <Trash2 className="mr-2 h-4 w-4" /> DELETE MISSION
+                                  </Button>
+                                </>
                             )}
                         </CardContent>
                     </Card>
@@ -475,7 +499,24 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </ScrollArea>
                 </DrawerContent>
             </Drawer>
+
+            <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left">
+                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left">Delete Mission?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left">
+                            This will permanently remove the mission from the global record. This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
+                        <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left text-left text-left text-left">
+                            {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
+                            Confirm Removal
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
-
