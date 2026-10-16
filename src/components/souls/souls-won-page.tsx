@@ -30,7 +30,8 @@ import {
   ChevronDown,
   Zap,
   Phone,
-  Mail
+  Mail,
+  Send
 } from "lucide-react";
 import { 
   Dialog, 
@@ -90,7 +91,7 @@ import { RelationshipCircleTracker } from "@/components/souls/relationship-circl
 import { SoulsImportTemplateCard } from "@/components/settings/souls-import-template-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { SoulProfileContent, getStatusClasses } from "./soul-profile-content";
+import { SoulProfileContent, getStatusClasses, WhatsAppIcon } from "./soul-profile-content";
 
 const SoulsWonTableLazy = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
   loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
@@ -119,7 +120,7 @@ function ChildSelectionDialog({
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
     souls: Soul[];
-    parent: Soul;
+    parent: Soul | null;
     spouse?: Soul | null;
     onSelect: (child: Soul) => void;
     isLoading: boolean;
@@ -128,6 +129,7 @@ function ChildSelectionDialog({
     const [search, setSearch] = useState('');
     
     const filteredSouls = useMemo(() => {
+        if (!parent) return [];
         const forbiddenIds = new Set([parent.id, ...(spouse ? [spouse.id] : []), ...(parent.childrenIds || [])]);
         let list = souls.filter(s => !forbiddenIds.has(s.id));
         if (search) {
@@ -136,6 +138,8 @@ function ChildSelectionDialog({
         }
         return list;
     }, [souls, parent, spouse, search]);
+
+    if (!parent) return null;
 
     const header = (
         <div className="p-8 border-b bg-muted/10 text-left">
@@ -193,7 +197,7 @@ function ChildSelectionDialog({
     if (isMobile) {
         return (
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     {header}
                     <div className="flex-grow overflow-hidden text-left">{body}</div>
                 </DrawerContent>
@@ -982,7 +986,7 @@ export default function SoulsWonPage() {
             isOpen={isChildSelectionOpen} 
             onOpenChange={setIsChildSelectionOpen} 
             souls={souls || []} 
-            parent={activeParentGroup?.parent!} 
+            parent={activeParentGroup?.parent || null} 
             spouse={activeParentGroup?.spouse}
             onSelect={handleLinkExistingChild}
             isLoading={isLinkingChild}
@@ -992,7 +996,7 @@ export default function SoulsWonPage() {
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
                 <AlertDialogHeader className="text-left text-left text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">This will permanently remove the record from your Kingdom journal. This action cannot be undone.</AlertDialogDescription>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">This will permanently remove the record from your Kingdom journal. This action cannot be undone.</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
@@ -1069,7 +1073,7 @@ export default function SoulsWonPage() {
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span></div>
+                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span></div>
                         <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                             {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                         </DrawerTitle>

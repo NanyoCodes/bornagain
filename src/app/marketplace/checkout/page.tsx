@@ -289,7 +289,7 @@ function CheckoutPageContent() {
                                                                 {item.vendorType === 'gift' ? 'GIFT' : 'MEAL'}
                                                             </Badge>
                                                             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left text-left text-left text-left">
-                                                                <User className="h-2.5 w-2.5 text-left text-left text-left" /> For: {item.soulName || 'Kingdom Member'}
+                                                                <User className="h-2.5 w-2.5 text-left text-left text-left text-left" /> For: {item.soulName || 'Kingdom Member'}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -305,7 +305,7 @@ function CheckoutPageContent() {
                                                         <span className="w-8 text-center font-black text-xs text-left text-left text-left"> {item.quantity}</span>
                                                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(item.id, item.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left text-left text-left"/></Button>
                                                     </div>
-                                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-destructive hover:bg-destructive/10 text-left text-left" onClick={() => handleRemoveItem(item.id)}>
+                                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-destructive hover:bg-destructive/10 text-left text-left text-left" onClick={() => handleRemoveItem(item.id)}>
                                                         <Trash2 className="h-4 w-4 text-left text-left text-left" />
                                                     </Button>
                                                 </div>
@@ -350,7 +350,7 @@ function CheckoutPageContent() {
                 </div>
 
                 <div className="space-y-6 text-left text-left text-left">
-                    <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left text-left">
+                    <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left text-left text-left">
                         <CardHeader className="p-8 pb-4 text-left text-left text-left text-left">
                             <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left text-left">Summary</CardTitle>
                             <CardDescription className="text-primary-foreground/70 font-medium text-left text-left text-left text-left">Consolidated Kingdom Offering.</CardDescription>
@@ -382,7 +382,7 @@ function CheckoutPageContent() {
                             <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left text-left text-left">
                                 <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left text-left text-left" />
                                 <p className="text-[10px] leading-relaxed font-medium text-left text-left text-left text-left text-left">
-                                    Finalizing confirms your intent to gift. Please ensure payment is transferred to the provider's account.
+                                    Finalizing your order notifies providers immediately. Please coordinate payments directly using their saved details.
                                 </p>
                             </div>
                         </CardContent>
@@ -404,8 +404,8 @@ function CheckoutPageContent() {
                             <Heart className="h-6 w-6 text-primary text-left text-left text-left text-left text-left" />
                         </div>
                         <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left text-left text-left">
-                            "Let us not love with words or speech but with actions and in truth." <br/>
-                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left text-left text-left">- 1 John 3:18</span>
+                            "Whoever is kind to the poor lends to the Lord, and he will reward them for what they have done." <br/>
+                            <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left text-left text-left">- Proverbs 19:17</span>
                         </p>
                     </div>
                 </div>
