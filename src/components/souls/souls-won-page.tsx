@@ -93,9 +93,20 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SoulProfileContent, getStatusClasses } from "./soul-profile-content";
 
+const SoulsWonTableLazy = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
+  loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
+  ssr: false
+});
+
 const ShareWordDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.ShareWordDialog), { ssr: false });
 const IntercessionHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.IntercessionHubDialog), { ssr: false });
 const MessageHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.MessageHubDialog), { ssr: false });
+const LogFollowUpDialogLazy = dynamic(() => import('@/components/souls/log-follow-up-dialog').then(m => m.LogFollowUpDialog), { ssr: false });
+const ViewHistoryDialogLazy = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
+const AssignFellowshipDialogLazy = dynamic(() => import('@/components/souls/assign-fellowship-dialog').then(m => m.AssignFellowshipDialog), { ssr: false });
+const LogSoulFormLazy = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
+const EditSoulFormLazy = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
+const SoulAssessmentDialogLazy = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
 
 function FilteredSoulList({ 
     souls, 
@@ -885,7 +896,7 @@ export default function SoulsWonPage() {
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left"><Sparkles className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span></div>
+                        <div className="flex items-center gap-2 mb-2 text-left"><Sparkles className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span></div>
                         <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
                             {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                         </DrawerTitle>
