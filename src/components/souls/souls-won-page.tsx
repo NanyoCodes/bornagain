@@ -90,9 +90,16 @@ import { SoulsImportTemplateCard } from "@/components/settings/souls-import-temp
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SoulProfileContent, getStatusClasses } from "./soul-profile-content";
-import { Checkbox } from "@/components/ui/checkbox";
 
-function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWord, onPray, onMessage }: { 
+function FilteredSoulList({ 
+    souls, 
+    allSouls, 
+    onSelectSoul, 
+    onAddChild, 
+    onShareWord, 
+    onPray, 
+    onMessage 
+}: { 
     souls: Soul[], 
     allSouls: Soul[], 
     onSelectSoul: (soul: Soul) => void, 
@@ -164,6 +171,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild, onShareWo
                             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left">
                                 <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left">
                                     Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
+                                    {soul.age && <span className="opacity-60 ml-1.5 font-black"> • {soul.age} YRS</span>}
                                 </p>
                                 {isFamilyMember && (
                                     <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none text-left">Family Unit</Badge>
@@ -811,9 +819,9 @@ export default function SoulsWonPage() {
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Add New Soul</DrawerTitle>
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
@@ -902,3 +910,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+

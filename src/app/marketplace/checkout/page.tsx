@@ -255,8 +255,8 @@ function CheckoutPageContent() {
                         const symbol = getCurrencySymbol(group.currency);
                         return (
                             <div key={group.vendorId} className="space-y-4 text-left text-left text-left text-left">
-                                <div className="flex items-center justify-between px-2 text-left text-left text-left text-left">
-                                    <div className="flex items-center gap-3 text-left text-left text-left">
+                                <div className="flex items-center justify-between px-2 text-left text-left text-left text-left text-left">
+                                    <div className="flex items-center gap-3 text-left text-left text-left text-left">
                                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm text-left text-left text-left text-left">
                                             <Store className="h-5 w-5 text-primary text-left text-left text-left text-left" />
                                         </div>
@@ -325,8 +325,8 @@ function CheckoutPageContent() {
                                             <Label className="text-[10px] font-black uppercase text-primary tracking-[0.3em] flex items-center gap-2 text-left text-left text-left text-left">
                                                 <CreditCard className="h-4 w-4 text-left text-left text-left text-left" /> ACCOUNT DETAILS FOR {group.vendorName}
                                             </Label>
-                                            <div className="p-6 rounded-[1.5rem] bg-background border-2 border-primary/10 shadow-inner relative overflow-hidden group/pay text-left text-left text-left text-left">
-                                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/pay:opacity-10 transition-opacity text-left text-left text-left text-left">
+                                            <div className="p-6 rounded-[1.5rem] bg-background border-2 border-primary/10 shadow-inner relative overflow-hidden group/pay text-left text-left text-left text-left text-left">
+                                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/pay:opacity-10 transition-opacity text-left text-left text-left text-left text-left">
                                                     <ShieldCheck className="h-16 w-16 text-primary rotate-12 text-left text-left text-left text-left" />
                                                 </div>
                                                 <p className="text-sm sm:text-base font-black text-foreground whitespace-pre-wrap leading-relaxed relative z-10 text-balance text-left text-left text-left text-left">
@@ -349,7 +349,7 @@ function CheckoutPageContent() {
 
                 <div className="space-y-6 text-left text-left text-left text-left">
                     <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left text-left text-left">
-                        <CardHeader className="p-8 pb-4 text-left text-left text-left text-left text-left text-left">
+                        <CardHeader className="p-8 pb-4 text-left text-left text-left text-left text-left text-left text-left">
                             <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left text-left text-left">Summary</CardTitle>
                             <CardDescription className="text-primary-foreground/70 font-medium text-left text-left text-left text-left text-left text-left">Consolidated Kingdom Offering.</CardDescription>
                         </CardHeader>
@@ -418,3 +418,4 @@ export default function CheckoutPage() {
         </AppShell>
     );
 }
+

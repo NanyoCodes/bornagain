@@ -134,20 +134,6 @@ function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
 
 // --- Utils ---
 
-const iconMap: Record<string, any> = {
-    'prayed_together': Sparkles,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
-    'matchmaking': HeartHandshake,
-};
-
 export const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
     switch (status) {
@@ -665,7 +651,7 @@ export function SoulProfileContent({
             return;
         case 'shared_meal':
         case 'gave_gift':
-            const mPath = actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+            const mPath = actionId === 'shared_meal' ? '/marketplace' : '/marketplace/gifts';
             router.push(`${mPath}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`);
             return;
         case 'matchmaking':
@@ -1124,7 +1110,7 @@ export function SoulProfileContent({
       </Dialog>
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
           <DialogHeader className="text-center space-y-2">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
                   <Share className="h-7 w-7 text-primary" />
@@ -1179,3 +1165,4 @@ export function SoulProfileContent({
     </div>
   );
 }
+
