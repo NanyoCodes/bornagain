@@ -64,7 +64,8 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest, SoulRelationship } from "@/lib/types";
 import { useCollection, useFirestore, useUser, useUserProfile } from "@/firebase";
-import { doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment, arrayUnion, query, collection, orderBy } from "firebase/firestore";
+import { useDoc } from "@/firebase/firestore/use-doc";
+import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment, arrayUnion } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -90,6 +91,10 @@ import { SoulsImportTemplateCard } from "@/components/settings/souls-import-temp
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SoulProfileContent, getStatusClasses } from "./soul-profile-content";
+
+const ShareWordDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.ShareWordDialog), { ssr: false });
+const IntercessionHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.IntercessionHubDialog), { ssr: false });
+const MessageHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.MessageHubDialog), { ssr: false });
 
 function FilteredSoulList({ 
     souls, 
@@ -145,18 +150,20 @@ function FilteredSoulList({
                     onClick={() => onSelectSoul(soul)}
                 >
                     <div className="flex flex-row items-center gap-3 min-w-0 flex-1 w-full text-left">
-                        <div className="flex -space-x-3 sm:-space-x-4 shrink-0 text-left">
-                            <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0 text-left">
-                                <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left"> {soul.firstName?.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            {spouseObj && (
-                                <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0 text-left">
-                                    <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover text-left" />
-                                    <AvatarFallback className="font-black bg-primary/10 text-primary/60 text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
+                        <CollapsibleTrigger asChild onClick={(e) => e.stopPropagation()}>
+                            <div className="flex -space-x-3 sm:-space-x-4 shrink-0 text-left hover:scale-105 active:scale-95 transition-transform">
+                                <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0 text-left">
+                                    <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
+                                    <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left"> {soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                            )}
-                        </div>
+                                {spouseObj && (
+                                    <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0 text-left">
+                                        <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover text-left" />
+                                        <AvatarFallback className="font-black bg-primary/10 text-primary/60 text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                )}
+                            </div>
+                        </CollapsibleTrigger>
                         <div className="min-w-0 flex-1 pr-1 text-left">
                             <div className="flex items-center gap-2 flex-wrap text-left">
                                 <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left">
@@ -260,9 +267,6 @@ const AssignFellowshipDialogLazy = dynamic(() => import('@/components/souls/assi
 const LogSoulFormLazy = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
 const EditSoulFormLazy = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const SoulAssessmentDialogLazy = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
-const ShareWordDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.ShareWordDialog), { ssr: false });
-const IntercessionHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.IntercessionHubDialog), { ssr: false });
-const MessageHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => m.MessageHubDialog), { ssr: false });
 
 export default function SoulsWonPage() {
   const { user } = useUser();
@@ -561,7 +565,7 @@ export default function SoulsWonPage() {
             <div className="lg:col-span-8 space-y-10 pb-32 text-left">
                 <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
-                        <div className="space-y-1 text-left text-left">
+                        <div className="space-y-1 text-left">
                             <div className="flex items-center gap-3 text-left">
                                 <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY HARVEST</h1>
                                 <Badge variant="secondary" className="h-7 sm:h-9 px-3 rounded-full font-black text-xs sm:text-sm bg-primary/10 text-primary border-primary/20 shrink-0 text-left">{totalSoulsCount}</Badge>
@@ -580,8 +584,8 @@ export default function SoulsWonPage() {
                                 <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl text-left">
                                     <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Select Format</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onSelect={() => handleExportHistory('csv')} className="text-left text-left"><Download className="mr-2 h-4 w-4 opacity-40 text-left" /> CSV (Excel)</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleExportHistory('pdf')} className="text-left text-left"><Download className="mr-2 h-4 w-4 text-primary text-left" /> PDF Report</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handleExportHistory('csv')} className="text-left"><Download className="mr-2 h-4 w-4 opacity-40 text-left" /> CSV (Excel)</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handleExportHistory('pdf')} className="text-left"><Download className="mr-2 h-4 w-4 text-primary text-left" /> PDF Report</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                             <Button onClick={() => { setLogSoulDefaults({}); setIsLogDialogOpen(true); }} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none text-left">
@@ -600,7 +604,7 @@ export default function SoulsWonPage() {
                             </div>
                         </div>
                         <div className="overflow-hidden relative w-full text-left" onMouseEnter={() => setIsGalleryPaused(true)} onMouseLeave={() => setIsGalleryPaused(false)}>
-                            <motion.div className="flex gap-4 w-max text-left text-left" animate={{ x: isGalleryPaused ? undefined : ["0%", "-33.3333333%"] }} transition={{ x: { duration: 30, repeat: Infinity, ease: "linear", repeatType: "loop" } }}>
+                            <motion.div className="flex gap-4 w-max text-left" animate={{ x: isGalleryPaused ? undefined : ["0%", "-33.3333333%"] }} transition={{ x: { duration: 30, repeat: Infinity, ease: "linear", repeatType: "loop" } }}>
                                 {duplicatedSouls.map((s, idx) => (
                                     <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0 text-left">
                                         <div onClick={() => setSelectedId(s.id)} className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-[0.98] transition-all text-left">
@@ -652,17 +656,17 @@ export default function SoulsWonPage() {
                     </div>
 
                     <div className="space-y-4 text-left">
-                        <div className="flex items-center gap-3 text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left"><Users className="h-5 w-5 text-primary text-left" /></div>
+                        <div className="flex items-center gap-3 text-left text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left"><Users className="h-5 w-5 text-primary text-left" /></div>
                             <div className="min-w-0 text-left text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">GENDER BALANCE</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Kingdom Workforce Diversity</p></div>
                         </div>
                         <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
                             <CardContent className="p-6 sm:p-8 text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
                                     {[ { label: 'Male', count: genderStats.male.count, color: 'bg-blue-600' }, { label: 'Female', count: genderStats.female.count, color: 'bg-rose-500' }, { label: 'Not Assigned', count: genderStats.unassigned.count, color: 'bg-slate-400' } ].map(stat => {
                                         const percent = genderStats.total > 0 ? (stat.count / genderStats.total) * 100 : 0;
                                         return (
-                                            <div key={stat.label} className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left" onClick={() => setSelectedFilterGroup({ type: 'gender', value: stat.label })}>
+                                            <div key={stat.label} className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left text-left" onClick={() => setSelectedFilterGroup({ type: 'gender', value: stat.label })}>
                                                 <div className="flex justify-between items-baseline text-left text-left"><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">{stat.label}</p><span className="text-2xl font-black text-primary tracking-tighter text-left">{stat.count}</span></div>
                                                 <div className="space-y-1.5 text-left text-left"><Progress value={percent} className="h-2 bg-muted text-left" indicatorClassName={stat.color} /><p className="text-right text-[9px] font-black text-muted-foreground/60 uppercase text-left">{Math.round(percent)}% OF HARVEST</p></div>
                                             </div>
@@ -684,8 +688,8 @@ export default function SoulsWonPage() {
                                     {[ { label: 'Families', count: maritalStats.married.count, color: 'bg-emerald-500', icon: Target }, { label: 'Singles', count: maritalStats.single.count, color: 'bg-primary', icon: Sparkles }, { label: 'Divorced', count: maritalStats.divorced.count, color: 'bg-slate-500', icon: HelpCircle }, { label: 'Widowers', count: maritalStats.widowed.count, color: 'bg-indigo-600', icon: Award } ].map(stat => {
                                         const percent = totalSoulsCount > 0 ? (stat.count / totalSoulsCount) * 100 : 0;
                                         return (
-                                            <div key={stat.label} className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left" onClick={() => setSelectedFilterGroup({ type: 'marital', value: stat.label })}>
-                                                <div className="flex justify-between items-center text-left text-left text-left"><p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">{stat.label}</p><span className="text-xl font-black text-primary tracking-tighter text-left">{stat.count}</span></div>
+                                            <div key={stat.label} className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left text-left" onClick={() => setSelectedFilterGroup({ type: 'marital', value: stat.label })}>
+                                                <div className="flex justify-between items-center text-left text-left"><p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">{stat.label}</p><span className="text-xl font-black text-primary tracking-tighter text-left">{stat.count}</span></div>
                                                 <div className="space-y-1.5 text-left text-left"><Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={stat.color} /><p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left">{Math.round(percent)}%</p></div>
                                             </div>
                                         );
@@ -696,10 +700,10 @@ export default function SoulsWonPage() {
                     </div>
                 </div>
 
-                <div className="px-4 sm:px-0 text-left text-left"><RelationshipCircleTracker souls={souls || []} campaigns={campaigns || []} fellowships={fellowships || []} className="rounded-3xl" /></div>
-                <div className="px-4 sm:px-0 text-left text-left"><SoulsImportTemplateCard /></div>
+                <div className="px-4 sm:px-0 text-left"><RelationshipCircleTracker souls={souls || []} campaigns={campaigns || []} fellowships={fellowships || []} className="rounded-3xl" /></div>
+                <div className="px-4 sm:px-0 text-left"><SoulsImportTemplateCard /></div>
 
-                <div className="-mx-4 sm:mx-0 text-left text-left">
+                <div className="-mx-4 sm:mx-0 text-left">
                     <SoulsWonTableLazy 
                         souls={filteredSouls || []} 
                         allSouls={souls || []}
@@ -725,7 +729,7 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <Drawer open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left"><BarChart3 className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span></div>
                             <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
@@ -749,10 +753,10 @@ export default function SoulsWonPage() {
                 </Drawer>
             ) : (
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
-                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left text-left"><BarChart3 className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span></div>
-                            <DialogHeader className="text-left p-0 text-left text-left text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left"><BarChart3 className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span></div>
+                            <DialogHeader className="text-left p-0 text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this demographic group.</DialogDescription>
                             </DialogHeader>
@@ -803,9 +807,9 @@ export default function SoulsWonPage() {
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                <AlertDialogHeader className="text-left text-left">
+                <AlertDialogHeader className="text-left text-left text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">This will permanently remove the record from your Kingdom journal. This action cannot be undone.</AlertDialogDescription>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">This will permanently remove the record from your Kingdom journal. This action cannot be undone.</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
@@ -826,7 +830,7 @@ export default function SoulsWonPage() {
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow px-8 text-left">
-                                <div className="py-8 text-left text-left">
+                                <div className="py-8 text-left text-left text-left">
                                     <LogSoulFormLazy onSoulLogged={() => { setIsLogDialogOpen(false); setLogSoulDefaults({}); }} fellowships={fellowships || []} campaigns={campaigns || []} {...logSoulDefaults} />
                                 </div>
                             </ScrollArea>
@@ -834,13 +838,13 @@ export default function SoulsWonPage() {
                     </Drawer>
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left">
                                 {soulToEdit && <EditSoulFormLazy soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DrawerContent>
@@ -849,27 +853,27 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-bold font-headline text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left">
                                 <LogSoulFormLazy onSoulLogged={() => { setIsLogDialogOpen(false); setLogSoulDefaults({}); }} fellowships={fellowships || []} campaigns={campaigns || []} {...logSoulDefaults} />
                             </ScrollArea>
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left">
                                 {soulToEdit && <EditSoulFormLazy soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DialogContent>
@@ -879,10 +883,10 @@ export default function SoulsWonPage() {
         )}
         
         <Drawer open={!!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span></div>
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span></div>
                         <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                             {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                         </DrawerTitle>
@@ -890,7 +894,7 @@ export default function SoulsWonPage() {
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left">
-                    <div className="p-6 pb-24 text-left text-left">
+                    <div className="p-6 pb-24 text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
                                 soul={souls.find(s => s.id === selectedId)!} 

@@ -247,7 +247,7 @@ export function ShareWordDialog({
   const renderHub = (
     <div className="space-y-8 text-left">
       <div className="space-y-4 text-left">
-        <div className="relative text-left text-left">
+        <div className="relative text-left">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50 text-left" />
             <Input placeholder="Search Bible..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
             <Button onClick={handleSearch} disabled={isSearching || !bibleSearch.trim()} variant="ghost" size="sm" className="absolute right-1.5 top-1/2 -translate-y-1/2 h-8 px-3 rounded-xl font-black text-[9px] uppercase text-primary text-left">
@@ -346,8 +346,8 @@ export function ShareWordDialog({
             <Target className="h-5 w-5 text-primary text-left" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
           </div>
-          <DialogHeader className="p-0 text-left text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase text-left text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}` : `${selectedBook} ${selectedChapter}`}</DialogTitle>
+          <DialogHeader className="p-0 text-left">
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}` : `${selectedBook} ${selectedChapter}`}</DialogTitle>
           </DialogHeader>
         </div>
         {view !== 'hub' && <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-muted-foreground/40 text-left" onClick={() => onOpenChange(false)}><X className="h-5 w-5 text-left" /></Button>}
@@ -363,7 +363,7 @@ export function ShareWordDialog({
                   <ScrollArea className="flex-grow p-6 text-left">{view === 'hub' ? renderHub : view === 'books' ? renderBooks : view === 'chapters' ? renderChapters : renderVerses}</ScrollArea>
                   {view === 'verses' && (
                     <div className="p-6 border-t bg-background/80 backdrop-blur-sm flex flex-col gap-3 text-left">
-                        <Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-2xl h-14 font-black shadow-xl uppercase tracking-widest text-left text-center">PREPARE SHARE ({selectedVerses.length})</Button>
+                        <Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-2xl h-14 font-black shadow-xl uppercase tracking-widest text-center">PREPARE SHARE ({selectedVerses.length})</Button>
                     </div>
                   )}
               </SheetContent>
@@ -438,13 +438,13 @@ export function IntercessionHubDialog({
 
     const header = (
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <DialogHeader className="text-left p-0 text-left">
+            <DialogHeader className="text-left p-0">
                 <div className="flex items-center gap-3 mb-2 text-left">
                     <HandHeart className="h-5 w-5 text-primary text-left" />
                     <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Intercession</span>
                 </div>
-                <DialogTitle className="text-2xl font-black font-headline uppercase text-left text-left">Prayer for {soul?.firstName}</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-left text-left">Draft a powerful word of blessing.</DialogDescription>
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Prayer for {soul?.firstName}</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-left">Draft a powerful word of blessing.</DialogDescription>
             </DialogHeader>
         </div>
     );
@@ -839,7 +839,7 @@ export function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p>
+                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.relationship || 'N/A'}</p>
                     </div>
                     <div className="space-y-1">
@@ -1108,10 +1108,11 @@ export function SoulProfileContent({
             </DialogHeader>
           </div>
           <div className="p-8 space-y-6 text-left">
-            <div className="space-y-2 text-left text-left text-left">
+            <div className="space-y-2 text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
+                    value={customMessageText}
                     onChange={e => setCustomMessageText(e.target.value)} 
                     className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
                 />
@@ -1145,11 +1146,11 @@ export function SoulProfileContent({
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10 text-left">
                   <DialogHeader className="text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left text-left">Which partner should receive these details?</DialogDescription>
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-6 text-left text-left text-left">
+              <div className="p-6 text-left">
               <ScrollArea className="h-64 text-left">
                   <div className="space-y-2 text-left">
                       {uniquePartners.map(p => (
