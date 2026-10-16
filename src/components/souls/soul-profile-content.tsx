@@ -654,9 +654,6 @@ export function SoulProfileContent({
                 toast({ variant: 'destructive', title: 'Location Undefined' });
             }
             return;
-        case 'helped_with_need':
-            setIsHelpNeedDialogOpen(true);
-            return;
         case 'shared_meal':
         case 'gave_gift':
             const mPath = actionId === 'shared_meal' ? '/marketplace' : '/marketplace/gifts';
@@ -1140,13 +1137,13 @@ export function SoulProfileContent({
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left">
-                  <DialogHeader className="text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
+              <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                  <DialogHeader className="text-left text-left text-left text-left">
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-6 text-left">
+              <div className="p-6 text-left text-left">
               <ScrollArea className="h-64 text-left">
                   <div className="space-y-2 text-left">
                       {uniquePartners.map(p => (
