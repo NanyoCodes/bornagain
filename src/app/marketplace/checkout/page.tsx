@@ -256,7 +256,7 @@ function CheckoutPageContent() {
                             const symbol = getCurrencySymbol(group.currency);
                             return (
                                 <div key={group.vendorId} className="space-y-4 text-left">
-                                    <div className="flex items-center gap-3 text-left">
+                                    <div className="flex items-center gap-3 text-left text-left">
                                         <Avatar className="h-10 w-10 rounded-xl border shadow-sm shrink-0 text-left">
                                             <AvatarImage src={group.vendorPhotoURL} className="object-cover text-left" />
                                             <AvatarFallback className="bg-primary/5 text-primary font-bold text-xs text-left">

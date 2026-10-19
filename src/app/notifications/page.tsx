@@ -192,12 +192,14 @@ export default function NotificationsPage() {
                         )}
                     </div>
                 </div>
-                <Link href="/testimonies" className="shrink-0 transition-transform active:scale-95 text-left">
-                    <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg text-left">
-                        <AvatarImage src={logo?.imageUrl} alt="Testify" className="object-cover text-left" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary text-left">T</AvatarFallback>
-                    </Avatar>
-                </Link>
+                {logo && (
+                    <Link href="/testimonies" className="shrink-0 transition-transform active:scale-95 text-left">
+                        <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg text-left">
+                            <AvatarImage src={logo.imageUrl} alt="Testify" className="object-cover text-left" />
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-left">T</AvatarFallback>
+                        </Avatar>
+                    </Link>
+                )}
             </div>
 
             <Tabs value={filter} onValueChange={setFilter} className="w-full text-left">

@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUserId: string, isUnread: boolean }) {
     const router = useRouter();
@@ -167,6 +168,7 @@ export default function ChatsPage() {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
+    const logo = PlaceHolderImages.find(img => img.id === 'logo');
 
     const chatsQuery = useMemo(() => {
         if (!user?.uid) return null;
@@ -219,17 +221,27 @@ export default function ChatsPage() {
     return (
         <div className="flex flex-col h-full w-full bg-background overflow-hidden text-left">
             <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4 text-left">
-                <div className="flex items-center gap-4 text-left text-left">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
-                        <ArrowLeft className="h-6 w-6 text-left text-left" />
-                        <span className="sr-only text-left text-left">Back</span>
-                    </Button>
-                    <div className="min-w-0 text-left text-left">
-                        <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase truncate text-left text-left">
-                            Conversations
-                        </h1>
-                        <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-1 uppercase tracking-[0.2em] truncate text-left text-left">Kingdom Messages</p>
+                <div className="flex items-center justify-between gap-4 text-left text-left">
+                    <div className="flex items-center gap-4 text-left text-left">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
+                            <ArrowLeft className="h-6 w-6 text-left text-left" />
+                            <span className="sr-only text-left text-left">Back</span>
+                        </Button>
+                        <div className="min-w-0 text-left text-left">
+                            <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase truncate text-left text-left">
+                                Conversations
+                            </h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-1 uppercase tracking-[0.2em] truncate text-left text-left">Kingdom Messages</p>
+                        </div>
                     </div>
+                    {logo && (
+                        <Link href="/testimonies" className="shrink-0 transition-transform active:scale-95">
+                            <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg">
+                                <AvatarImage src={logo.imageUrl} alt="Testify" className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary">T</AvatarFallback>
+                            </Avatar>
+                        </Link>
+                    )}
                 </div>
             </div>
 
