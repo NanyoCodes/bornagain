@@ -23,7 +23,6 @@ import {
     ChevronDown,
     Package,
     Sparkles,
-    Filter,
     Check,
     CreditCard
 } from 'lucide-react';
@@ -387,7 +386,7 @@ export default function MealsMarketplaceClient() {
                     <div className="flex flex-col sm:flex-row gap-3">
                         <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                             <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
-                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider">
+                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
                                     <SelectValue placeholder="Country" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px]">
@@ -397,7 +396,7 @@ export default function MealsMarketplaceClient() {
                             </Select>
 
                             <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
-                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider">
+                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
                                     <SelectValue placeholder="State/Region" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px]">
@@ -413,11 +412,11 @@ export default function MealsMarketplaceClient() {
                                 size="sm" 
                                 onClick={() => setFilterBySoulLoc(!filterBySoulLoc)}
                                 className={cn(
-                                    "h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] gap-2 transition-all",
+                                    "h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] gap-2 transition-all text-left",
                                     filterBySoulLoc ? "bg-primary text-white border-none shadow-lg ring-2 ring-primary/20" : "border-primary/20 text-primary hover:bg-primary/5"
                                 )}
                             >
-                                {filterBySoulLoc ? <Check className="h-3 w-3" /> : <MapPin className="h-3 w-3" />}
+                                {filterBySoulLoc ? <Check className="h-3 w-3 text-left" /> : <MapPin className="h-3 w-3 text-left" />}
                                 PROVISION IN {soul.locationWon.city.toUpperCase()}
                             </Button>
                         )}
@@ -449,7 +448,7 @@ export default function MealsMarketplaceClient() {
                                 <div className="absolute bottom-4 left-6 pr-4 text-left">
                                     <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-tight truncate text-left">{vendor.businessName}</h3>
                                     <div className="flex items-center gap-1.5 text-white/70 text-[9px] font-bold uppercase tracking-widest mt-1 text-left">
-                                        <MapPin className="h-2.5 w-2.5 text-primary" /> {vendor.location || 'Local Delivery'}
+                                        <MapPin className="h-2.5 w-2.5 text-primary text-left" /> {vendor.location || 'Local Delivery'}
                                     </div>
                                 </div>
                                 {vendor.currency && (
@@ -464,7 +463,7 @@ export default function MealsMarketplaceClient() {
                                 </p>
                                 <Button className="w-full justify-between h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center">
                                     VIEW MENU & PROVISIONS
-                                    <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1 text-left" />
+                                    <ChevronRight className="h-4 w-4 transition-transform group-hover:btn:translate-x-1 text-left" />
                                 </Button>
                             </div>
                         </Card>
@@ -482,24 +481,25 @@ export default function MealsMarketplaceClient() {
                 <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left">
                     <Link href="/marketplace/checkout" className="block group text-left">
                         <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left">
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left" />
+                            
                             <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left">
                                 <div className="relative text-left">
                                     <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left">
-                                        <ShoppingBag className="h-5 w-5 text-white/80" />
+                                        <ShoppingBag className="h-5 w-5 text-white/80 text-left" />
                                     </div>
-                                    <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center">
-                                        <span className="text-[10px] font-black text-white">{cartCount}</span>
+                                    <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center text-left">
+                                        <span className="text-[10px] font-black text-white text-center"> {cartCount}</span>
                                     </div>
                                 </div>
                                 <div className="flex flex-col text-left leading-none min-w-0">
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1">Provision Package</span>
-                                    <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate">View My Offering</span>
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1 text-left">Provision Package</span>
+                                    <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate text-left">View My Offering</span>
                                 </div>
                             </div>
-                            <div className="h-full px-6 rounded-full bg-primary text-white flex items-center gap-2 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10">
-                                <span className="text-xs font-black uppercase tracking-widest">Checkout</span>
-                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+
+                            <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left">
+                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left" />
                             </div>
                         </div>
                     </Link>
@@ -511,26 +511,26 @@ export default function MealsMarketplaceClient() {
                     <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left p-0">
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Become a Provider</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1">Register your meal service and start providing physical provision.</SheetDescription>
+                                <SheetHeader className="text-left p-0 text-left">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Register your meal service and start providing physical provision.</SheetDescription>
                                 </SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow">
+                            <ScrollArea className="flex-grow text-left text-left">
                                 {registrationForm}
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="p-0 text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                                <DialogHeader className="p-0 text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Become a Provider</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Register your meal service and start providing physical provision.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-grow text-left">
+                            <ScrollArea className="flex-grow text-left text-left text-left text-left">
                                 {registrationForm}
                             </ScrollArea>
                         </DialogContent>

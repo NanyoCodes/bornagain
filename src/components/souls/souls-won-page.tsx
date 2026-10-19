@@ -198,9 +198,9 @@ function ChildSelectionDialog({
     if (isMobile) {
         return (
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                     {header}
-                    <div className="flex-grow overflow-hidden text-left">{body}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left">{body}</div>
                 </DrawerContent>
             </Drawer>
         );
@@ -239,8 +239,8 @@ function FilteredSoulList({
 
   if (!souls || souls.length === 0) {
     return (
-      <div className="text-center py-10 text-left">
-        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
+      <div className="text-center py-10 text-left text-left">
+        <p className="text-sm text-muted-foreground italic text-left text-left">No souls found matching this criteria.</p>
       </div>
     );
   }
@@ -265,7 +265,7 @@ function FilteredSoulList({
         const hasFamily = spouseObj || children.length > 0;
 
         return (
-          <div key={soul.id} className="relative text-left">
+          <div key={soul.id} className="relative text-left text-left">
             <Collapsible open={openFamilyId === soul.id} onOpenChange={() => setOpenFamilyId(openFamilyId === soul.id ? null : soul.id)}>
                 <div 
                     className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 transition-all hover:bg-card/40 cursor-pointer text-left"
@@ -286,7 +286,7 @@ function FilteredSoulList({
                                 )}
                             </div>
                         </CollapsibleTrigger>
-                        <div className="min-w-0 flex-1 pr-1 text-left text-left">
+                        <div className="min-w-0 flex-1 pr-1 text-left text-left text-left">
                             <div className="flex items-center gap-2 flex-wrap text-left">
                                 <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left">
                                     {soul.firstName} {soul.lastName}
@@ -322,14 +322,14 @@ function FilteredSoulList({
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30 text-left">
-                                    <ChevronDown className="h-4 w-4 text-left" />
+                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30 text-left text-left">
+                                    <ChevronDown className="h-4 w-4 text-left text-left" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left">
                                 <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">More Actions</DropdownMenuLabel>
                                 <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
+                                <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left text-left">
                                     <User className="mr-2 h-4 w-4 text-left" /> View Full Identity
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -728,9 +728,9 @@ export default function SoulsWonPage() {
 
   return (
     <div className="w-full max-w-7xl mx-auto text-left">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
-            <div className="lg:col-span-8 space-y-10 pb-32 text-left">
-                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left text-left text-left">
+            <div className="lg:col-span-8 space-y-10 pb-32 text-left text-left text-left">
+                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left text-left text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                         <div className="space-y-1 text-left">
                             <div className="flex items-center gap-3 text-left">
@@ -750,7 +750,7 @@ export default function SoulsWonPage() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl text-left">
                                     <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Select Format</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
+                                    <DropdownMenuSeparator className="text-left" />
                                     <DropdownMenuItem onSelect={() => handleExportHistory('csv')} className="text-left">
                                         <Download className="mr-2 h-4 w-4 opacity-40 text-left" /> CSV (Excel)
                                     </DropdownMenuItem>
@@ -930,9 +930,9 @@ export default function SoulsWonPage() {
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Demographic View</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left p-0 text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedFilterGroup?.value} Directory</DialogTitle>

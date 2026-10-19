@@ -71,6 +71,7 @@ import {
   DialogDescription, 
   DialogTrigger,
   DialogFooter,
+  DialogClose
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -475,13 +476,13 @@ export function MessageHubDialog({
             <DialogHeader className="text-center space-y-2 p-0 text-left text-left">
                 <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left"><MessageSquare className="h-7 w-7 text-primary text-left" /></div>
                 <DialogTitle className="text-2xl font-black font-headline uppercase text-center text-left">Message Hub</DialogTitle>
-                <DialogTitle className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DialogDescription>
             </DialogHeader>
         </div>
     );
 
     const contentBody = (
-        <div className="flex flex-col gap-3 p-8 text-left text-left text-left">
+        <div className="flex flex-col gap-3 p-8 text-left text-left text-left text-left">
             <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center text-left">
                 <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp
             </Button>
@@ -752,8 +753,8 @@ export function SoulProfileContent({
                 <Dialog>
                     <DialogTrigger asChild disabled={!soul.photoURL}>
                         <div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95 text-left", soul.photoURL && "cursor-pointer hover:scale-105")}>
-                            <Avatar className="h-full w-full border shadow-sm text-left">
-                                <AvatarImage src={soul.photoURL || undefined} className="object-contain" />
+                            <Avatar className="h-full w-full border shadow-sm text-left text-left">
+                                <AvatarImage src={soul.photoURL || undefined} className="object-contain text-left" />
                                 <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-left"> {soul.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         </div>
@@ -772,11 +773,11 @@ export function SoulProfileContent({
                 {address && (
                     <Button 
                         size="icon" 
-                        className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background text-left text-left text-left"
+                        className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background text-left text-left text-left text-left"
                         onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')}
                         title="View Map"
                     >
-                        <MapPin className="h-5 w-5 text-left" />
+                        <MapPin className="h-5 w-5 text-left text-left" />
                     </Button>
                 )}
             </div>
@@ -785,7 +786,7 @@ export function SoulProfileContent({
                   {soul.firstName} {soul.lastName}
                 </CardTitle>
                 <div className="flex gap-2 justify-center items-center text-left">
-                    <Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center", getStatusClasses(soul.status))} variant="outline">
+                    <Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center text-left", getStatusClasses(soul.status))} variant="outline">
                         {soul.status}
                     </Badge>
                     <MutualConnectBadge soul={soul} />
@@ -801,8 +802,8 @@ export function SoulProfileContent({
                     <div className="flex items-center gap-1 text-left">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10">
-                                    <Download className="h-4 w-4" />
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left">
+                                    <Download className="h-4 w-4 text-left" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl text-left">
@@ -830,15 +831,15 @@ export function SoulProfileContent({
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize text-left">{soul.relationship || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
+                    <div className="space-y-1 text-left text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize text-left">{soul.workStatus || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
+                    <div className="space-y-1 text-left text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Rel. Status</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize text-left">{soul.maritalStatus || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
+                    <div className="space-y-1 text-left text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nickname</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize text-left">{soul.nickname || 'N/A'}</p>
                     </div>
@@ -861,7 +862,7 @@ export function SoulProfileContent({
                             {soul.phone}
                         </div>
                     ) : (
-                        <p className="text-[9px] text-muted-foreground/40 italic text-left">No phone recorded</p>
+                        <p className="text-[9px] text-muted-foreground/40 italic text-left text-left">No phone recorded</p>
                     )}
                     {soul.email && (
                         <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left text-left text-left text-left">
@@ -892,7 +893,7 @@ export function SoulProfileContent({
                                 disabled={isActionSubmitting}
                             >
                                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors text-left text-left">
-                                    {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left" /> : <Icon className="h-4 w-4 text-left" />}
+                                    {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left text-left" /> : <Icon className="h-4 w-4 text-left" />}
                                 </div>
                                 <span className="text-xs font-bold uppercase tracking-tight truncate flex-1 text-left">{action.label}</span>
                                 <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity text-left" />
@@ -983,7 +984,7 @@ export function SoulProfileContent({
                                         {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                         {log.memberName && <span className="ml-2 text-primary/40 text-left">• By {log.memberName.split(' ')[0]}</span>}
                                     </p>
-                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left">
+                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left text-left">
                                         &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                     </p>
                                 </div>
@@ -1095,7 +1096,7 @@ export function SoulProfileContent({
               <DialogDescription className="text-sm font-medium text-left">Describe how you supported {soul.firstName}.</DialogDescription>
             </DialogHeader>
           </div>
-          <div className="p-8 space-y-6 text-left">
+          <div className="p-8 space-y-6 text-left text-left">
             <div className="space-y-2 text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
                 <Textarea 
@@ -1140,7 +1141,7 @@ export function SoulProfileContent({
               </div>
               <div className="p-6 text-left text-left">
               <ScrollArea className="h-64 text-left text-left text-left">
-                  <div className="space-y-2 text-left text-left text-left">
+                  <div className="space-y-2 text-left text-left text-left text-left">
                       {uniquePartners.map(p => (
                           <Button 
                               key={p.userId} 

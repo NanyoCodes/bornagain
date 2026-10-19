@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
+import { useUser, useFirestore, useCollection, useDoc, useUserProfile } from '@/firebase';
 import { collection, query, where, doc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
 import type { VendorProfile, Soul } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -24,7 +24,6 @@ import {
     ArrowRight,
     ChevronDown,
     Sparkles,
-    Filter,
     Check
 } from 'lucide-react';
 import { 
@@ -58,7 +57,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import { ImageUpload } from '@/components/common/image-upload';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const currencyOptions = [
@@ -70,9 +69,13 @@ const currencyOptions = [
     { value: 'KES', label: 'Kenyan Shilling (KSh)', symbol: 'KSh' },
 ];
 
-const getCurrencySymbol = (code?: string) => {
-    return currencyOptions.find(opt => opt.value === code)?.symbol || '₦';
-};
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  );
+}
 
 export default function GiftsMarketplaceClient() {
     const { user } = useUser();
@@ -93,12 +96,10 @@ export default function GiftsMarketplaceClient() {
     const [vendorPhotoURL, setVendorPhotoURL] = useState('');
     const [selectedCurrency, setSelectedCurrency] = useState('NGN');
 
-    // Filtering State
     const [filterCountry, setFilterCountry] = useState<string>('all');
     const [filterState, setFilterState] = useState<string>('all');
     const [filterBySoulLoc, setFilterBySoulLoc] = useState(false);
 
-    // Registration Location
     const [regCountry, setRegCountry] = useState('');
     const [regState, setRegState] = useState('');
 
@@ -118,7 +119,6 @@ export default function GiftsMarketplaceClient() {
         setMounted(true);
     }, []);
 
-    // Soul Context
     const soulDocRef = useMemo(() => {
         if (!firestore || !user?.uid || !soulId) return null;
         return doc(firestore, `users/${user.uid}/souls`, soulId);
@@ -260,12 +260,12 @@ export default function GiftsMarketplaceClient() {
                 <div className="space-y-2 text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Base Currency</Label>
                     <Select onValueChange={setSelectedCurrency} value={selectedCurrency}>
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
-                            <SelectValue placeholder="Select Currency" className="text-left" />
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                            <SelectValue placeholder="Select Currency" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
+                        <SelectContent className="rounded-2xl border-none shadow-2xl">
                             {currencyOptions.map(opt => (
-                                <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold text-left">
+                                <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold">
                                     {opt.label}
                                 </SelectItem>
                             ))}
@@ -279,14 +279,14 @@ export default function GiftsMarketplaceClient() {
                         <Input id="address" name="address" placeholder="e.g., 123 Kingdom Way" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left" required />
                     </div>
 
-                    <div className="space-y-2 text-left text-left">
+                    <div className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Country</Label>
                         <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left">
-                                <SelectValue placeholder="Select Country" className="text-left" />
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left">
+                                <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
-                            <SelectContent className="max-h-[300px] text-left">
-                                {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
+                            <SelectContent className="max-h-[300px]">
+                                {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
@@ -295,11 +295,11 @@ export default function GiftsMarketplaceClient() {
                         <div className="space-y-2 text-left">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">State</Label>
                             <Select onValueChange={setRegState} value={regState} disabled={!regCountry || regStatesList.length === 0}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left">
-                                    <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "Select State"} className="text-left" />
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left">
+                                    <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "Select State"} />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left">
-                                    {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
+                                <SelectContent className="max-h-[300px]">
+                                    {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -374,7 +374,7 @@ export default function GiftsMarketplaceClient() {
 
                 <div className="space-y-4 text-left">
                     <div className="relative text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                         <Input 
                             placeholder="Search for gifts and products..." 
                             value={searchTerm}
@@ -387,21 +387,21 @@ export default function GiftsMarketplaceClient() {
                         <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar text-left">
                             <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
                                 <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
-                                    <SelectValue placeholder="Country" className="text-left" />
+                                    <SelectValue placeholder="Country" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left">
-                                    <SelectItem value="all" className="text-left">All Countries</SelectItem>
-                                    {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
+                                <SelectContent className="max-h-[300px]">
+                                    <SelectItem value="all">All Countries</SelectItem>
+                                    {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
 
                             <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
                                 <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
-                                    <SelectValue placeholder="State/Region" className="text-left" />
+                                    <SelectValue placeholder="State/Region" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left">
-                                    <SelectItem value="all" className="text-left">All States</SelectItem>
-                                    {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
+                                <SelectContent className="max-h-[300px]">
+                                    <SelectItem value="all">All States</SelectItem>
+                                    {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -438,9 +438,9 @@ export default function GiftsMarketplaceClient() {
                         >
                             <div className="aspect-[2/1] relative bg-muted text-left">
                                 {vendor.photoURL ? (
-                                    <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left" unoptimized />
+                                    <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-left">
+                                    <div className="w-full h-full flex items-center justify-center text-left text-left">
                                         <Package className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                                     </div>
                                 )}
@@ -452,7 +452,7 @@ export default function GiftsMarketplaceClient() {
                                     </div>
                                 </div>
                                 {vendor.currency && (
-                                    <Badge className="absolute top-4 right-4 bg-background/80 backdrop-blur-md text-primary font-black uppercase text-[8px] px-2 h-6 border-none shadow-sm text-left text-left">
+                                    <Badge className="absolute top-4 right-4 bg-background/80 backdrop-blur-md text-primary font-black uppercase text-[8px] px-2 h-6 border-none shadow-sm text-left">
                                         {vendor.currency}
                                     </Badge>
                                 )}
@@ -471,8 +471,8 @@ export default function GiftsMarketplaceClient() {
                 ) : (
                     <div className="col-span-full py-32 text-center flex flex-col items-center text-left">
                         <Gift className="h-16 w-16 text-muted-foreground opacity-10 mb-6 text-left" />
-                        <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-center text-left">No Services Found</h3>
-                        <p className="text-xs text-muted-foreground italic mt-2 text-center text-left">Kingdom product vendors will appear here.</p>
+                        <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-center">No Services Found</h3>
+                        <p className="text-xs text-muted-foreground italic mt-2 text-center">Kingdom product vendors will appear here.</p>
                     </div>
                 )}
             </div>
@@ -498,9 +498,8 @@ export default function GiftsMarketplaceClient() {
                                 </div>
                             </div>
 
-                            <div className="h-full px-6 rounded-full bg-primary text-white flex items-center gap-2 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 text-left">
-                                <span className="text-xs font-black uppercase tracking-widest text-left">Checkout</span>
-                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 text-left" />
+                            <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left">
+                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left" />
                             </div>
                         </div>
                     </Link>
@@ -511,7 +510,7 @@ export default function GiftsMarketplaceClient() {
                 isMobile ? (
                     <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                                 <SheetHeader className="text-left p-0 text-left">
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</SheetTitle>
                                     <SheetDescription className="text-sm font-medium mt-1 text-left">Register your gift storefront.</SheetDescription>
@@ -525,7 +524,7 @@ export default function GiftsMarketplaceClient() {
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DialogHeader className="p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Register your gift storefront and start providing physical tokens of kindness.</DialogDescription>
