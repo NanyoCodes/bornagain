@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import { collection, query, where, doc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
-import type { VendorProfile } from '@/lib/types';
+import type { VendorProfile, Soul } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,13 +17,14 @@ import {
     MapPin, 
     ChevronRight,
     ShoppingBag,
-    CreditCard,
     ArrowLeft,
     Globe,
     ArrowRight,
     ChevronDown,
     Package,
-    Sparkles
+    Sparkles,
+    Filter,
+    Check
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -56,7 +57,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import { ImageUpload } from '@/components/common/image-upload';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import Link from 'next/link';
 
 const currencyOptions = [
@@ -87,19 +88,37 @@ export default function MealsMarketplaceClient() {
     const [vendorPhotoURL, setVendorPhotoURL] = useState('');
     const [selectedCurrency, setSelectedCurrency] = useState('NGN');
 
-    // Location State
-    const [selectedCountry, setSelectedCountry] = useState('');
-    const [selectedState, setSelectedState] = useState('');
+    // Filtering State
+    const [filterCountry, setFilterCountry] = useState<string>('all');
+    const [filterState, setFilterState] = useState<string>('all');
+    const [filterBySoulLoc, setFilterBySoulLoc] = useState(false);
 
     const countriesList = useMemo(() => Country.getAllCountries(), []);
-    const statesList = useMemo(() => {
-        const country = countriesList.find(c => c.name === selectedCountry);
+    
+    // For Registration
+    const [regCountry, setRegCountry] = useState('');
+    const [regState, setRegState] = useState('');
+    const regStatesList = useMemo(() => {
+        const country = countriesList.find(c => c.name === regCountry);
         return country ? State.getStatesOfCountry(country.isoCode) : [];
-    }, [selectedCountry, countriesList]);
+    }, [regCountry, countriesList]);
+
+    // For Filtering
+    const filterStatesList = useMemo(() => {
+        const country = countriesList.find(c => c.name === filterCountry);
+        return country ? State.getStatesOfCountry(country.isoCode) : [];
+    }, [filterCountry, countriesList]);
 
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    // Soul Context
+    const soulDocRef = useMemo(() => {
+        if (!firestore || !user?.uid || !soulId) return null;
+        return doc(firestore, `users/${user.uid}/souls`, soulId);
+    }, [firestore, user?.uid, soulId]);
+    const { data: soul } = useDoc<Soul>(soulDocRef);
 
     const vendorsQuery = useMemo(() => {
         if (!firestore) return null;
@@ -129,13 +148,31 @@ export default function MealsMarketplaceClient() {
 
     const filteredVendors = useMemo(() => {
         if (!vendors) return [];
-        if (!searchTerm) return vendors;
-        const term = searchTerm.toLowerCase();
-        return vendors.filter(v => 
-            v.businessName.toLowerCase().includes(term) || 
-            v.location?.toLowerCase().includes(term)
-        );
-    }, [vendors, searchTerm]);
+        let list = [...vendors];
+
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            list = list.filter(v => 
+                v.businessName.toLowerCase().includes(term) || 
+                v.location?.toLowerCase().includes(term)
+            );
+        }
+
+        if (filterCountry !== 'all') {
+            list = list.filter(v => v.location?.toLowerCase().includes(filterCountry.toLowerCase()));
+        }
+
+        if (filterState !== 'all') {
+            list = list.filter(v => v.location?.toLowerCase().includes(filterState.toLowerCase()));
+        }
+
+        if (filterBySoulLoc && soul && soul.locationWon?.city) {
+            const city = soul.locationWon.city.toLowerCase();
+            list = list.filter(v => v.location?.toLowerCase().includes(city));
+        }
+
+        return list;
+    }, [vendors, searchTerm, filterCountry, filterState, filterBySoulLoc, soul]);
 
     const handleRegisterVendor = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -150,10 +187,9 @@ export default function MealsMarketplaceClient() {
 
         if (!businessName) return;
 
-        const locationString = [address, city, selectedState, selectedCountry].filter(Boolean).join(', ');
+        const locationString = [address, city, regState, regCountry].filter(Boolean).join(', ');
 
         setIsSubmitting(true);
-        
         const batch = writeBatch(firestore);
         const newVendorRef = doc(collection(firestore, 'vendors'));
         const userRef = doc(firestore, 'users', user.uid);
@@ -240,7 +276,7 @@ export default function MealsMarketplaceClient() {
 
                     <div className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Country</Label>
-                        <Select onValueChange={(val) => { setSelectedCountry(val); setSelectedState(''); }} value={selectedCountry}>
+                        <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left">
                                 <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
@@ -254,15 +290,15 @@ export default function MealsMarketplaceClient() {
                         <div className="space-y-2 text-left">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">State</Label>
                             <Select 
-                                onValueChange={setSelectedState} 
-                                value={selectedState}
-                                disabled={!selectedCountry || statesList.length === 0}
+                                onValueChange={setRegState} 
+                                value={regState}
+                                disabled={!regCountry || regStatesList.length === 0}
                             >
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left">
-                                    <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
+                                    <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "Select State"} />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px]">
-                                    {statesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
+                                    {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -286,8 +322,8 @@ export default function MealsMarketplaceClient() {
             </div>
             <div className="p-6 sm:p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
                 <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
-                <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+                <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Launch Storefront
                 </Button>
             </div>
@@ -295,7 +331,7 @@ export default function MealsMarketplaceClient() {
     );
 
     return (
-        <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left">
+        <div className="space-y-6 sm:space-y-10 max-w-4xl mx-auto pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                     <div className="flex items-center gap-4 text-left">
@@ -336,14 +372,55 @@ export default function MealsMarketplaceClient() {
                     </div>
                 )}
 
-                <div className="relative text-left">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
-                    <Input 
-                        placeholder="Search for local food outlets..." 
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                        className="h-12 sm:h-14 pl-12 rounded-[1.25rem] sm:rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-sm sm:text-lg text-left"
-                    />
+                <div className="space-y-4">
+                    <div className="relative text-left">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
+                        <Input 
+                            placeholder="Search for local food outlets..." 
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                            className="h-12 sm:h-14 pl-12 rounded-[1.25rem] sm:rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-sm sm:text-lg text-left"
+                        />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                            <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
+                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider">
+                                    <SelectValue placeholder="Country" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px]">
+                                    <SelectItem value="all">All Countries</SelectItem>
+                                    {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+
+                            <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
+                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider">
+                                    <SelectValue placeholder="State/Region" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px]">
+                                    <SelectItem value="all">All States</SelectItem>
+                                    {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        
+                        {soul?.locationWon?.city && (
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setFilterBySoulLoc(!filterBySoulLoc)}
+                                className={cn(
+                                    "h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] gap-2 transition-all",
+                                    filterBySoulLoc ? "bg-primary text-white border-none shadow-lg ring-2 ring-primary/20" : "border-primary/20 text-primary hover:bg-primary/5"
+                                )}
+                            >
+                                {filterBySoulLoc ? <Check className="h-3 w-3" /> : <MapPin className="h-3 w-3" />}
+                                PROVISION IN {soul.locationWon.city.toUpperCase()}
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </header>
 
@@ -361,14 +438,14 @@ export default function MealsMarketplaceClient() {
                         >
                             <div className="aspect-[2/1] relative bg-muted text-left">
                                 {vendor.photoURL ? (
-                                    <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
+                                    <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-left">
                                         <Utensils className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                                     </div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
-                                <div className="absolute bottom-4 left-6 pr-4 text-left">
+                                <div className="absolute bottom-4 left-6 pr-4 text-left text-left">
                                     <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-tight truncate text-left">{vendor.businessName}</h3>
                                     <div className="flex items-center gap-1.5 text-white/70 text-[9px] font-bold uppercase tracking-widest mt-1 text-left">
                                         <MapPin className="h-2.5 w-2.5 text-primary text-left" /> {vendor.location || 'Local Delivery'}
@@ -384,7 +461,7 @@ export default function MealsMarketplaceClient() {
                                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 font-medium leading-relaxed italic mb-4 text-left">
                                     &ldquo;{vendor.description || 'Verified Kingdom provision partner.'}&rdquo;
                                 </p>
-                                <Button className="w-full justify-between h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-left">
+                                <Button className="w-full justify-between h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center">
                                     VIEW MENU & PROVISIONS
                                     <ChevronRight className="h-4 w-4 transition-transform group-hover:btn:translate-x-1 text-left" />
                                 </Button>
@@ -401,15 +478,13 @@ export default function MealsMarketplaceClient() {
             </div>
 
             {cartCount > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500">
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left">
                     <Link href="/marketplace/checkout" className="block group">
                         <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20">
-                            {/* Inner Glow Effect */}
                             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            
                             <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left">
                                 <div className="relative text-left">
-                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left text-left">
                                         <ShoppingBag className="h-5 w-5 text-white/80" />
                                     </div>
                                     <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center">
@@ -421,7 +496,6 @@ export default function MealsMarketplaceClient() {
                                     <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate">View My Offering</span>
                                 </div>
                             </div>
-
                             <div className="h-full px-6 rounded-full bg-primary text-white flex items-center gap-2 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10">
                                 <span className="text-xs font-black uppercase tracking-widest">Checkout</span>
                                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -435,10 +509,10 @@ export default function MealsMarketplaceClient() {
                 isMobile ? (
                     <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left p-0 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                                <SheetHeader className="text-left p-0">
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Become a Provider</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</SheetDescription>
+                                    <SheetDescription className="text-sm font-medium mt-1">Register your meal service and start providing physical provision.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow">
@@ -448,8 +522,8 @@ export default function MealsMarketplaceClient() {
                     </Sheet>
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DialogHeader className="p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</DialogDescription>
