@@ -99,6 +99,10 @@ export default function NotificationsPage() {
   const allDisplayItems = useMemo(() => {
     let combined = [...notifications];
 
+    if (filter === 'unread') {
+        return combined.filter(i => !i.isRead);
+    }
+
     if (filter === 'kindness') {
         return combined.filter(i => 
             i.type === 'pending_provision' || 
@@ -197,8 +201,9 @@ export default function NotificationsPage() {
             </div>
 
             <Tabs value={filter} onValueChange={setFilter} className="w-full text-left">
-                <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/30 p-1 rounded-2xl text-left">
+                <TabsList className="grid w-full grid-cols-4 h-11 bg-muted/30 p-1 rounded-2xl text-left">
                     <TabsTrigger value="all" className="text-[10px] font-black uppercase tracking-widest rounded-xl text-left">All</TabsTrigger>
+                    <TabsTrigger value="unread" className="text-[10px] font-black uppercase tracking-widest rounded-xl text-left">Unread</TabsTrigger>
                     <TabsTrigger value="kindness" className="text-[10px] font-black uppercase tracking-widest rounded-xl text-left">Kindness</TabsTrigger>
                     <TabsTrigger value="general" className="text-[10px] font-black uppercase tracking-widest rounded-xl text-left">Others</TabsTrigger>
                 </TabsList>
@@ -224,12 +229,12 @@ export default function NotificationsPage() {
                         </div>
                     )}
                     {!loading && allDisplayItems.length === 0 && (
-                        <div className="py-24 text-center px-8 flex flex-col items-center justify-center flex-1 text-left">
+                        <div className="py-24 text-center px-8 flex flex-col items-center justify-center flex-1 text-left text-left">
                             <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
                                 {filter === 'kindness' ? <Gift className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left" /> : <Bell className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left" />}
                             </div>
-                            <h3 className="text-lg sm:text-xl font-bold font-headline uppercase tracking-tight text-left">No {filter !== 'all' ? filter : ''} Alerts</h3>
-                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed text-left text-left">
+                            <h3 className="text-lg sm:text-xl font-bold font-headline uppercase tracking-tight text-left text-left">No {filter !== 'all' ? filter : ''} Alerts</h3>
+                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed text-left text-left text-left">
                                 Stay focused on the harvest. We'll notify you here about activities in the Kingdom Network.
                             </p>
                         </div>
