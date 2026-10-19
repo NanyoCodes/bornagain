@@ -188,10 +188,10 @@ export default function NotificationsPage() {
                         )}
                     </div>
                 </div>
-                <Link href="/testimonies" className="shrink-0 transition-transform active:scale-95">
-                    <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg">
-                        <AvatarImage src={logo?.imageUrl} alt="Testify" className="object-cover" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary">T</AvatarFallback>
+                <Link href="/testimonies" className="shrink-0 transition-transform active:scale-95 text-left">
+                    <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg text-left">
+                        <AvatarImage src={logo?.imageUrl} alt="Testify" className="object-cover text-left" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-left">T</AvatarFallback>
                     </Avatar>
                 </Link>
             </div>
@@ -256,7 +256,7 @@ export default function NotificationsPage() {
                                                 {getNotificationIcon(notification.type, (notification as any).actionId)}
                                             </div>
                                             <div className="flex-1 min-w-0 space-y-1 text-left">
-                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1 text-left">
+                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1 text-left text-left">
                                                     <p className={cn(
                                                         "font-bold text-sm sm:text-base leading-snug break-words pr-8 sm:pr-0 text-left", 
                                                         isPendingAction ? "text-primary" : (!notification.isRead ? "text-foreground" : "text-muted-foreground")

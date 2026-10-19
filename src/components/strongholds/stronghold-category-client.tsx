@@ -86,6 +86,21 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "James 4:6", text: "God opposes the proud but shows favor to the humble.", prayer: "I choose to humble myself before You today, Lord. May Your favor rest upon me as I decrease and You increase. Amen." },
     { verse: "1 Peter 5:5", text: "Clothe yourselves, all of you, with humility toward one another.", prayer: "Holy Spirit, help me to serve others with a genuine heart, free from the need for recognition or praise. Amen." }
   ],
+  marital_strife: [
+    { verse: "Ephesians 5:21", text: "Submit to one another out of reverence for Christ.", prayer: "Lord, teach us the beauty of mutual submission. May our home be a sanctuary of peace and holy agreement. Amen." },
+    { verse: "Colossians 3:14", text: "And over all these virtues put on love, which binds them all together in perfect unity.", prayer: "We put on love today, Father. Let Your perfect unity dissolve every root of strife in our marriage. Amen." },
+    { verse: "Matthew 19:6", text: "So they are no longer two, but one flesh. Therefore what God has joined together, let no one separate.", prayer: "We stand on the authority of Your joining, O God. Protect our union from every external and internal attack. Amen." }
+  ],
+  parenting_challenges: [
+    { verse: "Proverbs 22:6", text: "Start children off on the way they should go, and even when they are old they will not turn from it.", prayer: "Lord, give me wisdom to lead my children. May the seeds of truth I plant today bear eternal fruit. Amen." },
+    { verse: "Psalm 127:3", text: "Children are a heritage from the Lord, offspring a reward from him.", prayer: "Thank You for the gift of my children. Help me to steward them for Your glory and not my own. Amen." },
+    { verse: "Ephesians 6:4", text: "Fathers, do not exasperate your children; instead, bring them up in the training and instruction of the Lord.", prayer: "Spirit of God, season my discipline with grace and my instruction with Your Word. Amen." }
+  ],
+  workplace_conflicts: [
+    { verse: "Colossians 3:23", text: "Whatever you do, work at it with all your heart, as working for the Lord, not for human masters.", prayer: "Jesus, I work for You today. Let Your excellence be seen in me, regardless of the environment. Amen." },
+    { verse: "Proverbs 16:7", text: "When the Lord takes pleasure in anyone’s way, he makes even their enemies live at peace with them.", prayer: "I choose to please You, Lord. I trust You to bring peace and favor into my workplace atmosphere. Amen." },
+    { verse: "Matthew 5:9", text: "Blessed are the peacemakers, for they will be called children of God.", prayer: "Make me a portal of peace in my office. Let my responses diffuse tension and bring Your light. Amen." }
+  ],
   lust: [
     { verse: "1 Corinthians 10:13", text: "No temptation has overtaken you except what is common to mankind. And God is faithful; he will not let you be tempted beyond what you can bear.", prayer: "Lord, I thank You for providing a way out. I choose Your path of escape and declare my freedom in Christ. Amen." },
     { verse: "Matthew 5:28", text: "But I tell you that anyone who looks at a woman lustfully has already committed adultery with her in his heart.", prayer: "Father, purify my vision and my heart. Let my eyes see only what is holy and honoring to You. Amen." },
@@ -95,111 +110,6 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "2 Timothy 1:7", text: "For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.", prayer: "I cast out fear and receive Your power, love, and sound mind, Father. Amen." },
     { verse: "Psalm 27:1", text: "The Lord is my light and my salvation—whom shall I fear? The Lord is the stronghold of my life—of whom shall I be afraid?", prayer: "You are my stronghold, O God. I am secure in Your salvation. Amen." },
     { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "Thank You for being with me always. I am not alone. Amen." }
-  ],
-  bitterness: [
-    { verse: "Hebrews 12:15", text: "See to it that no one falls short of the grace of God and that no bitter root grows up to cause trouble.", prayer: "Lord, help me to guard my heart against resentment. Wash me with Your grace. Amen." },
-    { verse: "Ephesians 4:31-32", text: "Get rid of all bitterness, rage and anger... Be kind and compassionate to one another, forgiving each other, just as in Christ God forgave you.", prayer: "I choose to forgive and release all bitterness today. Soften my heart, Lord. Amen." },
-    { verse: "James 3:14", text: "But if you harbor bitter envy and selfish ambition in your hearts, do not boast about it or deny the truth.", prayer: "Holy Spirit, reveal any hidden bitterness and help me walk in truth and love. Amen." }
-  ],
-  poverty: [
-    { verse: "2 Corinthians 8:9", text: "For you know the grace of our Lord Jesus Christ, that though he was rich, yet for your sake he became poor, so that you through his poverty might become rich.", prayer: "I declare that lack is broken in my life through the sacrifice of Jesus. Amen." },
-    { verse: "Philippians 4:19", text: "And my God will meet all your needs according to the riches of his glory in Christ Jesus.", prayer: "I trust in Your supply, Jehovah Jireh. You are my source. Amen." },
-    { verse: "Proverbs 10:22", text: "The blessing of the Lord brings wealth, without painful toil for it.", prayer: "I receive Your blessing that makes rich and adds no sorrow. Amen." }
-  ],
-  unforgiveness: [
-    { verse: "Matthew 6:14", text: "For if you forgive other people when they sin against you, your heavenly Father will also forgive you.", prayer: "Lord, give me the strength to forgive as I have been forgiven. Amen." },
-    { verse: "Colossians 3:13", text: "Bear with each other and forgive one another if any of you has a grievance against someone. Forgive as the Lord forgave you.", prayer: "I choose to drop every grievance at Your feet, Jesus. Amen." },
-    { verse: "Ephesians 4:32", text: "Be kind and compassionate to one another, forgiving each other, just as in Christ God forgave you.", prayer: "Fill me with Your compassion for those who have hurt me. Amen." }
-  ],
-  anger: [
-    { verse: "James 1:19-20", text: "Everyone should be quick to listen, slow to speak and slow to become angry, because human anger does not produce the righteousness that God desires.", prayer: "Lord, put a guard over my mouth and a peace in my spirit. Let Your righteousness be my response. Amen." },
-    { verse: "Ephesians 4:26-27", text: "In your anger do not sin: Do not let the sun go down while you are still angry, and do not give the devil a foothold.", prayer: "I refuse to give the enemy space in my heart through bitterness. I release all anger to You before I sleep. Amen." },
-    { verse: "Proverbs 14:29", text: "Whoever is patient has great understanding, but one who is quick-tempered displays folly.", prayer: "Father, grant me Your patience and a heart of understanding for those who provoke me. Amen." }
-  ],
-  discouragement: [
-    { verse: "Psalm 42:11", text: "Why, my soul, are you downcast? Why so disturbed within me? Put your hope in God, for I will yet praise him, my Savior and my God.", prayer: "I command my soul to hope in God! My season of discouragement ends now. Amen." },
-    { verse: "Joshua 1:9", text: "Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.", prayer: "I take courage today, knowing the Lord of hosts is by my side. Amen." },
-    { verse: "Galatians 6:9", text: "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.", prayer: "Father, strengthen my hands and my heart. I will not faint before my harvest. Amen." }
-  ],
-  addiction: [
-    { verse: "1 Corinthians 6:12", text: "I will not be mastered by anything.", prayer: "I declare that only Jesus is my Master. No substance or habit has authority over my life. Amen." },
-    { verse: "Galatians 5:1", text: "It is for freedom that Christ has set us free. Stand firm, then, and do not let yourselves be burdened again by a yoke of slavery.", prayer: "I stand firm in the freedom bought by the blood of Jesus. I am no longer a slave to addiction. Amen." },
-    { verse: "1 Peter 5:8", text: "Be alert and of sober mind. Your enemy the devil prowls around like a roaring lion looking for someone to devour.", prayer: "Lord, keep my mind sharp and my spirit alert. I resist the enemy and he must flee. Amen." }
-  ],
-  loneliness: [
-    { verse: "Matthew 28:20", text: "And surely I am with you always, to the very end of the age.", prayer: "I am never alone, for You are with me. I abide in Your constant friendship, Lord. Amen." },
-    { verse: "Psalm 68:6", text: "God sets the lonely in families, he leads out the prisoners with singing.", prayer: "Father, connect me with the Body. Thank You for the family of faith. Amen." },
-    { verse: "Hebrews 13:5", text: "Never will I leave you; never will I forsake you.", prayer: "I anchor my heart in Your promise of presence. You are my enough. Amen." }
-  ],
-  laziness: [
-    { verse: "Proverbs 6:6-8", text: "Go to the ant, you sluggard; consider its ways and be wise!", prayer: "Lord, give me a diligent heart that works with purpose even when no one is watching. Amen." },
-    { verse: "Colossians 3:23", text: "Whatever you do, work at it with all your heart, as working for the Lord, not for human masters.", prayer: "I offer my work today as an act of worship to You, Jesus. Let me be productive for Your Kingdom. Amen." },
-    { verse: "Proverbs 10:4", text: "Lazy hands make for poverty, but diligent hands bring wealth.", prayer: "Father, bless the work of my hands. Give me the discipline to be a good steward of my time. Amen." }
-  ],
-  confusion: [
-    { verse: "1 Corinthians 14:33", text: "For God is not a God of disorder but of peace—as in all the congregations of the Lord’s people.", prayer: "I speak order to my mind. I receive Your peace that surpasses understanding. Amen." },
-    { verse: "James 1:5", text: "If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault, and it will be given to you.", prayer: "I ask for Your wisdom and clarity in this season. Lead me in the path of truth. Amen." },
-    { verse: "2 Timothy 1:7", text: "For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.", prayer: "I reject the spirit of confusion. I walk in a sound mind and holy power. Amen." }
-  ],
-  grief: [
-    { verse: "Psalm 34:18", text: "The Lord is close to the brokenhearted and saves those who are crushed in spirit.", prayer: "Thank You for being close to me in my pain, Lord. Heal my heart. Amen." },
-    { verse: "Matthew 5:4", text: "Blessed are those who mourn, for they will be comforted.", prayer: "I receive Your divine comfort today. Lift the spirit of heaviness. Amen." },
-    { verse: "Isaiah 61:3", text: "To bestow on them a crown of beauty instead of ashes, the oil of joy instead of mourning.", prayer: "I trade my ashes for Your beauty. Let Your joy be my strength. Amen." }
-  ],
-  disobedience: [
-    { verse: "John 14:15", text: "If you love me, keep my commands.", prayer: "Lord, let my love for You translate into a willing and obedient heart. Amen." },
-    { verse: "1 Samuel 15:22", text: "To obey is better than sacrifice, and to heed is better than the fat of rams.", prayer: "I surrender my will to Yours. Help me to heed Your voice above all others. Amen." },
-    { verse: "Luke 6:46", text: "Why do you call me, 'Lord, Lord,' and do not do what I say?", prayer: "Forgive my rebellion, Father. I choose to follow Your path step by step. Amen." }
-  ],
-  comparison: [
-    { verse: "2 Corinthians 10:12", text: "When they measure themselves by themselves and compare themselves with themselves, they are not wise.", prayer: "Lord, free me from the trap of comparison. I am uniquely made for Your glory. Amen." },
-    { verse: "Galatians 1:10", text: "Am I now trying to win the approval of human beings, or of God? Or am I trying to please people?", prayer: "I seek Your approval alone. I rest in the identity You have given me. Amen." },
-    { verse: "Psalm 139:14", text: "I praise you because I am fearfully and wonderfully made; your works are wonderful, I know that full well.", prayer: "Thank You for my design. I celebrate who I am in Christ. Amen." }
-  ],
-  self_righteousness: [
-    { verse: "Isaiah 64:6", text: "All of us have become like one who is unclean, and all our righteous acts are like filthy rags.", prayer: "Lord, I repent of my own merit. I cloth myself in Your righteousness alone. Amen." },
-    { verse: "Luke 18:14", text: "For all those who exalt themselves will be humbled, and those who humble themselves will be exalted.", prayer: "I humble myself before You. It is Your grace, not my works, that saves me. Amen." },
-    { verse: "Philippians 3:9", text: "And be found in him, not having a righteousness of my own... but that which is through faith in Christ.", prayer: "I bank my entire eternity on Your perfection, Jesus. Amen." }
-  ],
-  unbelief: [
-    { verse: "Mark 9:24", text: "I do believe; help me overcome my unbelief!", prayer: "Lord, I choose to trust You. Where my faith is weak, strengthen it by Your Spirit. Amen." },
-    { verse: "Hebrews 11:6", text: "And without faith it is impossible to please God.", prayer: "Father, I approach You believing that You exist and that You reward those who seek You. Amen." },
-    { verse: "Romans 10:17", text: "Consequently, faith comes from hearing the message, and the message is heard through the word about Christ.", prayer: "Lord, as I read Your Word, let my faith explode. I build my life on Your promises. Amen." }
-  ],
-  gluttony: [
-    { verse: "1 Corinthians 6:19-20", text: "Do you not know that your bodies are temples of the Holy Spirit? ... Therefore honor God with your bodies.", prayer: "Holy Spirit, help me to steward my body with self-control and honor. Amen." },
-    { verse: "Proverbs 23:20-21", text: "Do not join those who drink too much wine or gorge themselves on meat.", prayer: "I choose moderation and discipline. Satisfy my hunger with Your presence. Amen." },
-    { verse: "1 Corinthians 10:31", text: "So whether you eat or drink or whatever you do, do it all for the glory of God.", prayer: "I consecrate my appetite to You. May my life be an offering in every area. Amen." }
-  ],
-  depression: [
-    { verse: "Psalm 42:11", text: "Why, my soul, are you downcast? ... Put your hope in God.", prayer: "I speak to the spirit of heaviness: Leave in the name of Jesus! I choose hope. Amen." },
-    { verse: "Psalm 34:17", text: "The righteous cry out, and the Lord hears them; he delivers them from all their troubles.", prayer: "Thank You for hearing my cry. I receive Your deliverance today. Amen." },
-    { verse: "Nehemiah 8:10", text: "Do not grieve, for the joy of the Lord is your strength.", prayer: "I lay down my grief and receive Your strength, which is my joy. Amen." }
-  ],
-  procrastination: [
-    { verse: "Ephesians 5:15-16", text: "Be very careful, then, how you live—not as unwise but as wise, making the most of every opportunity, because the days are evil.", prayer: "Lord, give me wisdom to manage my time. I choose diligence over delay. Amen." },
-    { verse: "Colossians 3:23", text: "Whatever you do, work at it with all your heart, as working for the Lord.", prayer: "I activate my heart for the task at hand. I work for Your glory today. Amen." },
-    { verse: "Proverbs 6:6", text: "Go to the ant, you sluggard; consider its ways and be wise!", prayer: "Holy Spirit, spark a fire of productivity in my life. Amen." }
-  ],
-  greed: [
-    { verse: "Luke 12:15", text: "Watch out! Be on your guard against all kinds of greed; life does not consist in an abundance of possessions.", prayer: "Lord, deliver me from the love of things. Let my life consist of Your presence and Your love. Amen." },
-    { verse: "Hebrews 13:5", text: "Keep your lives free from the love of money and be content with what you have.", prayer: "I find my satisfaction in You, Lord. I declare that You are my portion and my enough. Amen." },
-    { verse: "1 Timothy 6:10", text: "For the love of money is a root of all kinds of evil.", prayer: "Father, pull up any roots of greed in my heart. Give me a spirit of generosity and trust. Amen." }
-  ],
-  rejection: [
-    { verse: "Ephesians 1:6", text: "To the praise of his glorious grace, which he has freely given us in the One he loves.", prayer: "I am accepted in the Beloved! I reject the lie of rejection and receive Your love. Amen." },
-    { verse: "Psalm 27:10", text: "Though my father and mother forsake me, the Lord will receive me.", prayer: "You are my Father and my Home. I am secure in Your everlasting arms. Amen." },
-    { verse: "Romans 8:38-39", text: "For i am convinced that neither death nor life... will be able to separate us from the love of God.", prayer: "Nothing can separate me from You. I walk in total acceptance today. Amen." }
-  ],
-  worldliness: [
-    { verse: "1 John 2:15", text: "Do not love the world or anything in the world.", prayer: "I set my affections on things above. Purify my desires, O Lord. Amen." },
-    { verse: "Romans 12:2", text: "Do not conform to the pattern of this world, but be transformed by the renewing of your mind.", prayer: "Transform my thinking, Holy Spirit. Let me see through the lens of eternity. Amen." },
-    { verse: "James 4:4", text: "Don’t you know that friendship with the world means enmity against God?", prayer: "I choose Your friendship above the approval of the world. Amen." }
-  ],
-  jealousy: [
-    { verse: "James 3:16", text: "For where you have envy and selfish ambition, there you find disorder and every evil practice.", prayer: "Lord, cast out the spirit of envy. I speak order and peace into my life and relationships. Amen." },
-    { verse: "Proverbs 14:30", text: "A heart at peace gives life to the body, but envy rots the bones.", prayer: "I choose to be at peace with what You have given me. Revitalize my heart with Your joy. Amen." },
-    { verse: "Galatians 5:26", text: "Let us not become conceited, provoking and envying each other.", prayer: "Father, help me to rejoice in the blessings of others as if they were my own. Amen." }
   ],
   other: [
     { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "I cast out fear today. You are my God, and You are holding my hand. Amen." },
@@ -215,33 +125,33 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
 
     const content = (
         <div className="flex flex-col h-full overflow-hidden text-left">
-            <div className="p-6 border-b bg-muted/5 shrink-0">
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
-                        <Users className="h-5 w-5 text-muted-foreground/40" />
+            <div className="p-6 border-b bg-muted/5 shrink-0 text-left">
+                <div className="flex items-center gap-3 mb-4 text-left">
+                    <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
+                        <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
                     </div>
-                    <div className="min-w-0">
-                        <p className="text-sm font-black uppercase tracking-tight">{post.authorName}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                    <div className="min-w-0 text-left">
+                        <p className="text-sm font-black uppercase tracking-tight text-left">{post.authorName}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                             {postDate ? format(postDate, 'PPP') : 'Just now'}
                         </p>
                     </div>
                 </div>
-                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2">
-                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
-                    <p className="text-sm text-muted-foreground leading-relaxed italic font-medium">
+                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2 text-left">
+                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
+                    <p className="text-sm text-muted-foreground leading-relaxed italic font-medium text-left">
                         &ldquo;{post.text}&rdquo;
                     </p>
                 </div>
             </div>
             
-            <div className="flex-grow min-h-0 flex flex-col">
-                <div className="p-4 sm:p-6 pb-2 shrink-0">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60">
-                        <Zap className="h-3.5 w-3.5" /> Circle Responses & Solutions
+            <div className="flex-grow min-h-0 flex flex-col text-left">
+                <div className="p-4 sm:p-6 pb-2 shrink-0 text-left">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 text-left">
+                        <Zap className="h-3.5 w-3.5 text-left" /> Circle Responses & Solutions
                     </div>
                 </div>
-                <div className="flex-1 min-h-0">
+                <div className="flex-1 min-h-0 text-left">
                     <CommentSection path={`victoryCircles/${post.category}/posts/${post.id}/comments`} />
                 </div>
             </div>
@@ -253,17 +163,17 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left flex-shrink-0">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Zap className="h-4 w-4 text-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left">
+                                <Zap className="h-4 w-4 text-primary text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Circle Conversation</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">Victory over {categoryTitle}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Community responses and spiritual solutions.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance text-left">Victory over {categoryTitle}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left">Community responses and spiritual solutions.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <div className="flex-grow min-h-0">
+                    <div className="flex-grow min-h-0 text-left">
                         {content}
                     </div>
                 </SheetContent>
@@ -277,13 +187,13 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0">
-                    <DialogHeader>
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <DialogHeader className="text-left p-0 text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Victory over {categoryTitle}</DialogTitle>
-                        <DialogDescription className="text-base font-medium">Shared wisdom and encouragement for victory.</DialogDescription>
+                        <DialogDescription className="text-base font-medium text-left">Shared wisdom and encouragement for victory.</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="flex-grow min-h-0">
+                <div className="flex-grow min-h-0 text-left">
                     {content}
                 </div>
             </DialogContent>
@@ -357,57 +267,57 @@ function AddArmorDialog({ category, onArmorAdded }: { category: string, onArmorA
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
-                <Plus className="mr-2 h-4 w-4" /> ADD SCRIPTURE
+            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20 text-left">
+                <Plus className="mr-2 h-4 w-4 text-left" /> ADD SCRIPTURE
             </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-            <div className="p-8 border-b bg-muted/10 shrink-0">
-                <DialogHeader className="text-left">
+            <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                <DialogHeader className="text-left p-0 text-left">
                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Equip the Body</DialogTitle>
                     <DialogDescription className="text-sm font-medium text-left">Add a scripture and your revelation to the circle.</DialogDescription>
                 </DialogHeader>
             </div>
-            <ScrollArea className="flex-1 min-h-0">
-                <form id="add-armor-form" onSubmit={handleAdd} className="p-8 space-y-6">
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Scripture Reference</Label>
-                            <div className="relative">
+            <ScrollArea className="flex-1 min-h-0 text-left">
+                <form id="add-armor-form" onSubmit={handleAdd} className="p-8 space-y-6 text-left">
+                    <div className="space-y-4 text-left">
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Scripture Reference</Label>
+                            <div className="relative text-left">
                                 <Input 
                                     placeholder="e.g., Romans 8:31" 
                                     value={verse} 
                                     onChange={e => setVerse(e.target.value)} 
                                     required 
-                                    className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold pr-20" 
+                                    className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold pr-20 text-left" 
                                 />
                                 <Button 
                                     type="button"
                                     variant="ghost"
                                     size="sm"
-                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 text-[9px] font-black uppercase text-primary hover:bg-primary/10"
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 text-[9px] font-black uppercase text-primary hover:bg-primary/10 text-left"
                                     onClick={handleBibleSearch}
                                     disabled={isSearching || !verse.trim()}
                                 >
-                                    {isSearching ? <Loader2 className="h-3 w-3 animate-spin" /> : "SEARCH"}
+                                    {isSearching ? <Loader2 className="h-3 w-3 animate-spin text-left" /> : "SEARCH"}
                                 </Button>
                             </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">The Word</Label>
-                            <Textarea placeholder="Type or search for the scripture text..." value={text} onChange={e => setText(e.target.value)} required className="min-h-[120px] rounded-xl bg-muted/20 border-none shadow-inner text-base" />
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">The Word</Label>
+                            <Textarea placeholder="Type or search for the scripture text..." value={text} onChange={e => setText(e.target.value)} required className="min-h-[120px] rounded-xl bg-muted/20 border-none shadow-inner text-base text-left" />
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Personal Comment / Revelation</Label>
-                            <Textarea placeholder="How did this Word help you overcome?" value={comment} onChange={e => setComment(e.target.value)} className="min-h-[100px] rounded-xl bg-muted/20 border-none shadow-inner text-base" />
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Personal Comment / Revelation</Label>
+                            <Textarea placeholder="How did this Word help you overcome?" value={comment} onChange={e => setComment(e.target.value)} className="min-h-[100px] rounded-xl bg-muted/20 border-none shadow-inner text-base text-left" />
                         </div>
                     </div>
                 </form>
             </ScrollArea>
-            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0">
-                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
-                <Button type="submit" form="add-armor-form" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'CONTRIBUTE'}
+            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0 text-left">
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
+                <Button type="submit" form="add-armor-form" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : 'CONTRIBUTE'}
                 </Button>
             </div>
         </DialogContent>
@@ -461,54 +371,54 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
-                <Plus className="mr-2 h-4 w-4" /> SHARE RESOURCE
+            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20 text-left">
+                <Plus className="mr-2 h-4 w-4 text-left" /> SHARE RESOURCE
             </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-            <div className="p-8 border-b bg-muted/10 text-left shrink-0">
-                <DialogHeader className="text-left">
+            <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                <DialogHeader className="text-left p-0 text-left">
                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Add to Armory</DialogTitle>
                     <DialogDescription className="text-sm font-medium text-left">Share a resource that helped you overcome.</DialogDescription>
                 </DialogHeader>
             </div>
-            <ScrollArea className="flex-1 min-h-0">
-                <form id="share-resource-form" onSubmit={handleShare} className="p-8 space-y-6">
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Resource Title</Label>
-                            <Input placeholder="e.g., Understanding Grace Video" value={title} onChange={e => setTitle(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner" />
+            <ScrollArea className="flex-1 min-h-0 text-left">
+                <form id="share-resource-form" onSubmit={handleShare} className="p-8 space-y-6 text-left">
+                    <div className="space-y-4 text-left">
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Resource Title</Label>
+                            <Input placeholder="e.g., Understanding Grace Video" value={title} onChange={e => setTitle(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left" />
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Type</Label>
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Type</Label>
                             <Select value={type} onValueChange={(val: any) => setType(val)}>
-                                <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-none shadow-inner">
-                                    <SelectValue />
+                                <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left">
+                                    <SelectValue className="text-left" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-xl border-none shadow-2xl">
-                                    <SelectItem value="Video" className="rounded-lg">Video</SelectItem>
-                                    <SelectItem value="Article" className="rounded-lg">Article</SelectItem>
-                                    <SelectItem value="Book" className="rounded-lg">Book</SelectItem>
-                                    <SelectItem value="Sermon" className="rounded-lg">Sermon</SelectItem>
-                                    <SelectItem value="Other" className="rounded-lg">Other</SelectItem>
+                                <SelectContent className="rounded-xl border-none shadow-2xl text-left">
+                                    <SelectItem value="Video" className="rounded-lg text-left">Video</SelectItem>
+                                    <SelectItem value="Article" className="rounded-lg text-left">Article</SelectItem>
+                                    <SelectItem value="Book" className="rounded-lg text-left">Book</SelectItem>
+                                    <SelectItem value="Sermon" className="rounded-lg text-left">Sermon</SelectItem>
+                                    <SelectItem value="Other" className="rounded-lg text-left">Other</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL / Link</Label>
-                            <Input type="url" placeholder="https://..." value={url} onChange={e => setUrl(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner" />
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">URL / Link</Label>
+                            <Input type="url" placeholder="https://..." value={url} onChange={e => setUrl(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left" />
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description (Optional)</Label>
-                            <Textarea placeholder="How did this help you?" value={description} onChange={e => setDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/20 border-none shadow-inner" />
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Description (Optional)</Label>
+                            <Textarea placeholder="How did this help you?" value={description} onChange={e => setDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/20 border-none shadow-inner text-left" />
                         </div>
                     </div>
                 </form>
             </ScrollArea>
-            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0">
-                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
-                <Button type="submit" form="share-resource-form" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'SHARE NOW'}
+            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0 text-left">
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
+                <Button type="submit" form="share-resource-form" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : 'SHARE NOW'}
                 </Button>
             </div>
         </DialogContent>
@@ -653,13 +563,13 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     return (
         <div className="space-y-8 max-w-4xl mx-auto pb-32 text-left">
             <header className="flex items-center gap-4 px-4 sm:px-0 pt-4 text-left">
-                <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
-                    <ArrowLeft className="h-5 w-5" />
+                <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
+                    <ArrowLeft className="h-5 w-5 text-left" />
                 </Button>
                 <div className="min-w-0 flex-1 text-left">
-                    <div className="flex items-center gap-2 mb-1">
-                        <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Victory Hub</span>
+                    <div className="flex items-center gap-2 mb-1 text-left">
+                        <ShieldCheck className="h-3.5 w-3.5 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Victory Hub</span>
                     </div>
                     <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate leading-tight text-balance text-left">Victory over {categoryTitle}</h1>
                 </div>
@@ -667,9 +577,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
             <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground mx-4 sm:mx-0 text-left">
                 <CardContent className="p-8 sm:p-10 space-y-6 text-left">
-                    <div className="flex items-start gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
-                            <ShieldCheck className="h-6 w-6 text-white" />
+                    <div className="flex items-start gap-4 text-left">
+                        <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0 text-left">
+                            <ShieldCheck className="h-6 w-6 text-white text-left" />
                         </div>
                         <div className="space-y-1 text-left">
                             <h2 className="text-xl font-black uppercase tracking-tight leading-tight text-left">Lasting Solutions Through Transparency</h2>
@@ -679,28 +589,28 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         </div>
                     </div>
                     
-                    <div className="space-y-4 pt-2">
+                    <div className="space-y-4 pt-2 text-left">
                         <Textarea 
                             placeholder="Share your struggle or a victory strategy..."
                             value={newPostText}
                             onChange={(e) => setNewPostText(e.target.value)}
                             className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[120px] rounded-2xl text-base focus-visible:ring-white/30 text-left"
                         />
-                        <div className="flex items-center space-x-2 px-1">
+                        <div className="flex items-center space-x-2 px-1 text-left">
                             <Checkbox 
                                 id="anonymous-toggle" 
                                 checked={isAnonymous} 
                                 onCheckedChange={(val) => setIsAnonymous(!!val)}
-                                className="border-white/40 data-[state=checked]:bg-white data-[state=checked]:text-primary"
+                                className="border-white/40 data-[state=checked]:bg-white data-[state=checked]:text-primary text-left"
                             />
-                            <Label htmlFor="anonymous-toggle" className="text-xs font-bold text-white/80 cursor-pointer uppercase tracking-widest">Post Anonymously</Label>
+                            <Label htmlFor="anonymous-toggle" className="text-xs font-bold text-white/80 cursor-pointer uppercase tracking-widest text-left">Post Anonymously</Label>
                         </div>
                         <Button 
                             onClick={handleCreatePost} 
                             disabled={isSubmitting || !newPostText.trim()}
-                            className="w-full h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-widest uppercase text-left"
+                            className="w-full h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-widest uppercase text-center"
                         >
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                             SHARE IN THE LIGHT
                         </Button>
                     </div>
@@ -708,15 +618,15 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             </Card>
 
             <Tabs defaultValue="armor" className="w-full text-left">
-                <TabsList className="grid w-full grid-cols-3 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 mx-4 sm:mx-0 w-[calc(100%-2rem)] sm:w-full">
-                    <TabsTrigger value="armor" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Armor</TabsTrigger>
-                    <TabsTrigger value="discussion" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">Discussion</TabsTrigger>
-                    <TabsTrigger value="resources" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">Resources</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 mx-4 sm:mx-0 w-[calc(100%-2rem)] sm:w-full text-left">
+                    <TabsTrigger value="armor" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-center">Armor</TabsTrigger>
+                    <TabsTrigger value="discussion" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-center">Discussion</TabsTrigger>
+                    <TabsTrigger value="resources" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-center">Resources</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="armor" className="space-y-6 outline-none px-4 sm:px-0 text-left">
                     <div className="flex items-center justify-between gap-3 text-left">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
                                 <BookOpen className="h-5 w-5 text-primary text-left" />
                             </div>
@@ -760,11 +670,11 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                             variant="outline" 
                                                             size="sm" 
                                                             className={cn(
-                                                                "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all",
+                                                                "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all text-left",
                                                                 amenScriptureIdx === idx ? "bg-primary text-white border-none scale-105 shadow-lg" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary"
                                                             )}
                                                         >
-                                                            {amenScriptureIdx === idx ? <Check className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
+                                                            {amenScriptureIdx === idx ? <Check className="h-3.5 w-3.5 text-left" /> : <Sparkles className="h-3.5 w-3.5 text-left" />}
                                                             AMEN
                                                         </Button>
                                                     </div>
@@ -798,7 +708,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                     <p className="text-sm text-muted-foreground italic font-medium leading-relaxed text-left">&ldquo;{arm.text}&rdquo;</p>
                                                 </div>
                                             </CardHeader>
-                                            <CardContent className="p-6 pt-2 flex-grow text-left">
+                                            <CardContent className="p-6 pt-2 flex-grow text-left text-left">
                                                 {arm.comment && (
                                                     <div className="space-y-2 text-left">
                                                         <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left">Revelation</p>
@@ -899,7 +809,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold text-left">
                                                             <X className="mr-1 h-3 w-3 text-left" /> Cancel
                                                         </Button>
-                                                        <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left">
+                                                        <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-center">
                                                             {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin text-left" /> : <Check className="mr-1 h-3 w-3 text-left" />}
                                                             Save Changes
                                                         </Button>
@@ -924,7 +834,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left">Victory Support Active</span>
                                              </div>
                                              <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-left">
+                                                <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-center">
                                                     Participate
                                                 </Button>
                                              </PostResponsesDialog>
@@ -933,11 +843,11 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 );
                             })
                         ) : (
-                            <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left text-left">
+                            <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0 text-left">
                                 <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
                                     <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
                                 </div>
-                                <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Circle Silence</h4>
+                                <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-center">Circle Silence</h4>
                                 <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
                             </div>
                         )}
@@ -974,7 +884,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                         {res.description && <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1 italic text-left">{res.description}</p>}
                                         <div className="flex items-center justify-between mt-4 text-left">
                                             <p className="text-[8px] font-bold text-muted-foreground uppercase text-left">Shared by {res.authorName}</p>
-                                            <Button variant="ghost" size="sm" asChild className="h-7 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left">
+                                            <Button variant="ghost" size="sm" asChild className="h-7 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-center">
                                                 <a href={res.url} target="_blank" rel="noopener noreferrer" className="flex items-center text-left">
                                                     Open <ExternalLink className="ml-1 h-2.5 w-2.5 text-left" />
                                                 </a>

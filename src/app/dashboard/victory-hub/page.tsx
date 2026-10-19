@@ -31,7 +31,9 @@ import {
     Timer,
     HeartHandshake,
     AlertCircle,
-    User
+    User,
+    Briefcase,
+    Baby
 } from 'lucide-react';
 import { 
     Card, 
@@ -67,6 +69,30 @@ const strongholdCategories = [
         icon: Heart, 
         color: 'text-red-500', 
         bg: 'bg-red-500/10' 
+    },
+    { 
+        name: 'Marital Strife', 
+        desc: 'Victory over conflict, breakdown, and disharmony in marriage.', 
+        mission: 'Ephesians 5:21 - Submit to one another out of reverence for Christ.',
+        icon: HeartHandshake, 
+        color: 'text-pink-600', 
+        bg: 'bg-pink-600/10' 
+    },
+    { 
+        name: 'Parenting Challenges', 
+        desc: 'Victory in raising godly children and maintaining generational peace.', 
+        mission: 'Proverbs 22:6 - Start children off on the way they should go, and even when they are old they will not turn from it.',
+        icon: Baby, 
+        color: 'text-cyan-600', 
+        bg: 'bg-cyan-600/10' 
+    },
+    { 
+        name: 'Workplace Conflicts', 
+        desc: 'Victory over office politics, career stagnation, and professional battles.', 
+        mission: 'Colossians 3:23 - Whatever you do, work at it with all your heart, as working for the Lord.',
+        icon: Briefcase, 
+        color: 'text-blue-500', 
+        bg: 'bg-blue-500/10' 
     },
     { 
         name: 'Fear', 
@@ -257,7 +283,7 @@ const strongholdCategories = [
 function CategoryCard({ category }: { category: typeof strongholdCategories[0] }) {
     const { toast } = useToast();
     const firestore = useFirestore();
-    const circleLink = `/strongholds/${category.name.toLowerCase()}`;
+    const circleLink = `/strongholds/${category.name.toLowerCase().replace(/ /g, '-')}`;
     const Icon = category.icon;
 
     const [participantCount, setParticipantCount] = useState(0);
@@ -297,7 +323,7 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
     
     return (
         <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5 text-left">
-            <CardHeader className="p-8 pb-4 text-left">
+            <CardHeader className="p-8 pb-4 text-left text-left">
                 <div className="flex justify-between items-start mb-6 text-left">
                     <div className={cn("h-16 w-16 rounded-[1.5rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform", category.bg)}>
                         <Icon className={cn("h-8 w-8", category.color)} />
@@ -305,30 +331,30 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
                     <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-9 w-9 rounded-full bg-muted/20 hover:bg-primary/10 hover:text-primary transition-all shadow-sm"
+                        className="h-9 w-9 rounded-full bg-muted/20 hover:bg-primary/10 hover:text-primary transition-all shadow-sm text-left"
                         onClick={handleShare}
                     >
-                        <Share2 className="h-4 w-4" />
-                        <span className="sr-only">Share Circle</span>
+                        <Share2 className="h-4 w-4 text-left" />
+                        <span className="sr-only text-left">Share Circle</span>
                     </Button>
                 </div>
-                <CardTitle className="text-2xl font-black font-headline uppercase group-hover:text-primary transition-colors text-left">
+                <CardTitle className="text-2xl font-black font-headline uppercase group-hover:text-primary transition-colors text-left text-left">
                     VICTORY OVER {category.name}
                 </CardTitle>
-                <CardDescription className="text-sm font-medium mt-2 leading-relaxed text-left">
+                <CardDescription className="text-sm font-medium mt-2 leading-relaxed text-left text-left">
                     {category.desc}
                 </CardDescription>
             </CardHeader>
             <CardContent className="px-8 pb-8 flex-grow text-left">
-                <div className="relative pl-6 border-l-4 border-primary/20 py-1 italic text-xs text-muted-foreground font-medium text-left">
-                    <Quote className="absolute top-0 right-0 h-8 w-8 opacity-5 pointer-events-none" />
+                <div className="relative pl-6 border-l-4 border-primary/20 py-1 italic text-xs text-muted-foreground font-medium text-left text-left">
+                    <Quote className="absolute top-0 right-0 h-8 w-8 opacity-5 pointer-events-none text-left" />
                     &ldquo;{category.mission}&rdquo;
                 </div>
             </CardContent>
-            <CardFooter className="p-0 border-t mt-auto text-left">
-                <Button asChild variant="ghost" className="w-full h-14 rounded-none gap-2 font-black uppercase tracking-widest text-[11px] group/btn hover:bg-primary/5 hover:text-primary transition-all">
-                    <Link href={circleLink} className="flex items-center justify-center w-full h-full text-center">
-                        ENTER VICTORY CIRCLE <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 ml-2" />
+            <CardFooter className="p-0 border-t mt-auto text-left text-left">
+                <Button asChild variant="ghost" className="w-full h-14 rounded-none gap-2 font-black uppercase tracking-widest text-[11px] group/btn hover:bg-primary/5 hover:text-primary transition-all text-left">
+                    <Link href={circleLink} className="flex items-center justify-center w-full h-full text-center text-left">
+                        ENTER VICTORY CIRCLE <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 ml-2 text-left" />
                     </Link>
                 </Button>
             </CardFooter>
@@ -349,62 +375,62 @@ export default function VictoryHubPage() {
     }, [searchTerm]);
 
     return (
-        <div className="space-y-10 max-w-6xl mx-auto pb-32 text-left">
-            <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left text-left">
-                    <div className="space-y-1 text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left">
-                            <ShieldCheck className="h-5 w-5 text-primary text-left text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Kingdom Recovery</span>
+        <div className="space-y-10 max-w-6xl mx-auto pb-32 text-left text-left">
+            <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left text-left text-left">
+                    <div className="space-y-1 text-left text-left text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
+                            <ShieldCheck className="h-5 w-5 text-primary text-left text-left text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Kingdom Recovery</span>
                         </div>
-                        <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left text-left">Victory Hub</h1>
-                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-xl text-balance italic text-left text-left">
+                        <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left text-left text-left">Victory Hub</h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-xl text-balance italic text-left text-left text-left">
                             A sanctuary for transparency and spiritual breakthrough. Join a circle to find communal solutions for lasting victory.
                         </p>
                     </div>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-start gap-5 shadow-inner text-left text-left">
-                    <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1 text-left text-left">
-                        <Lock className="h-6 w-6 text-white text-left text-left" />
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-start gap-5 shadow-inner text-left text-left text-left">
+                    <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1 text-left text-left text-left">
+                        <Lock className="h-6 w-6 text-white text-left text-left text-left" />
                     </div>
-                    <div className="text-left text-left">
-                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left text-left">Choice-Based Sanctuary</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance text-left text-left">
-                            Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30 text-left">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear.
+                    <div className="text-left text-left text-left">
+                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left text-left text-left">Choice-Based Sanctuary</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance text-left text-left text-left">
+                            Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30 text-left text-left">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear.
                         </p>
                     </div>
                 </div>
 
-                <div className="relative text-left text-left">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left" />
+                <div className="relative text-left text-left text-left">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left" />
                     <Input 
                         placeholder="Search for a struggle circle..." 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="h-14 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-lg font-bold w-full text-left"
+                        className="h-14 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-lg font-bold w-full text-left text-left"
                     />
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left text-left">
                 {filteredCategories.length > 0 ? (
                     filteredCategories.map(cat => (
                         <CategoryCard key={cat.name} category={cat} />
                     ))
                 ) : (
-                    <div className="col-span-full py-32 text-center flex flex-col items-center text-left text-left">
-                        <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left">
-                            <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left" />
+                    <div className="col-span-full py-32 text-center flex flex-col items-center text-left text-left text-left">
+                        <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left text-left">
+                            <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left" />
                         </div>
-                        <p className="text-base font-black uppercase tracking-tight opacity-40 text-center text-left">No matching circles found</p>
-                        <p className="text-xs text-muted-foreground italic text-center text-left">Try a different search term or enter the "Other" circle.</p>
+                        <p className="text-base font-black uppercase tracking-tight opacity-40 text-center text-left text-left">No matching circles found</p>
+                        <p className="text-xs text-muted-foreground italic text-center text-left text-left">Try a different search term or enter the "Other" circle.</p>
                     </div>
                 )}
             </div>
 
-            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left text-left">
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium italic text-balance text-center text-left">
+            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left text-left text-left">
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium italic text-balance text-center text-left text-left">
                     "And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death." — Revelation 12:11
                 </p>
             </footer>
