@@ -83,7 +83,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import { ImageUpload } from '@/components/common/image-upload';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -299,7 +299,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     </div>
 
                     <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left">
-                        {vendor.photoURL ? <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left text-left"><Store className="h-16 w-16 text-primary opacity-10 text-left text-left" /></div>}
+                        {vendor.photoURL ? <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left text-left"><Store className="h-16 w-16 text-primary opacity-10 text-left text-left" /></div>}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
                         <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left">
                             <div className="flex items-center gap-2 opacity-80 mb-2 text-left">
@@ -330,7 +330,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <Card key={meal.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
                                 <CardContent className="p-0 text-left text-left">
                                     <div className="aspect-[4/3] relative bg-muted text-left">
-                                        {meal.photoURL ? <NextImage src={meal.photoURL} alt={meal.name} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex items-center justify-center text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left" />}</div>}
+                                        {meal.photoURL ? <Image src={meal.photoURL} alt={meal.name} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex items-center justify-center text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left" />}</div>}
                                         <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left">
                                             <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-center text-left">{itemSymbol}{meal.price.toLocaleString()}</Badge>
                                             {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-center text-left">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
@@ -370,9 +370,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500">
                         <Link href="/marketplace/checkout" className="block group">
                             <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20">
-                                {/* Inner Glow Effect */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                
                                 <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left">
                                     <div className="relative text-left">
                                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left">
@@ -383,11 +381,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         </div>
                                     </div>
                                     <div className="flex flex-col text-left leading-none min-w-0">
-                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1">Kindness Package</span>
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1">Provision Package</span>
                                         <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate">View My Offering</span>
                                     </div>
                                 </div>
-
                                 <div className="h-full px-6 rounded-full bg-primary text-white flex items-center gap-2 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10">
                                     <span className="text-xs font-black uppercase tracking-widest">Checkout</span>
                                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

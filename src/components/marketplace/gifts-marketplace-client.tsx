@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
+import { useUser, useFirestore, useCollection } from '@/firebase';
 import { collection, query, where, doc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
 import type { VendorProfile } from '@/lib/types';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -56,7 +56,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import { ImageUpload } from '@/components/common/image-upload';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const currencyOptions = [
@@ -119,7 +119,7 @@ export default function GiftsMarketplaceClient() {
             limit(1)
         );
     }, [user?.uid, firestore]);
-    const { data: myGiftVendors } = useCollection<VendorProfile>(myMealVendorsQuery);
+    const { data: myGiftVendors } = useCollection<VendorProfile>(myGiftVendorsQuery);
     const myVendorProfile = myGiftVendors?.[0];
 
     const cartQuery = useMemo(() => (user && firestore) ? query(collection(firestore, 'users', user.uid, 'cart')) : null, [user, firestore]);
@@ -237,7 +237,7 @@ export default function GiftsMarketplaceClient() {
                     </div>
 
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1">Country</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Country</Label>
                         <Select onValueChange={(val) => { setSelectedCountry(val); setSelectedState(''); }} value={selectedCountry}>
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left">
                                 <SelectValue placeholder="Select Country" />
@@ -354,7 +354,7 @@ export default function GiftsMarketplaceClient() {
                         >
                             <div className="aspect-[2/1] relative bg-muted text-left">
                                 {vendor.photoURL ? (
-                                    <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
+                                    <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-left">
                                         <Package className="h-10 w-10 text-muted-foreground opacity-20 text-left" />

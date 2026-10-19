@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
+import { useUser, useFirestore, useCollection } from '@/firebase';
 import { collection, query, where, doc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
 import type { VendorProfile } from '@/lib/types';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -56,7 +56,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import { ImageUpload } from '@/components/common/image-upload';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const currencyOptions = [
@@ -361,7 +361,7 @@ export default function MealsMarketplaceClient() {
                         >
                             <div className="aspect-[2/1] relative bg-muted text-left">
                                 {vendor.photoURL ? (
-                                    <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
+                                    <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-left">
                                         <Utensils className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
@@ -386,7 +386,7 @@ export default function MealsMarketplaceClient() {
                                 </p>
                                 <Button className="w-full justify-between h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-left">
                                     VIEW MENU & PROVISIONS
-                                    <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 text-left" />
+                                    <ChevronRight className="h-4 w-4 transition-transform group-hover:btn:translate-x-1 text-left" />
                                 </Button>
                             </div>
                         </Card>
@@ -438,7 +438,7 @@ export default function MealsMarketplaceClient() {
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left p-0 text-left">
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Become a Provider</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1">Register your meal service and start providing physical provision.</SheetDescription>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow">
