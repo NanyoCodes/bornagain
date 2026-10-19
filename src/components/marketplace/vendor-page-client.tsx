@@ -268,7 +268,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price ({getCurrencySymbol(vendor?.currency)})</Label><Input name="price" type="number" step="0.01" defaultValue={item?.price || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required /></div>
                     <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Fee</Label><Input name="deliveryFee" type="number" step="0.01" defaultValue={item?.deliveryFee || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
                 </div>
-                <div className="space-y-2 text-left"><Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
+                <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
                 <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
             </div>
             <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3">
@@ -352,9 +352,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <div className="flex-1 min-w-0 text-left">
                                         {cartItem ? (
                                             <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left"/></Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left text-left"/></Button>
                                                 <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-center text-left">IN PACKAGE</span>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left"/></Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left text-left"/></Button>
                                             </div>
                                         ) : (
                                             <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-90 text-center text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
@@ -367,24 +367,30 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 {cartCount > 0 && (
-                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[24rem] px-6 animate-in slide-in-from-bottom-10">
+                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500">
                         <Link href="/marketplace/checkout" className="block group">
-                            <div className="w-full h-16 rounded-full bg-primary p-1 shadow-2xl shadow-primary/40 border-4 border-background flex items-center transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:shadow-primary/60">
-                                <div className="flex-1 flex items-center gap-4 px-6 text-primary-foreground text-left">
-                                    <div className="relative flex items-center justify-center h-10 w-10 bg-white/20 rounded-full text-left">
-                                        <ShoppingBag className="h-5 w-5 text-left" />
-                                        <div className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white text-[9px] font-black text-primary shadow-lg ring-1 ring-primary/20 text-center">
-                                            {cartCount}
+                            <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20">
+                                {/* Inner Glow Effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                
+                                <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left">
+                                    <div className="relative text-left">
+                                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left">
+                                            <ShoppingBag className="h-5 w-5 text-white/80" />
+                                        </div>
+                                        <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center">
+                                            <span className="text-[10px] font-black text-white">{cartCount}</span>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col text-left leading-none text-left">
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 text-left">Provision Package</span>
-                                        <span className="text-sm font-black uppercase tracking-widest text-left">View Offering</span>
+                                    <div className="flex flex-col text-left leading-none min-w-0">
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1">Kindness Package</span>
+                                        <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate">View My Offering</span>
                                     </div>
                                 </div>
-                                <div className="h-10 px-6 rounded-full bg-white flex items-center justify-center gap-2 mr-1">
-                                    <span className="text-xs font-black text-primary uppercase tracking-wider">Checkout</span>
-                                    <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+
+                                <div className="h-full px-6 rounded-full bg-primary text-white flex items-center gap-2 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10">
+                                    <span className="text-xs font-black uppercase tracking-widest">Checkout</span>
+                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </div>
                             </div>
                         </Link>
@@ -394,39 +400,38 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                 <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left"> {addLabel}</DialogTitle>
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+                        <DialogHeader className="text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left"> {addLabel}</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm()}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left">{itemForm()}</div>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                        <DialogHeader className="text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Offering</DialogTitle>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
+                        <DialogHeader className="text-left text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Edit Offering</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm(itemToEdit, true)}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left text-left">{itemForm(itemToEdit, true)}</div>
                 </DialogContent>
             </Dialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left text-left">
-                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left">
+                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left">Remove Offering?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}Delete</AlertDialogAction>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left text-left text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left" />}Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
         </div>
     );
 }
-

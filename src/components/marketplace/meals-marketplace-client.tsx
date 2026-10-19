@@ -77,9 +77,9 @@ export default function MealsMarketplaceClient() {
     const isMobile = useIsMobile();
     const [mounted, setMounted] = useState(false);
     
-    const soulId = searchParams.get('soulId');
-    const soulName = searchParams.get('soulName');
-    const actionId = searchParams.get('actionId');
+    const soulId = searchParams?.get('soulId');
+    const soulName = searchParams?.get('soulName');
+    const actionId = searchParams?.get('actionId');
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
@@ -287,7 +287,7 @@ export default function MealsMarketplaceClient() {
             <div className="p-6 sm:p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
                 <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                     Launch Storefront
                 </Button>
             </div>
@@ -401,24 +401,30 @@ export default function MealsMarketplaceClient() {
             </div>
 
             {cartCount > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[24rem] px-6 animate-in slide-in-from-bottom-10">
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500">
                     <Link href="/marketplace/checkout" className="block group">
-                        <div className="w-full h-16 rounded-full bg-primary p-1 shadow-2xl shadow-primary/40 border-4 border-background flex items-center transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:shadow-primary/60">
-                            <div className="flex-1 flex items-center gap-4 px-6 text-primary-foreground text-left">
-                                <div className="relative flex items-center justify-center h-10 w-10 bg-white/20 rounded-full text-left">
-                                    <ShoppingBag className="h-5 w-5 text-left" />
-                                    <div className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white text-[9px] font-black text-primary shadow-lg ring-1 ring-primary/20 text-center">
-                                        {cartCount}
+                        <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20">
+                            {/* Inner Glow Effect */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            
+                            <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left">
+                                <div className="relative text-left">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left">
+                                        <ShoppingBag className="h-5 w-5 text-white/80" />
+                                    </div>
+                                    <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center">
+                                        <span className="text-[10px] font-black text-white">{cartCount}</span>
                                     </div>
                                 </div>
-                                <div className="flex flex-col text-left leading-none text-left">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 text-left">Provision Package</span>
-                                    <span className="text-sm font-black uppercase tracking-widest text-left">View Offering</span>
+                                <div className="flex flex-col text-left leading-none min-w-0">
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1">Provision Package</span>
+                                    <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate">View My Offering</span>
                                 </div>
                             </div>
-                            <div className="h-10 px-6 rounded-full bg-white flex items-center justify-center gap-2 mr-1">
-                                <span className="text-xs font-black text-primary uppercase tracking-wider">Checkout</span>
-                                <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+
+                            <div className="h-full px-6 rounded-full bg-primary text-white flex items-center gap-2 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10">
+                                <span className="text-xs font-black uppercase tracking-widest">Checkout</span>
+                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                             </div>
                         </div>
                     </Link>
@@ -445,11 +451,11 @@ export default function MealsMarketplaceClient() {
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="p-0 text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Become a Provider</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1">Register your meal service and start providing physical provision.</DialogDescription>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-grow">
+                            <ScrollArea className="flex-grow text-left">
                                 {registrationForm}
                             </ScrollArea>
                         </DialogContent>
@@ -459,4 +465,3 @@ export default function MealsMarketplaceClient() {
         </div>
     );
 }
-
