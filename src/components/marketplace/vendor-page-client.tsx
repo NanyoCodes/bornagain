@@ -378,7 +378,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         </div>
                                     </div>
                                     <div className="flex flex-col text-left leading-none">
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Kindness Package</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Provision Package</span>
                                         <span className="text-sm font-black uppercase tracking-widest">View Offering</span>
                                     </div>
                                 </div>
