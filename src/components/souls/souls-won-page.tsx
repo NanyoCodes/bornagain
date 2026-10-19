@@ -1012,7 +1012,7 @@ export default function SoulsWonPage() {
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
@@ -1055,7 +1055,7 @@ export default function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DialogHeader className="text-left p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</DialogTitle>

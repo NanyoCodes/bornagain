@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
-import { collection, query, where, doc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
+import { collection, query, where, doc, addDoc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
 import type { VendorProfile, Soul } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,8 @@ import {
     Package,
     Sparkles,
     Filter,
-    Check
+    Check,
+    CreditCard
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -57,7 +58,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import { ImageUpload } from '@/components/common/image-upload';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const currencyOptions = [
@@ -438,17 +439,17 @@ export default function MealsMarketplaceClient() {
                         >
                             <div className="aspect-[2/1] relative bg-muted text-left">
                                 {vendor.photoURL ? (
-                                    <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
+                                    <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-left">
                                         <Utensils className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                                     </div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
-                                <div className="absolute bottom-4 left-6 pr-4 text-left text-left">
+                                <div className="absolute bottom-4 left-6 pr-4 text-left">
                                     <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-tight truncate text-left">{vendor.businessName}</h3>
                                     <div className="flex items-center gap-1.5 text-white/70 text-[9px] font-bold uppercase tracking-widest mt-1 text-left">
-                                        <MapPin className="h-2.5 w-2.5 text-primary text-left" /> {vendor.location || 'Local Delivery'}
+                                        <MapPin className="h-2.5 w-2.5 text-primary" /> {vendor.location || 'Local Delivery'}
                                     </div>
                                 </div>
                                 {vendor.currency && (
@@ -463,7 +464,7 @@ export default function MealsMarketplaceClient() {
                                 </p>
                                 <Button className="w-full justify-between h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center">
                                     VIEW MENU & PROVISIONS
-                                    <ChevronRight className="h-4 w-4 transition-transform group-hover:btn:translate-x-1 text-left" />
+                                    <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1 text-left" />
                                 </Button>
                             </div>
                         </Card>
@@ -479,12 +480,12 @@ export default function MealsMarketplaceClient() {
 
             {cartCount > 0 && (
                 <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left">
-                    <Link href="/marketplace/checkout" className="block group">
-                        <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20">
+                    <Link href="/marketplace/checkout" className="block group text-left">
+                        <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left">
                             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left">
                                 <div className="relative text-left">
-                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left text-left">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left">
                                         <ShoppingBag className="h-5 w-5 text-white/80" />
                                     </div>
                                     <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center">
@@ -509,7 +510,7 @@ export default function MealsMarketplaceClient() {
                 isMobile ? (
                     <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left p-0">
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Become a Provider</SheetTitle>
                                     <SheetDescription className="text-sm font-medium mt-1">Register your meal service and start providing physical provision.</SheetDescription>
@@ -522,8 +523,8 @@ export default function MealsMarketplaceClient() {
                     </Sheet>
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</DialogDescription>

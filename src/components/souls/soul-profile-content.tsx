@@ -71,7 +71,6 @@ import {
   DialogDescription, 
   DialogTrigger,
   DialogFooter,
-  DialogClose
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -476,7 +475,7 @@ export function MessageHubDialog({
             <DialogHeader className="text-center space-y-2 p-0 text-left text-left">
                 <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left"><MessageSquare className="h-7 w-7 text-primary text-left" /></div>
                 <DialogTitle className="text-2xl font-black font-headline uppercase text-center text-left">Message Hub</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DialogDescription>
+                <DialogTitle className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DialogTitle>
             </DialogHeader>
         </div>
     );
@@ -505,7 +504,7 @@ export function MessageHubDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left">
+            <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left text-left">
                 {header}
                 {contentBody}
             </DialogContent>
@@ -592,7 +591,7 @@ export function SoulProfileContent({
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    const memberName = `${currentUserProfile?.firstName || ''} ${currentUserProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+    const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
         note: `Logged via Identity Hub: ${action?.label}${noteAddendum ? ` - ${noteAddendum}` : ''}`,
