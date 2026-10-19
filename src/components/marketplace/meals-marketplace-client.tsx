@@ -24,10 +24,7 @@ import {
     Package,
     Sparkles,
     Check,
-    CreditCard,
-    Truck,
-    Timer,
-    XCircle
+    CreditCard
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -455,7 +452,7 @@ export default function MealsMarketplaceClient() {
                                     &ldquo;{vendor.description || 'Verified Kingdom provision partner.'}&rdquo;
                                 </p>
                                 <Button className="w-full h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center">
-                                    <span className="flex-1 text-left">VIEW MENU & PROVISIONS</span>
+                                    <span className="flex-1 text-left text-left">VIEW MENU & PROVISIONS</span>
                                     <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 text-left" />
                                 </Button>
                             </div>
@@ -485,7 +482,7 @@ export default function MealsMarketplaceClient() {
                                         <span className="text-[10px] font-black text-white text-center text-left"> {cartCount}</span>
                                     </div>
                                 </div>
-                                <div className="flex flex-col text-left leading-none min-w-0 text-left">
+                                <div className="flex flex-col text-left leading-none min-w-0 text-left text-left">
                                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1 text-left">Provision Package</span>
                                     <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate text-left">View My Offering</span>
                                 </div>
@@ -519,7 +516,7 @@ export default function MealsMarketplaceClient() {
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="p-0 text-left text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Become a Provider</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</DialogDescription>
                                 </DialogHeader>
                             </div>

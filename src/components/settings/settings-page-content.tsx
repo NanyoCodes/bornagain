@@ -243,7 +243,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
 
                 <Button onClick={handleSave} disabled={isSubmitting} className="w-full min-h-[3.5rem] h-auto rounded-[1.5rem] font-black shadow-xl shadow-primary/20 tracking-widest uppercase py-4 text-left text-left text-left">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
-                    Save Environment
+                    Click to view
                 </Button>
             </div>
         </CardContent>
@@ -324,7 +324,7 @@ function ContactCard() {
                 <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-bold hover:underline truncate block text-foreground text-left text-left text-left">testifyglobal360@gmail.com</a>
             </div>
         </div>
-        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left text-left text-left">
+        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left text-left text-left text-left">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left text-left">
                 <Phone className="h-5 w-5 text-primary text-left text-left text-left" />
             </div>

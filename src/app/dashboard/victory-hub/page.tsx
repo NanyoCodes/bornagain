@@ -338,21 +338,21 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
                         <span className="sr-only">Share Circle</span>
                     </Button>
                 </div>
-                <CardTitle className="text-2xl font-black font-headline uppercase group-hover:text-primary transition-colors">
+                <CardTitle className="text-2xl font-black font-headline uppercase group-hover:text-primary transition-colors text-left">
                     VICTORY OVER {category.name}
                 </CardTitle>
-                <CardDescription className="text-sm font-medium mt-2 leading-relaxed">
+                <CardDescription className="text-sm font-medium mt-2 leading-relaxed text-left">
                     {category.desc}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="px-8 pb-8 flex-grow">
-                <div className="relative pl-6 border-l-4 border-primary/20 py-1 italic text-xs text-muted-foreground font-medium">
+            <CardContent className="px-8 pb-8 flex-grow text-left">
+                <div className="relative pl-6 border-l-4 border-primary/20 py-1 italic text-xs text-muted-foreground font-medium text-left">
                     <Quote className="absolute top-0 right-0 h-8 w-8 opacity-5 pointer-events-none" />
                     &ldquo;{category.mission}&rdquo;
                 </div>
             </CardContent>
             <CardFooter className="p-0 border-t mt-auto">
-                <Button asChild variant="ghost" className="w-full h-14 rounded-none gap-2 font-black uppercase tracking-widest text-[11px] group/btn hover:bg-primary/5 hover:text-primary transition-all">
+                <Button asChild variant="ghost" className="w-full h-14 rounded-none gap-2 font-black uppercase tracking-widest text-[11px] group/btn hover:bg-primary/5 hover:text-primary transition-all text-center">
                     <Link href={circleLink} className="flex items-center justify-center w-full h-full text-center">
                         ENTER VICTORY CIRCLE <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 ml-2" />
                     </Link>
@@ -420,8 +420,8 @@ export default function VictoryHubPage() {
                     ))
                 ) : (
                     <div className="col-span-full py-32 text-center flex flex-col items-center text-left">
-                        <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
-                            <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
+                        <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left">
+                            <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left" />
                         </div>
                         <p className="text-base font-black uppercase tracking-tight opacity-40 text-center text-left">No matching circles found</p>
                         <p className="text-xs text-muted-foreground italic text-center text-left">Try a different search term or enter the "Another Vice" circle.</p>
