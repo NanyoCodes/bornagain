@@ -508,7 +508,7 @@ export function MessageHubDialog({
     if (isMobile) {
         return (
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left text-left">
+                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left text-left text-left">
                     {header}
                     {contentBody}
                 </DrawerContent>
@@ -589,7 +589,7 @@ export function SoulProfileContent({
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    const memberName = `${currentUserProfile?.firstName || ''} ${currentUserProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+    const memberName = `${currentUserProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
         note: `Logged via Identity Hub: ${action?.label}${noteAddendum ? ` - ${noteAddendum}` : ''}`,
@@ -1122,7 +1122,7 @@ export function SoulProfileContent({
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
                   <Share className="h-7 w-7 text-primary text-left" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline uppercase text-center text-left">Share Details</DialogTitle>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-left">
