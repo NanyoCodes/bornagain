@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useAuth, useDoc, useCollection } from '@/firebase';
+import { useUser, useAuth, useDoc, useCollection, useFirestore } from '@/firebase';
 import { collection, query, where, doc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
 import type { VendorProfile } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -53,7 +53,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import { ImageUpload } from '@/components/common/image-upload';
-import Image from 'next/image';
+import NextImage from 'next/image';
 
 const currencyOptions = [
     { value: 'NGN', label: 'Naira (₦)', symbol: '₦' },
@@ -192,7 +192,7 @@ export default function GiftsMarketplaceClient() {
                 </div>
 
                 <div className="space-y-4 text-left">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Storefront Photo</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Storefront Photo</Label>
                   <ImageUpload 
                       initialImageUrl={vendorPhotoURL} 
                       onUploadComplete={setVendorPhotoURL} 
@@ -273,7 +273,7 @@ export default function GiftsMarketplaceClient() {
             <div className="p-6 sm:p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 text-left">
                 <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Launch
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />} Launch
                 </Button>
             </div>
         </form>
@@ -288,9 +288,9 @@ export default function GiftsMarketplaceClient() {
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
                         <div className="min-w-0 text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase truncate">Kindness Center</h1>
-                            <p className="text-[10px] sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
-                            <Gift className="h-3.5 w-3.5 text-primary" /> Products Hub
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase truncate text-left">Kindness Center</h1>
+                            <p className="text-[10px] sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
+                                <Gift className="h-3.5 w-3.5 text-primary text-left" /> Products Hub
                             </p>
                         </div>
                     </div>
@@ -314,7 +314,7 @@ export default function GiftsMarketplaceClient() {
                                 <Gift className="h-5 w-5 sm:h-6 sm:w-6 text-white animate-pulse text-left" />
                             </div>
                             <div className="min-w-0 text-left">
-                                <p className="text-base sm:text-lg font-black uppercase tracking-tight leading-tight truncate text-left text-left">Gift for {soulName}</p>
+                                <p className="text-base sm:text-lg font-black uppercase tracking-tight leading-tight truncate text-left">Gift for {soulName}</p>
                                 <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-80 text-balance text-left">Choose a provider to gift a token of kindness.</p>
                             </div>
                         </div>
@@ -341,12 +341,12 @@ export default function GiftsMarketplaceClient() {
                     filteredVendors.map(vendor => (
                         <Card 
                             key={vendor.id} 
-                            className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group cursor-pointer bg-card/50 backdrop-blur-sm text-left"
+                            className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group cursor-pointer bg-card/50 backdrop-blur-sm flex flex-col h-full text-left"
                             onClick={() => router.push(`/dashboard/marketplace/vendors/${vendor.id}${soulId ? `?soulId=${soulId}&soulName=${soulName}&actionId=${actionId}` : ''}`)}
                         >
                             <div className="aspect-[2/1] relative bg-muted text-left">
                                 {vendor.photoURL ? (
-                                    <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
+                                    <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-left">
                                         <Package className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
@@ -379,8 +379,8 @@ export default function GiftsMarketplaceClient() {
                 ) : (
                     <div className="col-span-full py-32 text-center flex flex-col items-center text-left">
                         <Gift className="h-16 w-16 text-muted-foreground opacity-10 mb-6 text-left" />
-                        <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-center">No Services Found</h3>
-                        <p className="text-xs text-muted-foreground italic mt-2 text-center">Kingdom product vendors will appear here.</p>
+                        <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-center text-left">No Services Found</h3>
+                        <p className="text-xs text-muted-foreground italic mt-2 text-center text-left">Kingdom product vendors will appear here.</p>
                     </div>
                 )}
             </div>
