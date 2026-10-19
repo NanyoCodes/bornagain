@@ -39,7 +39,8 @@ import {
     Globe,
     Check,
     Quote,
-    ChevronDown
+    ChevronDown,
+    ArrowRight
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -273,7 +274,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
                 <Button type="button" variant="outline" onClick={() => { setIsAddMealOpen(false); setItemToEdit(null); }} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest text-center">
-                    {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                     {isEdit ? 'SAVE CHANGES' : 'ADD TO CATALOG'}
                 </Button>
             </div>
@@ -366,13 +367,27 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 {cartCount > 0 && (
-                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10 text-left text-left">
-                        <Button onClick={() => setIsCartOpen(true)} asChild className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8 text-center text-left">
-                            <Link href="/marketplace/checkout" className="text-left">
-                                <div className="flex items-center gap-3 text-left"><div className="relative text-left"><ShoppingCart className="h-5 w-5 text-left" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center text-center text-left"> {cartCount}</span></div><span className="text-xs text-left">VIEW PACKAGE</span></div>
-                                <span className="text-sm text-left">CHECKOUT</span>
-                            </Link>
-                        </Button>
+                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[24rem] px-6 animate-in slide-in-from-bottom-10">
+                        <Link href="/marketplace/checkout" className="block group">
+                            <div className="w-full h-16 rounded-full bg-primary p-1 shadow-2xl shadow-primary/40 border-4 border-background flex items-center transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:shadow-primary/60">
+                                <div className="flex-1 flex items-center gap-4 px-6 text-primary-foreground">
+                                    <div className="relative flex items-center justify-center h-10 w-10 bg-white/20 rounded-full">
+                                        <ShoppingBag className="h-5 w-5" />
+                                        <div className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white text-[9px] font-black text-primary shadow-lg ring-1 ring-primary/20">
+                                            {cartCount}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col text-left leading-none">
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Kindness Package</span>
+                                        <span className="text-sm font-black uppercase tracking-widest">View Offering</span>
+                                    </div>
+                                </div>
+                                <div className="h-10 px-6 rounded-full bg-white flex items-center justify-center gap-2 mr-1">
+                                    <span className="text-xs font-black text-primary uppercase tracking-wider">Checkout</span>
+                                    <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+                                </div>
+                            </div>
+                        </Link>
                     </div>
                 )}
             </div>

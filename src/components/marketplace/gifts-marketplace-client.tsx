@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useAuth, useDoc, useCollection, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useCollection } from '@/firebase';
 import { collection, query, where, doc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
 import type { VendorProfile } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,7 +20,8 @@ import {
     Gift,
     Package,
     ArrowLeft,
-    Globe
+    Globe,
+    ArrowRight
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -54,6 +55,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import { ImageUpload } from '@/components/common/image-upload';
 import NextImage from 'next/image';
+import Link from 'next/link';
 
 const currencyOptions = [
     { value: 'NGN', label: 'Naira (₦)', symbol: '₦' },
@@ -117,6 +119,10 @@ export default function GiftsMarketplaceClient() {
     }, [user?.uid, firestore]);
     const { data: myGiftVendors } = useCollection<VendorProfile>(myGiftVendorsQuery);
     const myVendorProfile = myGiftVendors?.[0];
+
+    const cartQuery = useMemo(() => (user && firestore) ? query(collection(firestore, 'users', user.uid, 'cart')) : null, [user, firestore]);
+    const { data: cartItems } = useCollection<any>(cartQuery);
+    const cartCount = useMemo(() => cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0, [cartItems]);
 
     const filteredVendors = useMemo(() => {
         if (!vendors) return [];
@@ -385,6 +391,31 @@ export default function GiftsMarketplaceClient() {
                 )}
             </div>
 
+            {cartCount > 0 && (
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[24rem] px-6 animate-in slide-in-from-bottom-10">
+                    <Link href="/marketplace/checkout" className="block group">
+                        <div className="w-full h-16 rounded-full bg-primary p-1 shadow-2xl shadow-primary/40 border-4 border-background flex items-center transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:shadow-primary/60">
+                            <div className="flex-1 flex items-center gap-4 px-6 text-primary-foreground">
+                                <div className="relative flex items-center justify-center h-10 w-10 bg-white/20 rounded-full">
+                                    <ShoppingBag className="h-5 w-5" />
+                                    <div className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white text-[9px] font-black text-primary shadow-lg ring-1 ring-primary/20">
+                                        {cartCount}
+                                    </div>
+                                </div>
+                                <div className="flex flex-col text-left leading-none">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Kindness Package</span>
+                                    <span className="text-sm font-black uppercase tracking-widest">View Offering</span>
+                                </div>
+                            </div>
+                            <div className="h-10 px-6 rounded-full bg-white flex items-center justify-center gap-2 mr-1">
+                                <span className="text-xs font-black text-primary uppercase tracking-wider">Checkout</span>
+                                <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+                            </div>
+                        </div>
+                    </Link>
+                </div>
+            )}
+
             {mounted && (
                 isMobile ? (
                     <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
@@ -405,8 +436,8 @@ export default function GiftsMarketplaceClient() {
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Register your gift storefront and start providing physical tokens of kindness.</DialogDescription>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Become a Provider</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Register your gift storefront and start providing physical tokens of kindness.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">

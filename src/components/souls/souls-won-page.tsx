@@ -326,8 +326,8 @@ function FilteredSoulList({
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left text-left">More Actions</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="text-left" />
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left text-left text-left">More Actions</DropdownMenuLabel>
+                                <DropdownMenuSeparator className="text-left text-left" />
                                 <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left text-left">
                                     <User className="mr-2 h-4 w-4 text-left" /> View Full Identity
                                 </DropdownMenuItem>
@@ -928,8 +928,8 @@ export default function SoulsWonPage() {
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
+                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
+                                <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left">Demographic View</BarChart3>
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
@@ -1073,15 +1073,15 @@ export default function SoulsWonPage() {
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span></div>
+                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Identity Hub</span></div>
                         <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
                             {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                         </DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                     </DrawerHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
                                 soul={souls.find(s => s.id === selectedId)!} 
