@@ -377,24 +377,24 @@ export default function VictoryHubPage() {
     return (
         <div className="space-y-10 max-w-6xl mx-auto pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="space-y-1">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+                    <div className="space-y-1 text-left">
                         <div className="flex items-center gap-2 mb-2 text-left">
-                            <ShieldCheck className="h-5 w-5 text-primary" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Recovery</span>
+                            <ShieldCheck className="h-5 w-5 text-primary text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Recovery</span>
                         </div>
-                        <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase">Victory Hub</h1>
-                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-xl text-balance italic">
+                        <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left">VICTORY CLINIC</h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-xl text-balance italic text-left">
                             A sanctuary for transparency and spiritual breakthrough. Join a circle to find communal solutions for lasting victory.
                         </p>
                     </div>
                 </div>
 
                 <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-start gap-5 shadow-inner text-left">
-                    <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1">
-                        <Lock className="h-6 w-6 text-white" />
+                    <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1 text-left">
+                        <Lock className="h-6 w-6 text-white text-left" />
                     </div>
-                    <div>
+                    <div className="text-left">
                         <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left">Choice-Based Sanctuary</h3>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance text-left">
                             Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear.
@@ -413,24 +413,24 @@ export default function VictoryHubPage() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
                 {filteredCategories.length > 0 ? (
                     filteredCategories.map(cat => (
                         <CategoryCard key={cat.name} category={cat} />
                     ))
                 ) : (
-                    <div className="col-span-full py-32 text-center flex flex-col items-center">
-                        <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
-                            <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20" />
+                    <div className="col-span-full py-32 text-center flex flex-col items-center text-left">
+                        <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
+                            <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                         </div>
-                        <p className="text-base font-black uppercase tracking-tight opacity-40 text-center">No matching circles found</p>
-                        <p className="text-xs text-muted-foreground italic text-center">Try a different search term or enter the "Another Vice" circle.</p>
+                        <p className="text-base font-black uppercase tracking-tight opacity-40 text-center text-left">No matching circles found</p>
+                        <p className="text-xs text-muted-foreground italic text-center text-left">Try a different search term or enter the "Another Vice" circle.</p>
                     </div>
                 )}
             </div>
 
-            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium italic text-balance text-center">
+            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left">
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium italic text-balance text-center text-left">
                     "And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death." — Revelation 12:11
                 </p>
             </footer>
