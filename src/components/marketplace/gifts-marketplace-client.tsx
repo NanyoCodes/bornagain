@@ -285,7 +285,7 @@ export default function GiftsMarketplaceClient() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                     <div className="flex items-center gap-4 text-left">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border shadow-sm">
-                            <ArrowLeft className="h-5 w-5" />
+                            <ArrowLeft className="h-6 w-6" />
                         </Button>
                         <div className="min-w-0 text-left">
                             <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase truncate text-left">Kindness Center</h1>
@@ -369,9 +369,9 @@ export default function GiftsMarketplaceClient() {
                                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 font-medium leading-relaxed italic mb-4 text-left">
                                     &ldquo;{vendor.description || 'Verified Kingdom gift partner.'}&rdquo;
                                 </p>
-                                <Button variant="ghost" className="w-full justify-between h-10 rounded-xl px-4 hover:bg-primary/5 hover:text-primary transition-all font-black text-[10px] uppercase tracking-widest text-left">
-                                    View Products & Gifting Options
-                                    <ChevronRight className="h-4 w-4 text-left" />
+                                <Button className="w-full justify-between h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-left">
+                                    EXPLORE OFFERINGS
+                                    <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                                 </Button>
                             </div>
                         </Card>
@@ -389,10 +389,10 @@ export default function GiftsMarketplaceClient() {
                 isMobile ? (
                     <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                                <SheetHeader className="text-left p-0 text-left">
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Register your gift storefront.</SheetDescription>
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                                <SheetHeader className="text-left p-0 text-left text-left">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Become a Provider</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Register your gift storefront.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -403,10 +403,10 @@ export default function GiftsMarketplaceClient() {
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="text-left p-0 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Register your gift storefront and start providing physical tokens of kindness.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Register your gift storefront and start providing physical tokens of kindness.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">

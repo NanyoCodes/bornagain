@@ -299,10 +299,10 @@ function CheckoutPageContent() {
                                                         <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm text-left text-left">
                                                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(item.id, item.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left text-left"/></Button>
                                                             <span className="w-8 text-center font-black text-xs text-left text-left"> {item.quantity}</span>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(item.id, item.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left text-left"/></Button>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(item.id, item.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left text-left"/></Button>
                                                         </div>
-                                                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-destructive hover:bg-destructive/10 text-left text-left" onClick={() => handleRemoveItem(item.id)}>
-                                                            <Trash2 className="h-4 w-4 text-left text-left" />
+                                                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-destructive hover:bg-destructive/10 text-left text-left text-left" onClick={() => handleRemoveItem(item.id)}>
+                                                            <Trash2 className="h-4 w-4 text-left text-left text-left" />
                                                         </Button>
                                                     </div>
 
@@ -345,63 +345,63 @@ function CheckoutPageContent() {
                         })}
                     </div>
 
-                    <div className="space-y-6 text-left text-left">
+                    <div className="space-y-6 text-left text-left text-left">
                         <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left text-left">
-                            <CardHeader className="p-8 pb-4 text-left text-left">
-                                <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Summary</CardTitle>
-                                <CardDescription className="text-primary-foreground/70 font-medium text-left text-left">Consolidated Kingdom Offering.</CardDescription>
+                            <CardHeader className="p-8 pb-4 text-left text-left text-left text-left">
+                                <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left text-left">Summary</CardTitle>
+                                <CardDescription className="text-primary-foreground/70 font-medium text-left text-left text-left text-left">Consolidated Kingdom Offering.</CardDescription>
                             </CardHeader>
-                            <CardContent className="p-8 pt-0 space-y-6 text-left text-left">
-                                <div className="space-y-6 text-left text-left">
+                            <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left text-left">
+                                <div className="space-y-6 text-left text-left text-left text-left">
                                     {Object.entries(totalsByCurrency).map(([curr, values]) => {
                                         const symbol = getCurrencySymbol(curr);
                                         return (
-                                            <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0 text-left text-left">
-                                                <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left">
+                                            <div key={curr} className="space-y-4 border-b border-white/10 pb-6 last:border-0 last:pb-0 text-left text-left text-left text-left">
+                                                <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left text-left text-left">
                                                     <span>Items Total</span>
                                                     <span>{symbol}{values.subtotal.toLocaleString()}</span>
                                                 </div>
-                                                <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left">
+                                                <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest opacity-70 text-left text-left text-left text-left">
                                                     <span>Delivery (Grouped)</span>
                                                     <span>{symbol}{values.delivery.toLocaleString()}</span>
                                                 </div>
-                                                <Separator className="bg-white/10 text-left text-left" />
-                                                <div className="flex justify-between items-baseline text-left text-left">
-                                                    <span className="text-xs font-black uppercase tracking-[0.2em] text-left text-left text-left">Grand Total</span>
-                                                    <span className="text-3xl font-black tracking-tighter text-left text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
+                                                <Separator className="bg-white/10 text-left text-left text-left text-left" />
+                                                <div className="flex justify-between items-baseline text-left text-left text-left text-left">
+                                                    <span className="text-xs font-black uppercase tracking-[0.2em] text-left text-left text-left text-left text-left text-left">Grand Total</span>
+                                                    <span className="text-3xl font-black tracking-tighter text-left text-left text-left text-left">{symbol}{(values.subtotal + values.delivery).toLocaleString()}</span>
                                                 </div>
                                             </div>
                                         )
                                     })}
                                 </div>
 
-                                <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left">
-                                    <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left" />
-                                    <p className="text-[10px] leading-relaxed font-medium text-left text-left text-left text-left">
+                                <div className="bg-white/10 p-5 rounded-2xl border border-white/10 flex items-start gap-3 text-left text-left text-left text-left">
+                                    <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left text-left text-left text-left text-left" />
+                                    <p className="text-[10px] leading-relaxed font-medium text-left text-left text-left text-left text-left text-left text-left text-left">
                                         Finalizing your order notifies providers immediately. Please coordinate payments directly using their saved details.
                                     </p>
                                 </div>
                             </CardContent>
-                            <CardFooter className="p-8 pt-0 text-left text-left">
+                            <CardFooter className="p-8 pt-0 text-left text-left text-left text-left">
                                 <Button 
                                     onClick={handleFinalizeOffering} 
                                     disabled={isSubmitting} 
                                     size="lg" 
-                                    className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-left text-left"
+                                    className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-left text-left text-left text-left"
                                 >
-                                    {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left text-left" />}
+                                    {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left text-left text-left text-left" />}
                                     FINALIZE OFFERING
                                 </Button>
                             </CardFooter>
                         </Card>
 
-                        <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left">
-                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left">
-                                <Heart className="h-6 w-6 text-primary text-left text-left" />
+                        <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left text-left">
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left text-left text-left">
+                                <Heart className="h-6 w-6 text-primary text-left text-left text-left text-left" />
                             </div>
-                            <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left">
+                            <p className="text-xs text-muted-foreground font-medium italic leading-relaxed text-balance text-center text-left text-left text-left text-left">
                                 "Whoever is kind to the poor lends to the Lord, and he will reward them for what they have done." <br/>
-                                <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left">- Proverbs 19:17</span>
+                                <span className="font-black uppercase tracking-widest text-[9px] mt-2 block text-center text-left text-left text-left text-left">- Proverbs 19:17</span>
                             </p>
                         </div>
                     </div>
