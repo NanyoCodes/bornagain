@@ -130,8 +130,8 @@ function ChildSelectionDialog({
     const [search, setSearch] = useState('');
     
     const filteredSouls = useMemo(() => {
-        if (!parent) return [];
-        const forbiddenIds = new Set([parent.id, ...(spouse ? [spouse.id] : []), ...(parent.childrenIds || [])]);
+        if (!parent?.id) return [];
+        const forbiddenIds = new Set([parent.id, ...(spouse?.id ? [spouse.id] : []), ...(parent.childrenIds || [])]);
         let list = souls.filter(s => !forbiddenIds.has(s.id));
         if (search) {
             const term = search.toLowerCase();
@@ -1053,8 +1053,8 @@ export default function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Update soul identity and mission details.</DialogDescription>
