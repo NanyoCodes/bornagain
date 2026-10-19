@@ -95,9 +95,9 @@ const strongholdCategories = [
         bg: 'bg-blue-500/10' 
     },
     { 
-        name: 'Fear', 
-        desc: 'Conquering anxiety with the perfect love of God.', 
-        mission: '2 Timothy 1:7 - For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.',
+        name: 'Anxiety', 
+        desc: 'Casting all your cares on Him because He cares for you.', 
+        mission: '1 Peter 5:7 - Cast all your anxiety on him because he cares for you.',
         icon: ShieldAlert, 
         color: 'text-blue-600', 
         bg: 'bg-blue-600/10' 
@@ -379,7 +379,7 @@ export default function VictoryHubPage() {
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="space-y-1">
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2 mb-2 text-left">
                             <ShieldCheck className="h-5 w-5 text-primary" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Recovery</span>
                         </div>
@@ -402,8 +402,8 @@ export default function VictoryHubPage() {
                     </div>
                 </div>
 
-                <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
+                <div className="relative text-left">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                     <Input 
                         placeholder="Search for a struggle circle..." 
                         value={searchTerm}

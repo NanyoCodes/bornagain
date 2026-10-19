@@ -86,6 +86,11 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "James 4:6", text: "God opposes the proud but shows favor to the humble.", prayer: "I choose to humble myself before You today, Lord. May Your favor rest upon me as I decrease and You increase. Amen." },
     { verse: "1 Peter 5:5", text: "Clothe yourselves, all of you, with humility toward one another.", prayer: "Holy Spirit, help me to serve others with a genuine heart, free from the need for recognition or praise. Amen." }
   ],
+  anxiety: [
+    { verse: "1 Peter 5:7", text: "Cast all your anxiety on him because he cares for you.", prayer: "Lord, I release every heavy burden and anxious thought to You. I trust that You care for me deeply. Amen." },
+    { verse: "Philippians 4:6-7", text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.", prayer: "I trade my worry for Your peace that surpasses understanding. Guard my heart and mind in Christ Jesus. Amen." },
+    { verse: "Matthew 6:34", text: "Therefore do not worry about tomorrow, for tomorrow will worry about itself.", prayer: "Help me to live fully in today, trusting Your provision for every moment. Amen." }
+  ],
   marital_strife: [
     { verse: "Ephesians 5:21", text: "Submit to one another out of reverence for Christ.", prayer: "Lord, teach us the beauty of mutual submission. May our home be a sanctuary of peace and holy agreement. Amen." },
     { verse: "Colossians 3:14", text: "And over all these virtues put on love, which binds them all together in perfect unity.", prayer: "We put on love today, Father. Let Your perfect unity dissolve every root of strife in our marriage. Amen." },
@@ -444,7 +449,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     const [isUpdating, setIsUpdating] = useState(false);
     const [amenScriptureIdx, setAmenScriptureIdx] = useState<number | string | null>(null);
 
-    const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
+    const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
     const categoryKey = category.toLowerCase().replace(/-/g, '_');
     const scriptures = categoryScriptures[categoryKey] || categoryScriptures['other'];
 
@@ -562,9 +567,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
     return (
         <div className="space-y-8 max-w-4xl mx-auto pb-32 text-left">
-            <header className="flex items-center gap-4 px-4 sm:px-0 pt-4 text-left">
+            <header className="flex items-center gap-4 px-4 sm:px-0 pt-4 text-left text-left">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
-                    <ArrowLeft className="h-5 w-5 text-left" />
+                    <ArrowLeft className="h-6 w-6 text-left" />
                 </Button>
                 <div className="min-w-0 flex-1 text-left">
                     <div className="flex items-center gap-2 mb-1 text-left">
@@ -596,7 +601,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             onChange={(e) => setNewPostText(e.target.value)}
                             className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[120px] rounded-2xl text-base focus-visible:ring-white/30 text-left"
                         />
-                        <div className="flex items-center space-x-2 px-1 text-left">
+                        <div className="flex items-center space-x-2 px-1 text-left text-left">
                             <Checkbox 
                                 id="anonymous-toggle" 
                                 checked={isAnonymous} 
@@ -618,7 +623,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             </Card>
 
             <Tabs defaultValue="armor" className="w-full text-left">
-                <TabsList className="grid w-full grid-cols-3 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 mx-4 sm:mx-0 w-[calc(100%-2rem)] sm:w-full text-left">
+                <TabsList className="grid w-full grid-cols-3 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 mx-4 sm:mx-0 w-[calc(100%-2rem)] sm:w-full text-left text-left text-left">
                     <TabsTrigger value="armor" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-center">Armor</TabsTrigger>
                     <TabsTrigger value="discussion" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-center">Discussion</TabsTrigger>
                     <TabsTrigger value="resources" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-center">Resources</TabsTrigger>
@@ -708,7 +713,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                     <p className="text-sm text-muted-foreground italic font-medium leading-relaxed text-left">&ldquo;{arm.text}&rdquo;</p>
                                                 </div>
                                             </CardHeader>
-                                            <CardContent className="p-6 pt-2 flex-grow text-left text-left">
+                                            <CardContent className="p-6 pt-2 flex-grow text-left">
                                                 {arm.comment && (
                                                     <div className="space-y-2 text-left">
                                                         <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left">Revelation</p>
@@ -719,7 +724,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                             <CardFooter className="p-4 bg-muted/5 border-t flex items-center justify-between text-left">
                                                 <div className="flex items-center gap-2 text-left">
                                                     <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
-                                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest text-left">BY {arm.authorName}</p>
+                                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest text-left text-left">BY {arm.authorName}</p>
                                                 </div>
                                                 <Button variant="ghost" size="sm" className="h-7 rounded-lg text-[9px] font-black text-primary uppercase text-left" onClick={() => handleAmen(arm.id)}>
                                                     <HandHeart className="mr-1.5 h-3 w-3 text-left" /> AMEN
@@ -752,9 +757,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         </div>
                     </div>
 
-                    <div className="space-y-6 text-left">
+                    <div className="space-y-6 text-left text-left">
                         {loadingPosts ? (
-                            <div className="flex justify-center py-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left" /></div>
+                            <div className="flex justify-center py-20 text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left text-left" /></div>
                         ) : filteredPosts && filteredPosts.length > 0 ? (
                             filteredPosts.map((post: any) => {
                                 const postDate = safeToDate(post.createdAt);
@@ -762,13 +767,13 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 const isEditing = editingPostId === post.id;
 
                                 return (
-                                    <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 text-left">
-                                        <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between text-left">
-                                            <div className="flex items-center gap-3 text-left">
+                                    <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 text-left text-left">
+                                        <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between text-left text-left">
+                                            <div className="flex items-center gap-3 text-left text-left">
                                                 <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
                                                     <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
                                                 </div>
-                                                <div className="min-w-0 text-left">
+                                                <div className="min-w-0 text-left text-left">
                                                     <p className="text-sm font-black uppercase tracking-tight text-left">{post.authorName}</p>
                                                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                                         {postDate ? format(postDate, 'PPP') : 'Just now'}
@@ -796,7 +801,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 )}
                                             </div>
                                         </CardHeader>
-                                        <CardContent className="p-6 pt-4 text-left">
+                                        <CardContent className="p-6 pt-4 text-left text-left">
                                             {isEditing ? (
                                                 <div className="space-y-4 text-left">
                                                     <Textarea 
@@ -805,11 +810,11 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
                                                         autoFocus
                                                     />
-                                                    <div className="flex justify-end gap-2 text-left">
+                                                    <div className="flex justify-end gap-2 text-left text-left">
                                                         <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold text-left">
                                                             <X className="mr-1 h-3 w-3 text-left" /> Cancel
                                                         </Button>
-                                                        <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-center">
+                                                        <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-center text-left">
                                                             {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin text-left" /> : <Check className="mr-1 h-3 w-3 text-left" />}
                                                             Save Changes
                                                         </Button>
@@ -828,13 +833,13 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 </PostResponsesDialog>
                                             )}
                                         </CardContent>
-                                        <CardFooter className="p-3 bg-muted/5 flex justify-between items-center text-left">
-                                             <div className="flex items-center gap-2 px-3 text-left">
+                                        <CardFooter className="p-3 bg-muted/5 flex justify-between items-center text-left text-left">
+                                             <div className="flex items-center gap-2 px-3 text-left text-left">
                                                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
                                                 <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left">Victory Support Active</span>
                                              </div>
                                              <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-center">
+                                                <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-center text-left">
                                                     Participate
                                                 </Button>
                                              </PostResponsesDialog>
@@ -843,11 +848,11 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 );
                             })
                         ) : (
-                            <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0 text-left">
+                            <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0 text-left text-left">
                                 <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
                                     <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
                                 </div>
-                                <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-center">Circle Silence</h4>
+                                <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-center text-left">Circle Silence</h4>
                                 <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
                             </div>
                         )}
