@@ -118,7 +118,7 @@ import {
   deleteDoc
 } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { getBibleChapter, type BibleChapterOutput } from "@/ai/flows/get-bible-chapter-flow";
+import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { bibleData } from "@/lib/bible-data";
 import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-data";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -253,17 +253,12 @@ export function ShareWordDialog({
             <Target className="h-5 w-5 text-primary" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
           </div>
-          {isMobile ? (
-            <DrawerHeader className="p-0 text-left">
-              <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}</DrawerTitle>
-              <DrawerDescription className="text-sm font-medium">Access the word of God to share with converts.</DrawerDescription>
-            </DrawerHeader>
-          ) : (
-            <DialogHeader className="p-0 text-left">
-              <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}</DialogTitle>
-              <DialogDescription className="text-sm font-medium">Access the word of God to share with converts.</DialogDescription>
-            </DialogHeader>
-          )}
+          <DialogHeader className="p-0 text-left">
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+                {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}
+            </DialogTitle>
+            <DialogDescription className="text-sm font-medium">Access the word of God to share with converts.</DialogDescription>
+          </DialogHeader>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -355,17 +350,10 @@ export function IntercessionHubDialog({
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0 text-left">
-            {isMobile ? (
-                <DrawerHeader className="p-0 text-left">
-                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DrawerTitle>
-                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DrawerDescription>
-                </DrawerHeader>
-            ) : (
-                <DialogHeader className="p-0 text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
-                    <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
-                </DialogHeader>
-            )}
+            <DialogHeader className="p-0 text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+            </DialogHeader>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -429,17 +417,10 @@ export function MessageHubDialog({
                 <MessageSquare className="h-4 w-4 text-primary" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
             </div>
-            {isMobile ? (
-                <DrawerHeader className="p-0 text-left">
-                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</DrawerTitle>
-                    <DrawerDescription className="text-sm font-medium text-center sm:text-left">Encourage {soul?.firstName} via mobile.</DrawerDescription>
-                </DrawerHeader>
-            ) : (
-                <DialogHeader className="p-0 text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-center sm:text-left">Encourage {soul?.firstName} via mobile.</DialogDescription>
-                </DialogHeader>
-            )}
+            <DialogHeader className="p-0 text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-center sm:text-left">Encourage {soul?.firstName} via mobile.</DialogDescription>
+            </DialogHeader>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -604,6 +585,13 @@ export function SoulProfileContent({
             return;
         case 'matchmaking':
             router.push(`/matchmaking?soulId=${soul.id}`);
+            return;
+        case 'invited_to_event':
+            await finalizeLog(actionId, 'Redirected to Events Hub');
+            router.push('/dashboard/events');
+            return;
+        case 'helped_with_need':
+            setIsHelpNeedDialogOpen(true);
             return;
         default:
             await finalizeLog(actionId);
