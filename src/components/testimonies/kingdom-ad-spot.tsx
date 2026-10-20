@@ -1,11 +1,10 @@
-
 'use client';
 
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Store, CalendarDays, ArrowRight, Info, Sparkles } from "lucide-react";
+import { Store, CalendarDays, ArrowRight, Info, Sparkles, Newspaper } from "lucide-react";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
@@ -17,7 +16,7 @@ interface KingdomAdSpotProps {
 
 /**
  * @fileOverview High-fidelity ad spots for Kingdom businesses and missions.
- * Refined to remove redundant headers and provide an immersive visual experience.
+ * Refined to remove redundant headers and provide an immersive visual experience with optimized opacity.
  */
 export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
     const adImage = PlaceHolderImages.find(img => img.id === 'ad-placeholder-1');
@@ -33,7 +32,7 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
                                 src={adImage.imageUrl} 
                                 alt="Kingdom Spotlight" 
                                 fill 
-                                className="object-cover opacity-50 transition-transform duration-[2000ms] group-hover:scale-125 text-left"
+                                className="object-cover opacity-80 transition-transform duration-[2000ms] group-hover:scale-110 text-left"
                                 unoptimized
                                 data-ai-hint={adImage.imageHint}
                             />

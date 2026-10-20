@@ -1,4 +1,3 @@
-
 {
   "placeholderImages": [
     {
@@ -105,9 +104,9 @@
     },
     {
       "id": "ad-placeholder-1",
-      "description": "Immersive Kingdom mission ad",
-      "imageUrl": "https://picsum.photos/seed/kingdom-mission-ad/800/600",
-      "imageHint": "mission church"
+      "description": "Immersive Kingdom mission spotlight",
+      "imageUrl": "https://picsum.photos/seed/harvest_mission_spotlight/800/600",
+      "imageHint": "mission outreach"
     }
   ]
 }

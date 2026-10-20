@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -158,7 +157,7 @@ function ChildSelectionDialog({
                 </DialogHeader>
             </div>
             <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => onOpenChange(false)}>
-                <X className="h-5 w-5" />
+                <X className="h-5 w-5 text-left" />
             </Button>
         </div>
     );
@@ -1081,7 +1080,7 @@ export function SoulsWonPage() {
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <div className="flex items-center justify-between gap-4 text-left">
-                                    <DialogHeader className="text-left p-0 text-left">
+                                    <DialogHeader className="text-left p-0 text-left text-left">
                                         <DialogTitle className="text-2xl font-bold font-headline text-left">Add New Soul</DialogTitle>
                                         <DialogDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DialogDescription>
                                     </DialogHeader>
@@ -1096,7 +1095,7 @@ export function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-2xl sm:rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <div className="flex items-center justify-between gap-4 text-left">
                                     <DialogHeader className="text-left p-0 text-left">
