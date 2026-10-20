@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
@@ -9,6 +8,7 @@ import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-f
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import { PrayerRequestCard } from "@/components/prayer/PrayerRequestCard";
 import { CreatePrayerRequestForm } from "@/components/prayer/CreatePrayerRequestForm";
+import { KingdomAdSpot } from "@/components/testimonies/kingdom-ad-spot";
 import {
   Dialog,
   DialogContent,
@@ -170,6 +170,21 @@ function TestimoniesContent() {
     );
   }, [testimonies, searchTerm, activeTab, userProfile, partnerIds]);
 
+  const interleavedTestimonies = useMemo(() => {
+    const list: (Testimony & { isAd?: boolean; adType?: 'business' | 'event' })[] = [];
+    filteredTestimonies.forEach((t, i) => {
+      list.push(t);
+      if ((i + 1) % 4 === 0) {
+        list.push({
+          id: `ad-testimony-${i}`,
+          isAd: true,
+          adType: ((i + 1) / 4) % 2 === 0 ? 'event' : 'business'
+        } as any);
+      }
+    });
+    return list;
+  }, [filteredTestimonies]);
+
   const filteredPrayerRequests = useMemo(() => {
     if (!prayerRequests) return [];
     if (activeTab !== 'prayers' || !searchTerm) return prayerRequests;
@@ -180,6 +195,21 @@ function TestimoniesContent() {
       req.category.toLowerCase().includes(term)
     );
   }, [prayerRequests, searchTerm, activeTab]);
+
+  const interleavedPrayers = useMemo(() => {
+    const list: (PrayerRequest & { isAd?: boolean; adType?: 'business' | 'event' })[] = [];
+    filteredPrayerRequests.forEach((p, i) => {
+      list.push(p);
+      if ((i + 1) % 4 === 0) {
+        list.push({
+          id: `ad-prayer-${i}`,
+          isAd: true,
+          adType: ((i + 1) / 4) % 2 === 0 ? 'business' : 'event'
+        } as any);
+      }
+    });
+    return list;
+  }, [filteredPrayerRequests]);
 
   useEffect(() => {
     if (activeTab === 'testimonies') {
@@ -337,16 +367,20 @@ function TestimoniesContent() {
                             [...Array(3)].map((_, i) => (
                                 <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
                             ))
-                            ) : filteredTestimonies.map((testimony) => (
-                                <TestimonyCard 
-                                    key={testimony.id}
-                                    testimony={testimony} 
-                                    isPartner={testimony._isPartner}
-                                    hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
-                                    currentUserProfile={userProfile}
-                                    onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
-                                    onEdit={() => setTestimonyToEdit(testimony)}
-                                />
+                            ) : interleavedTestimonies.map((item) => (
+                                item.isAd ? (
+                                    <KingdomAdSpot key={item.id} type={item.adType!} />
+                                ) : (
+                                    <TestimonyCard 
+                                        key={item.id}
+                                        testimony={item} 
+                                        isPartner={item._isPartner}
+                                        hasPendingRequest={pendingRequestIds.has(item.authorId)}
+                                        currentUserProfile={userProfile}
+                                        onDelete={() => setItemToDelete({ type: 'testimony', data: item })}
+                                        onEdit={() => setTestimonyToEdit(item)}
+                                    />
+                                )
                             ))}
                             {!loading && filteredTestimonies?.length === 0 && (
                             <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
@@ -366,14 +400,18 @@ function TestimoniesContent() {
                             [...Array(3)].map((_, i) => (
                                 <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
                             ))
-                            ) : filteredPrayerRequests.map((req) => (
-                            <PrayerRequestCard 
-                                key={req.id}
-                                prayerRequest={req}
-                                onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
-                                onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
-                                onEdit={() => setPrayerToEdit(req)}
-                            />
+                            ) : interleavedPrayers.map((item) => (
+                                item.isAd ? (
+                                    <KingdomAdSpot key={item.id} type={item.adType!} />
+                                ) : (
+                                    <PrayerRequestCard 
+                                        key={item.id}
+                                        prayerRequest={item}
+                                        onDelete={() => setItemToDelete({ type: 'prayer', data: item })}
+                                        onAnswerPrayer={() => handleOpenTestimonyDialog(item)}
+                                        onEdit={() => setPrayerToEdit(item)}
+                                    />
+                                )
                             ))}
                             {!loading && filteredPrayerRequests?.length === 0 && (
                             <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
@@ -517,7 +555,7 @@ function TestimoniesContent() {
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Edit Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Update the details of your request.</DialogDescription>
