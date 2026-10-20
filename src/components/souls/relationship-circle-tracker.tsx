@@ -13,7 +13,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerTrigger } from '@/components/ui/drawer';
@@ -47,7 +47,8 @@ function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
           >
             <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors text-left">
-                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+                  <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                  <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0 text-left ml-1 sm:ml-2">
                 <div className="flex items-center gap-2 text-left flex-wrap">
@@ -167,7 +168,7 @@ export function RelationshipCircleTracker({
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center justify-between gap-4 text-left">
                                 <div className="min-w-0 text-left">
-                                    <DialogHeader className="text-left text-left">
+                                    <DialogHeader className="text-left p-0 text-left">
                                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedCategoryName} Directory</DialogTitle>
                                         <DialogDescription className="text-sm font-medium text-left">Souls won within your {selectedCategoryName.toLowerCase()} circle.</DialogDescription>
                                     </DialogHeader>
@@ -197,9 +198,9 @@ export function RelationshipCircleTracker({
             <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left text-left">
+                        <DrawerHeader className="text-left p-0 text-left">
                             <DrawerTitle className="text-2xl font-black font-headline text-left">Log {selectedCategoryName} Soul</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium text-left">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DrawerDescription>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DrawerDescription>
                         </DrawerHeader>
                     </div>
                     <div className="flex-grow overflow-y-auto p-8 text-left">
@@ -281,7 +282,7 @@ export function RelationshipCircleTracker({
             </Card>
             {dialogContent}
             {logSoulView}
-            <ViewHistoryDialog soul={detailedSoul} isOpen={!!detailedSoul} onOpenChange={(open) => !open && setDetailedSoul(null)} />
+            <ViewHistoryDialogLazy soul={detailedSoul} isOpen={!!detailedSoul} onOpenChange={(open) => !open && setDetailedSoul(null)} />
         </>
     );
 }

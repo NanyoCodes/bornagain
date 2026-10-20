@@ -153,20 +153,6 @@ export const getStatusClasses = (status: FollowUpStatus | undefined): string => 
     }
 }
 
-export const iconMap: Record<string, any> = {
-    'prayed_together': Sparkles,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
-    'matchmaking': HeartHandshake,
-};
-
 // --- Sub-Dialogs ---
 
 export function ShareWordDialog({ 
@@ -244,8 +230,8 @@ export function ShareWordDialog({
   const header = (
     <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left">
       <div className="flex items-center justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex items-center gap-3 mb-2">
+        <div className="min-w-0 text-left">
+          <div className="flex items-center gap-3 mb-2 text-left">
             {view !== 'hub' && (
                 <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
                     <ArrowLeft className="h-4 w-4" />
@@ -254,8 +240,8 @@ export function ShareWordDialog({
             <Target className="h-5 w-5 text-primary" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
           </div>
-          <DialogHeader className="p-0">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}</DialogTitle>
+          <DialogHeader className="p-0 text-left">
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}</DialogTitle>
           </DialogHeader>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
@@ -267,7 +253,7 @@ export function ShareWordDialog({
 
   const body = (
     <ScrollArea className="flex-grow min-h-[300px]">
-        <div className="p-4 sm:p-10">
+        <div className="p-4 sm:p-10 text-left">
             {view === 'hub' && (
                 <div className="space-y-8">
                     <div className="relative">
@@ -323,7 +309,7 @@ export function ShareWordDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col">
+      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
         {header}{body}{footer || (<div className="p-6 border-t bg-muted/5 flex justify-end shrink-0"><Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs">Close Hub</Button></div>)}
       </DialogContent>
     </Dialog>
@@ -364,8 +350,8 @@ export function IntercessionHubDialog({
   );
 
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-        <DialogHeader className="p-0">
+    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+        <DialogHeader className="p-0 text-left">
             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
             <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
         </DialogHeader>
@@ -384,7 +370,7 @@ export function IntercessionHubDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
             {header}{content}
         </DialogContent>
     </Dialog>
@@ -667,8 +653,8 @@ export function SoulProfileContent({
                     <DialogTrigger asChild disabled={!soul.photoURL}>
                         <div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
                             <Avatar className="h-full w-full border shadow-sm">
-                                <AvatarImage src={soul.photoURL || undefined} className="object-contain" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full"> {soul.firstName?.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl"> {soul.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         </div>
                     </DialogTrigger>
