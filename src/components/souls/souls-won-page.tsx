@@ -100,7 +100,7 @@ import { RelationshipCircleTracker } from "@/components/souls/relationship-circl
 import { SoulsImportTemplateCard } from "@/components/settings/souls-import-template-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { SoulProfileContent, getStatusClasses } from "./soul-profile-content";
+import { SoulProfileContent, getStatusClasses, ShareWordDialog, IntercessionHubDialog, MessageHubDialog } from "./soul-profile-content";
 import { Checkbox } from "../ui/checkbox";
 
 const SoulsWonTableLazy = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -108,9 +108,6 @@ const SoulsWonTableLazy = dynamic(() => import('@/components/souls/souls-won-tab
   ssr: false
 });
 
-const ShareWordDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => (m as any).ShareWordDialog), { ssr: false });
-const IntercessionHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => (m as any).IntercessionHubDialog), { ssr: false });
-const MessageHubDialogLazy = dynamic(() => import('@/components/souls/soul-profile-content').then(m => (m as any).MessageHubDialog), { ssr: false });
 const LogFollowUpDialogLazy = dynamic(() => import('@/components/souls/log-follow-up-dialog').then(m => m.LogFollowUpDialog), { ssr: false });
 const ViewHistoryDialogLazy = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 const AssignFellowshipDialogLazy = dynamic(() => import('@/components/souls/assign-fellowship-dialog').then(m => m.AssignFellowshipDialog), { ssr: false });
@@ -124,7 +121,6 @@ function ChildSelectionDialog({
     souls,
     parent,
     spouse,
-    onSelect,
     onShareWord,
     isLoading
 }: {
@@ -320,7 +316,7 @@ function FilteredSoulList({
                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 group/trigger hover:opacity-80 transition-opacity text-left">
                                     <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left">
                                         Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
-                                        {soul.age && <span className="opacity-60 ml-1.5 font-black"> • {soul.age} YRS</span>}
+                                        {soul.age && <span className="opacity-60 font-black"> • {soul.age} YRS</span>}
                                     </p>
                                     {hasFamily && (
                                         <ChevronDown className={cn("h-3 w-3 text-primary transition-transform duration-200", openFamilyId === soul.id && "rotate-180")} />
@@ -368,7 +364,7 @@ function FilteredSoulList({
                                   <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover text-left" />
                                   <AvatarFallback className="text-center flex items-center justify-center h-full w-full text-left"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0 text-left">
+                              <div className="flex-1 min-w-0 text-left text-left">
                                   <p className="font-bold text-xs uppercase truncate leading-none text-left">{spouseObj.firstName} {spouseObj.lastName}</p>
                                   <p className="text-[9px] text-muted-foreground uppercase mt-0.5 text-left">Spouse</p>
                               </div>
@@ -377,9 +373,9 @@ function FilteredSoulList({
                       )}
                       {children.map(child => (
                            <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left">
-                              <Avatar className="h-8 w-8 border text-left text-left">
+                              <Avatar className="h-8 w-8 border text-left">
                                   <AvatarImage src={child.photoURL || undefined} className="object-cover text-left" />
-                                  <AvatarFallback className="text-center flex items-center justify-center h-full w-full text-left text-left"> {child.firstName?.charAt(0)}</AvatarFallback>
+                                  <AvatarFallback className="text-center flex items-center justify-center h-full w-full text-left"> {child.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <div className="flex-1 min-w-0 text-left text-left">
                                   <p className="font-bold text-xs uppercase truncate leading-none text-left">{child.firstName} {child.lastName}</p>
@@ -406,7 +402,7 @@ function FilteredSoulList({
   );
 }
 
-export default function SoulsWonPage() {
+export function SoulsWonPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -960,8 +956,8 @@ export default function SoulsWonPage() {
                         <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
                             <div className="flex items-center justify-between gap-4">
                                 <div className="min-w-0 text-left">
-                                    <div className="flex items-center gap-2 mb-2 text-left">
-                                        <BarChart3 className="h-4 w-4 text-primary text-left" />
+                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
+                                        <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left" />
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Demographic View</span>
                                     </div>
                                     <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
@@ -998,21 +994,21 @@ export default function SoulsWonPage() {
         <AssignFellowshipDialogLazy soul={soulToAssign} fellowships={fellowships || []} isOpen={!!assignSoulId} onOpenChange={(isOpen) => !isOpen && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
         <SoulAssessmentDialogLazy soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(open) => !open && setAssessmentSoulId(null)} />
         
-        <ShareWordDialogLazy 
+        <ShareWordDialog 
           isOpen={!!shareWordSoulId}
           onOpenChange={(open: boolean) => !open && setShareWordSoulId(null)}
           soul={soulForWordSharing}
           onSelectVerse={(v: string) => { setShareWordSoulId(null); setSelectedId(null); }}
         />
 
-        <IntercessionHubDialogLazy 
+        <IntercessionHubDialog 
           isOpen={!!prayerSoulId}
           onOpenChange={(open: boolean) => !open && setPrayerSoulId(null)}
           soul={soulForPrayer}
           onComplete={(msg: string) => { setPrayerSoulId(null); setSelectedId(null); }}
         />
 
-        <MessageHubDialogLazy 
+        <MessageHubDialog 
           isOpen={!!messageSoulId}
           onOpenChange={(open: boolean) => !open && setMessageSoulId(null)}
           soul={soulForMessage}
@@ -1052,7 +1048,7 @@ export default function SoulsWonPage() {
                                 <div className="flex items-center justify-between gap-4">
                                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Add New Soul</DrawerTitle>
-                                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Record a new life won for Christ.</DrawerDescription>
+                                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Record a new life won for Christ.</DrawerDescription>
                                     </DrawerHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => setIsLogDialogOpen(false)}>
                                         <X className="h-5 w-5" />
@@ -1072,7 +1068,7 @@ export default function SoulsWonPage() {
                                 <div className="flex items-center justify-between gap-4">
                                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Edit Record</DrawerTitle>
-                                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update soul identity and mission details.</DrawerDescription>
+                                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Update soul identity and mission details.</DrawerDescription>
                                     </DrawerHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => setEditSoulId(null)}>
                                         <X className="h-5 w-5" />
@@ -1129,11 +1125,11 @@ export default function SoulsWonPage() {
         
         <Drawer open={!!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                     <div className="flex items-center justify-between gap-4 text-left">
                         <div className="min-w-0 flex-1">
-                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
-                                <div className="flex items-center gap-2 mb-2 text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span></div>
+                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
+                                <div className="flex items-center gap-2 mb-2 text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Identity Hub</span></div>
                                 <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
                                     {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                                 </DrawerTitle>

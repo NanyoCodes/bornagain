@@ -173,7 +173,7 @@ export function RelationshipCircleTracker({
             ) : (
                 <Dialog open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
                             <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left">
                                 <div className="min-w-0 text-left text-left">
                                     <DialogHeader className="text-left p-0 text-left text-left text-left">
