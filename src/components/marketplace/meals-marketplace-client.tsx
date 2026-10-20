@@ -323,7 +323,7 @@ export default function MealsMarketplaceClient() {
 
     return (
         <div className="space-y-6 sm:space-y-10 max-w-4xl mx-auto pb-32 text-left text-left text-left">
-            <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left text-left">
+            <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left text-left text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left text-left text-left text-left">
                     <div className="flex items-center gap-4 text-left text-left text-left text-left">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left text-left text-left text-left"><ArrowLeft className="h-6 w-6 text-left text-left text-left text-left" /></Button>
@@ -429,14 +429,14 @@ export default function MealsMarketplaceClient() {
                                 {vendor.photoURL ? (
                                     <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left text-left text-left" unoptimized />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-left text-left text-left">
+                                    <div className="w-full h-full flex items-center justify-center text-left text-left text-left text-left">
                                         <Utensils className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left text-left" />
                                     </div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left text-left" />
                                 <div className="absolute bottom-4 left-6 pr-4 text-left text-left text-left text-left">
                                     <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-tight truncate text-left text-left text-left">{vendor.businessName}</h3>
-                                    <div className="flex items-center gap-1.5 text-white/70 text-[9px] font-bold uppercase tracking-widest mt-1 text-left text-left text-left">
+                                    <div className="flex items-center gap-1.5 text-white/70 text-[9px] font-bold uppercase tracking-widest mt-1 text-left text-left text-left text-left">
                                         <MapPin className="h-2.5 w-2.5 text-primary text-left text-left text-left text-left" /> {vendor.location || 'Local Delivery'}
                                     </div>
                                 </div>
@@ -478,7 +478,7 @@ export default function MealsMarketplaceClient() {
                                         <ShoppingBag className="h-5 w-5 text-white/80 text-left text-left text-left text-left text-left" />
                                     </div>
                                     <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center text-left text-left text-left text-left text-left">
-                                        <span className="text-[10px] font-black text-white text-center text-left text-left text-left text-left"> {cartCount}</span>
+                                        <span className="text-[10px] font-black text-white text-center text-left text-left text-left text-left text-left"> {cartCount}</span>
                                     </div>
                                 </div>
                                 <div className="flex flex-col text-left leading-none min-w-0 text-left text-left text-left text-left text-left text-left">

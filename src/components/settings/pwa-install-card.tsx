@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Smartphone, CheckCircle2, Info, Share, PlusSquare, Sparkles } from 'lucide-react';
+import { Download, Smartphone, CheckCircle2, Share, PlusSquare, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
@@ -20,13 +19,11 @@ export function PwaInstallCard() {
   useEffect(() => {
     setMounted(true);
 
-    // iOS detection logic
     const isIosDevice = typeof window !== 'undefined' && 
       (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
     setIsIos(isIosDevice);
 
-    // Check if app is already installed or running in standalone mode
     if (
       typeof window !== 'undefined' && (
       window.matchMedia('(display-mode: standalone)').matches ||
@@ -38,9 +35,7 @@ export function PwaInstallCard() {
     }
 
     const handler = (e: Event) => {
-      // Prevent Chrome 67 and earlier from automatically showing the prompt
       e.preventDefault();
-      // Stash the event so it can be triggered later.
       setDeferredPrompt(e);
     };
 
@@ -76,9 +71,7 @@ export function PwaInstallCard() {
       return;
     }
 
-    // Show the prompt
     deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
     
     if (outcome === 'accepted') {
@@ -88,7 +81,6 @@ export function PwaInstallCard() {
       });
     }
     
-    // We've used the prompt, and can't use it again
     setDeferredPrompt(null);
   };
 
@@ -132,7 +124,7 @@ export function PwaInstallCard() {
                         Kingdom Identity
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed font-medium text-balance text-left text-left">
-                        Add Testify to your home screen to access the harvest field instantly with your unique spiritual identity and current app logo.
+                        Add Testify to your home screen to access the harvest field instantly with your unique spiritual identity.
                     </p>
                 </div>
             </div>
@@ -149,7 +141,7 @@ export function PwaInstallCard() {
                                 <Share className="h-6 w-6 text-primary text-left text-left" />
                             </div>
                             <p className="text-sm font-bold text-muted-foreground leading-snug text-left text-left">
-                                1. Tap the <span className="text-foreground font-black text-left text-left">Share</span> icon at the bottom of Safari.
+                                1. Tap the <span className="text-foreground font-black text-left text-left">Share</span> icon in Safari.
                             </p>
                         </div>
                         <div className="flex items-center gap-5 text-left text-left text-left">
@@ -157,7 +149,7 @@ export function PwaInstallCard() {
                                 <PlusSquare className="h-6 w-6 text-primary text-left text-left text-left" />
                             </div>
                             <p className="text-sm font-bold text-muted-foreground leading-snug text-left text-left text-left">
-                                2. Scroll down and tap <span className="text-foreground font-black text-left text-left text-left">"Add to Home Screen"</span>.
+                                2. Tap <span className="text-foreground font-black text-left text-left text-left">"Add to Home Screen"</span>.
                             </p>
                         </div>
                     </div>
@@ -176,16 +168,12 @@ export function PwaInstallCard() {
                     {!deferredPrompt && (
                         <div className="p-5 bg-muted/20 rounded-2xl border border-dashed text-center text-left text-left">
                             <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-relaxed text-balance text-left text-left">
-                                Use <span className="text-foreground text-left text-left">Google Chrome</span> on Android to enable one-tap installation with the app logo.
+                                Use <span className="text-foreground text-left text-left">Google Chrome</span> on Android to enable one-tap installation.
                             </p>
                         </div>
                     )}
                 </div>
             )}
-            
-            <p className="text-[9px] text-center text-muted-foreground font-black uppercase tracking-[0.4em] opacity-30 text-left text-left">
-                PWA Version 1.2.1 • Mobilizing the Body
-            </p>
           </div>
         )}
       </CardContent>
