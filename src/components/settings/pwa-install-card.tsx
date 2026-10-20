@@ -88,7 +88,7 @@ export function PwaInstallCard() {
 
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden bg-card/50 backdrop-blur-sm text-left">
-      <CardHeader className="p-6 sm:p-8 text-left">
+      <CardHeader className="p-6 sm:p-8 text-left text-left">
         <CardTitle className="flex items-center gap-2 text-lg font-black font-headline uppercase tracking-tight text-left">
           <Smartphone className="h-5 w-5 text-primary text-left" /> 
           App Installation
@@ -99,9 +99,9 @@ export function PwaInstallCard() {
       </CardHeader>
       <CardContent className="p-6 sm:p-8 pt-0 space-y-8 text-left">
         {isInstalled ? (
-          <div className="flex items-center gap-4 text-green-600 font-bold bg-green-50 dark:bg-green-950/20 p-6 rounded-[2rem] border-2 border-dashed border-green-200 dark:border-green-900 animate-in fade-in zoom-in duration-500 shadow-inner text-left">
+          <div className="flex items-center gap-4 text-green-600 font-bold bg-green-50 dark:bg-green-950/20 p-6 rounded-[2rem] border-2 border-dashed border-green-200 dark:border-green-900 animate-in fade-in zoom-in duration-500 shadow-inner text-left text-left">
             <CheckCircle2 className="h-8 w-8 shrink-0 text-left" />
-            <div className="space-y-1 text-left">
+            <div className="space-y-1 text-left text-left">
                 <p className="text-base font-black uppercase tracking-tight text-left">Kingdom Ready</p>
                 <p className="text-[10px] uppercase tracking-widest opacity-70 text-left">App is successfully installed</p>
             </div>
@@ -146,7 +146,7 @@ export function PwaInstallCard() {
                         </div>
                         <div className="flex items-center gap-5 text-left text-left text-left">
                             <div className="h-12 w-12 rounded-2xl bg-background flex items-center justify-center border shadow-xl shrink-0 text-left text-left text-left">
-                                <PlusSquare className="h-6 w-6 text-primary text-left text-left text-left" />
+                                <PlusSquare className="h-6 w-6 text-primary text-left text-left text-left text-left" />
                             </div>
                             <p className="text-sm font-bold text-muted-foreground leading-snug text-left text-left text-left">
                                 2. Tap <span className="text-foreground font-black text-left text-left text-left">"Add to Home Screen"</span>.
@@ -155,20 +155,20 @@ export function PwaInstallCard() {
                     </div>
                 </div>
             ) : (
-                <div className="space-y-4 text-left text-left">
+                <div className="space-y-4 text-left text-left text-left">
                     <Button 
                         onClick={handleInstallClick} 
-                        className="w-full font-black h-14 rounded-2xl shadow-xl shadow-primary/20 tracking-[0.2em] uppercase py-4 text-center text-left"
+                        className="w-full font-black h-14 rounded-2xl shadow-xl shadow-primary/20 tracking-[0.2em] uppercase py-4 text-center text-left text-left text-left"
                         variant="default"
                     >
-                        <Download className="mr-2 h-5 w-5 text-left text-left" />
+                        <Download className="mr-2 h-5 w-5 text-left text-left text-left" />
                         INSTALL APP
                     </Button>
                     
                     {!deferredPrompt && (
-                        <div className="p-5 bg-muted/20 rounded-2xl border border-dashed text-center text-left text-left">
-                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-relaxed text-balance text-left text-left">
-                                Use <span className="text-foreground text-left text-left">Google Chrome</span> on Android to enable one-tap installation.
+                        <div className="p-5 bg-muted/20 rounded-2xl border border-dashed text-center text-left text-left text-left">
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-relaxed text-balance text-left text-left text-left">
+                                Use <span className="text-foreground text-left text-left text-left">Google Chrome</span> on Android to enable one-tap installation.
                             </p>
                         </div>
                     )}

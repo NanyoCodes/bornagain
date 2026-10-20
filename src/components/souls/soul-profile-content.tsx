@@ -148,20 +148,6 @@ export const getStatusClasses = (status: FollowUpStatus | undefined): string => 
     }
 }
 
-export const iconMap: Record<string, any> = {
-    'prayed_together': Sparkles,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
-    'matchmaking': HeartHandshake,
-};
-
 // --- Sub-Dialogs ---
 
 export function ShareWordDialog({ 
@@ -342,27 +328,27 @@ export function IntercessionHubDialog({
 
   const content = (
     <div className="p-8 space-y-6 text-left">
-        <div className="space-y-3 text-left text-left">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Select Focus</label>
-            <div className="flex flex-wrap gap-2 text-left text-left">
+        <div className="space-y-3 text-left">
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Focus</label>
+            <div className="flex flex-wrap gap-2 text-left">
                 {prayerTemplates.map(t => (
-                    <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-left text-left" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
+                    <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-left" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
                 ))}
             </div>
         </div>
-        <div className="space-y-2 text-left text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Message</Label>
-            <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left text-left" />
+        <div className="space-y-2 text-left">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Message</Label>
+            <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" />
         </div>
-        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left text-left text-left">PREPARE TO SEND</Button>
+        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">PREPARE TO SEND</Button>
     </div>
   );
 
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
-        <DialogHeader className="text-left text-left text-left">
-            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Kingdom Intercession</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-left text-left text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+        <DialogHeader className="text-left">
+            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+            <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
         </DialogHeader>
     </div>
   );
@@ -399,21 +385,21 @@ export function MessageHubDialog({
 }) {
   const isMobile = useIsMobile();
   const header = (
-    <div className="text-center space-y-2 p-8 border-b bg-muted/10 text-left text-left text-left">
-        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left text-left text-left">
-            <MessageSquare className="h-7 w-7 text-primary text-left text-left text-left" />
+    <div className="text-center space-y-2 p-8 border-b bg-muted/10 text-left">
+        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+            <MessageSquare className="h-7 w-7 text-primary text-left" />
         </div>
-        <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left">Message Hub</h2>
-        <p className="text-sm font-medium text-center text-left text-left">Encourage {soul?.firstName} through external channels.</p>
+        <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</h2>
+        <p className="text-sm font-medium text-center">Encourage {soul?.firstName} through external channels.</p>
     </div>
   );
   const content = (
-    <div className="flex flex-col gap-3 p-8 text-left text-left text-left text-left">
-        <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg text-left text-left text-left text-left text-left text-left text-left text-left">
-            <WhatsAppIcon className="h-5 w-5 text-left text-left text-left text-left text-left text-left text-left text-left" /> WhatsApp
+    <div className="flex flex-col gap-3 p-8 text-left">
+        <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg text-left">
+            <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp
         </Button>
-        <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary text-left text-left text-left text-left text-left text-left text-left text-left">
-            <MessageSquare className="h-5 w-5 text-left text-left text-left text-left text-left text-left text-left text-left" /> Standard SMS
+        <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary text-left">
+            <MessageSquare className="h-5 w-5 text-left" /> Standard SMS
         </Button>
     </div>
   );
@@ -754,7 +740,7 @@ export function SoulProfileContent({
                 </div>
             </div>
 
-            <Separator className="opacity-20" />
+            <Separator className="opacity-20 text-left" />
 
             <div className="space-y-3 text-left">
                 <div className="flex items-center justify-between text-left">
@@ -781,7 +767,7 @@ export function SoulProfileContent({
                 </div>
             </div>
 
-            <Separator className="opacity-20" />
+            <Separator className="opacity-20 text-left" />
 
             <div className="space-y-4 text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Relational Actions</p>
@@ -811,7 +797,7 @@ export function SoulProfileContent({
                 </div>
             </div>
 
-            <Separator className="opacity-20" />
+            <Separator className="opacity-20 text-left" />
 
             <div className="space-y-4 text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Harvest Context</p>
@@ -823,7 +809,7 @@ export function SoulProfileContent({
                 </div>
             </div>
 
-            <Separator className="opacity-20" />
+            <Separator className="opacity-20 text-left" />
 
             <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between text-left">
@@ -850,7 +836,7 @@ export function SoulProfileContent({
                 </div>
             </div>
 
-            <Separator className="opacity-20" />
+            <Separator className="opacity-20 text-left" />
 
             <div className="space-y-4 text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Milestones</p>
@@ -872,7 +858,7 @@ export function SoulProfileContent({
                 </div>
             </div>
 
-            <Separator className="opacity-20" />
+            <Separator className="opacity-20 text-left" />
             <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left">
@@ -890,22 +876,22 @@ export function SoulProfileContent({
                                 <React.Fragment key={index}>
                                     <div className="relative text-left">
                                         <div className="pl-4 border-l-4 border-primary/20 text-left">
-                                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left text-left">
+                                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left">
                                                 {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                                 {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName}</span>}
                                             </p>
-                                            <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left text-left">
+                                            <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left">
                                                 &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                             </p>
                                         </div>
                                     </div>
-                                    {index < 2 && sortedHistory.length > index + 1 && <Separator className="mt-4 opacity-10 text-left text-left" />}
+                                    {index < 2 && sortedHistory.length > index + 1 && <Separator className="mt-4 opacity-10" />}
                                 </React.Fragment>
                             );
                         })
                     ) : (
-                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left text-left">
-                            <p className="text-sm text-muted-foreground/40 italic text-left">No interactions recorded.</p>
+                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left">
+                            <p className="text-sm text-muted-foreground/40 italic">No interactions recorded.</p>
                         </div>
                     )}
                 </div>
@@ -980,7 +966,6 @@ export function SoulProfileContent({
         </CardContent>
       </Card>
       
-      {/* Portals / Modals specific to profile actions */}
       <IntercessionHubDialog
         isOpen={isPrayerCustomizationOpen}
         onOpenChange={setIsPrayerCustomizationOpen}
@@ -1021,7 +1006,7 @@ export function IntercessionHubDialog({
   const content = (
     <div className="p-8 space-y-6 text-left">
         <div className="space-y-3 text-left">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Focus</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Focus</label>
             <div className="flex flex-wrap gap-2 text-left">
                 {prayerTemplates.map(t => (
                     <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-left" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
@@ -1029,7 +1014,7 @@ export function IntercessionHubDialog({
             </div>
         </div>
         <div className="space-y-2 text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Message</Label>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
             <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" />
         </div>
         <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">PREPARE TO SEND</Button>
@@ -1057,8 +1042,8 @@ export function IntercessionHubDialog({
         <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
             <div className="p-8 border-b bg-muted/10 text-left">
                 <DialogHeader className="text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
+                    <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
                 </DialogHeader>
             </div>
             {content}
@@ -1081,7 +1066,7 @@ export function MessageHubDialog({
   const isMobile = useIsMobile();
   const header = (
     <div className="text-center space-y-2 p-8 border-b bg-muted/10 text-left">
-        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
             <MessageSquare className="h-7 w-7 text-primary text-left" />
         </div>
         <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</h2>

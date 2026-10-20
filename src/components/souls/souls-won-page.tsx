@@ -486,7 +486,6 @@ export default function SoulsWonPage() {
     if (!souls) return stats;
     const processedIds = new Set<string>();
     souls.forEach(soul => {
-      const status = soul.status;
       const marital = soul.maritalStatus;
       if (marital === 'Married') {
           if (!processedIds.has(soul.id)) {
@@ -728,8 +727,8 @@ export default function SoulsWonPage() {
   return (
     <div className="w-full max-w-7xl mx-auto text-left">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
-            <div className="lg:col-span-8 space-y-10 pb-32 text-left text-left">
-                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left">
+            <div className="lg:col-span-8 space-y-10 pb-32 text-left">
+                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                         <div className="space-y-1 text-left">
                             <div className="flex items-center gap-3 text-left">
@@ -1054,11 +1053,11 @@ export default function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Update soul identity and mission details.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8 text-left text-left">
@@ -1071,7 +1070,7 @@ export default function SoulsWonPage() {
         )}
         
         <Drawer open={!!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span></div>
@@ -1081,8 +1080,8 @@ export default function SoulsWonPage() {
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                     </DrawerHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
                                 soul={souls.find(s => s.id === selectedId)!} 
