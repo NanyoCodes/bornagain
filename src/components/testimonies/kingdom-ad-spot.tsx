@@ -4,9 +4,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Store, CalendarDays, ArrowRight, Info, Sparkles, Newspaper } from "lucide-react";
-import Image from "next/image";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Store, CalendarDays, ArrowRight, Info, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 
@@ -16,40 +14,41 @@ interface KingdomAdSpotProps {
 
 /**
  * @fileOverview High-fidelity ad spots for Kingdom businesses and missions.
- * Refined to remove redundant headers and provide an immersive visual experience with optimized opacity.
+ * Updated to use vibrant gradients instead of images as requested.
+ * Optimized layout removes redundant headers for a modern, immersive feel.
  */
 export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
-    const adImage = PlaceHolderImages.find(img => img.id === 'ad-placeholder-1');
     const isBusiness = type === 'business';
     
     return (
         <Card className="rounded-none sm:rounded-[3rem] border-y sm:border border-border border-x-0 sm:border-x border-t-[6px] border-t-primary shadow-none sm:shadow-2xl bg-[#09090b] overflow-hidden group text-left transition-all duration-500 hover:scale-[1.01] hover:border-primary/20">
             <CardContent className="p-0 text-left">
                 <div className="grid grid-cols-1 md:grid-cols-2 text-left">
-                    <div className="relative aspect-video md:aspect-auto h-full min-h-[220px] bg-zinc-900 overflow-hidden text-left">
-                        {adImage && (
-                            <Image 
-                                src={adImage.imageUrl} 
-                                alt="Kingdom Spotlight" 
-                                fill 
-                                className="object-cover opacity-80 transition-transform duration-[2000ms] group-hover:scale-110 text-left"
-                                unoptimized
-                                data-ai-hint={adImage.imageHint}
-                            />
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-transparent to-transparent text-left" />
-                        <div className="absolute inset-0 bg-primary/5 group-hover:bg-transparent transition-colors duration-500 text-left" />
+                    <div className={cn(
+                        "relative aspect-video md:aspect-auto h-full min-h-[220px] overflow-hidden text-left transition-all duration-700",
+                        isBusiness 
+                            ? "bg-gradient-to-br from-indigo-600 via-purple-600 to-primary" 
+                            : "bg-gradient-to-br from-orange-600 via-rose-600 to-red-600"
+                    )}>
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                        <div className="absolute inset-0 opacity-30">
+                            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_70%)]" />
+                        </div>
                         
                         <div className="absolute top-6 left-6 bg-black/60 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 flex items-center gap-2 text-left shadow-2xl">
                             <Sparkles className="h-4 w-4 text-primary animate-pulse text-left" />
                             <span className="text-[10px] font-black text-white uppercase tracking-widest text-left">KINGDOM SPOTLIGHT</span>
                         </div>
+
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            {isBusiness ? (
+                                <Store className="h-32 w-32 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-1000" />
+                            ) : (
+                                <CalendarDays className="h-32 w-32 text-white/10 -rotate-12 group-hover:rotate-0 transition-transform duration-1000" />
+                            )}
+                        </div>
                     </div>
                     <div className="p-8 sm:p-12 flex flex-col justify-center space-y-6 bg-gradient-to-br from-[#121217] to-[#09090b] text-left relative">
-                        <div className="absolute top-0 right-0 p-12 opacity-[0.02] pointer-events-none group-hover:opacity-[0.05] transition-opacity duration-700 text-left">
-                            {isBusiness ? <Store className="h-48 w-48 text-primary" /> : <CalendarDays className="h-48 w-48 text-primary" />}
-                        </div>
-                        
                         <div className="space-y-3 text-left relative z-10">
                             <div className="flex items-center gap-3 mb-2 text-left">
                                 <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-left">
