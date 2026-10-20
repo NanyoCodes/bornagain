@@ -1088,7 +1088,7 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                                 <div className="flex items-center justify-between gap-4">
                                     <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left">
@@ -1145,8 +1145,8 @@ export default function SoulsWonPage() {
                         </Button>
                     </div>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
                                 soul={souls.find(s => s.id === selectedId)!} 
