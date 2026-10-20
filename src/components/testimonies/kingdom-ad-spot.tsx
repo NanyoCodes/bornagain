@@ -4,7 +4,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Store, CalendarDays, Megaphone, ArrowRight, Quote, Sparkles, MessageSquare, Info } from "lucide-react";
+import { Store, CalendarDays, Megaphone, ArrowRight, Info, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
@@ -14,27 +14,16 @@ interface KingdomAdSpotProps {
     type: 'business' | 'event';
 }
 
+/**
+ * @fileOverview High-fidelity ad spots for Kingdom businesses and missions.
+ * Refined to remove redundant headers and provide an immersive visual experience.
+ */
 export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
     const adImage = PlaceHolderImages.find(img => img.id === 'ad-placeholder-1');
     const isBusiness = type === 'business';
     
     return (
         <Card className="rounded-none sm:rounded-[3rem] border-y sm:border border-border border-x-0 sm:border-x border-t-[6px] border-t-primary shadow-none sm:shadow-2xl bg-[#09090b] overflow-hidden group text-left transition-all duration-500 hover:scale-[1.01] hover:border-primary/20">
-            <div className="p-4 sm:p-6 pb-4 border-b border-white/5 flex items-center justify-between bg-black/40 backdrop-blur-md text-left">
-                <div className="flex items-center gap-3 text-left">
-                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 text-left shadow-lg">
-                        <Megaphone className="h-5 w-5 text-primary text-left" />
-                    </div>
-                    <div className="flex flex-col text-left">
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 text-left">Testify Global</span>
-                        <span className="text-[12px] font-bold text-white uppercase tracking-tight text-left">Kingdom Spotlight</span>
-                    </div>
-                </div>
-                <Badge variant="outline" className="h-7 px-3 text-[9px] font-black uppercase tracking-widest bg-primary/10 border-primary/30 text-primary text-left shadow-[0_0_15px_rgba(249,116,22,0.2)] animate-pulse">
-                    FEATURED VISION
-                </Badge>
-            </div>
-            
             <CardContent className="p-0 text-left">
                 <div className="grid grid-cols-1 md:grid-cols-2 text-left">
                     <div className="relative aspect-video md:aspect-auto h-full min-h-[220px] bg-zinc-900 overflow-hidden text-left">
@@ -53,7 +42,7 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
                         
                         <div className="absolute top-6 left-6 bg-black/60 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 flex items-center gap-2 text-left shadow-2xl">
                             <Sparkles className="h-4 w-4 text-primary animate-pulse text-left" />
-                            <span className="text-[10px] font-black text-white uppercase tracking-widest text-left">KINGDOM MINDSET</span>
+                            <span className="text-[10px] font-black text-white uppercase tracking-widest text-left">KINGDOM SPOTLIGHT</span>
                         </div>
                     </div>
                     <div className="p-8 sm:p-12 flex flex-col justify-center space-y-6 bg-gradient-to-br from-[#121217] to-[#09090b] text-left relative">
@@ -90,7 +79,7 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
                             <div className="h-px w-20 bg-white/10 text-left" />
                             <div className="flex items-center gap-2.5 text-[10px] text-zinc-500 font-black uppercase tracking-[0.4em] text-center text-left">
                                 <Info className="h-4 w-4 text-primary/40 text-left" />
-                                ALL VISIONARY PROJECTS WELCOME
+                                SPONSORED VISION
                             </div>
                         </div>
                     </div>
