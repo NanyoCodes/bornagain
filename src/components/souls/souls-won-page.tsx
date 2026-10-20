@@ -1010,7 +1010,7 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Add New Soul</DrawerTitle>
@@ -1025,7 +1025,7 @@ export default function SoulsWonPage() {
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</DrawerTitle>
