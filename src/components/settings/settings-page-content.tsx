@@ -223,7 +223,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
                 <div className="space-y-8 text-left text-left text-left text-left">
                     <div className="space-y-4 text-left text-left text-left">
                         <div className="flex justify-between items-center text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">Overlay Intensity</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left text-left">Overlay Intensity</Label>
                             <span className="text-[10px] font-black text-primary uppercase tracking-tighter text-left text-left">{Math.round(overlayOpacity * 100)}% Darkness</span>
                         </div>
                         <div className="flex items-center gap-4 px-2 text-left text-left text-left">
@@ -243,7 +243,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
 
                 <Button onClick={handleSave} disabled={isSubmitting} className="w-full min-h-[3.5rem] h-auto rounded-[1.5rem] font-black shadow-xl shadow-primary/20 tracking-widest uppercase py-4 text-left text-left text-left">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
-                    Click to view
+                    Tap to view photo
                 </Button>
             </div>
         </CardContent>

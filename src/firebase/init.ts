@@ -28,7 +28,7 @@ export function initializeFirebase(): FirebaseServices {
   if (typeof window !== 'undefined') {
     try {
       // Attempt to initialize with long polling and disabled fetch streams for proxy/station compatibility.
-      // This is the robust fix for "INTERNAL ASSERTION FAILED: Unexpected state" and connectivity issues in proxied environments.
+      // This is the robust fix for "INTERNAL ASSERTION FAILED" and connectivity timeouts in proxied environments.
       firestore = initializeFirestore(app, {
         experimentalForceLongPolling: true,
         // @ts-ignore - useFetchStreams is valid in newer Firebase versions to resolve proxy stream issues
