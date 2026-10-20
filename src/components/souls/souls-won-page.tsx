@@ -727,8 +727,8 @@ export default function SoulsWonPage() {
   return (
     <div className="w-full max-w-7xl mx-auto text-left">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
-            <div className="lg:col-span-8 space-y-10 pb-32 text-left">
-                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
+            <div className="lg:col-span-8 space-y-10 pb-32 text-left text-left">
+                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                         <div className="space-y-1 text-left">
                             <div className="flex items-center gap-3 text-left">
@@ -903,13 +903,13 @@ export default function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
                             </div>
-                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                             </DrawerHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left">
-                            <div className="p-4 sm:p-8 text-left">
+                        <ScrollArea className="flex-grow text-left text-left">
+                            <div className="p-4 sm:p-8 text-left text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
@@ -932,7 +932,7 @@ export default function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Demographic View</span>
                             </div>
-                            <DialogHeader className="text-left p-0 text-left">
+                            <DialogHeader className="text-left p-0 text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this demographic group.</DialogDescription>
                             </DialogHeader>
@@ -1009,7 +1009,7 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
@@ -1024,7 +1024,7 @@ export default function SoulsWonPage() {
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle>
@@ -1042,7 +1042,7 @@ export default function SoulsWonPage() {
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <DialogHeader className="text-left p-0 text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left">
                                     <DialogTitle className="text-2xl font-bold font-headline text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
