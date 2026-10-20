@@ -375,7 +375,7 @@ export function IntercessionHubDialog({
             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
             <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
         </div>
-        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">SEND</Button>
+        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">SEND</Button>
     </div>
   );
 
@@ -441,7 +441,7 @@ export function MessageHubDialog({
   if (isMobile) {
       return (
           <Drawer open={isOpen} onOpenChange={onOpenChange}>
-              <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12">
+              <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
                   {header}{content}
               </DrawerContent>
           </Drawer>
@@ -450,7 +450,7 @@ export function MessageHubDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
           {header}{content}
       </DialogContent>
     </Dialog>
@@ -588,7 +588,7 @@ export function SoulProfileContent({
             return;
         case 'invited_to_event':
             await finalizeLog(actionId, 'Redirected to Events Hub');
-            router.push('/dashboard/events');
+            router.push('/events');
             return;
         case 'helped_with_need':
             setIsHelpNeedDialogOpen(true);
@@ -683,11 +683,11 @@ export function SoulProfileContent({
   return (
     <div className="space-y-6 text-left">
       <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
-        <CardHeader className="p-8 pb-4 text-center">
-            <div className="relative inline-block mx-auto mb-4">
+        <CardHeader className="p-8 pb-4 text-center text-left">
+            <div className="relative inline-block mx-auto mb-4 text-left">
                 <Dialog>
                     <DialogTrigger asChild disabled={!soul.photoURL}>
-                        <div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                        <div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95 text-left", soul.photoURL && "cursor-pointer hover:scale-105")}>
                             <Avatar className="h-full w-full border shadow-sm">
                                 <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                                 <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl"> {soul.firstName?.charAt(0)}</AvatarFallback>
@@ -697,8 +697,8 @@ export function SoulProfileContent({
                     {soul.photoURL && (
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                             <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
-                            <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left">
+                            <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -790,10 +790,10 @@ export function SoulProfileContent({
                         <Edit className="h-4 w-4 text-left" />
                     </Button>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 text-left">
                     {soul.phone ? (
-                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left">
-                            <Phone className="h-3.5 w-3.5 text-primary shrink-0" />
+                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left text-left">
+                            <Phone className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
                             {soul.phone}
                         </div>
                     ) : (
@@ -801,7 +801,7 @@ export function SoulProfileContent({
                     )}
                     {soul.email && (
                         <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left">
-                            <Mail className="h-3.5 w-3.5 text-primary shrink-0" />
+                            <Mail className="h-3.5 w-3.5 text-primary shrink-0 text-left text-left" />
                             {soul.email}
                         </div>
                     )}
@@ -812,7 +812,7 @@ export function SoulProfileContent({
 
             <div className="space-y-4 text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Relational Actions</p>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 text-left">
                     {actionItems.map(action => {
                         const Icon = iconMap[action.id] || Heart;
                         const isThisProcessing = clickedActionId === action.id && isActionSubmitting;
@@ -828,7 +828,7 @@ export function SoulProfileContent({
                                 disabled={isActionSubmitting}
                             >
                                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
-                                    {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Icon className="h-4 w-4" />}
+                                    {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left" /> : <Icon className="h-4 w-4 text-left" />}
                                 </div>
                                 <span className="text-xs font-bold uppercase tracking-tight truncate flex-1 text-left">{action.label}</span>
                                 <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity" />
@@ -840,11 +840,11 @@ export function SoulProfileContent({
 
             <Separator className="opacity-20" />
 
-            <div className="space-y-4 text-left">
+            <div className="space-y-4 text-left text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Harvest Context</p>
-                <div className="space-y-1">
-                    <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate text-left">
-                        <Target className="h-3 w-3 text-primary" />
+                <div className="space-y-1 text-left">
+                    <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate text-left text-left">
+                        <Target className="h-3 w-3 text-primary text-left" />
                         Source: {soul.source}
                     </p>
                 </div>
@@ -852,26 +852,26 @@ export function SoulProfileContent({
 
             <Separator className="opacity-20" />
 
-            <div className="space-y-4 text-left">
-                <div className="flex items-center justify-between">
+            <div className="space-y-4 text-left text-left">
+                <div className="flex items-center justify-between text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onOpenAssignDialog(soul)}>
-                        <Edit className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left" onClick={() => onOpenAssignDialog(soul)}>
+                        <Edit className="h-4 w-4 text-left" />
                     </Button>
                 </div>
                 <div className="space-y-3">
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left">
-                        <HeartHandshake className="h-4 w-4 text-primary shrink-0" />
-                        <div className="min-w-0">
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p>
-                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p>
+                        <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left text-left" />
+                        <div className="min-w-0 text-left">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Fellowship</p>
+                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left">{soul.fellowshipName || 'No Fellowship'}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left">
-                        <Users className="h-4 w-4 text-blue-500 shrink-0" />
-                        <div className="min-w-0">
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p>
-                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p>
+                        <Users className="h-4 w-4 text-blue-500 shrink-0 text-left text-left" />
+                        <div className="min-w-0 text-left text-left">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Association</p>
+                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left">{soul.associationName || 'No Association'}</p>
                         </div>
                     </div>
                 </div>
@@ -879,7 +879,7 @@ export function SoulProfileContent({
 
             <Separator className="opacity-20" />
 
-            <div className="space-y-4 text-left">
+            <div className="space-y-4 text-left text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Milestones</p>
                 <div className="grid grid-cols-2 gap-2 text-left">
                     {[
@@ -892,7 +892,7 @@ export function SoulProfileContent({
                             "flex items-center gap-2 p-2 rounded-xl border transition-all text-left",
                             milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40"
                         )}>
-                            <milestone.icon className="h-3 w-3" />
+                            <milestone.icon className="h-3 w-3 text-left" />
                             <span className="text-[10px] font-black uppercase tracking-tight text-left">{milestone.label}</span>
                         </div>
                     ))}
@@ -900,16 +900,16 @@ export function SoulProfileContent({
             </div>
 
             <Separator className="opacity-20" />
-            <div className="space-y-4 text-left">
+            <div className="space-y-4 text-left text-left">
                 <div className="flex items-center justify-between">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left">
-                        <History className="h-3.5 w-3.5" /> Interaction History
+                        <History className="h-3.5 w-3.5 text-left" /> Interaction History
                     </p>
                     <Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5 text-left" onClick={() => onViewHistory(soul)}>
                         View All
                     </Button>
                 </div>
-                <div className="space-y-4 pl-1 text-left">
+                <div className="space-y-4 pl-1 text-left text-left">
                     {sortedHistory.length > 0 ? (
                         sortedHistory.slice(0, 3).map((log, index) => {
                             const date = safeToDate(log.date);
@@ -917,11 +917,11 @@ export function SoulProfileContent({
                                 <React.Fragment key={index}>
                                     <div className="relative text-left">
                                         <div className="pl-4 border-l-4 border-primary/20 text-left">
-                                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left">
+                                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left text-left">
                                                 {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                                 {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName}</span>}
                                             </p>
-                                            <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left">
+                                            <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left text-left">
                                                 &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                             </p>
                                         </div>
@@ -931,47 +931,47 @@ export function SoulProfileContent({
                             );
                         })
                     ) : (
-                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left">
-                            <p className="text-sm text-muted-foreground/40 italic">No interactions recorded.</p>
+                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left text-left">
+                            <p className="text-sm text-muted-foreground/40 italic text-left">No interactions recorded.</p>
                         </div>
                     )}
                 </div>
             </div>
 
             <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left">
-                        <ClipboardList className="h-4 w-4" /> Assessed Needs
+                        <ClipboardList className="h-4 w-4 text-left" /> Assessed Needs
                     </p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onAssess(soul)}>
-                        <Edit className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left" onClick={() => onAssess(soul)}>
+                        <Edit className="h-4 w-4 text-left" />
                     </Button>
                 </div>
                 {needs ? (
                     <div className="space-y-4 text-left">
-                        {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
+                        {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                             {needs.emotionalNeeds && (
-                                <div className="space-y-1">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black">Emotional</Badge>
+                                <div className="space-y-1 text-left">
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge>
                                     <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.emotionalNeeds}</p>
                                 </div>
                             )}
                             {needs.physicalNeeds && (
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-left">
                                     <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge>
                                     <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.physicalNeeds}</p>
                                 </div>
                             )}
                             {needs.financialNeeds && (
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-left text-left">
                                     <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge>
                                     <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.financialNeeds}</p>
                                 </div>
                             )}
                             {needs.socialNeeds && (
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-left text-left">
                                     <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge>
                                     <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.socialNeeds}</p>
                                 </div>
@@ -979,16 +979,16 @@ export function SoulProfileContent({
                         </div>
 
                         {needs.followUpPlan && (
-                            <div className="pt-2 border-t border-primary/10 text-left">
-                                <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left">
+                            <div className="pt-2 border-t border-primary/10 text-left text-left text-left">
+                                <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left text-left">
                                     <Target className="h-2.5 w-2.5 text-left" /> Strategy
                                 </p>
-                                <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p>
+                                <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left text-left">{needs.followUpPlan}</p>
                             </div>
                         )}
                     </div>
                 ) : (
-                    <div className="py-4 text-center">
+                    <div className="py-4 text-center text-left">
                         <Button variant="outline" size="sm" className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-left" onClick={() => onAssess(soul)}>
                             BEGIN ASSESSMENT
                         </Button>
@@ -1001,7 +1001,7 @@ export function SoulProfileContent({
                     LOG FOLLOW-UP
                 </Button>
                 <Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px] text-left" onClick={() => onDelete(soul)}>
-                    <Trash2 className="mr-2 h-4 w-4" /> DELETE RECORD
+                    <Trash2 className="mr-2 h-4 w-4 text-left" /> DELETE RECORD
                 </Button>
             </div>
         </CardContent>
@@ -1027,6 +1027,30 @@ export function SoulProfileContent({
           soul={soul}
           onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setIsCommChannelDialogOpen(true); }}
       />
+
+      {/* Help with a need dialog */}
+      <Drawer open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
+        <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+          <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+              <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                  <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support details</DrawerTitle>
+                  <DrawerDescription className="text-sm font-medium mt-1 text-left">Record the physical or spiritual support provided.</DrawerDescription>
+              </DrawerHeader>
+          </div>
+          <div className="p-8 space-y-6 text-left">
+              <div className="space-y-2 text-left">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Notes</Label>
+                  <Textarea 
+                      placeholder="e.g. Provided food items, helped with bill..." 
+                      value={customMessageText}
+                      onChange={e => setCustomMessageText(e.target.value)}
+                      className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
+                  />
+              </div>
+              <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-14 rounded-2xl font-black shadow-lg uppercase tracking-widest text-center" disabled={!customMessageText.trim()}>CONFIRM SERVICE</Button>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }
