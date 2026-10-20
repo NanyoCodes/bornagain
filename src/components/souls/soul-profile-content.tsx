@@ -242,7 +242,7 @@ export function ShareWordDialog({
 
   const header = (
     <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 text-left">
         <div className="min-w-0 text-left">
           <div className="flex items-center gap-3 mb-2 text-left">
             {view !== 'hub' && (
@@ -258,7 +258,7 @@ export function ShareWordDialog({
           </DialogHeader>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5 text-left" />
         </Button>
       </div>
     </div>
@@ -294,7 +294,7 @@ export function ShareWordDialog({
             )}
             {view === 'verses' && (
                 <div className="space-y-1 font-serif text-left">
-                    {loadingVerses ? (<div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>) : chapterContent?.verses.map(v => (
+                    {loadingVerses ? (<div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div>) : chapterContent?.verses.map(v => (
                         <div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => toggleVerse(v.verse)}><sup className="text-[10px] font-black mr-2 opacity-40"> {v.verse}</sup><span className="text-sm leading-relaxed">{v.text}</span></div>
                     ))}
                 </div>
@@ -908,7 +908,7 @@ export function SoulProfileContent({
                             );
                         })
                     ) : (
-                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left text-left">
+                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left text-left text-left">
                             <p className="text-sm text-muted-foreground/40 italic">No interactions recorded.</p>
                         </div>
                     )}
