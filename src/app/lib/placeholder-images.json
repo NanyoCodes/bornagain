@@ -1,3 +1,4 @@
+
 {
   "placeholderImages": [
     {
@@ -68,9 +69,9 @@
     },
     {
       "id": "feature-victory",
-      "description": "People celebrating spiritual breakthrough in worship",
-      "imageUrl": "https://images.unsplash.com/photo-1510673398445-94f476ef2793?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "spiritual breakthrough"
+      "description": "A person with raised hands celebrating in a field",
+      "imageUrl": "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "happy freedom"
     },
     {
       "id": "feature-provision",
@@ -104,9 +105,9 @@
     },
     {
       "id": "ad-placeholder-1",
-      "description": "Placeholder for an advertisement",
-      "imageUrl": "https://picsum.photos/seed/ad1/600/400",
-      "imageHint": "advertisement product"
+      "description": "Immersive Kingdom mission ad",
+      "imageUrl": "https://picsum.photos/seed/kingdom-mission-ad/800/600",
+      "imageHint": "mission church"
     }
   ]
 }

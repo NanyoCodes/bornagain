@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -208,7 +209,7 @@ function ChildSelectionDialog({
 
     if (isMobile) {
         return (
-            <Drawer open={isOpen} onOpenChange={setIsOpen}>
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     {header}
                     <div className="flex-grow overflow-hidden">{body}</div>
@@ -218,7 +219,7 @@ function ChildSelectionDialog({
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                 {header}
                 {body}
@@ -916,13 +917,13 @@ export function SoulsWonPage() {
                                         <BarChart3 className="h-4 w-4 text-primary text-left" />
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
                                     </div>
-                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
                                         <DrawerDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                                     </DrawerHeader>
                                 </div>
                                 <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => setSelectedFilterGroup(null)}>
-                                    <X className="h-5 w-5" />
+                                    <X className="h-5 w-5 text-left" />
                                 </Button>
                             </div>
                         </div>
@@ -958,7 +959,7 @@ export function SoulsWonPage() {
                                     </DialogHeader>
                                 </div>
                                 <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => setSelectedFilterGroup(null)}>
-                                    <X className="h-5 w-5" />
+                                    <X className="h-5 w-5 text-left" />
                                 </Button>
                             </div>
                         </div>
@@ -1037,7 +1038,7 @@ export function SoulsWonPage() {
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                                 <div className="flex items-center justify-between gap-4 text-left">
                                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
