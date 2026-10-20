@@ -46,16 +46,16 @@ function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
             key={soul.id} 
             variant="ghost"
             onClick={() => onSelectSoul(soul)}
-            className="flex items-center justify-between p-2.5 sm:p-4 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98]"
+            className="flex flex-row items-center justify-between p-2.5 sm:p-4 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98]"
           >
-            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+            <div className="flex flex-row items-center gap-3 min-w-0 flex-1 text-left">
                 <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors text-left">
                   <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                   <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0 text-left ml-1 sm:ml-2">
                 <div className="flex items-center gap-2 text-left flex-wrap">
-                    <p className="font-black text-[13px] sm:text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                    <p className="font-black text-[13px] sm:text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                     <Badge variant="outline" className={cn("text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left bg-background/50")}>{soul.status}</Badge>
                 </div>
                 <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
