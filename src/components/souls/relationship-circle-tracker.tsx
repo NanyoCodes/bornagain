@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { 
     Users, 
     Heart, 
@@ -8,7 +9,8 @@ import {
     Home, 
     Sparkles, 
     ArrowRight, 
-    Target
+    Target,
+    ChevronDown
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,7 +25,8 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import type { Soul, Campaign, Fellowship, SoulRelationship } from '@/lib/types';
 import { LogSoulForm } from './log-soul-form';
-import { ViewHistoryDialog } from './view-history-dialog';
+
+const ViewHistoryDialog = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 
 function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul: (soul: Soul) => void }) {
   if (!souls || souls.length === 0) {
@@ -53,7 +56,7 @@ function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
                 <div className="flex-1 min-w-0 text-left ml-1 sm:ml-2">
                 <div className="flex items-center gap-2 text-left flex-wrap">
                     <p className="font-black text-[13px] sm:text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
-                    <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left">{soul.status}</Badge>
+                    <Badge variant="outline" className={cn("text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left bg-background/50")}>{soul.status}</Badge>
                 </div>
                 <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
                     Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
@@ -282,7 +285,7 @@ export function RelationshipCircleTracker({
             </Card>
             {dialogContent}
             {logSoulView}
-            <ViewHistoryDialogLazy soul={detailedSoul} isOpen={!!detailedSoul} onOpenChange={(open) => !open && setDetailedSoul(null)} />
+            <ViewHistoryDialog soul={detailedSoul} isOpen={!!detailedSoul} onOpenChange={(open) => !open && setDetailedSoul(null)} />
         </>
     );
 }
