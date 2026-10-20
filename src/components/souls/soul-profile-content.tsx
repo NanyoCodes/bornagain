@@ -358,7 +358,7 @@ export function IntercessionHubDialog({
             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
             <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
         </div>
-        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">PREPARE TO SEND</Button>
+        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">SEND</Button>
     </div>
   );
 
@@ -514,11 +514,11 @@ export function SoulProfileContent({
     };
 
     batch.update(soulRef, {
-        followUpLog: arrayUnion(newLogEntry),
+        followUpLog: arrayUnion(logEntry),
         lastUpdatedAt: serverTimestamp(),
     });
     batch.update(globalSoulRef, {
-        followUpLog: arrayUnion(newLogEntry),
+        followUpLog: arrayUnion(logEntry),
         lastUpdatedAt: serverTimestamp(),
     });
 
