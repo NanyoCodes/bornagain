@@ -148,6 +148,20 @@ export const getStatusClasses = (status: FollowUpStatus | undefined): string => 
     }
 }
 
+export const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+    'matchmaking': HeartHandshake,
+};
+
 // --- Sub-Dialogs ---
 
 export function ShareWordDialog({ 
@@ -305,7 +319,7 @@ export function ShareWordDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
-        {header}{body}{footer || (<div className="p-6 border-t bg-muted/5 flex justify-end shrink-0 text-left text-left"><Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs text-left">Close Hub</Button></div>)}
+        {header}{body}{footer || (<div className="p-6 border-t bg-muted/5 flex justify-end shrink-0 text-left"><Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs text-left">Close Hub</Button></div>)}
       </DialogContent>
     </Dialog>
   );
@@ -386,7 +400,7 @@ export function MessageHubDialog({
   const isMobile = useIsMobile();
   const header = (
     <div className="text-center space-y-2 p-8 border-b bg-muted/10 text-left">
-        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
             <MessageSquare className="h-7 w-7 text-primary text-left" />
         </div>
         <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</h2>
@@ -820,14 +834,14 @@ export function SoulProfileContent({
                 </div>
                 <div className="space-y-3 text-left">
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left">
-                        <HeartHandshake className="h-4 w-4 text-primary shrink-0" />
+                        <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left" />
                         <div className="min-w-0 text-left">
                             <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p>
                             <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left">
-                        <Users className="h-4 w-4 text-blue-500 shrink-0" />
+                        <Users className="h-4 w-4 text-blue-500 shrink-0 text-left" />
                         <div className="min-w-0 text-left">
                             <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p>
                             <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p>
@@ -1006,7 +1020,7 @@ export function IntercessionHubDialog({
   const content = (
     <div className="p-8 space-y-6 text-left">
         <div className="space-y-3 text-left">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Focus</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Focus</label>
             <div className="flex flex-wrap gap-2 text-left">
                 {prayerTemplates.map(t => (
                     <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-left" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
@@ -1014,10 +1028,19 @@ export function IntercessionHubDialog({
             </div>
         </div>
         <div className="space-y-2 text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Message</Label>
             <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" />
         </div>
         <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">PREPARE TO SEND</Button>
+    </div>
+  );
+
+  const header = (
+    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+        <DialogHeader className="text-left">
+            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+            <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+        </DialogHeader>
     </div>
   );
 
@@ -1025,13 +1048,7 @@ export function IntercessionHubDialog({
       return (
           <Sheet open={isOpen} onOpenChange={onOpenChange}>
               <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                      <SheetHeader className="text-left">
-                          <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</SheetTitle>
-                          <SheetDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</SheetDescription>
-                      </SheetHeader>
-                  </div>
-                  <ScrollArea className="flex-grow text-left">{content}</ScrollArea>
+                  {header}<ScrollArea className="flex-grow text-left">{content}</ScrollArea>
               </SheetContent>
           </Sheet>
       );
@@ -1040,13 +1057,7 @@ export function IntercessionHubDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-            <div className="p-8 border-b bg-muted/10 text-left">
-                <DialogHeader className="text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
-                    <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
-                </DialogHeader>
-            </div>
-            {content}
+            {header}{content}
         </DialogContent>
     </Dialog>
   );
@@ -1066,7 +1077,7 @@ export function MessageHubDialog({
   const isMobile = useIsMobile();
   const header = (
     <div className="text-center space-y-2 p-8 border-b bg-muted/10 text-left">
-        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
             <MessageSquare className="h-7 w-7 text-primary text-left" />
         </div>
         <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</h2>
@@ -1096,7 +1107,7 @@ export function MessageHubDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
           {header}{content}
       </DialogContent>
     </Dialog>
@@ -1188,7 +1199,7 @@ export function ShareWordDialog({
             <Target className="h-5 w-5 text-primary text-left" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
           </div>
-          <DialogHeader className="text-left p-0">
+          <DialogHeader className="text-left p-0 text-left">
             <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}</DialogTitle>
           </DialogHeader>
         </div>
@@ -1239,9 +1250,9 @@ export function ShareWordDialog({
   );
 
   const footer = view === 'verses' && (
-    <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
-        <Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold text-left">Clear Selection</Button>
-        <Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest text-left">PREPARE SHARE ({selectedVerses.length})</Button>
+    <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left text-left">
+        <Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold text-left text-left">Clear Selection</Button>
+        <Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest text-left text-left">PREPARE SHARE ({selectedVerses.length})</Button>
     </div>
   );
 

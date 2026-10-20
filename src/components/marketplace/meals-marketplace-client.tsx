@@ -306,11 +306,11 @@ export default function MealsMarketplaceClient() {
                     <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">About Your Service</Label>
                     <Textarea id="description" name="description" placeholder="Describe your food service..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
                 </div>
-                <div className="space-y-2 text-left">
-                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left text-left">
-                        <CreditCard className="h-3 w-3 text-left text-left" /> Payment Details
+                <div className="space-y-2 text-left text-left">
+                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left text-left text-left text-left">
+                        <CreditCard className="h-3 w-3 text-left text-left text-left text-left" /> Payment Details
                     </Label>
-                    <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank details or payment instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" required />
+                    <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank details or payment instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left text-left text-left" required />
                 </div>
             </div>
             <div className="p-6 sm:p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 text-left text-left">
@@ -451,9 +451,9 @@ export default function MealsMarketplaceClient() {
                                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 font-medium leading-relaxed italic mb-4 text-left text-left text-left">
                                     &ldquo;{vendor.description || 'Verified Kingdom provision partner.'}&rdquo;
                                 </p>
-                                <Button className="w-full h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center text-left text-left">
-                                    <span className="flex-1 text-left text-left text-left">VIEW MENU & PROVISIONS</span>
-                                    <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 text-left text-left text-left" />
+                                <Button className="w-full h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center text-left text-left text-left">
+                                    <span className="flex-1 text-left text-left text-left text-left">VIEW MENU & PROVISIONS</span>
+                                    <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 text-left text-left text-left text-left" />
                                 </Button>
                             </div>
                         </Card>
