@@ -125,6 +125,7 @@ function ChildSelectionDialog({
     parent,
     spouse,
     onSelect,
+    onShareWord,
     isLoading
 }: {
     isOpen: boolean;
@@ -133,6 +134,7 @@ function ChildSelectionDialog({
     parent: Soul | null;
     spouse?: Soul | null;
     onSelect: (child: Soul) => void;
+    onShareWord: (child: Soul) => void;
     isLoading: boolean;
 }) {
     const isMobile = useIsMobile();
@@ -178,8 +180,8 @@ function ChildSelectionDialog({
                             <Button 
                                 key={s.id} 
                                 variant="ghost" 
-                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 transition-all border bg-card/50 text-left flex items-center gap-4"
-                                onClick={() => onSelect(s)}
+                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex flex-row items-center border bg-card/50 text-left"
+                                onClick={() => onShareWord(s)}
                                 disabled={isLoading}
                             >
                                 <Avatar className="h-10 w-10 border shadow-sm shrink-0">
@@ -278,7 +280,7 @@ function FilteredSoulList({
             <Collapsible open={openFamilyId === soul.id} onOpenChange={() => setOpenFamilyId(openFamilyId === soul.id ? null : soul.id)}>
                 <div 
                     className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 transition-all hover:bg-card/40 cursor-pointer text-left"
-                    onClick={() => onSelectSoul(soul)}
+                    onClick={() => onShareWord(soul)}
                 >
                     <div className="flex flex-row items-center gap-3 min-w-0 flex-1 w-full text-left">
                         <CollapsibleTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -748,7 +750,7 @@ export default function SoulsWonPage() {
                                 <ClipboardList className="h-4 w-4 text-primary text-left" /> Logged Records
                             </p>
                         </div>
-                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap w-full sm:w-auto text-left text-left">
+                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap w-full sm:w-auto text-left">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none text-left">
@@ -785,7 +787,7 @@ export default function SoulsWonPage() {
                             <motion.div className="flex gap-4 w-max text-left" animate={{ x: isGalleryPaused ? undefined : ["0%", "-33.3333333%"] }} transition={{ x: { duration: 30, repeat: Infinity, ease: "linear", repeatType: "loop" } }}>
                                 {duplicatedSouls.map((s, idx) => (
                                     <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0 text-left">
-                                        <div onClick={() => setSelectedId(s.id)} className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-[0.98] transition-all text-left">
+                                        <div onClick={() => setShareWordSoulId(s.id)} className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-[0.98] transition-all text-left">
                                             <NextImage src={s.photoURL!} alt={s.firstName} fill className="object-cover transition-transform group-hover:scale-110 duration-500 text-left" unoptimized />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
                                             <div className="absolute bottom-3 left-3 right-3 text-white text-left">
@@ -858,7 +860,7 @@ export default function SoulsWonPage() {
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left"><Heart className="h-5 w-5 text-primary text-left" /></div>
-                            <div className="min-w-0 text-left text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">MARITAL DEMOGRAPHICS</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Family & Status Insights</p></div>
+                            <div className="min-w-0 text-left text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left">MARITAL DEMOGRAPHICS</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Family & Status Insights</p></div>
                         </div>
                         <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
                             <CardContent className="p-6 sm:p-8 text-left">
@@ -998,6 +1000,7 @@ export default function SoulsWonPage() {
             parent={activeParentGroup?.parent || null} 
             spouse={activeParentGroup?.spouse}
             onSelect={handleLinkExistingChild}
+            onShareWord={(s) => { setIsChildSelectionOpen(false); setShareWordSoulId(s.id); }}
             isLoading={isLinkingChild}
         />
 
@@ -1050,8 +1053,8 @@ export default function SoulsWonPage() {
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <DialogHeader className="text-left p-0 text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-bold font-headline text-left text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
@@ -1063,8 +1066,8 @@ export default function SoulsWonPage() {
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <DialogHeader className="text-left p-0 text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left p-0 text-left text-left text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>

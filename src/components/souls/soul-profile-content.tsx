@@ -958,7 +958,7 @@ export function SoulProfileContent({
                         {needs.followUpPlan && (
                             <div className="pt-2 border-t border-primary/10 text-left">
                                 <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left">
-                                    <Target className="h-2.5 w-2.5" /> Strategy
+                                    <Target className="h-2.5 w-2.5 text-left" /> Strategy
                                 </p>
                                 <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p>
                             </div>
@@ -984,5 +984,280 @@ export function SoulProfileContent({
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// --- Specific Dialog Components ---
+
+export function ShareWordDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onSelectVerse 
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  soul: Soul | null; 
+  onSelectVerse: (verse: string) => void;
+}) {
+  const isMobile = useIsMobile();
+  const [view, setView] = useState<'hub' | 'books' | 'chapters' | 'verses'>('hub');
+  const [bibleSearch, setBibleSearch] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<{reference: string, text: string}[]>([]);
+  const [selectedBook, setSelectedBook] = useState<string | null>(null);
+  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [chapterContent, setChapterContent] = useState<BibleChapterOutput | null>(null);
+  const [loadingVerses, setLoadingVerses] = useState(false);
+  const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setView('hub');
+      setBibleSearch('');
+      setSearchResults([]);
+      setSelectedBook(null);
+      setSelectedChapter(null);
+      setChapterContent(null);
+      setSelectedVerses([]);
+    }
+  }, [isOpen]);
+
+  const handleSearch = async () => {
+      if (!bibleSearch.trim()) return;
+      setIsSearching(true);
+      try {
+          const res = await fetch(`https://bible-api.com/${encodeURIComponent(bibleSearch)}`);
+          if (res.ok) {
+              const data = await res.json();
+              if (data.verses) setSearchResults([{ reference: data.reference, text: data.text }]);
+          }
+      } catch (e) {
+          console.warn("Bible search failed", e);
+      } finally { setIsSearching(false); }
+  };
+
+  const handleSelectBook = (bookName: string) => { setSelectedBook(bookName); setView('chapters'); };
+  const handleSelectChapter = async (num: number) => {
+    if (!selectedBook) return;
+    setSelectedChapter(num);
+    setLoadingVerses(true);
+    try {
+      const content = await getBibleChapter({ book: selectedBook, chapter: num });
+      setChapterContent(content);
+      setView('verses');
+    } catch (e) { console.error(e); } finally { setLoadingVerses(false); }
+  };
+
+  const toggleVerse = (num: number) => {
+    setSelectedVerses(prev => prev.includes(num) ? prev.filter(v => v !== num) : [...prev, num].sort((a, b) => a - b));
+  };
+
+  const handleShareSelected = () => {
+    if (!chapterContent || selectedVerses.length === 0 || !soul) return;
+    const selectedTexts = chapterContent.verses.filter(v => selectedVerses.includes(v.verse)).map(v => v.text).join(' ');
+    const reference = `${chapterContent.book} ${chapterContent.chapter}:${selectedVerses.join(', ')}`;
+    const msg = `"${selectedTexts.trim()}" — ${reference}\n\nStudy this with me on Testify! Visit: ${window.location.origin}/bible`;
+    onSelectVerse(msg);
+  };
+
+  const header = (
+    <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left">
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0 text-left">
+          <div className="flex items-center gap-3 mb-2 text-left">
+            {view !== 'hub' && (
+                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
+                    <ArrowLeft className="h-4 w-4" />
+                </Button>
+            )}
+            <Target className="h-5 w-5 text-primary" />
+            <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
+          </div>
+          <DialogHeader className="p-0 text-left">
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}</DialogTitle>
+          </DialogHeader>
+        </div>
+        <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
+            <X className="h-5 w-5" />
+        </Button>
+      </div>
+    </div>
+  );
+
+  const body = (
+    <ScrollArea className="flex-grow min-h-[300px] text-left">
+        <div className="p-4 sm:p-10 text-left">
+            {view === 'hub' && (
+                <div className="space-y-8">
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50" />
+                        <Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-14 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-lg" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Button onClick={() => setView('books')} variant="outline" className="h-32 rounded-[2rem] gap-3 border-2 border-primary/20 text-primary flex flex-col text-center">
+                            <BookOpen className="h-8 w-8 mb-1" />
+                            <span className="font-black text-[10px] uppercase tracking-widest text-center">Browse Bible</span>
+                        </Button>
+                        <Button variant="outline" asChild className="h-32 rounded-[2rem] gap-3 border-2 border-primary/20 text-primary flex flex-col text-center"><Link href="/dashboard/bible"><BookMarked className="h-8 w-8 mb-1" /><span className="font-black text-[10px] uppercase tracking-widest text-center">Open Reader</span></Link></Button>
+                    </div>
+                </div>
+            )}
+            {view === 'books' && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-left">
+                    {bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[10px]" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>))}
+                </div>
+            )}
+            {view === 'chapters' && (
+                <div className="grid grid-cols-5 sm:grid-cols-8 gap-2 text-left">
+                    {selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (<Button key={ch.chapter} variant="outline" className="h-10 w-10 p-0 rounded-lg font-black text-sm" onClick={() => handleSelectChapter(ch.chapter)}>{ch.chapter}</Button>))}
+                </div>
+            )}
+            {view === 'verses' && (
+                <div className="space-y-1 font-serif text-left">
+                    {loadingVerses ? (<div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>) : chapterContent?.verses.map(v => (
+                        <div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => toggleVerse(v.verse)}><sup className="text-[10px] font-black mr-2 opacity-40"> {v.verse}</sup><span className="text-sm leading-relaxed">{v.text}</span></div>
+                    ))}
+                </div>
+            )}
+        </div>
+    </ScrollArea>
+  );
+
+  const footer = view === 'verses' && (
+    <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
+        <Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold">Clear Selection</Button>
+        <Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest text-center">PREPARE SHARE ({selectedVerses.length})</Button>
+    </div>
+  );
+
+  if (isMobile) {
+      return (
+          <Sheet open={isOpen} onOpenChange={onOpenChange}>
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                  {header}{body}{footer}
+              </SheetContent>
+          </Sheet>
+      );
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
+        {header}{body}{footer || (<div className="p-6 border-t bg-muted/5 flex justify-end shrink-0"><Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs">Close Hub</Button></div>)}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function IntercessionHubDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onComplete 
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  soul: Soul | null; 
+  onComplete: (msg: string) => void;
+}) {
+  const [text, setText] = useState('');
+  const isMobile = useIsMobile();
+  useEffect(() => { if(isOpen && soul) setText(prayerTemplates[0].text.replace(/{name}/g, soul.firstName)); }, [isOpen, soul]);
+
+  const content = (
+    <div className="p-8 space-y-6 text-left">
+        <div className="space-y-3">
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Focus</label>
+            <div className="flex flex-wrap gap-2">
+                {prayerTemplates.map(t => (
+                    <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-primary" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
+                ))}
+            </div>
+        </div>
+        <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
+            <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
+        </div>
+        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">PREPARE TO SEND</Button>
+    </div>
+  );
+
+  const header = (
+    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+        <DialogHeader className="p-0 text-left">
+            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+            <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+        </DialogHeader>
+    </div>
+  );
+
+  if (isMobile) {
+      return (
+          <Sheet open={isOpen} onOpenChange={onOpenChange}>
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                  {header}<ScrollArea className="flex-grow">{content}</ScrollArea>
+              </SheetContent>
+          </Sheet>
+      );
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+            {header}{content}
+        </DialogContent>
+    </Dialog>
+  );
+}
+
+export function MessageHubDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onChannelSelect 
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  soul: Soul | null; 
+  onChannelSelect: (channel: 'whatsapp' | 'sms') => void;
+}) {
+  const isMobile = useIsMobile();
+  const header = (
+    <div className="text-center space-y-2 p-8 border-b bg-muted/10 text-left">
+        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+            <MessageSquare className="h-7 w-7 text-primary" />
+        </div>
+        <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</h2>
+        <p className="text-sm font-medium text-center">Encourage {soul?.firstName} through external channels.</p>
+    </div>
+  );
+  const content = (
+    <div className="flex flex-col gap-3 p-8 text-left">
+        <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg text-center">
+            <WhatsAppIcon className="h-5 w-5" /> WhatsApp
+        </Button>
+        <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary text-center">
+            <MessageSquare className="h-5 w-5" /> Standard SMS
+        </Button>
+    </div>
+  );
+
+  if (isMobile) {
+      return (
+          <Drawer open={isOpen} onOpenChange={onOpenChange}>
+              <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12">
+                  {header}{content}
+              </DrawerContent>
+          </Drawer>
+      );
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+          {header}{content}
+      </DialogContent>
+    </Dialog>
   );
 }
