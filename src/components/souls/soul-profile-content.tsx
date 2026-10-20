@@ -265,7 +265,7 @@ export function ShareWordDialog({
             {view === 'hub' && (
                 <div className="space-y-8 text-left">
                     <div className="relative text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50 text-left" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50" />
                         <Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-14 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-lg text-left" />
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-left">
@@ -1042,7 +1042,7 @@ export function SoulProfileContent({
                   <Textarea 
                       placeholder="e.g. Provided food items, helped with bill..." 
                       value={customMessageText}
-                      onChange={e => setCustomMessageText(e.target.value)}
+                      onChange={(e) => setCustomMessageText(e.target.value)}
                       className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
                   />
               </div>

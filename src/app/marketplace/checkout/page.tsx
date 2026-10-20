@@ -36,6 +36,7 @@ import { cn, safeToDate } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { AppShell } from '@/components/layout/app-shell';
 
 const currencyOptions = [
     { value: 'NGN', symbol: '₦' },
@@ -215,17 +216,17 @@ function CheckoutPageContent() {
     if (!cartItems || cartItems.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left">
-                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left text-left">
-                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left" />
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
+                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                 </div>
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Package is empty</h2>
-                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-left text-left text-left text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
-                <div className="flex gap-4 mt-8 text-left text-left text-left">
-                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left text-left">
-                        <Link href="/marketplace" className="text-left text-left">Meals Hub</Link>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Package is empty</h2>
+                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-left text-left text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
+                <div className="flex gap-4 mt-8 text-left">
+                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left">
+                        <Link href="/marketplace" className="text-left">Meals Hub</Link>
                     </Button>
-                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left text-left text-left">
-                        <Link href="/marketplace/gifts" className="text-left text-left">Kindness Hub</Link>
+                    <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left">
+                        <Link href="/marketplace/gifts" className="text-left">Kindness Hub</Link>
                     </Button>
                 </div>
             </div>
@@ -256,8 +257,8 @@ function CheckoutPageContent() {
                         return (
                             <div key={group.vendorId} className="space-y-4 text-left">
                                 <div className="flex items-center gap-3 text-left">
-                                    <Avatar className="h-10 w-10 rounded-xl border shadow-sm shrink-0 text-left text-left">
-                                        <AvatarImage src={group.vendorPhotoURL} className="object-cover text-left text-left" />
+                                    <Avatar className="h-10 w-10 rounded-xl border shadow-sm shrink-0 text-left">
+                                        <AvatarImage src={group.vendorPhotoURL} className="object-cover text-left" />
                                         <AvatarFallback className="bg-primary/5 text-primary font-bold text-xs text-left">
                                             {group.vendorName?.charAt(0)}
                                         </AvatarFallback>
@@ -271,30 +272,30 @@ function CheckoutPageContent() {
                                     <CardContent className="p-0 divide-y divide-dashed text-left">
                                         {group.items.map((item) => (
                                             <div key={item.id} className="p-6 flex flex-col gap-5 text-left">
-                                                <div className="flex items-start gap-4 text-left text-left">
-                                                    <Avatar className="h-14 w-14 rounded-2xl border shadow-inner text-left text-left">
-                                                        <AvatarImage src={item.photoURL} className="object-cover text-left text-left" />
-                                                        <AvatarFallback className="bg-primary/5 text-primary font-bold text-left text-left"> {item.name?.charAt(0)}</AvatarFallback>
+                                                <div className="flex items-start gap-4 text-left">
+                                                    <Avatar className="h-14 w-14 rounded-2xl border shadow-inner text-left">
+                                                        <AvatarImage src={item.photoURL} className="object-cover text-left" />
+                                                        <AvatarFallback className="bg-primary/5 text-primary font-bold text-left"> {item.name?.charAt(0)}</AvatarFallback>
                                                     </Avatar>
                                                     <div className="min-w-0 flex-1 text-left">
                                                         <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight text-left">{item.name}</h3>
                                                         <div className="flex items-center gap-2 mt-1.5 flex-wrap text-left">
-                                                            <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left text-left">
+                                                            <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left">
                                                                 {item.vendorType === 'gift' ? <Gift className="h-2 w-2 mr-1 text-left" /> : <Utensils className="h-2 w-2 mr-1 text-left" />}
                                                                 {item.vendorType === 'gift' ? 'GIFT' : 'MEAL'}
                                                             </Badge>
-                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left text-left">
+                                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 text-left">
                                                                 <User className="h-2.5 w-2.5 text-left" /> For: {item.soulName || 'Kingdom Member'}
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <div className="text-right shrink-0 text-left text-left">
+                                                    <div className="text-right shrink-0 text-left">
                                                         <p className="text-xl font-black text-primary tracking-tighter text-left">{symbol}{item.price.toLocaleString()}</p>
                                                         <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter text-right text-left">Per Unit</p>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center justify-between gap-4 pt-4 border-t border-muted/20 text-left text-left">
+                                                <div className="flex items-center justify-between gap-4 pt-4 border-t border-muted/20 text-left">
                                                     <div className="flex items-center gap-2 bg-background border rounded-xl p-1 shadow-sm text-left">
                                                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(item.id, item.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left"/></Button>
                                                         <span className="w-8 text-center font-black text-xs text-left"> {item.quantity}</span>
@@ -305,7 +306,7 @@ function CheckoutPageContent() {
                                                     </Button>
                                                 </div>
 
-                                                <div className="space-y-2 text-left text-left">
+                                                <div className="space-y-2 text-left">
                                                     <Label className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-1 text-left">Special Instructions</Label>
                                                     <Textarea 
                                                         placeholder="e.g., Delivery instructions, personal message..."
@@ -348,7 +349,7 @@ function CheckoutPageContent() {
                     <Card className="rounded-[2rem] overflow-hidden border-none shadow-xl bg-primary text-primary-foreground text-left">
                         <CardHeader className="p-8 pb-4 text-left">
                             <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Summary</CardTitle>
-                            <CardDescription className="text-primary-foreground/70 font-medium text-left text-left">Consolidated Kingdom Offering.</CardDescription>
+                            <CardDescription className="text-primary-foreground/70 font-medium text-left">Consolidated Kingdom Offering.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-8 pt-0 space-y-6 text-left">
                             <div className="space-y-6 text-left">
