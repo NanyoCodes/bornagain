@@ -26,7 +26,7 @@ import Link from 'next/link';
 import type { Soul, Campaign, Fellowship, SoulRelationship } from '@/lib/types';
 import { LogSoulForm } from './log-soul-form';
 
-const ViewHistoryDialogLazy = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
+const ViewHistoryDialogLazy = dynamic(() => import('./view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 
 function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul: (soul: Soul) => void }) {
   if (!souls || souls.length === 0) {
