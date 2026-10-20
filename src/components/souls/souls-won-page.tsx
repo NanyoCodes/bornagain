@@ -898,10 +898,10 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <Drawer open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left text-left text-left text-left">Harvest Demographic</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left">Harvest Demographic</span>
                             </div>
                             <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left text-left text-left text-left text-left text-left text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
@@ -929,8 +929,8 @@ export default function SoulsWonPage() {
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left text-left text-left text-left">Demographic View</span>
+                                <BarChart3 className="h-4 w-4 text-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
@@ -1040,7 +1040,7 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-bold font-headline text-left text-left text-left text-left">Add New Soul</DialogTitle>
@@ -1057,7 +1057,7 @@ export default function SoulsWonPage() {
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left text-left">
@@ -1080,7 +1080,7 @@ export default function SoulsWonPage() {
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                     </DrawerHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left">
                     <div className="p-6 pb-24 text-left text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 

@@ -61,11 +61,11 @@ function ProfileSettingsCard() {
   return (
     <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left"><User className="h-5 w-5 text-primary text-left" /> Public Identity</CardTitle>
-        <CardDescription className="text-left">This is how others see your impact on the platform.</CardDescription>
+        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left text-left text-left"><User className="h-5 w-5 text-primary text-left text-left text-left text-left" /> Public Identity</CardTitle>
+        <CardDescription className="text-left text-left text-left text-left">This is how others see your impact on the platform.</CardDescription>
       </CardHeader>
-      <CardContent className="text-left">
-        <Button asChild className="w-full sm:w-auto h-12 rounded-2xl font-bold uppercase tracking-widest text-left"><Link href="/profile" className="text-left">Edit Your Profile</Link></Button>
+      <CardContent className="text-left text-left text-left text-left text-left">
+        <Button asChild className="w-full sm:w-auto h-12 rounded-2xl font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><Link href="/profile" className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Edit Your Profile</Link></Button>
       </CardContent>
     </Card>
   );
@@ -105,73 +105,71 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
 
   return (
     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
-        <CardHeader className="text-left">
-            <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left"><ImageIcon className="h-5 w-5 text-primary text-left" /> Kingdom Atmosphere</CardTitle>
-            <CardDescription className="text-left">Personalize your environment and app readability.</CardDescription>
+        <CardHeader className="text-left text-left">
+            <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left"><ImageIcon className="h-5 w-5 text-primary text-left text-left" /> Kingdom Atmosphere</CardTitle>
+            <CardDescription className="text-left text-left">Personalize your environment and app readability.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-8 text-left">
-            {/* Appearance Controls */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-                <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left">
-                    <div className="space-y-0.5 text-left text-left">
-                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left text-left">
-                             <Palette className="h-4 w-4 text-primary text-left text-left text-left" />
+        <CardContent className="space-y-8 text-left text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left text-left">
+                <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left text-left">
+                    <div className="space-y-0.5 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                             <Palette className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                              Theme
                         </label>
-                        <p className="text-[10px] text-muted-foreground uppercase font-medium text-left text-left text-left">Dark mode is default</p>
+                        <p className="text-[10px] text-muted-foreground uppercase font-medium text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Dark mode is default</p>
                     </div>
                     <ThemeToggle />
                 </div>
 
-                <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left">
-                    <div className="space-y-0.5 pr-2 text-left text-left text-left">
-                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left text-left">
-                            <Type className="h-4 w-4 text-primary text-left text-left text-left" />
+                <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left text-left">
+                    <div className="space-y-0.5 pr-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                            <Type className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                             Text Size
                         </label>
-                        <p className="text-[10px] text-muted-foreground uppercase font-medium text-left text-left text-left">Adjust readability</p>
+                        <p className="text-[10px] text-muted-foreground uppercase font-medium text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Adjust readability</p>
                     </div>
                     <Select value={fontSize} onValueChange={(val) => setFontSize(val as any)}>
-                        <SelectTrigger className="w-fit min-w-[100px] h-9 text-xs font-bold uppercase gap-2 text-left">
-                            <SelectValue placeholder="Size" className="text-left" />
+                        <SelectTrigger className="w-fit min-w-[100px] h-9 text-xs font-bold uppercase gap-2 text-left text-left">
+                            <SelectValue placeholder="Size" className="text-left text-left" />
                         </SelectTrigger>
-                        <SelectContent className="text-left">
-                            <SelectItem value="sm" className="text-left">Small</SelectItem>
-                            <SelectItem value="base" className="text-left">Medium</SelectItem>
-                            <SelectItem value="lg" className="text-left">Large</SelectItem>
-                            <SelectItem value="xl" className="text-left">XL</SelectItem>
+                        <SelectContent className="text-left text-left">
+                            <SelectItem value="sm" className="text-left text-left">Small</SelectItem>
+                            <SelectItem value="base" className="text-left text-left">Medium</SelectItem>
+                            <SelectItem value="lg" className="text-left text-left">Large</SelectItem>
+                            <SelectItem value="xl" className="text-left text-left">XL</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
             </div>
 
-            <Separator className="opacity-50 text-left" />
+            <Separator className="opacity-50 text-left text-left" />
 
-            {/* Background Selection */}
-            <div className="space-y-6 text-left">
-                <div className="space-y-4 text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">Select Background</Label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 text-left">
+            <div className="space-y-6 text-left text-left text-left text-left">
+                <div className="space-y-4 text-left text-left text-left text-left text-left">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left text-left text-left text-left text-left text-left text-left">Select Background</Label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 text-left text-left text-left text-left text-left text-left text-left">
                         {backgroundPresets.map((preset) => (
                             <button
                                 key={preset.id}
                                 type="button"
                                 onClick={() => setSelectedUrl(preset.url)}
                                 className={cn(
-                                    "group relative aspect-video rounded-2xl overflow-hidden border-2 transition-all active:scale-95 flex flex-col items-center justify-center text-left",
+                                    "group relative aspect-video rounded-2xl overflow-hidden border-2 transition-all active:scale-95 flex flex-col items-center justify-center text-left text-left text-left text-left text-left",
                                     selectedUrl === preset.url ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-60 hover:opacity-100"
                                 )}
                             >
-                                <div className="absolute inset-0 text-left" style={{ background: preset.url }} />
+                                <div className="absolute inset-0 text-left text-left" style={{ background: preset.url }} />
                                 <div className={cn(
-                                  "absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity p-2 text-left",
+                                  "absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity p-2 text-left text-left",
                                   selectedUrl === preset.url ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                                 )}>
-                                    <span className="text-[9px] font-black text-white uppercase tracking-widest text-center leading-tight text-left">{preset.label}</span>
+                                    <span className="text-[9px] font-black text-white uppercase tracking-widest text-center leading-tight text-left text-left text-left text-left text-left">{preset.label}</span>
                                 </div>
                                 {selectedUrl === preset.url && (
-                                    <div className="absolute top-1 right-1 bg-primary rounded-full p-0.5 z-10 shadow-lg text-left">
-                                        <Sparkles className="h-3 w-3 text-white text-left" />
+                                    <div className="absolute top-1 right-1 bg-primary rounded-full p-0.5 z-10 shadow-lg text-left text-left">
+                                        <Sparkles className="h-3 w-3 text-white text-left text-left text-left text-left" />
                                     </div>
                                 )}
                             </button>
@@ -179,30 +177,30 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
                     </div>
                 </div>
 
-                <div className="space-y-8 text-left">
-                    <div className="space-y-4 text-left">
-                        <div className="flex justify-between items-center text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">Overlay Intensity</Label>
-                            <span className="text-[10px] font-black text-primary uppercase tracking-tighter text-left">{Math.round(overlayOpacity * 100)}% Dark</span>
+                <div className="space-y-8 text-left text-left text-left text-left text-left">
+                    <div className="space-y-4 text-left text-left text-left text-left text-left text-left text-left">
+                        <div className="flex justify-between items-center text-left text-left text-left text-left text-left text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left text-left text-left text-left text-left text-left text-left">Overlay Intensity</Label>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-tighter text-left text-left text-left text-left text-left text-left text-left">{Math.round(overlayOpacity * 100)}% Dark</span>
                         </div>
-                        <div className="flex items-center gap-4 px-2 text-left text-left text-left">
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase text-left text-left">Glass</span>
+                        <div className="flex items-center gap-4 px-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase text-left text-left text-left text-left text-left text-left text-left text-left">Glass</span>
                             <Slider 
                                 value={[1 - overlayOpacity]} 
                                 max={1} 
                                 step={0.05} 
                                 min={0}
                                 onValueChange={(val) => setOverlayOpacity(1 - val[0])}
-                                className="flex-1 text-left text-left text-left"
+                                className="flex-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"
                             />
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase text-left text-left">Solid</span>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase text-left text-left text-left text-left text-left text-left text-left text-left text-left">Solid</span>
                         </div>
                     </div>
                 </div>
 
-                <Button onClick={handleSave} disabled={isSubmitting} className="w-full min-h-[3.5rem] h-auto rounded-[1.5rem] font-black shadow-xl shadow-primary/20 tracking-widest uppercase py-4 text-left">
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
-                    Click to view
+                <Button onClick={handleSave} disabled={isSubmitting} className="w-full min-h-[3.5rem] h-auto rounded-[1.5rem] font-black shadow-xl shadow-primary/20 tracking-widest uppercase py-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left" />}
+                    View only this photo when clicked
                 </Button>
             </div>
         </CardContent>
@@ -241,23 +239,21 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
         }).finally(() => setIsSubmitting(false));
   }
   return (
-    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left text-left">
-      <CardHeader className="text-left text-left">
-        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left text-left"><Bell className="h-5 w-5 text-primary text-left text-left" /> Notifications</CardTitle>
-      </CardHeader>
-      <CardContent className="text-left">
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
+      <CardHeader className="text-left text-left text-left text-left"><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left text-left text-left text-left text-left"><Bell className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left" /> Notifications</CardTitle></CardHeader>
+      <CardContent className="text-left text-left text-left text-left text-left text-left text-left">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
             <FormField control={form.control} name="newCampaignsInArea" render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-2xl border p-5 bg-muted/20 gap-4 text-left">
-                  <div className="space-y-0.5 text-left text-left">
-                    <FormLabel className="text-sm font-black uppercase tracking-wider text-left text-left">New Campaigns</FormLabel>
-                    <FormDescription className="text-[10px] font-medium leading-tight text-left text-left">Notify me of missions in my area.</FormDescription>
+                <FormItem className="flex flex-row items-center justify-between rounded-2xl border p-5 bg-muted/20 gap-4 text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <div className="space-y-0.5 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <FormLabel className="text-sm font-black uppercase tracking-wider text-left text-left text-left text-left text-left text-left text-left text-left">New Campaigns</FormLabel>
+                    <FormDescription className="text-[10px] font-medium leading-tight text-left text-left text-left text-left text-left text-left text-left text-left text-left">Notify me of missions in my area.</FormDescription>
                   </div>
-                  <FormControl className="text-left text-left"><Switch checked={field.value} onCheckedChange={field.onChange} className="text-left text-left" /></FormControl>
+                  <FormControl className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><Switch checked={field.value} onCheckedChange={field.onChange} className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></FormControl>
                 </FormItem>
               )} />
-            <Button type="submit" className="w-full sm:w-auto h-12 rounded-2xl font-black uppercase tracking-widest text-left text-left" disabled={isSubmitting || !form.formState.isDirty}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}Save Preferences</Button>
+            <Button type="submit" className="w-full sm:w-auto h-12 rounded-2xl font-black uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" disabled={isSubmitting || !form.formState.isDirty}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left" />}Save Preferences</Button>
           </form>
         </Form>
       </CardContent>
@@ -268,26 +264,24 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
 function ContactCard() {
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
-      <CardHeader className="text-left">
-        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left"><MessageSquare className="h-5 w-5 text-primary text-left" /> Ministry Support</CardTitle>
-      </CardHeader>
-      <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left">
-                <Mail className="h-5 w-5 text-primary text-left" />
+      <CardHeader className="text-left text-left"><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left text-left text-left text-left"><MessageSquare className="h-5 w-5 text-primary text-left text-left text-left text-left" /> Ministry Support</CardTitle></CardHeader>
+      <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left text-left text-left text-left">
+        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left text-left text-left text-left text-left text-left">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left">
+                <Mail className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left" />
             </div>
-            <div className="min-w-0 text-left">
-                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left">Email Support</p>
-                <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-bold hover:underline truncate block text-foreground text-left">testifyglobal360@gmail.com</a>
+            <div className="min-w-0 text-left text-left text-left text-left text-left text-left text-left">
+                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left text-left text-left text-left text-left text-left text-left text-left text-left">Email Support</p>
+                <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-bold hover:underline truncate block text-foreground text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">testifyglobal360@gmail.com</a>
             </div>
         </div>
-        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left text-left">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left">
-                <Phone className="h-5 w-5 text-primary text-left text-left" />
+        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left text-left text-left text-left text-left text-left text-left">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                <Phone className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
             </div>
-            <div className="min-w-0 text-left text-left">
-                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left text-left">Call / WhatsApp</p>
-                <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground text-left text-left">+234 814 853 8502</a>
+            <div className="min-w-0 text-left text-left text-left text-left text-left text-left text-left text-left">
+                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Call / WhatsApp</p>
+                <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">+234 814 853 8502</a>
             </div>
         </div>
       </CardContent>
@@ -303,16 +297,16 @@ function AccountDeletionRequest({ userId }: { userId: string }) {
     };
 
     return (
-        <div className="pt-12 pb-8 flex flex-col items-center gap-4 text-center px-6 text-left text-left">
-            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] opacity-40 text-center text-left">Account Lifecycle</p>
+        <div className="pt-12 pb-8 flex flex-col items-center gap-4 text-center px-6 text-left text-left text-left text-left">
+            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] opacity-40 text-center text-left text-left text-left">Account Lifecycle</p>
             <Button 
                 variant="ghost" 
                 onClick={handleEmailRequest}
-                className="text-destructive hover:text-destructive hover:bg-destructive/10 font-black uppercase tracking-[0.2em] text-[10px] h-10 px-8 rounded-full border border-destructive/20 transition-all active:scale-95 text-center text-left"
+                className="text-destructive hover:text-destructive hover:bg-destructive/10 font-black uppercase tracking-[0.2em] text-[10px] h-10 px-8 rounded-full border border-destructive/20 transition-all active:scale-95 text-center text-left text-left"
             >
                 Request Account Deletion
             </Button>
-            <p className="text-[9px] text-muted-foreground italic max-w-xs leading-relaxed text-center text-left">
+            <p className="text-[9px] text-muted-foreground italic max-w-xs leading-relaxed text-center text-left text-left">
                 Send a request to our ministry team for secure identity removal.
             </p>
         </div>
@@ -326,20 +320,20 @@ export default function SettingsPage() {
   const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32 text-left">
-      <div className="px-4 sm:px-0 space-y-1 text-left">
-        <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase text-left">Settings</h1>
-        <p className="text-xs sm:text-sm text-muted-foreground text-left text-left">Manage your identity and Kingdom preferences.</p>
+    <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32 text-left text-left">
+      <div className="px-4 sm:px-0 space-y-1 text-left text-left">
+        <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase text-left text-left">Settings</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Manage your identity and Kingdom preferences.</p>
       </div>
       
        {loading || !userProfile || !user ? (
-        <div className="space-y-6 px-4 sm:px-0 text-left">
-            <Skeleton className="h-40 w-full rounded-2xl text-left" />
-            <Skeleton className="h-60 w-full rounded-2xl text-left" />
-            <Skeleton className="h-40 w-full rounded-2xl text-left" />
+        <div className="space-y-6 px-4 sm:px-0 text-left text-left">
+            <Skeleton className="h-40 w-full rounded-2xl text-left text-left" />
+            <Skeleton className="h-60 w-full rounded-2xl text-left text-left" />
+            <Skeleton className="h-40 w-full rounded-2xl text-left text-left" />
         </div>
        ) : (
-        <div className="space-y-6 md:space-y-8 text-left">
+        <div className="space-y-6 md:space-y-8 text-left text-left">
             <ProfileSettingsCard />
             <VisualEnvironmentCard userProfile={userProfile} userId={user.uid} />
             <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
