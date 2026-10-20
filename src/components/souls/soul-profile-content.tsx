@@ -1005,3 +1005,115 @@ export function SoulProfileContent({
     </div>
   );
 }
+
+export function IntercessionHubDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onComplete 
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  soul: Soul | null; 
+  onComplete: (msg: string) => void;
+}) {
+  const [text, setText] = useState('');
+  const isMobile = useIsMobile();
+  useEffect(() => { if(isOpen && soul) setText(prayerTemplates[0].text.replace(/{name}/g, soul.firstName)); }, [isOpen, soul]);
+
+  const content = (
+    <div className="p-8 space-y-6 text-left">
+        <div className="space-y-3">
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Focus</label>
+            <div className="flex flex-wrap gap-2">
+                {prayerTemplates.map(t => (
+                    <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-primary" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
+                ))}
+            </div>
+        </div>
+        <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
+            <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
+        </div>
+        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">PREPARE TO SEND</Button>
+    </div>
+  );
+
+  const header = (
+    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+        <DialogHeader className="p-0 text-left">
+            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+            <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+        </DialogHeader>
+    </div>
+  );
+
+  if (isMobile) {
+      return (
+          <Sheet open={isOpen} onOpenChange={onOpenChange}>
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                  {header}<ScrollArea className="flex-grow">{content}</ScrollArea>
+              </SheetContent>
+          </Sheet>
+      );
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+            {header}{content}
+        </DialogContent>
+    </Dialog>
+  );
+}
+
+export function MessageHubDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onChannelSelect 
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  soul: Soul | null; 
+  onChannelSelect: (channel: 'whatsapp' | 'sms') => void;
+}) {
+  const isMobile = useIsMobile();
+  const header = (
+    <div className="text-center space-y-2 p-8 border-b bg-muted/10 text-left">
+        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+            <MessageSquare className="h-7 w-7 text-primary" />
+        </div>
+        <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</h2>
+        <p className="text-sm font-medium text-center">Encourage {soul?.firstName} through external channels.</p>
+    </div>
+  );
+  const content = (
+    <div className="flex flex-col gap-3 p-8 text-left">
+        <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg text-center">
+            <WhatsAppIcon className="h-5 w-5" /> WhatsApp
+        </Button>
+        <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary text-center">
+            <MessageSquare className="h-5 w-5" /> Standard SMS
+        </Button>
+    </div>
+  );
+
+  if (isMobile) {
+      return (
+          <Drawer open={isOpen} onOpenChange={onOpenChange}>
+              <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12">
+                  {header}{content}
+              </DrawerContent>
+          </Drawer>
+      );
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+          {header}{content}
+      </DialogContent>
+    </Dialog>
+  );
+}

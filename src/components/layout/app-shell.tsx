@@ -730,7 +730,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
               <SheetHeader className="text-left flex-shrink-0 text-left">
                 <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
+                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself and add your profile photo.</SheetDescription>
               </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8 text-left text-left text-left">
