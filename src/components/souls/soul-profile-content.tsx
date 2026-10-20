@@ -257,8 +257,8 @@ export function ShareWordDialog({
             <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}</DialogTitle>
           </DialogHeader>
         </div>
-        <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
-            <X className="h-5 w-5 text-left" />
+        <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
+            <X className="h-5 w-5" />
         </Button>
       </div>
     </div>
@@ -344,6 +344,18 @@ export function IntercessionHubDialog({
   const isMobile = useIsMobile();
   useEffect(() => { if(isOpen && soul) setText(prayerTemplates[0].text.replace(/{name}/g, soul.firstName)); }, [isOpen, soul]);
 
+  const header = (
+    <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
+        <DialogHeader className="p-0 text-left">
+            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+            <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+        </DialogHeader>
+        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => onOpenChange(false)}>
+            <X className="h-5 w-5" />
+        </Button>
+    </div>
+  );
+
   const content = (
     <div className="p-8 space-y-6 text-left">
         <div className="space-y-3">
@@ -359,15 +371,6 @@ export function IntercessionHubDialog({
             <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
         </div>
         <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">SEND</Button>
-    </div>
-  );
-
-  const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-        <DialogHeader className="p-0 text-left">
-            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
-            <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
-        </DialogHeader>
     </div>
   );
 
@@ -403,12 +406,18 @@ export function MessageHubDialog({
 }) {
   const isMobile = useIsMobile();
   const header = (
-    <div className="text-center space-y-2 p-8 border-b bg-muted/10 text-left">
-        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-            <MessageSquare className="h-7 w-7 text-primary" />
+    <div className="p-8 border-b bg-muted/10 text-left flex items-center justify-between gap-4">
+        <div className="flex-1 min-w-0 text-left">
+            <div className="flex items-center gap-2 mb-1 text-left">
+                <MessageSquare className="h-4 w-4 text-primary" />
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
+            </div>
+            <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-left">Message Hub</h2>
+            <p className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</p>
         </div>
-        <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</h2>
-        <p className="text-sm font-medium text-center">Encourage {soul?.firstName} through external channels.</p>
+        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => onOpenChange(false)}>
+            <X className="h-5 w-5" />
+        </Button>
     </div>
   );
   const content = (
