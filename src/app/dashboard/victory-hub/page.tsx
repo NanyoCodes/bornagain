@@ -394,7 +394,7 @@ export default function VictoryHubPage() {
                     <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1 text-left text-left text-left text-left">
                         <Lock className="h-6 w-6 text-white text-left text-left text-left text-left" />
                     </div>
-                    <div className="text-left text-left text-left text-left">
+                    <div className="text-left text-left text-left text-left text-left">
                         <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left text-left text-left text-left">Choice-Based Sanctuary</h3>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance text-left text-left text-left text-left">
                             Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30 text-left text-left text-left text-left">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear.
@@ -402,7 +402,7 @@ export default function VictoryHubPage() {
                     </div>
                 </div>
 
-                <div className="relative text-left text-left text-left">
+                <div className="relative text-left text-left text-left text-left">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left text-left" />
                     <Input 
                         placeholder="Search for a struggle circle..." 
