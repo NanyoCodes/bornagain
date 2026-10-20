@@ -19,64 +19,77 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
     const isBusiness = type === 'business';
     
     return (
-        <Card className="rounded-none sm:rounded-[2.5rem] border-y sm:border border-border border-x-0 sm:border-x border-t-4 border-t-primary/40 shadow-none sm:shadow-lg bg-[#1c1c21] overflow-hidden group text-left">
-            <div className="p-4 sm:p-6 pb-4 border-b border-white/5 flex items-center justify-between bg-black/20 text-left">
-                <div className="flex items-center gap-2.5 text-left">
-                    <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 text-left">
-                        <Megaphone className="h-4 w-4 text-primary text-left" />
+        <Card className="rounded-none sm:rounded-[3rem] border-y sm:border border-border border-x-0 sm:border-x border-t-[6px] border-t-primary shadow-none sm:shadow-2xl bg-[#09090b] overflow-hidden group text-left transition-all duration-500 hover:scale-[1.01] hover:border-primary/20">
+            <div className="p-4 sm:p-6 pb-4 border-b border-white/5 flex items-center justify-between bg-black/40 backdrop-blur-md text-left">
+                <div className="flex items-center gap-3 text-left">
+                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 text-left shadow-lg">
+                        <Megaphone className="h-5 w-5 text-primary text-left" />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 text-left">Kingdom Spotlight</span>
+                    <div className="flex flex-col text-left">
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 text-left">Testify Global</span>
+                        <span className="text-[12px] font-bold text-white uppercase tracking-tight text-left">Kingdom Spotlight</span>
+                    </div>
                 </div>
-                <Badge variant="outline" className="h-5 px-2 text-[8px] font-black uppercase tracking-widest bg-background/50 border-primary/20 text-primary text-left">FEATURED VISION</Badge>
+                <Badge variant="outline" className="h-7 px-3 text-[9px] font-black uppercase tracking-widest bg-primary/10 border-primary/30 text-primary text-left shadow-[0_0_15px_rgba(249,116,22,0.2)] animate-pulse">
+                    FEATURED VISION
+                </Badge>
             </div>
             
             <CardContent className="p-0 text-left">
                 <div className="grid grid-cols-1 md:grid-cols-2 text-left">
-                    <div className="relative aspect-video md:aspect-auto h-full min-h-[180px] bg-zinc-900 overflow-hidden text-left">
+                    <div className="relative aspect-video md:aspect-auto h-full min-h-[220px] bg-zinc-900 overflow-hidden text-left">
                         {adImage && (
                             <Image 
                                 src={adImage.imageUrl} 
                                 alt="Kingdom Spotlight" 
                                 fill 
-                                className="object-cover opacity-60 transition-transform duration-1000 group-hover:scale-110 text-left"
+                                className="object-cover opacity-50 transition-transform duration-[2000ms] group-hover:scale-125 text-left"
                                 unoptimized
                                 data-ai-hint={adImage.imageHint}
                             />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
-                        <div className="absolute top-4 left-4 bg-primary/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-1.5 text-left">
-                            <Sparkles className="h-3 w-3 text-primary animate-pulse text-left" />
-                            <span className="text-[8px] font-black text-white uppercase tracking-widest text-left">Kingdom Mindset</span>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-transparent to-transparent text-left" />
+                        <div className="absolute inset-0 bg-primary/5 group-hover:bg-transparent transition-colors duration-500 text-left" />
+                        
+                        <div className="absolute top-6 left-6 bg-black/60 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 flex items-center gap-2 text-left shadow-2xl">
+                            <Sparkles className="h-4 w-4 text-primary animate-pulse text-left" />
+                            <span className="text-[10px] font-black text-white uppercase tracking-widest text-left">KINGDOM MINDSET</span>
                         </div>
                     </div>
-                    <div className="p-8 sm:p-10 flex flex-col justify-center space-y-5 bg-gradient-to-br from-[#1c1c21] to-[#09090b] text-left">
-                        <div className="space-y-2 text-left">
-                            <div className="flex items-center gap-2.5 mb-2 text-left">
-                                {isBusiness ? <Store className="h-5 w-5 text-primary text-left" /> : <CalendarDays className="h-5 w-5 text-primary text-left" />}
-                                <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white leading-none text-left">
+                    <div className="p-8 sm:p-12 flex flex-col justify-center space-y-6 bg-gradient-to-br from-[#121217] to-[#09090b] text-left relative">
+                        <div className="absolute top-0 right-0 p-12 opacity-[0.02] pointer-events-none group-hover:opacity-[0.05] transition-opacity duration-700 text-left">
+                            {isBusiness ? <Store className="h-48 w-48 text-primary" /> : <CalendarDays className="h-48 w-48 text-primary" />}
+                        </div>
+                        
+                        <div className="space-y-3 text-left relative z-10">
+                            <div className="flex items-center gap-3 mb-2 text-left">
+                                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-left">
+                                    {isBusiness ? <Store className="h-4 w-4 text-primary text-left" /> : <CalendarDays className="h-4 w-4 text-primary text-left" />}
+                                </div>
+                                <h3 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tighter text-white leading-none text-left text-balance">
                                     {isBusiness ? "Kingdom Enterprise" : "Kingdom Mission"}
                                 </h3>
                             </div>
-                            <p className="text-sm sm:text-base text-zinc-400 font-medium leading-relaxed italic text-left">
+                            <p className="text-base sm:text-lg text-zinc-400 font-medium leading-relaxed italic text-left text-balance border-l-2 border-primary/20 pl-6">
                                 {isBusiness 
                                     ? "Empowering the Body through economic unity. Feature your business, ministry, or project to a global community dedicated to the King."
                                     : "Mobilize the saints for your next conference, worship night, or outreach. Share your event with a global community of soul-winners."}
                             </p>
                         </div>
                         
-                        <div className="pt-2 text-left">
-                            <Button asChild className="w-full h-14 rounded-2xl font-black shadow-xl shadow-primary/20 uppercase tracking-[0.2em] group/btn bg-primary text-white hover:bg-primary/90 text-center">
+                        <div className="pt-4 text-left relative z-10">
+                            <Button asChild size="lg" className="w-full h-16 rounded-[1.5rem] font-black shadow-2xl shadow-primary/30 uppercase tracking-[0.2em] group/btn bg-primary text-white hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-95 text-center">
                                 <Link href="/contact" className="flex items-center justify-center w-full text-center">
                                     {isBusiness ? "BOOST MY BUSINESS" : "FEATURE MY EVENT"}
-                                    <ArrowRight className="ml-3 h-5 w-5 transition-transform group-hover/btn:translate-x-1 text-left" />
+                                    <ArrowRight className="ml-3 h-6 w-6 transition-transform group-hover/btn:translate-x-2 text-left" />
                                 </Link>
                             </Button>
                         </div>
                         
-                        <div className="flex flex-col items-center gap-3 pt-2 text-left">
-                            <div className="h-px w-12 bg-white/10 text-left" />
-                            <div className="flex items-center gap-2 text-[9px] text-zinc-500 font-black uppercase tracking-[0.3em] text-center text-left">
-                                <Info className="h-3 w-3 text-left" />
+                        <div className="flex flex-col items-center gap-4 pt-4 text-left relative z-10">
+                            <div className="h-px w-20 bg-white/10 text-left" />
+                            <div className="flex items-center gap-2.5 text-[10px] text-zinc-500 font-black uppercase tracking-[0.4em] text-center text-left">
+                                <Info className="h-4 w-4 text-primary/40 text-left" />
                                 ALL VISIONARY PROJECTS WELCOME
                             </div>
                         </div>
