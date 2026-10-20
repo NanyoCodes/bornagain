@@ -118,7 +118,7 @@ import {
   deleteDoc
 } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
+import { getBibleChapter, type BibleChapterOutput } from "@/ai/flows/get-bible-chapter-flow";
 import { bibleData } from "@/lib/bible-data";
 import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-data";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -166,7 +166,7 @@ export const getStatusClasses = (status: FollowUpStatus | undefined): string => 
     }
 }
 
-// --- Sub-Dialogs ---
+// --- Immersive Dialog Components ---
 
 export function ShareWordDialog({ 
   isOpen, 
@@ -265,7 +265,7 @@ export function ShareWordDialog({
             </DialogHeader>
           )}
         </div>
-        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
+        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
         </Button>
       </div>
@@ -354,17 +354,19 @@ export function IntercessionHubDialog({
 
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
-        {isMobile ? (
-            <DrawerHeader className="text-left p-0 flex-1 min-w-0">
-                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DrawerTitle>
-                <DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DrawerDescription>
-            </DrawerHeader>
-        ) : (
-            <DialogHeader className="text-left p-0 flex-1 min-w-0">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
-            </DialogHeader>
-        )}
+        <div className="flex-1 min-w-0 text-left">
+            {isMobile ? (
+                <DrawerHeader className="p-0 text-left">
+                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DrawerDescription>
+                </DrawerHeader>
+            ) : (
+                <DialogHeader className="p-0 text-left">
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+                    <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+                </DialogHeader>
+            )}
+        </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
         </Button>
@@ -430,12 +432,12 @@ export function MessageHubDialog({
             {isMobile ? (
                 <DrawerHeader className="p-0 text-left">
                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</DrawerTitle>
-                    <DrawerDescription className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</DrawerDescription>
+                    <DrawerDescription className="text-sm font-medium text-center sm:text-left">Encourage {soul?.firstName} via mobile.</DrawerDescription>
                 </DrawerHeader>
             ) : (
                 <DialogHeader className="p-0 text-left">
                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</DialogDescription>
+                    <DialogDescription className="text-sm font-medium text-center sm:text-left">Encourage {soul?.firstName} via mobile.</DialogDescription>
                 </DialogHeader>
             )}
         </div>

@@ -51,7 +51,7 @@ function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
           >
             <div className="flex flex-row items-center gap-3 min-w-0 flex-1 text-left">
                 <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors text-left">
-                  <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                  <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
                   <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0 text-left ml-1 sm:ml-2">

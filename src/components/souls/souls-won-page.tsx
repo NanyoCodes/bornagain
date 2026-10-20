@@ -747,7 +747,7 @@ export function SoulsWonPage() {
     <div className="w-full max-w-7xl mx-auto text-left">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
             <div className="lg:col-span-8 space-y-10 pb-32 text-left">
-                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left">
+                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                         <div className="space-y-1 text-left">
                             <div className="flex items-center gap-3 text-left text-left">
@@ -956,7 +956,7 @@ export function SoulsWonPage() {
                         <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
                             <div className="flex items-center justify-between gap-4">
                                 <div className="min-w-0 text-left">
-                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
+                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
                                         <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left" />
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Demographic View</span>
                                     </div>
@@ -1162,3 +1162,5 @@ export function SoulsWonPage() {
     </div>
   );
 }
+
+export default SoulsWonPage;
