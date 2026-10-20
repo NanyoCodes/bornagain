@@ -1017,7 +1017,7 @@ export default function SoulsWonPage() {
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Record a new life won for Christ.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow px-8 text-left text-left text-left text-left">
+                            <ScrollArea className="flex-grow px-8 text-left text-left text-left text-left text-left">
                                 <div className="py-8 text-left text-left text-left text-left">
                                     <LogSoulFormLazy onSoulLogged={() => { setIsLogDialogOpen(false); setLogSoulDefaults({}); }} fellowships={fellowships || []} campaigns={campaigns || []} {...logSoulDefaults} />
                                 </div>
@@ -1082,7 +1082,7 @@ export default function SoulsWonPage() {
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
                                 soul={souls.find(s => s.id === selectedId)!} 
