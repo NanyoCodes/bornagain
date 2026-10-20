@@ -241,7 +241,7 @@ export function ShareWordDialog({
   };
 
   const header = (
-    <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left">
+    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
       <div className="flex items-center justify-between gap-4 text-left">
         <div className="min-w-0 text-left">
           <div className="flex items-center gap-3 mb-2 text-left">
@@ -253,9 +253,17 @@ export function ShareWordDialog({
             <Target className="h-5 w-5 text-primary" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
           </div>
-          <DialogHeader className="p-0 text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}</DialogTitle>
-          </DialogHeader>
+          {isMobile ? (
+            <>
+              <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}</DrawerTitle>
+              <DrawerDescription className="sr-only">Access the word of God to share with converts.</DrawerDescription>
+            </>
+          ) : (
+            <>
+              <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}</DialogTitle>
+              <DialogDescription className="sr-only">Access the word of God to share with converts.</DialogDescription>
+            </>
+          )}
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -346,10 +354,17 @@ export function IntercessionHubDialog({
 
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
-        <DialogHeader className="p-0 text-left">
-            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
-            <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
-        </DialogHeader>
+        {isMobile ? (
+            <div className="min-w-0 flex-1">
+                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DrawerTitle>
+                <DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DrawerDescription>
+            </div>
+        ) : (
+            <div className="min-w-0 flex-1">
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+            </div>
+        )}
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
         </Button>
@@ -412,8 +427,17 @@ export function MessageHubDialog({
                 <MessageSquare className="h-4 w-4 text-primary" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
             </div>
-            <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-left">Message Hub</h2>
-            <p className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</p>
+            {isMobile ? (
+                <>
+                    <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Message Hub</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</DrawerDescription>
+                </>
+            ) : (
+                <>
+                    <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Message Hub</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</DialogDescription>
+                </>
+            )}
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -683,8 +707,8 @@ export function SoulProfileContent({
                     {soul.photoURL && (
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                             <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
-                            <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                            <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -773,7 +797,7 @@ export function SoulProfileContent({
                 <div className="flex items-center justify-between">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Contact Identity</p>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onEdit(soul)}>
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-4 w-4 text-left" />
                     </Button>
                 </div>
                 <div className="space-y-2">

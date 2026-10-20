@@ -156,10 +156,17 @@ function ChildSelectionDialog({
     const header = (
         <div className="p-8 border-b bg-muted/10 text-left flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0 text-left">
-                <DialogHeader className="text-left p-0">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Select Child</DialogTitle>
-                    <DialogDescription className="text-sm font-medium mt-1 text-left">Pick an existing convert to add to {parent.firstName}&apos;s household.</DialogDescription>
-                </DialogHeader>
+                {isMobile ? (
+                    <DrawerHeader className="text-left p-0">
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Select Child</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Pick an existing convert to add to {parent.firstName}&apos;s household.</DrawerDescription>
+                    </DrawerHeader>
+                ) : (
+                    <DialogHeader className="text-left p-0">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Select Child</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left">Pick an existing convert to add to {parent.firstName}&apos;s household.</DialogDescription>
+                    </DialogHeader>
+                )}
             </div>
             <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => onOpenChange(false)}>
                 <X className="h-5 w-5" />
@@ -830,7 +837,7 @@ export default function SoulsWonPage() {
                                         const Icon = group.icon;
                                         return (
                                             <div key={group.label} className={cn("space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left", "hover:border-primary/20")} onClick={() => setSelectedFilterGroup({ type: 'age', value: group.label })}>
-                                                <div className="flex items-center justify-between text-left text-left"><div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left text-left text-left"><Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left text-left text-left" /></div><span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span></div>
+                                                <div className="flex items-center justify-between text-left text-left"><div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left text-left text-left"><Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left text-left text-left text-left" /></div><span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span></div>
                                                 <div className="space-y-1 text-left"><div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left"><span className="text-left">{group.label}</span><span className="text-left">{Math.round(percent)}%</span></div><Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={group.color} /></div>
                                             </div>
                                         );
@@ -1130,7 +1137,7 @@ export default function SoulsWonPage() {
                                 <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
                                     {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                                 </DrawerTitle>
-                                <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DialogDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                             </DrawerHeader>
                         </div>
                         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => setSelectedId(null)}>
@@ -1159,4 +1166,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-

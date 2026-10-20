@@ -10,7 +10,8 @@ import {
     Sparkles, 
     ArrowRight, 
     Target,
-    ChevronDown
+    ChevronDown,
+    X
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -146,15 +147,19 @@ export function RelationshipCircleTracker({
                                     <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight text-left">{selectedCategoryName} Circle</DrawerTitle>
                                     <DrawerDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Viewing all converts in your {selectedCategoryName.toLowerCase()} group.</DrawerDescription>
                                 </div>
-                                <Button 
-                                    onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
-                                    size="icon"
-                                    className="shrink-0 rounded-full shadow-lg h-10 w-10"
-                                    title={`Log ${selectedCategoryName}`}
-                                >
-                                    <PlusCircle className="h-5 w-5" />
-                                    <span className="sr-only">Log {selectedCategoryName}</span>
-                                </Button>
+                                <div className="flex gap-2 shrink-0 text-left">
+                                    <Button 
+                                        onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
+                                        size="icon"
+                                        className="rounded-full shadow-lg h-10 w-10 text-left"
+                                        title={`Log ${selectedCategoryName}`}
+                                    >
+                                        <PlusCircle className="h-5 w-5 text-left" />
+                                    </Button>
+                                    <Button variant="outline" size="icon" className="rounded-full h-10 w-10 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => setSelectedCategoryName(null)}>
+                                        <X className="h-5 w-5" />
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                         <div className="flex-grow overflow-hidden relative text-left">
@@ -176,15 +181,19 @@ export function RelationshipCircleTracker({
                                         <DialogDescription className="text-sm font-medium text-left">Souls won within your {selectedCategoryName.toLowerCase()} circle.</DialogDescription>
                                     </DialogHeader>
                                 </div>
-                                <Button 
-                                    onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
-                                    size="icon"
-                                    className="shrink-0 rounded-full shadow-lg h-10 w-10"
-                                    title={`Log ${selectedCategoryName}`}
-                                >
-                                    <PlusCircle className="h-5 w-5" />
-                                    <span className="sr-only">Log {selectedCategoryName}</span>
-                                </Button>
+                                <div className="flex gap-2 shrink-0 text-left">
+                                    <Button 
+                                        onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
+                                        size="icon"
+                                        className="rounded-full shadow-lg h-10 w-10 text-left"
+                                        title={`Log ${selectedCategoryName}`}
+                                    >
+                                        <PlusCircle className="h-5 w-5 text-left" />
+                                    </Button>
+                                    <Button variant="outline" size="icon" className="rounded-full h-10 w-10 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => setSelectedCategoryName(null)}>
+                                        <X className="h-5 w-5" />
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                         <ScrollArea className="max-h-[60vh] p-6 text-left">
@@ -199,31 +208,31 @@ export function RelationshipCircleTracker({
     const logSoulView = isLogSoulOpen && (
         isMobile ? (
             <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left p-0 text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline text-left">Log {selectedCategoryName} Soul</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DrawerDescription>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                        <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Log {selectedCategoryName} Soul</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <div className="flex-grow overflow-y-auto p-8 text-left">
+                    <ScrollArea className="flex-grow overflow-y-auto p-8 text-left text-left">
                         <LogSoulForm 
                             onSoulLogged={() => setIsLogSoulOpen(false)} 
                             fellowships={fellowships} 
                             campaigns={campaigns}
                             defaultRelationship={relationshipType}
                         />
-                    </div>
+                    </ScrollArea>
                 </DrawerContent>
             </Drawer>
         ) : (
             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <DialogContent className="sm:max-w-lg text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-left">Log {selectedCategoryName} Soul</DialogTitle>
-                        <DialogDescription className="text-left">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DialogDescription>
+                <DialogContent className="sm:max-w-lg text-left text-left">
+                    <DialogHeader className="text-left text-left">
+                        <DialogTitle className="text-left text-left text-left">Log {selectedCategoryName} Soul</DialogTitle>
+                        <DialogDescription className="text-left text-left text-left">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DialogDescription>
                     </DialogHeader>
-                    <div className="max-h-[70vh] overflow-y-auto pr-2 text-left">
+                    <div className="max-h-[70vh] overflow-y-auto pr-2 text-left text-left">
                         <LogSoulForm 
                             onSoulLogged={() => setIsLogSoulOpen(false)} 
                             fellowships={fellowships} 
@@ -238,34 +247,34 @@ export function RelationshipCircleTracker({
 
     return (
         <>
-            <Card className={cn("overflow-hidden border-none shadow-sm bg-card/50 backdrop-blur-sm text-left", className)}>
-                <CardHeader className="pb-3 text-left">
-                    <CardTitle className="text-lg flex items-center gap-2 text-left">
-                        <Home className="h-5 w-5 text-primary" />
+            <Card className={cn("overflow-hidden border-none shadow-sm bg-card/50 backdrop-blur-sm text-left text-left", className)}>
+                <CardHeader className="pb-3 text-left text-left">
+                    <CardTitle className="text-lg flex items-center gap-2 text-left text-left">
+                        <Home className="h-5 w-5 text-primary text-left text-left" />
                         Relationship Circle Tracker
                     </CardTitle>
-                    <CardDescription className="font-medium text-left">
+                    <CardDescription className="font-medium text-left text-left text-left">
                         Ensuring your closest circles are saved and nurtured in faith.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6 text-left">
-                    <div className="grid grid-cols-3 gap-2 text-left">
+                <CardContent className="space-y-6 text-left text-left">
+                    <div className="grid grid-cols-3 gap-2 text-left text-left">
                         <div 
-                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm text-left"
+                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm text-left text-left"
                             onClick={() => handleCategoryClick('Family')}
                         >
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary text-center">Family</p>
                             <p className="text-xl font-black text-primary text-center">{stats.family.count}</p>
                         </div>
                         <div 
-                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm text-left"
+                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm text-left text-left"
                             onClick={() => handleCategoryClick('Friends')}
                         >
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary text-center">Friends</p>
                             <p className="text-xl font-black text-primary text-center">{stats.friends.count}</p>
                         </div>
                         <div 
-                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm text-left"
+                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm text-left text-left"
                             onClick={() => handleCategoryClick('Outreach')}
                         >
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary text-center">Outreach</p>
@@ -274,9 +283,9 @@ export function RelationshipCircleTracker({
                     </div>
 
                     {stats.family.count === 0 && (
-                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3 shadow-inner text-left">
-                            <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                            <p className="text-xs text-primary font-medium leading-relaxed text-left">
+                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3 shadow-inner text-left text-left">
+                            <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left" />
+                            <p className="text-xs text-primary font-medium leading-relaxed text-left text-left">
                                 Have you shared the Gospel with your household? Log your family members here to prioritize their spiritual growth.
                             </p>
                         </div>
