@@ -33,7 +33,9 @@ import {
     Users,
     Newspaper,
     ChevronDown,
-    X
+    X,
+    Heart,
+    Award
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -67,7 +69,34 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 
 const strongholdCategories = [
-    'Pride', 'Lust', 'Fear', 'Bitterness', 'Poverty', 'Unforgiveness', 'Anger', 'Discouragement', 'Addiction', 'Loneliness', 'Laziness', 'Confusion', 'Grief', 'Disobedience', 'Comparison', 'Self-Righteousness', 'Unbelief', 'Gluttony', 'Depression', 'Procrastination', 'Greed', 'Rejection', 'Worldliness', 'Jealousy', 'Other'
+    'Pride', 
+    'Lust', 
+    'Marital Strife', 
+    'Parenting Challenges', 
+    'Workplace Conflicts', 
+    'Anxiety', 
+    'Bitterness', 
+    'Poverty', 
+    'Unforgiveness', 
+    'Anger', 
+    'Discouragement', 
+    'Addiction', 
+    'Loneliness', 
+    'Laziness', 
+    'Confusion', 
+    'Grief', 
+    'Disobedience', 
+    'Comparison', 
+    'Self-Righteousness', 
+    'Unbelief', 
+    'Gluttony', 
+    'Depression', 
+    'Procrastination', 
+    'Greed', 
+    'Rejection', 
+    'Worldliness', 
+    'Jealousy', 
+    'Other'
 ];
 
 const victoryScriptures = [
@@ -325,7 +354,7 @@ export function StrongholdTracker() {
                                     </div>
                                     
                                     <Link href={circleLink} className="block w-full py-2.5 bg-primary/20 border-t border-primary/20 text-center group/circle hover:bg-primary/30 transition-all text-left">
-                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary group-hover/circle:scale-105 transition-transform flex items-center justify-center gap-1.5 text-center">
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary group-hover:scale-105 transition-transform flex items-center justify-center gap-1.5 text-center">
                                             ENTER VICTORY CIRCLE <ArrowRight className="h-3 w-3" />
                                         </span>
                                     </Link>

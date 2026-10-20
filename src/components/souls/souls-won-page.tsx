@@ -170,7 +170,7 @@ function ChildSelectionDialog({
                             <Button 
                                 key={s.id} 
                                 variant="ghost" 
-                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex flex-row items-center border bg-card/50"
+                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 transition-all border bg-card/50"
                                 onClick={() => onSelect(s)}
                                 disabled={isLoading}
                             >
@@ -186,7 +186,7 @@ function ChildSelectionDialog({
                             </Button>
                         ))
                     ) : (
-                        <div className="text-center py-24 px-8 space-y-3">
+                        <div className="text-center py-24 px-8 space-y-3 text-left">
                             <Users className="h-10 w-10 text-muted-foreground/20 mx-auto" />
                             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center">No converts available to link</p>
                         </div>
@@ -266,37 +266,37 @@ function FilteredSoulList({
         const hasFamily = spouseObj || children.length > 0;
 
         return (
-          <div key={soul.id} className="relative">
+          <div key={soul.id} className="relative text-left">
             <Collapsible open={openFamilyId === soul.id} onOpenChange={() => setOpenFamilyId(openFamilyId === soul.id ? null : soul.id)}>
                 <div 
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 transition-all hover:bg-card/40 cursor-pointer"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 transition-all hover:bg-card/40 cursor-pointer text-left"
                     onClick={() => onSelectSoul(soul)}
                 >
-                    <div className="flex flex-row items-center gap-3 min-w-0 flex-1 w-full">
+                    <div className="flex flex-row items-center gap-3 min-w-0 flex-1 w-full text-left">
                         <CollapsibleTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <div className="flex -space-x-3 sm:-space-x-4 shrink-0 hover:scale-105 active:scale-95 transition-transform">
-                                <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0">
+                            <div className="flex -space-x-3 sm:-space-x-4 shrink-0 hover:scale-105 active:scale-95 transition-transform text-left">
+                                <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0 text-left">
                                     <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                                     <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs flex items-center justify-center h-full w-full"> {soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 {spouseObj && (
-                                    <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0">
+                                    <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0 text-left">
                                         <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover" />
                                         <AvatarFallback className="font-black bg-primary/10 text-primary/60 text-[10px] sm:text-xs flex items-center justify-center h-full w-full"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 )}
                             </div>
                         </CollapsibleTrigger>
-                        <div className="min-w-0 flex-1 pr-1">
+                        <div className="min-w-0 flex-1 pr-1 text-left">
                             <div className="flex items-center gap-2 flex-wrap text-left">
-                                <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate">
+                                <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left">
                                     {soul.firstName} {soul.lastName}
                                 </p>
                                 <Badge variant="outline" className={cn("h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50", getStatusClasses(soul.status))}>{soul.status}</Badge>
                             </div>
                             <CollapsibleTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 group/trigger hover:opacity-80 transition-opacity">
-                                    <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 group/trigger hover:opacity-80 transition-opacity text-left">
+                                    <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left">
                                         Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                                         {soul.age && <span className="opacity-60 ml-1.5 font-black"> • {soul.age} YRS</span>}
                                     </p>
@@ -310,68 +310,68 @@ function FilteredSoulList({
                             </CollapsibleTrigger>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 sm:gap-2 shrink-0 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-none border-dashed border-primary/10" onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary" onClick={() => onShareWord(soul)}>
-                            <BookMarked className="h-4 w-4" />
+                    <div className="flex items-center gap-2 sm:gap-2 shrink-0 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-none border-dashed border-primary/10 text-left" onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary text-left" onClick={() => onShareWord(soul)}>
+                            <BookMarked className="h-4 w-4 text-left" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary" onClick={() => onPray(soul)}>
-                            <HandHeart className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary text-left" onClick={() => onPray(soul)}>
+                            <HandHeart className="h-4 w-4 text-left" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary" onClick={() => onMessage(soul)}>
-                            <MessageSquare className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary text-left" onClick={() => onMessage(soul)}>
+                            <MessageSquare className="h-4 w-4 text-left" />
                         </Button>
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30">
-                                    <ChevronDown className="h-4 w-4" />
+                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30 text-left">
+                                    <ChevronDown className="h-4 w-4 text-left" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black">More Actions</DropdownMenuLabel>
+                            <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left">
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">More Actions</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5">
-                                    <User className="mr-2 h-4 w-4" /> View Full Identity
+                                <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
+                                    <User className="mr-2 h-4 w-4 text-left" /> View Full Identity
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
                 </div>
               <CollapsibleContent className="px-4 pb-4">
-                  <div className="pt-3 space-y-2">
-                      <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2">Household Members</p>
+                  <div className="pt-3 space-y-2 text-left">
+                      <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2 text-left">Household Members</p>
                       {spouseObj && (
-                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4">
-                              <Avatar className="h-8 w-8 border">
+                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left">
+                              <Avatar className="h-8 w-8 border text-left">
                                   <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover" />
                                   <AvatarFallback className="text-center flex items-center justify-center h-full w-full"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0">
-                                  <p className="font-bold text-xs uppercase truncate leading-none">{spouseObj.firstName} {spouseObj.lastName}</p>
-                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Spouse</p>
+                              <div className="flex-1 min-w-0 text-left">
+                                  <p className="font-bold text-xs uppercase truncate leading-none text-left">{spouseObj.firstName} {spouseObj.lastName}</p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5 text-left">Spouse</p>
                               </div>
-                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => onSelectSoul(spouseObj)}>View Profile</Button>
+                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-left" onClick={() => onSelectSoul(spouseObj)}>View Profile</Button>
                           </div>
                       )}
                       {children.map(child => (
-                           <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4">
-                              <Avatar className="h-8 w-8 border">
+                           <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left">
+                              <Avatar className="h-8 w-8 border text-left">
                                   <AvatarImage src={child.photoURL || undefined} className="object-cover" />
                                   <AvatarFallback className="text-center flex items-center justify-center h-full w-full"> {child.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0">
-                                  <p className="font-bold text-xs uppercase truncate leading-none">{child.firstName} {child.lastName}</p>
-                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Child</p>
+                              <div className="flex-1 min-w-0 text-left">
+                                  <p className="font-bold text-xs uppercase truncate leading-none text-left">{child.firstName} {child.lastName}</p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5 text-left">Child</p>
                               </div>
-                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => onSelectSoul(child)}>View Profile</Button>
+                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-left" onClick={() => onSelectSoul(child)}>View Profile</Button>
                           </div>
                       ))}
-                      <div className="flex gap-2 ml-4 w-[calc(100%-1rem)]">
-                        <Button variant="outline" className="flex-1 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase" onClick={() => onPickChild(soul, spouseObj)}>
-                            <Users className="mr-1.5 h-3.5 w-3.5" /> Pick Existing Soul
+                      <div className="flex gap-2 ml-4 w-[calc(100%-1rem)] text-left">
+                        <Button variant="outline" className="flex-1 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase text-left" onClick={() => onPickChild(soul, spouseObj)}>
+                            <Users className="mr-1.5 h-3.5 w-3.5 text-left" /> Pick Existing Soul
                         </Button>
-                        <Button variant="outline" className="flex-1 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase" onClick={() => onAddChildForm(soul, spouseObj)}>
-                            <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> New Record
+                        <Button variant="outline" className="flex-1 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase text-left" onClick={() => onAddChildForm(soul, spouseObj)}>
+                            <PlusCircle className="mr-1.5 h-3.5 w-3.5 text-left" /> New Record
                         </Button>
                       </div>
                   </div>
@@ -1074,14 +1074,14 @@ export default function SoulsWonPage() {
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Identity Hub</span></div>
+                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Identity Hub</span></div>
                         <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">
                             {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                         </DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                     </DrawerHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left">
                     <div className="p-6 pb-24 text-left text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
