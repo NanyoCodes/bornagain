@@ -388,7 +388,7 @@ function FilteredSoulList({
   );
 }
 
-export function SoulsWonPage() {
+function SoulsWonPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -951,7 +951,7 @@ export function SoulsWonPage() {
                                         <DialogDescription className="text-sm font-medium text-left text-left text-left">Viewing all souls within this demographic group.</DialogDescription>
                                     </DialogHeader>
                                 </div>
-                                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 text-left text-left" onClick={() => setSelectedFilterGroup(null)}>
+                                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 text-left text-left text-left" onClick={() => setSelectedFilterGroup(null)}>
                                     <X className="h-5 w-5 text-left text-left text-left" />
                                 </Button>
                             </div>
@@ -1031,7 +1031,7 @@ export function SoulsWonPage() {
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <div className="flex items-center justify-between gap-4 text-left text-left">
                                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Add New Soul</DrawerTitle>
@@ -1050,7 +1050,7 @@ export function SoulsWonPage() {
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                                 <div className="flex items-center justify-between gap-4 text-left text-left text-left">
                                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
@@ -1097,7 +1097,7 @@ export function SoulsWonPage() {
                                         <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
                                     </DialogHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 text-left" onClick={() => setEditSoulId(null)}>
-                                        <X className="h-5 w-5 text-left text-left text-left text-left" />
+                                        <X className="h-5 w-5 text-left text-left text-left" />
                                     </Button>
                                 </div>
                             </div>

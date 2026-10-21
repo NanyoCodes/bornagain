@@ -217,7 +217,7 @@ function CheckoutPageContent() {
         return (
             <div className="flex flex-col items-center justify-center py-32 text-center px-8 text-left text-left">
                 <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left text-left text-left">
-                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left" />
+                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left text-left" />
                 </div>
                 <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Package is empty</h2>
                 <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-left text-left text-left text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
@@ -324,7 +324,7 @@ function CheckoutPageContent() {
                                                 <CreditCard className="h-4 w-4 text-left text-left text-left text-left" /> ACCOUNT DETAILS FOR {group.vendorName}
                                             </Label>
                                             <div className="p-6 rounded-[1.5rem] bg-background border-2 border-primary/10 shadow-inner relative overflow-hidden group/pay text-left text-left text-left">
-                                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/pay:opacity-10 transition-opacity text-left text-left text-left">
+                                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/pay:opacity-10 transition-opacity text-left text-left text-left text-left">
                                                     <ShieldCheck className="h-16 w-16 text-primary rotate-12 text-left text-left text-left text-left" />
                                                 </div>
                                                 <p className="text-sm sm:text-base font-black text-foreground whitespace-pre-wrap leading-relaxed relative z-10 text-balance text-left text-left text-left">
@@ -395,7 +395,7 @@ function CheckoutPageContent() {
                         </CardFooter>
                     </Card>
 
-                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left">
+                    <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 text-center space-y-4 text-left text-left text-left text-left">
                         <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto text-left text-left text-left text-left">
                             <Heart className="h-6 w-6 text-primary text-left text-left text-left text-left" />
                         </div>
