@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Authorship based permissions for testimonies - 2025-06-18T18:30:00Z
+    // Deployment trigger: Granular authorship and interaction history privacy - 2025-06-25T14:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -85,12 +86,12 @@ service cloud.firestore {
       }
 
       match /souls/{soulId} {
-        allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
+        allow read: if isOwner(userId) || 
+                    (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
         allow create, delete: if isOwner(userId);
         allow update: if isAuthenticated() && (
           isOwner(userId) || 
-          isFellowshipMember(resource.data.get('fellowshipId', '')) || 
-          isFellowshipMember(resource.data.get('associationId', ''))
+          (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))))
         );
       }
       
@@ -198,17 +199,16 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated() && (
         (resource.data.get('userId', '') == request.auth.uid) || 
         (resource.data.userId == request.auth.uid) || 
-        isFellowshipMember(resource.data.get('fellowshipId', '')) ||
-        isFellowshipMember(resource.data.get('associationId', ''))
+        (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))))
       );
     }
 
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid) || 
+        (resource.data.authorId == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 
@@ -323,6 +323,12 @@ service cloud.firestore {
     match /mail/{mailId} {
       allow create: if isAuthenticated();
       allow read, update, delete: if false;
+    }
+
+    match /ads/{adId} {
+      allow read, list: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if false;
     }
   }
 }

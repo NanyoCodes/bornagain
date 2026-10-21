@@ -1,88 +1,49 @@
+
 'use client';
 
 import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import { DollarSign, ShieldCheck } from 'lucide-react';
-
-type AdProvider = 'google' | 'custom' | 'other';
+import { Card } from '../ui/card';
+import { ShieldCheck } from 'lucide-react';
 
 type AdsenseAdProps = {
   adSlot: string;
-  adFormat?: string;
-  style?: React.CSSProperties;
   className?: string;
-  provider?: AdProvider;
 };
 
 /**
- * @fileOverview Flexible Ad component supporting Google AdSense and custom providers.
+ * @fileOverview Standard component for Google AdSense banners.
+ * Configured for non-intrusive integration into the Kingdom feed.
  */
-const AdsenseAd = ({ adSlot, adFormat = 'auto', style, className, provider = 'google' }: AdsenseAdProps) => {
-  const ADSENSE_CLIENT_ID = 'ca-pub-5186166468494737';
-  const isDevelopment = process.env.NODE_ENV === 'development';
-
+export function AdsenseAd({ adSlot, className }: AdsenseAdProps) {
   useEffect(() => {
-    if (provider === 'google') {
-      try {
-        // @ts-ignore
-        if (window.adsbygoogle) {
-          // @ts-ignore
-          (window.adsbygoogle = window.adsbygoogle || []).push({});
-        }
-      } catch (err: any) {
-        // Silently ignore errors related to multiple pushes or already-filled slots
-      }
+    try {
+      // @ts-ignore
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (err) {
+      console.error("AdSense injection error:", err);
     }
-  }, [adSlot, provider]);
+  }, [adSlot]);
 
   return (
-    <Card className={cn("w-full flex flex-col justify-center items-center bg-muted/20 rounded-lg border min-h-[350px] relative overflow-hidden", className)}>
-      <div className="absolute top-2 right-2 flex items-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wider bg-background/50 px-2 py-0.5 rounded-full z-10">
-        <ShieldCheck className="h-3 w-3" />
-        Sponsored
+    <Card className={cn(
+        "w-full overflow-hidden border-none shadow-none bg-transparent flex flex-col items-center justify-center min-h-[100px] py-4 px-4 sm:px-0 text-left",
+        className
+    )}>
+      <div className="w-full flex items-center justify-center gap-2 mb-2 opacity-20 text-left">
+          <ShieldCheck className="h-3 w-3 text-left" />
+          <span className="text-[8px] font-black uppercase tracking-[0.3em] text-left">Kingdom Partner Network</span>
       </div>
-
-      {provider === 'google' ? (
+      <div className="w-full max-w-2xl bg-muted/20 rounded-xl overflow-hidden text-left">
         <ins
-          className='adsbygoogle'
-          style={{ display: 'block', width: '100%', height: '100%', ...style }}
-          data-ad-client={ADSENSE_CLIENT_ID}
-          data-ad-slot={adSlot}
-          data-ad-format={adFormat}
-          data-full-width-responsive="true"
-          data-ad-channel="christian-content"
-          data-ad-type="image_text"
+            className="adsbygoogle"
+            style={{ display: 'block' }}
+            data-ad-client="ca-pub-5186166468494737"
+            data-ad-slot={adSlot}
+            data-ad-format="auto"
+            data-full-width-responsive="true"
         />
-      ) : provider === 'custom' ? (
-        <div className="text-center p-6 space-y-4">
-           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-             <DollarSign className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <CardTitle className="text-sm font-bold">Custom Partner Ad</CardTitle>
-            <p className="text-xs text-muted-foreground mt-1 max-w-[200px] mx-auto">
-              Custom partner ad space.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="text-center p-6 space-y-4">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-             <DollarSign className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <CardTitle className="text-sm font-bold">Christian Partner Ad</CardTitle>
-            <p className="text-xs text-muted-foreground mt-1 max-w-[200px] mx-auto">
-              {isDevelopment 
-                ? "This space is reserved for a relevant Christian advertisement." 
-                : "Promoting faith-based initiatives and community growth."}
-            </p>
-          </div>
-        </div>
-      )}
+      </div>
     </Card>
   );
-};
-
-export default AdsenseAd;
+}
