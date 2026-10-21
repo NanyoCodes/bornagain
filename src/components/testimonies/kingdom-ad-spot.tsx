@@ -62,13 +62,13 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
                             )}
                         </div>
                         <div className="min-w-0 flex-1 text-left">
-                            <div className="flex items-center gap-2 mb-0.5 text-left text-left">
+                            <div className="flex items-center gap-2 mb-0.5 text-left">
                                 <Sparkles className="h-3 w-3 text-primary animate-pulse text-left" />
-                                <h3 className="text-sm font-black uppercase tracking-tight text-white truncate text-left text-left">
+                                <h3 className="text-sm font-black uppercase tracking-tight text-white truncate text-left">
                                     {activeAd?.title || (isBusiness ? "Kingdom Enterprise" : "Kingdom Mission")}
                                 </h3>
                             </div>
-                            <p className="text-[10px] sm:text-xs text-zinc-400 font-medium leading-tight truncate italic text-left text-left">
+                            <p className="text-[10px] sm:text-xs text-zinc-400 font-medium leading-tight truncate italic text-left">
                                 {activeAd?.description || (isBusiness 
                                     ? "Empowering the Body through economic unity."
                                     : "Mobilize the saints for your next outreach.")}
@@ -76,10 +76,10 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
                         </div>
                     </div>
                     
-                    <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto text-left text-left">
+                    <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto text-left">
                         <div className="hidden md:flex flex-col items-end text-right text-left">
                              <div className="flex items-center gap-1 text-[8px] text-zinc-500 font-black uppercase tracking-[0.2em] text-right text-left">
-                                <Info className="h-2.5 w-2.5 text-primary/40 text-left text-left" />
+                                <Info className="h-2.5 w-2.5 text-primary/40 text-left" />
                                 SPONSORED
                             </div>
                         </div>

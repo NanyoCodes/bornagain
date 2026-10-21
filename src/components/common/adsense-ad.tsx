@@ -14,12 +14,18 @@ type AdsenseAdProps = {
 /**
  * @fileOverview Standard component for Google AdSense banners.
  * Configured for non-intrusive integration into the Kingdom feed.
+ * Includes status checks to prevent multiple injection errors.
  */
 export function AdsenseAd({ adSlot, className }: AdsenseAdProps) {
   useEffect(() => {
     try {
-      // @ts-ignore
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
+        // Ensure we only push once per slot in the DOM
+        const ins = document.querySelector(`ins[data-ad-slot="${adSlot}"]:not([data-adsbygoogle-status])`);
+        if (ins) {
+          (window as any).adsbygoogle.push({});
+        }
+      }
     } catch (err) {
       console.error("AdSense injection error:", err);
     }
