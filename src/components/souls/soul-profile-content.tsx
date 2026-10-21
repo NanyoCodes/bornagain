@@ -93,7 +93,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
-import type { Soul, FollowUpStatus, UserProfile, BibleChapterOutput, DailyDevotional } from "@/lib/types";
+import type { Soul, FollowUpStatus, UserProfile, BibleChapterOutput } from "@/lib/types";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
 import { 
   doc, 
@@ -246,12 +246,12 @@ export function ShareWordDialog({
             <Target className="h-5 w-5 text-primary text-left" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
           </div>
-          <DialogHeader className="p-0 text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+          <div className="text-left">
+            <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                 {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}
-            </DialogTitle>
-            <DialogDescription className="text-sm font-medium text-left">Access the word of God to share with converts.</DialogDescription>
-          </DialogHeader>
+            </h2>
+            <p className="text-sm font-medium text-left">Access the word of God to share with converts.</p>
+          </div>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5 text-left" />
@@ -342,10 +342,10 @@ export function IntercessionHubDialog({
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0 text-left">
-            <DialogHeader className="text-left p-0">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
-            </DialogHeader>
+            <div className="text-left p-0">
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</h2>
+                <p className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</p>
+            </div>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 text-left" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5 text-left" />
@@ -409,10 +409,10 @@ export function MessageHubDialog({
                 <MessageSquare className="h-4 w-4 text-primary text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Channel Select</span>
             </div>
-            <DialogHeader className="p-0 text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</DialogDescription>
-            </DialogHeader>
+            <div className="text-left p-0">
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</h2>
+                <p className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</p>
+            </div>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 text-left" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5 text-left" />
