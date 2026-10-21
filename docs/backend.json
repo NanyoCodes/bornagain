@@ -269,6 +269,20 @@
         "updatedAt": { "type": "object" }
       },
       "required": ["userId", "bookId", "lastPageRead"]
+    },
+    "Ad": {
+      "title": "Ad",
+      "description": "Represents an advertisement or boosted post.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "type": { "type": "string", "enum": ["testimony_boost", "business", "event"] },
+        "authorId": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "active", "expired"] },
+        "createdAt": { "type": "object" }
+      }
     }
   },
   "auth": {
@@ -292,6 +306,10 @@
     "/bookReadingProgress/{progressId}": {
       "schema": { "$ref": "#/entities/BookReadingProgress" },
       "description": "Reading progress logs."
+    },
+    "/ads/{adId}": {
+      "schema": { "$ref": "#/entities/Ad" },
+      "description": "Ad requests and active promotions."
     }
   }
 }
