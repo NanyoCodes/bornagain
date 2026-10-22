@@ -1008,20 +1008,20 @@ export default function SoulsWonPage() {
             souls={souls || []} 
             parent={activeParentGroup?.parent || null} 
             spouse={activeParentGroup?.spouse}
-            onShareWord={(s) => { setIsChildSelectionOpen(false); setShareWordSoulId(s.id); }}
+            onShareWord={(s) => { handleLinkExistingChild(s); }}
             isLoading={isLinkingChild}
         />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
-                <AlertDialogHeader>
-                    <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight">Delete Record?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed">This will permanently remove the record from your Kingdom journal. This action cannot be undone.</AlertDialogDescription>
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                <AlertDialogHeader className="text-left">
+                    <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight text-left">Delete Record?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">This will permanently remove the record from your Kingdom journal. This action cannot be undone.</AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Removal
+                <AlertDialogFooter className="gap-3 mt-6 text-left">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Removal
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
@@ -1032,14 +1032,14 @@ export default function SoulsWonPage() {
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                <div className="flex items-center justify-between gap-4">
-                                    <DrawerHeader className="text-left flex-shrink-0 p-0">
-                                        <DrawerTitle className="text-2xl font-black font-headline">Add New Soul</DrawerTitle>
-                                        <DrawerDescription className="text-sm font-medium mt-1">Record a new life won for Christ.</DrawerDescription>
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                                <div className="flex items-center justify-between gap-4 text-left">
+                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                                        <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
+                                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
                                     </DrawerHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => setIsLogDialogOpen(false)}>
-                                        <X className="h-5 w-5" />
+                                        <X className="h-5 w-5 text-left" />
                                     </Button>
                                 </div>
                             </div>
@@ -1052,14 +1052,14 @@ export default function SoulsWonPage() {
                     </Drawer>
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <div className="flex items-center justify-between gap-4">
-                                    <DrawerHeader className="text-left flex-shrink-0 p-0">
-                                        <DrawerTitle className="text-2xl font-black font-headline">Edit Record</DrawerTitle>
-                                        <DrawerDescription className="text-sm font-medium mt-1">Update soul identity and mission details.</DrawerDescription>
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                                <div className="flex items-center justify-between gap-4 text-left">
+                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                                        <DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle>
+                                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DrawerDescription>
                                     </DrawerHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60" onClick={() => setEditSoulId(null)}>
-                                        <X className="h-5 w-5" />
+                                        <X className="h-5 w-5 text-left" />
                                     </Button>
                                 </div>
                             </div>
@@ -1113,8 +1113,8 @@ export default function SoulsWonPage() {
         
         <Drawer open={!!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10">
-                    <div className="flex items-center justify-between gap-4 text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                    <div className="flex items-center justify-between gap-4">
                         <div className="min-w-0 flex-1">
                             <DrawerHeader className="text-left flex-shrink-0 p-0">
                                 <div className="flex items-center gap-2 mb-2"><Sparkles className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity Hub</span></div>

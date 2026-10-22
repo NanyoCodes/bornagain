@@ -17,13 +17,17 @@ type AdsenseAdProps = {
  */
 export function AdsenseAd({ adSlot, className }: AdsenseAdProps) {
   const adRef = useRef<HTMLModElement>(null);
+  const initialized = useRef(false);
 
   useEffect(() => {
+    if (initialized.current) return;
+    
     try {
       if (typeof window !== 'undefined' && (window as any).adsbygoogle && adRef.current) {
         // Ensure we only push once per slot instance in the DOM
         if (!adRef.current.getAttribute('data-adsbygoogle-status')) {
           (window as any).adsbygoogle.push({});
+          initialized.current = true;
         }
       }
     } catch (err) {
