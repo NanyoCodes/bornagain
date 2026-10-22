@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Card } from '../ui/card';
 import { ShieldCheck } from 'lucide-react';
@@ -16,12 +16,13 @@ type AdsenseAdProps = {
  * Includes status checks to prevent multiple injection errors.
  */
 export function AdsenseAd({ adSlot, className }: AdsenseAdProps) {
+  const adRef = useRef<HTMLModElement>(null);
+
   useEffect(() => {
     try {
-      if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
-        // Ensure we only push once per slot in the DOM
-        const ins = document.querySelector(`ins[data-ad-slot="${adSlot}"]:not([data-adsbygoogle-status])`);
-        if (ins) {
+      if (typeof window !== 'undefined' && (window as any).adsbygoogle && adRef.current) {
+        // Ensure we only push once per slot instance in the DOM
+        if (!adRef.current.getAttribute('data-adsbygoogle-status')) {
           (window as any).adsbygoogle.push({});
         }
       }
@@ -41,6 +42,7 @@ export function AdsenseAd({ adSlot, className }: AdsenseAdProps) {
       </div>
       <div className="w-full max-w-2xl bg-muted/20 rounded-xl overflow-hidden text-left">
         <ins
+            ref={adRef}
             className="adsbygoogle"
             style={{ display: 'block' }}
             data-ad-client="ca-pub-5186166468494737"
