@@ -21,17 +21,21 @@ export function AdsenseAd({ adSlot, className }: AdsenseAdProps) {
   useEffect(() => {
     if (initialized.current) return;
     
-    try {
-      if (typeof window !== 'undefined' && (window as any).adsbygoogle && adRef.current) {
-        // Ensure we only push once per slot instance in the DOM
-        if (!adRef.current.getAttribute('data-adsbygoogle-status')) {
-          (window as any).adsbygoogle.push({});
-          initialized.current = true;
+    const timeout = setTimeout(() => {
+        try {
+          if (typeof window !== 'undefined' && (window as any).adsbygoogle && adRef.current) {
+            // Ensure we only push once per slot instance in the DOM
+            if (!adRef.current.getAttribute('data-adsbygoogle-status')) {
+              (window as any).adsbygoogle.push({});
+              initialized.current = true;
+            }
+          }
+        } catch (err) {
+          console.error("AdSense injection error:", err);
         }
-      }
-    } catch (err) {
-      console.error("AdSense injection error:", err);
-    }
+    }, 100);
+
+    return () => clearTimeout(timeout);
   }, [adSlot]);
 
   return (
