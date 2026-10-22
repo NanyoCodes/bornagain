@@ -274,6 +274,28 @@ export function ShareWordDialog({
                         </Button>
                         <Button variant="outline" asChild className="h-32 rounded-[2rem] gap-3 border-2 border-primary/20 text-primary flex flex-col text-center"><Link href="/dashboard/bible"><BookMarked className="h-8 w-8 mb-1 text-center" /><span className="font-black text-[10px] uppercase tracking-widest text-center">Open Reader</span></Link></Button>
                     </div>
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between px-1">
+                            <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Kingdom Essential Scriptures</Label>
+                            <Badge variant="outline" className="h-5 px-2 text-[8px] font-bold text-primary border-primary/20 bg-primary/5 uppercase">Top Weapons</Badge>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-left">
+                        {kingdomVerses.map((v, idx) => (
+                            <Button 
+                            key={idx} 
+                            variant="ghost" 
+                            className="w-full justify-start h-auto py-4 sm:py-6 px-4 sm:px-6 rounded-2xl sm:rounded-[2rem] hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left block relative overflow-hidden bg-muted/5 shadow-sm"
+                            onClick={() => onSelectVerse(`"${v.text}" — ${v.reference}\n\nStudy this with me on Testify! Visit: ${window.location.origin}/bible`)}
+                            >
+                            <div className="flex items-center justify-between w-full mb-1.5">
+                                <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
+                                <PlusCircle className="h-3.5 w-3.5 sm:h-4 w-4 opacity-0 group-hover:opacity-40 transition-opacity" />
+                            </div>
+                            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic line-clamp-2">&ldquo;{v.text}&rdquo;</p>
+                            </Button>
+                        ))}
+                        </div>
+                    </div>
                 </div>
             )}
             {view === 'books' && (
@@ -880,7 +902,7 @@ export function SoulProfileContent({
                         { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck },
                     ].map(milestone => (
                         <div key={milestone.label} className={cn(
-                            "flex items-center gap-2 p-2 rounded-xl border transition-all",
+                            "flex items-center gap-2 p-2 rounded-xl border transition-all text-left",
                             milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40"
                         )}>
                             <milestone.icon className="h-3 w-3" />
@@ -1274,7 +1296,7 @@ export function ShareWordDialog({
   );
 
   const body = (
-    <ScrollArea className="flex-grow min-h-[300px]">
+    <div className="flex-grow min-h-[300px]">
         <div className="p-4 sm:p-10 text-left">
             {view === 'hub' && (
                 <div className="space-y-8 text-left">
@@ -1309,7 +1331,7 @@ export function ShareWordDialog({
                 </div>
             )}
         </div>
-    </ScrollArea>
+    </div>
   );
 
   const footer = view === 'verses' && (
@@ -1337,4 +1359,3 @@ export function ShareWordDialog({
     </Dialog>
   );
 }
-

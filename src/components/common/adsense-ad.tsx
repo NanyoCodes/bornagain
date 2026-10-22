@@ -38,7 +38,7 @@ export function AdsenseAd({ adSlot, className }: AdsenseAdProps) {
     )}>
       <div className="w-full flex items-center justify-center gap-2 mb-2 opacity-20 text-left">
           <ShieldCheck className="h-3 w-3 text-left" />
-          <span className="text-[8px] font-black uppercase tracking-[0.3em] text-left text-left">Kingdom Partner Network</span>
+          <span className="text-[8px] font-black uppercase tracking-[0.3em] text-left">Kingdom Partner Network</span>
       </div>
       <div className="w-full max-w-2xl bg-muted/20 rounded-xl overflow-hidden text-left">
         <ins

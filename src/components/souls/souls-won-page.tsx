@@ -146,12 +146,12 @@ function ChildSelectionDialog({
         <div className="p-8 border-b bg-muted/10 text-left flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0 text-left">
                 <div className="text-left p-0">
-                    <DrawerTitle className="text-2xl font-black font-headline uppercase">Select Child</DrawerTitle>
-                    <DrawerDescription className="text-sm font-medium mt-1">Pick an existing convert to add to {parent.firstName}&apos;s household.</DrawerDescription>
+                    <DialogTitle className="text-2xl font-black font-headline uppercase">Select Child</DialogTitle>
+                    <DialogDescription className="text-sm font-medium mt-1">Pick an existing convert to add to {parent.firstName}&apos;s household.</DialogDescription>
                 </div>
             </div>
             <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
-                <X className="h-5 w-5" />
+                <X className="h-5 w-5 text-left" />
             </Button>
         </div>
     );
@@ -291,7 +291,7 @@ function FilteredSoulList({
                                 )}
                             </div>
                         </CollapsibleTrigger>
-                        <div className="min-w-0 flex-1 pr-1 text-left text-left">
+                        <div className="min-w-0 flex-1 pr-1 text-left">
                             <div className="flex items-center gap-2 flex-wrap">
                                 <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate">
                                     {soul.firstName} {soul.lastName}
@@ -388,7 +388,7 @@ function FilteredSoulList({
   );
 }
 
-export function SoulsWonPage() {
+export default function SoulsWonPage() {
   const router = useRouter();
   const { user } = useUser();
   const firestore = useFirestore();
