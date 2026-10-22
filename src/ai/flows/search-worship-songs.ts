@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview A Genkit flow for searching worship songs on YouTube Music.
+ * @fileOverview A Genkit flow for searching worship songs on YouTube.
  *
  * - searchWorshipSongs - A function that returns suggested worship songs based on a query.
  */
@@ -24,24 +24,9 @@ const SearchSongsOutputSchema = z.object({
 });
 export type SearchSongsOutput = z.infer<typeof SearchSongsOutputSchema>;
 
-export async function searchWorshipSongs(input: SearchSongsInput): Promise<SearchSongsOutput> {
-  return searchWorshipSongsFlow(input);
-}
-
-const searchWorshipSongsPrompt = ai.definePrompt({
-  name: 'searchWorshipSongsPrompt',
-  input: { schema: SearchSongsInputSchema },
-  output: { schema: SearchSongsOutputSchema },
-  prompt: `You are a worship music expert. Find the most relevant and powerful Christian worship songs for the query: "{{{query}}}".
-
-Return a list of exactly 5 songs. Each must have:
-1. title: The accurate song name.
-2. artist: The primary worship leader or group (e.g., Maverick City Music, Hillsong, Sinach).
-3. url: A valid YouTube URL for a high-quality version of the song.
-
-Ensure the links are functional and the selections are edifying for a testimony context.`,
-});
-
+/**
+ * Genkit flow for searching worship songs.
+ */
 const searchWorshipSongsFlow = ai.defineFlow(
   {
     name: 'searchWorshipSongsFlow',
@@ -49,8 +34,31 @@ const searchWorshipSongsFlow = ai.defineFlow(
     outputSchema: SearchSongsOutputSchema,
   },
   async (input) => {
-    const { output } = await searchWorshipSongsPrompt(input);
-    if (!output) throw new Error('Failed to find worship songs.');
-    return output;
+    const response = await ai.generate({
+      prompt: `You are a worship music expert. Find the most relevant and powerful Christian worship songs for the query: "${input.query}".
+
+Return a list of exactly 5 songs. Each must have:
+1. title: The accurate song name.
+2. artist: The primary worship leader or group (e.g., Maverick City Music, Hillsong, Sinach).
+3. url: A valid YouTube URL for a high-quality version of the song (e.g. https://www.youtube.com/watch?v=...).
+
+Ensure the links are functional and the selections are edifying for a testimony context.`,
+      output: {
+        schema: SearchSongsOutputSchema,
+      },
+    });
+
+    if (!response.output) {
+      throw new Error('AI failed to generate song results.');
+    }
+
+    return response.output;
   }
 );
+
+/**
+ * Server action wrapper for the worship song search flow.
+ */
+export async function searchWorshipSongs(input: SearchSongsInput): Promise<SearchSongsOutput> {
+  return searchWorshipSongsFlow(input);
+}

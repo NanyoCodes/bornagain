@@ -104,12 +104,18 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const handleScanSongs = async () => {
     if (!songSearchQuery.trim()) return;
     setIsSearchingSongs(true);
+    setSongResults([]);
     try {
         const result = await searchWorshipSongs({ query: songSearchQuery.trim() });
-        setSongResults(result.songs);
-        if (result.songs.length === 0) toast({ title: "No songs found." });
-    } catch (e) {
-        toast({ variant: 'destructive', title: 'Search Failed' });
+        if (result && result.songs) {
+            setSongResults(result.songs);
+            if (result.songs.length === 0) toast({ title: "No matching songs found in the library." });
+        } else {
+            throw new Error("Invalid response from song library.");
+        }
+    } catch (e: any) {
+        console.error("Worship scan failed:", e);
+        toast({ variant: 'destructive', title: 'Library Access Failed', description: 'Could not connect to the worship music hub.' });
     } finally {
         setIsSearchingSongs(false);
     }
@@ -403,7 +409,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                                 }}
                                 className={cn(
                                     "flex items-center justify-between p-3 rounded-xl border-2 transition-all text-left",
-                                    selectedMusicUrl === song.url ? "bg-primary/5 border-primary/40 ring-1 ring-primary/10" : "bg-card border-transparent hover:border-primary/10"
+                                    selectedMusicUrl === song.url ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20" : "bg-card border-transparent hover:border-primary/10"
                                 )}
                             >
                                 <div className="min-w-0 flex-1">

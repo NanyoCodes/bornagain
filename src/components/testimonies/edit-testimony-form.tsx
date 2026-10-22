@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,13 +18,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
-import { Loader2, Camera, Video, X, FileUp, Sparkles, Music, Info } from "lucide-react";
+import { Loader2, Camera, Video, X, FileUp, Sparkles, Music, Info, Search, Check, PlayCircle } from "lucide-react";
 import { Testimony, TestimonyCategory } from "@/lib/types";
 import { useFirestore, useUser, useStorage } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { searchWorshipSongs, type SearchSongsOutput } from "@/ai/flows/search-worship-songs";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -73,6 +74,10 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     testimony.mediaUrl2 ? { url: testimony.mediaUrl2, type: testimony.mediaType2 as any } : null
   );
 
+  const [songSearchQuery, setSongSearchQuery] = useState('');
+  const [isSearchingSongs, setIsSearchingSongs] = useState(false);
+  const [songResults, setSongResults] = useState<SearchSongsOutput['songs']>([]);
+
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
 
@@ -93,6 +98,26 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       musicTitle: testimony.musicTitle || "",
     },
   });
+
+  const selectedMusicUrl = useWatch({ control: form.control, name: 'musicUrl' });
+
+  const handleScanSongs = async () => {
+    if (!songSearchQuery.trim()) return;
+    setIsSearchingSongs(true);
+    setSongResults([]);
+    try {
+        const result = await searchWorshipSongs({ query: songSearchQuery.trim() });
+        if (result && result.songs) {
+            setSongResults(result.songs);
+            if (result.songs.length === 0) toast({ title: "No matching songs found." });
+        }
+    } catch (e: any) {
+        console.error("Worship scan failed:", e);
+        toast({ variant: 'destructive', title: 'Library Access Failed' });
+    } finally {
+        setIsSearchingSongs(false);
+    }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, slot: 1 | 2) => {
     const file = e.target.files?.[0];
@@ -220,7 +245,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         });
   };
 
-  const renderMediaSlot = (slot: 1 | 2, preview: typeof mediaPreview1, setPreview: typeof setMediaPreview1, inputRef: React.RefObject<HTMLInputElement>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
+  const renderMediaSlot = (slot: 1 | 2, preview: typeof mediaPreview1, setPreview: typeof setMediaPreview1, inputRef: React.RefObject<HTMLInputElement | null>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
     return (
       <div className="space-y-3 flex-1 text-left text-left">
           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
@@ -286,7 +311,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                   <SelectTrigger className="h-12 rounded-2xl border-2 text-left"><SelectValue className="text-left" /></SelectTrigger>
                 </FormControl>
                 <SelectContent className="rounded-2xl text-left">
-                  {testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="text-left">{cat}</SelectItem>)}
+                  {testimonyCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -317,35 +342,82 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <Music className="h-4 w-4 text-primary" />
                 <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Worship (Optional)</h4>
             </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField
-                    control={form.control}
-                    name="musicTitle"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Song Title</FormLabel>
-                        <FormControl>
-                            <Input placeholder="e.g., Way Maker" {...field} value={field.value ?? ""} className="h-10 rounded-xl bg-muted/20 border-none" />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="musicUrl"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">YouTube Link</FormLabel>
-                        <FormControl>
-                            <Input placeholder="https://youtube.com/..." {...field} value={field.value ?? ""} className="h-10 rounded-xl bg-muted/20 border-none" />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
+            <div className="space-y-4">
+                <div className="flex gap-2">
+                    <Input 
+                        placeholder="Scan for worship songs..." 
+                        value={songSearchQuery}
+                        onChange={e => setSongSearchQuery(e.target.value)}
+                        className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold"
+                        onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleScanSongs())}
+                    />
+                    <Button 
+                        type="button" 
+                        onClick={handleScanSongs} 
+                        disabled={isSearchingSongs || !songSearchQuery.trim()}
+                        className="h-11 rounded-xl px-6 font-black uppercase tracking-widest text-[10px]"
+                    >
+                        {isSearchingSongs ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                        SCAN
+                    </Button>
+                </div>
+
+                {songResults.length > 0 && (
+                    <div className="grid gap-2 max-h-60 overflow-y-auto pr-1 animate-in fade-in slide-in-from-top-2">
+                        {songResults.map((song, idx) => (
+                            <button
+                                key={idx}
+                                type="button"
+                                onClick={() => {
+                                    form.setValue('musicUrl', song.url, { shouldDirty: true });
+                                    form.setValue('musicTitle', song.title, { shouldDirty: true });
+                                    setSongResults([]);
+                                    setSongSearchQuery('');
+                                    toast({ title: 'Song Selected', description: `"${song.title}" will accompany your story.` });
+                                }}
+                                className={cn(
+                                    "flex items-center justify-between p-3 rounded-xl border-2 transition-all text-left",
+                                    selectedMusicUrl === song.url ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20" : "bg-card border-transparent hover:border-primary/10"
+                                )}
+                            >
+                                <div className="min-w-0 flex-1">
+                                    <p className="font-black text-xs uppercase tracking-tight truncate">{song.title}</p>
+                                    <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest truncate">{song.artist}</p>
+                                </div>
+                                {selectedMusicUrl === song.url ? <Check className="h-4 w-4 text-primary ml-2 shrink-0" /> : <PlayCircle className="h-4 w-4 text-primary/40 ml-2 shrink-0" />}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {selectedMusicUrl && (
+                    <div className="bg-primary/5 rounded-2xl p-4 border-2 border-dashed border-primary/20 flex items-center justify-between">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                                <Music className="h-4 w-4 text-primary" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[8px] font-black uppercase text-primary/60 tracking-widest">Active Sound</p>
+                                <p className="text-xs font-black uppercase tracking-tight truncate">{form.watch('musicTitle')}</p>
+                            </div>
+                        </div>
+                        <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10"
+                            onClick={() => {
+                                form.setValue('musicUrl', '', { shouldDirty: true });
+                                form.setValue('musicTitle', '', { shouldDirty: true });
+                            }}
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
             </div>
+            
             <p className="text-[9px] text-muted-foreground italic flex items-center gap-1.5 px-1">
                 <Info className="h-3 w-3" />
                 Update the worship song to accompany your story.
