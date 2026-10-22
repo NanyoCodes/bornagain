@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
-import { Loader2, Camera, Video, X, FileUp, Sparkles } from "lucide-react";
+import { Loader2, Camera, Video, X, FileUp, Sparkles, Music, Info } from "lucide-react";
 import { Testimony, TestimonyCategory } from "@/lib/types";
 import { useFirestore, useUser, useStorage } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
@@ -27,6 +26,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 const testimonyCategories: TestimonyCategory[] = [
@@ -52,6 +52,8 @@ const formSchema = z.object({
   mediaType: z.enum(['image', 'video', 'audio']).optional().nullable(),
   mediaUrl2: z.string().optional().nullable(),
   mediaType2: z.enum(['image', 'video', 'audio']).optional().nullable(),
+  musicUrl: z.string().url("Please enter a valid YouTube URL.").optional().nullable().or(z.literal('')),
+  musicTitle: z.string().max(100, "Title too long").optional().nullable(),
 });
 
 type EditTestimonyFormProps = {
@@ -87,6 +89,8 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       mediaType: testimony.mediaType || null,
       mediaUrl2: testimony.mediaUrl2 || null,
       mediaType2: testimony.mediaType2 || null,
+      musicUrl: testimony.musicUrl || "",
+      musicTitle: testimony.musicTitle || "",
     },
   });
 
@@ -188,6 +192,8 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         mediaType: values.mediaType || null,
         mediaUrl2: values.mediaUrl2 || null,
         mediaType2: values.mediaType2 || null,
+        musicUrl: values.musicUrl || null,
+        musicTitle: values.musicTitle || null,
         updatedAt: serverTimestamp(),
     };
 
@@ -304,6 +310,46 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         <div className="flex gap-4 text-left">
              {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
              {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
+        </div>
+
+        <div className="space-y-4 pt-2 border-t border-dashed text-left">
+            <div className="flex items-center gap-2 px-1">
+                <Music className="h-4 w-4 text-primary" />
+                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Worship (Optional)</h4>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                    control={form.control}
+                    name="musicTitle"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Song Title</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g., Way Maker" {...field} value={field.value ?? ""} className="h-10 rounded-xl bg-muted/20 border-none" />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="musicUrl"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">YouTube Link</FormLabel>
+                        <FormControl>
+                            <Input placeholder="https://youtube.com/..." {...field} value={field.value ?? ""} className="h-10 rounded-xl bg-muted/20 border-none" />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+            <p className="text-[9px] text-muted-foreground italic flex items-center gap-1.5 px-1">
+                <Info className="h-3 w-3" />
+                Update the worship song to accompany your story.
+            </p>
         </div>
 
         <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting || isUploadingMedia !== null}>

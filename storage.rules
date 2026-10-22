@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Granular read access for converted soul privacy - 2025-03-05T15:30:00Z
+    // Deployment trigger: Updated for Kingdom Worship music metadata - 2025-03-05T16:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;

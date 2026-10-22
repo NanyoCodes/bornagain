@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Camera, Video, X, FileUp, Sparkles } from "lucide-react";
+import { Loader2, Camera, Video, X, FileUp, Sparkles, Music, Youtube } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
@@ -26,6 +26,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -52,6 +53,8 @@ const formSchema = z.object({
   mediaType: z.enum(['image', 'video']).optional(),
   mediaUrl2: z.string().optional(),
   mediaType2: z.enum(['image', 'video']).optional(),
+  musicUrl: z.string().url("Please enter a valid YouTube URL.").optional().or(z.literal('')),
+  musicTitle: z.string().max(100, "Title too long").optional(),
 });
 
 type CreateTestimonyFormProps = {
@@ -77,7 +80,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { content: "", category: undefined },
+    defaultValues: { content: "", category: undefined, musicUrl: "", musicTitle: "" },
   });
 
   useEffect(() => {
@@ -196,6 +199,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           mediaType: values.mediaType || null,
           mediaUrl2: values.mediaUrl2 || null,
           mediaType2: values.mediaType2 || null,
+          musicUrl: values.musicUrl || null,
+          musicTitle: values.musicTitle || null,
       };
 
       if (campaign) { testimonyData.campaignId = campaign.id; testimonyData.campaignTitle = campaign.title; }
@@ -308,7 +313,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="rounded-2xl text-left">
-                      {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="text-left">{cat}</SelectItem>))}
+                      {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat}>{cat}</SelectItem>))}
                     </SelectContent>
                   </Select>
                 <FormMessage />
@@ -336,6 +341,46 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
              {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
           </div>
 
+          <div className="space-y-4 pt-2 border-t border-dashed">
+            <div className="flex items-center gap-2 px-1">
+                <Music className="h-4 w-4 text-primary" />
+                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Worship (Optional)</h4>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                    control={form.control}
+                    name="musicTitle"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Song Title</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g., Way Maker" {...field} className="h-10 rounded-xl bg-muted/20 border-none" />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="musicUrl"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">YouTube Link</FormLabel>
+                        <FormControl>
+                            <Input placeholder="https://youtube.com/..." {...field} className="h-10 rounded-xl bg-muted/20 border-none" />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+            <p className="text-[9px] text-muted-foreground italic flex items-center gap-1.5 px-1">
+                <Info className="h-3 w-3" />
+                Select any worship song to accompany your story.
+            </p>
+          </div>
+
           <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting || isUploadingMedia !== null}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
             {isSubmitting ? 'PUBLISHING...' : 'PUBLISH TESTIMONY'}
@@ -345,3 +390,32 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
+
+const compressImage = (file: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const img = new (window as any).Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const maxDimension = 1920;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxDimension) { height *= maxDimension / width; width = maxDimension; }
+        } else {
+          if (height > maxDimension) { width *= maxDimension / height; height = maxDimension; }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas compression failed'));
+        }, 'image/jpeg', 0.7);
+      };
+      img.onerror = reject;
+    });
+  };

@@ -189,6 +189,8 @@ export type Testimony = {
   mediaType?: 'image' | 'video' | 'audio';
   mediaUrl2?: string;
   mediaType2?: 'image' | 'video' | 'audio';
+  musicUrl?: string | null;
+  musicTitle?: string | null;
   isAnonymous?: boolean;
 };
 
