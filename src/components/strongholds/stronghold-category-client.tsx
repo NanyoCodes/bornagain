@@ -78,7 +78,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { CircleResource, CircleArmor } from '@/lib/types';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import type { CircleResource } from '@/lib/types';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
   pride: [
@@ -147,32 +148,32 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
     const content = (
         <div className="flex flex-col h-full overflow-hidden text-left">
             <div className="p-6 border-b bg-muted/5 shrink-0 text-left">
-                <div className="flex items-center gap-3 mb-4 text-left text-left">
-                    <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left text-left">
-                        <Users className="h-5 w-5 text-muted-foreground/40 text-left text-left" />
+                <div className="flex items-center gap-3 mb-4 text-left">
+                    <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
+                        <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
                     </div>
-                    <div className="min-w-0 text-left text-left">
+                    <div className="min-w-0 text-left">
                         <p className="text-sm font-black uppercase tracking-tight text-left">{post.authorName}</p>
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                             {postDate ? format(postDate, 'PPP') : 'Just now'}
                         </p>
                     </div>
                 </div>
-                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2 text-left text-left">
-                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left text-left" />
+                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2 text-left">
+                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
                     <p className="text-sm text-muted-foreground leading-relaxed italic font-medium text-left">
                         &ldquo;{post.text}&rdquo;
                     </p>
                 </div>
             </div>
             
-            <div className="flex-grow min-h-0 flex flex-col text-left text-left">
-                <div className="p-4 sm:p-6 pb-2 shrink-0 text-left text-left">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 text-left text-left">
-                        <Zap className="h-3.5 w-3.5 text-left text-left" /> Circle Responses & Solutions
+            <div className="flex-grow min-h-0 flex flex-col text-left">
+                <div className="p-4 sm:p-6 pb-2 shrink-0 text-left">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 text-left">
+                        <Zap className="h-3.5 w-3.5 text-left" /> Circle Responses & Solutions
                     </div>
                 </div>
-                <div className="flex-1 min-h-0 text-left text-left">
+                <div className="flex-1 min-h-0 text-left">
                     <CommentSection path={`victoryCircles/${post.category}/posts/${post.id}/comments`} />
                 </div>
             </div>
@@ -274,10 +275,10 @@ function AddArmorDialog({ category, onArmorAdded }: { category: string, onArmorA
 
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
-        <div className="min-w-0">
+        <div className="min-w-0 text-left">
             <DialogHeader className="p-0 text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Equip the Body</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-left">Add a scripture and your revelation to the circle.</DialogDescription>
+                <DialogDescription className="text-sm font-medium text-left text-left">Add a scripture and your revelation to the circle.</DialogDescription>
             </DialogHeader>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => setIsOpen(false)}>
@@ -288,10 +289,10 @@ function AddArmorDialog({ category, onArmorAdded }: { category: string, onArmorA
 
   const formContent = (
     <form id="add-armor-form" onSubmit={handleAdd} className="p-8 space-y-6 text-left">
-        <div className="space-y-4 text-left text-left">
+        <div className="space-y-4 text-left">
             <div className="space-y-2 text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Scripture Reference</Label>
-                <div className="relative text-left text-left">
+                <div className="relative text-left">
                     <Input 
                         placeholder="e.g., Romans 8:31" 
                         value={verse} 
@@ -315,7 +316,7 @@ function AddArmorDialog({ category, onArmorAdded }: { category: string, onArmorA
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">The Word</Label>
                 <Textarea placeholder="Type or search for the scripture text..." value={text} onChange={e => setText(e.target.value)} required className="min-h-[120px] rounded-xl bg-muted/20 border-none shadow-inner text-base text-left" />
             </div>
-            <div className="space-y-2 text-left text-left">
+            <div className="space-y-2 text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Personal Comment / Revelation</Label>
                 <Textarea placeholder="How did this Word help you overcome?" value={comment} onChange={e => setComment(e.target.value)} className="min-h-[100px] rounded-xl bg-muted/20 border-none shadow-inner text-base text-left" />
             </div>
@@ -336,13 +337,14 @@ function AddArmorDialog({ category, onArmorAdded }: { category: string, onArmorA
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-                <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 text-left">
-                    <Plus className="mr-2 h-4 w-4 text-left" /> ADD SCRIPTURE
+                <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary hover:bg-primary/5 shrink-0 text-left">
+                    <Plus className="h-5 w-5 text-left" />
+                    <span className="sr-only">Add Scripture</span>
                 </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 {header}
-                <ScrollArea className="flex-grow">{formContent}</ScrollArea>
+                <ScrollArea className="flex-grow text-left">{formContent}</ScrollArea>
                 {footer}
             </SheetContent>
         </Sheet>
@@ -352,13 +354,16 @@ function AddArmorDialog({ category, onArmorAdded }: { category: string, onArmorA
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20 text-left">
-                <Plus className="mr-2 h-4 w-4 text-left" /> ADD SCRIPTURE
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary hover:bg-primary/5 shrink-0 text-left">
+                <Plus className="h-5 w-5 text-left" />
+                <span className="sr-only text-left">Add Scripture</span>
             </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
             {header}
-            <ScrollArea className="flex-1 min-h-0">{formContent}</ScrollArea>
+            <ScrollArea className="flex-1 min-h-0 text-left">
+                {formContent}
+            </ScrollArea>
             {footer}
         </DialogContent>
     </Dialog>
@@ -411,7 +416,7 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
 
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
-        <div className="min-w-0">
+        <div className="min-w-0 text-left">
             <DialogHeader className="p-0 text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Add to Armory</DialogTitle>
                 <DialogDescription className="text-sm font-medium text-left">Share a resource that helped you overcome.</DialogDescription>
@@ -425,7 +430,7 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
 
   const formContent = (
     <form id="share-resource-form" onSubmit={handleShare} className="p-8 space-y-6 text-left">
-        <div className="space-y-4 text-left text-left">
+        <div className="space-y-4 text-left">
             <div className="space-y-2 text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Resource Title</Label>
                 <Input placeholder="e.g., Understanding Grace Video" value={title} onChange={e => setTitle(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left" />
@@ -433,15 +438,15 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
             <div className="space-y-2 text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Type</Label>
                 <Select value={type} onValueChange={(val: any) => setType(val)}>
-                    <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left">
+                    <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left text-left">
                         <SelectValue className="text-left" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-none shadow-2xl text-left">
-                        <SelectItem value="Video" className="rounded-lg text-left">Video</SelectItem>
-                        <SelectItem value="Article" className="rounded-lg text-left">Article</SelectItem>
-                        <SelectItem value="Book" className="rounded-lg text-left">Book</SelectItem>
-                        <SelectItem value="Sermon" className="rounded-lg text-left">Sermon</SelectItem>
-                        <SelectItem value="Other" className="rounded-lg text-left">Other</SelectItem>
+                        <SelectItem value="Video" className="rounded-lg text-left text-left">Video</SelectItem>
+                        <SelectItem value="Article" className="rounded-lg text-left text-left">Article</SelectItem>
+                        <SelectItem value="Book" className="rounded-lg text-left text-left">Book</SelectItem>
+                        <SelectItem value="Sermon" className="rounded-lg text-left text-left">Sermon</SelectItem>
+                        <SelectItem value="Other" className="rounded-lg text-left text-left">Other</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -449,7 +454,7 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">URL / Link</Label>
                 <Input type="url" placeholder="https://..." value={url} onChange={e => setUrl(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left" />
             </div>
-            <div className="space-y-2 text-left text-left text-left">
+            <div className="space-y-2 text-left text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Description (Optional)</Label>
                 <Textarea placeholder="How did this help you?" value={description} onChange={e => setDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/20 border-none shadow-inner text-left" />
             </div>
@@ -470,8 +475,9 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-                <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 text-left">
-                    <Plus className="mr-2 h-4 w-4 text-left" /> SHARE RESOURCE
+                <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary hover:bg-primary/5 shrink-0 text-left">
+                    <PlusCircle className="h-5 w-5 text-left" />
+                    <span className="sr-only">Share Resource</span>
                 </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
@@ -486,13 +492,16 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20 text-left">
-                <Plus className="mr-2 h-4 w-4 text-left" /> SHARE RESOURCE
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary hover:bg-primary/5 shrink-0 text-left">
+                <PlusCircle className="h-5 w-5 text-left" />
+                <span className="sr-only text-left">Share Resource</span>
             </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
             {header}
-            <ScrollArea className="flex-1 min-h-0">{formContent}</ScrollArea>
+            <ScrollArea className="flex-1 min-h-0 text-left">
+                {formContent}
+            </ScrollArea>
             {footer}
         </DialogContent>
     </Dialog>
@@ -724,7 +733,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                         </AccordionTrigger>
                                         <AccordionContent className="pb-6 pt-2 text-left">
                                             <div className="space-y-6 text-left">
-                                                <div className="relative pl-6 border-l-4 border-primary/20 bg-background/50 p-4 rounded-r-2xl shadow-inner text-left">
+                                                <div className="relative pl-6 border-l-4 border-primary/20 bg-background/50 p-4 rounded-r-2xl shadow-inner text-left text-left">
                                                     <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
                                                     <p className="text-base text-muted-foreground italic font-medium text-justify text-balance text-left">
                                                         &ldquo;{s.text}&rdquo;
@@ -784,7 +793,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                             <CardContent className="p-6 pt-2 flex-grow text-left">
                                                 {arm.comment && (
                                                     <div className="space-y-2 text-left">
-                                                        <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left">Revelation</p>
+                                                        <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left text-left">Revelation</p>
                                                         <p className="text-xs text-foreground font-medium leading-relaxed text-left">{arm.comment}</p>
                                                     </div>
                                                 )}
@@ -806,7 +815,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     </div>
                 </TabsContent>
 
-                <TabsContent value="discussion" className="space-y-6 outline-none px-4 sm:px-0 text-left text-left">
+                <TabsContent value="discussion" className="space-y-6 outline-none px-4 sm:px-0 text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner text-left">
@@ -835,8 +844,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 const isEditing = editingPostId === post.id;
 
                                 return (
-                                    <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 text-left text-left">
-                                        <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between text-left text-left">
+                                    <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 text-left">
+                                        <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between text-left">
                                             <div className="flex items-center gap-3 text-left">
                                                 <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
                                                     <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
@@ -890,9 +899,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 </div>
                                             ) : (
                                                 <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                    <button className="w-full text-left outline-none group/post text-left text-left">
-                                                        <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left text-left">
-                                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left text-left" />
+                                                    <button className="w-full text-left outline-none group/post text-left">
+                                                        <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left">
+                                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
                                                             <p className="text-base text-muted-foreground leading-relaxed italic font-medium text-left">
                                                                 &ldquo;{post.text}&rdquo;
                                                             </p>
@@ -904,7 +913,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                         <CardFooter className="p-3 bg-muted/5 flex justify-between items-center text-left">
                                              <div className="flex items-center gap-2 px-3 text-left">
                                                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left text-left">Victory Support Active</span>
+                                                <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left">Victory Support Active</span>
                                              </div>
                                              <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
                                                 <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-center text-left">
@@ -917,17 +926,17 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             })
                         ) : (
                             <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0 text-left">
-                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
-                                    <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
+                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left">
+                                    <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left" />
                                 </div>
-                                <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-center">Circle Silence</h4>
-                                <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
+                                <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-center text-left text-left">Circle Silence</h4>
+                                <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left text-left">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
                             </div>
                         )}
                     </div>
                 </TabsContent>
 
-                <TabsContent value="resources" className="space-y-6 outline-none px-4 sm:px-0 text-left text-left">
+                <TabsContent value="resources" className="space-y-6 outline-none px-4 sm:px-0 text-left">
                     <div className="flex items-center justify-between gap-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner text-left">
@@ -941,25 +950,25 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
                         {loadingResources ? (
                             [...Array(4)].map((_, i) => (
-                                <Card key={i} className="h-32 rounded-2xl animate-pulse bg-muted/30 text-left" />
+                                <Card key={i} className="h-32 rounded-2xl animate-pulse bg-muted/30 text-left text-left" />
                             ))
                         ) : resources && resources.length > 0 ? (
                             resources.map(res => (
                                 <Card key={res.id} className="rounded-2xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-md transition-all text-left">
-                                    <CardContent className="p-5 text-left text-left text-left">
-                                        <div className="flex items-start justify-between mb-3 text-left text-left">
-                                            <div className="h-10 w-10 rounded-xl bg-muted/5 flex items-center justify-center shrink-0 border text-left">
+                                    <CardContent className="p-5 text-left text-left">
+                                        <div className="flex items-start justify-between mb-3 text-left">
+                                            <div className="h-10 w-10 rounded-xl bg-muted/5 flex items-center justify-center shrink-0 border text-left text-left">
                                                 {getResourceIcon(res.type)}
                                             </div>
-                                            <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-left">{res.type}</Badge>
+                                            <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-left text-left">{res.type}</Badge>
                                         </div>
-                                        <h4 className="font-black text-sm uppercase tracking-tight truncate text-left">{res.title}</h4>
-                                        {res.description && <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1 italic text-left">{res.description}</p>}
-                                        <div className="flex items-center justify-between mt-4 text-left">
-                                            <p className="text-[8px] font-bold text-muted-foreground uppercase text-left">Shared by {res.authorName}</p>
-                                            <Button variant="ghost" size="sm" asChild className="h-7 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-center">
-                                                <a href={res.url} target="_blank" rel="noopener noreferrer" className="flex items-center text-left">
-                                                    Open <ExternalLink className="ml-1 h-2.5 w-2.5 text-left" />
+                                        <h4 className="font-black text-sm uppercase tracking-tight truncate text-left text-left">{res.title}</h4>
+                                        {res.description && <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1 italic text-left text-left">{res.description}</p>}
+                                        <div className="flex items-center justify-between mt-4 text-left text-left">
+                                            <p className="text-[8px] font-bold text-muted-foreground uppercase text-left text-left">Shared by {res.authorName}</p>
+                                            <Button variant="ghost" size="sm" asChild className="h-7 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-center text-left">
+                                                <a href={res.url} target="_blank" rel="noopener noreferrer" className="flex items-center text-left text-left">
+                                                    Open <ExternalLink className="ml-1 h-2.5 w-2.5 text-left text-left" />
                                                 </a>
                                             </Button>
                                         </div>
@@ -967,17 +976,17 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 </Card>
                             ))
                         ) : (
-                            <div className="col-span-full py-20 text-center border-2 border-dashed rounded-3xl bg-muted/5 flex flex-col items-center text-left">
-                                <PlusCircle className="h-12 w-12 text-muted-foreground opacity-10 mb-4 text-left" />
-                                <p className="text-sm text-muted-foreground italic text-left">The armory is empty. Share a supply to help others!</p>
+                            <div className="col-span-full py-20 text-center border-2 border-dashed rounded-3xl bg-muted/5 flex flex-col items-center text-left text-left">
+                                <PlusCircle className="h-12 w-12 text-muted-foreground opacity-10 mb-4 text-left text-left" />
+                                <p className="text-sm text-muted-foreground italic text-left text-left">The armory is empty. Share a supply to help others!</p>
                             </div>
                         )}
                     </div>
                 </TabsContent>
             </Tabs>
             
-            <footer className="text-center pt-12 border-t mt-12 px-8 text-left">
-                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed font-serif text-balance text-center">
+            <footer className="text-center pt-12 border-t mt-12 px-8 text-left text-left">
+                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed font-serif text-balance text-center text-left text-left">
                     "Confess your faults one to another, and pray one for another, that ye may be healed. The effectual fervent prayer of a righteous man availeth much." — James 5:16
                 </p>
             </footer>
