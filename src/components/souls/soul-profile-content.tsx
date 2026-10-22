@@ -485,7 +485,7 @@ export function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.firstName} {soul.lastName}</p>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest">Gender/Age</p>
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Gender/Age</p>
                         <p className="text-[11px] sm:text-xs font-bold">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
                     <div className="space-y-1">
@@ -1041,7 +1041,7 @@ export function ShareWordDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl max-h-[85dvh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">
-        {header}<ScrollArea className="flex-grow">{body}</ScrollArea>{footer || (<div className="p-6 border-t bg-muted/5 flex justify-end shrink-0"><Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs">Close Hub</Button></div>)}
+        {header}<ScrollArea className="flex-grow">{body}</ScrollArea>{footer || (<div className="p-6 border-t bg-muted/5 flex justify-end shrink-0"><Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-full px-10 font-bold h-11">Close Hub</Button></div>)}
       </DialogContent>
     </Dialog>
   );
