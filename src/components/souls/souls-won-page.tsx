@@ -94,7 +94,6 @@ import { SoulsImportTemplateCard } from "@/components/settings/souls-import-temp
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SoulProfileContent, getStatusClasses, ShareWordDialog, IntercessionHubDialog, MessageHubDialog } from "./soul-profile-content";
-import { Checkbox } from "../ui/checkbox";
 import { Input } from "@/components/ui/input";
 
 const SoulsWonTableLazy = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -109,123 +108,10 @@ const LogSoulFormLazy = dynamic(() => import('@/components/souls/log-soul-form')
 const EditSoulFormLazy = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const SoulAssessmentDialogLazy = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
 
-function ChildSelectionDialog({
-    isOpen,
-    onOpenChange,
-    souls,
-    parent,
-    spouse,
-    onShareWord,
-    isLoading
-}: {
-    isOpen: boolean;
-    onOpenChange: (open: boolean) => void;
-    souls: Soul[];
-    parent: Soul | null;
-    spouse?: Soul | null;
-    onShareWord: (child: Soul) => void;
-    isLoading: boolean;
-}) {
-    const isMobile = useIsMobile();
-    const [search, setSearch] = useState('');
-    
-    const filteredSouls = useMemo(() => {
-        if (!parent?.id) return [];
-        const forbiddenIds = new Set([parent.id, ...(spouse?.id ? [spouse.id] : []), ...(parent.childrenIds || [])]);
-        let list = souls.filter(s => !forbiddenIds.has(s.id));
-        if (search) {
-            const term = search.toLowerCase();
-            list = list.filter(s => `${s.firstName} ${s.lastName}`.toLowerCase().includes(term));
-        }
-        return list;
-    }, [souls, parent, spouse, search]);
-
-    if (!parent) return null;
-
-    const header = (
-        <div className="p-8 border-b bg-muted/10 text-left flex items-center justify-between gap-4">
-            <div className="flex-1 min-w-0 text-left">
-                <div className="text-left p-0">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase">Select Child</DialogTitle>
-                    <DialogDescription className="text-sm font-medium mt-1">Pick an existing convert to add to {parent.firstName}&apos;s household.</DialogDescription>
-                </div>
-            </div>
-            <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
-                <X className="h-5 w-5 text-left" />
-            </Button>
-        </div>
-    );
-
-    const body = (
-        <div className="p-6 space-y-6 text-left">
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                <Input 
-                    placeholder="Search converts..." 
-                    value={search} 
-                    onChange={e => setSearch(e.target.value)}
-                    className="h-12 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
-                />
-            </div>
-            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
-                <div className="p-2 space-y-1.5">
-                    {filteredSouls.length > 0 ? (
-                        filteredSouls.map(s => (
-                            <Button 
-                                key={s.id} 
-                                variant="ghost" 
-                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex flex-row items-center border bg-card/50"
-                                onClick={() => onShareWord(s)}
-                                disabled={isLoading}
-                            >
-                                <Avatar className="h-10 w-10 border shadow-sm shrink-0">
-                                    <AvatarImage src={s.photoURL || undefined} className="object-cover" />
-                                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs"> {s.firstName?.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="text-left min-w-0 flex-1">
-                                    <p className="font-black text-sm uppercase tracking-tight truncate leading-tight">{s.firstName} {s.lastName}</p>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">{s.status}</p>
-                                </div>
-                                <PlusCircle className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </Button>
-                        ))
-                    ) : (
-                        <div className="text-center py-24 px-8 space-y-3">
-                            <Users className="h-10 w-10 text-muted-foreground/20 mx-auto" />
-                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center">No converts available to link</p>
-                        </div>
-                    )}
-                </div>
-            </ScrollArea>
-        </div>
-    );
-
-    if (isMobile) {
-        return (
-            <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    {header}
-                    <div className="flex-grow overflow-hidden">{body}</div>
-                </DrawerContent>
-            </Drawer>
-        );
-    }
-
-    return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                {header}
-                {body}
-            </DialogContent>
-        </Dialog>
-    );
-}
-
 function FilteredSoulList({ 
     souls, 
     allSouls, 
     onSelectSoul, 
-    onPickChild,
     onAddChildForm, 
     onShareWord, 
     onPray, 
@@ -234,7 +120,6 @@ function FilteredSoulList({
     souls: Soul[], 
     allSouls: Soul[], 
     onSelectSoul: (soul: Soul) => void, 
-    onPickChild: (parent: Soul, spouse?: Soul | null) => void,
     onAddChildForm: (p1: Soul, p2?: Soul | null) => void,
     onShareWord: (soul: Soul) => void,
     onPray: (soul: Soul) => void,
@@ -302,13 +187,9 @@ function FilteredSoulList({
                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 group/trigger hover:opacity-80 transition-opacity">
                                     <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
                                         Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
-                                        {soul.age && <span className="opacity-60 font-black"> • {soul.age} YRS</span>}
                                     </p>
                                     {hasFamily && (
                                         <ChevronDown className={cn("h-3 w-3 text-primary transition-transform duration-200", openFamilyId === soul.id && "rotate-180")} />
-                                    )}
-                                    {isFamilyMember && (
-                                        <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none">Family Unit</Badge>
                                     )}
                                 </div>
                             </CollapsibleTrigger>
@@ -324,21 +205,9 @@ function FilteredSoulList({
                         <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary" onClick={() => onMessage(soul)}>
                             <MessageSquare className="h-4 w-4" />
                         </Button>
-
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30">
-                                    <ChevronDown className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black">More Actions</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="text-left py-2.5">
-                                    <User className="mr-2 h-4 w-4" /> View Full Identity
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30" onClick={() => onSelectSoul(soul)}>
+                            <User className="h-4 w-4" />
+                        </Button>
                     </div>
                 </div>
               <CollapsibleContent className="px-4 pb-4">
@@ -350,7 +219,7 @@ function FilteredSoulList({
                                   <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover" />
                                   <AvatarFallback className="text-center flex items-center justify-center h-full w-full"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0">
+                              <div className="flex-1 min-w-0 text-left">
                                   <p className="font-bold text-xs uppercase truncate leading-none">{spouseObj.firstName} {spouseObj.lastName}</p>
                                   <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Spouse</p>
                               </div>
@@ -363,7 +232,7 @@ function FilteredSoulList({
                                   <AvatarImage src={child.photoURL || undefined} className="object-cover" />
                                   <AvatarFallback className="text-center flex items-center justify-center h-full w-full"> {child.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0">
+                              <div className="flex-1 min-w-0 text-left">
                                   <p className="font-bold text-xs uppercase truncate leading-none">{child.firstName} {child.lastName}</p>
                                   <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Child</p>
                               </div>
@@ -371,9 +240,6 @@ function FilteredSoulList({
                           </div>
                       ))}
                       <div className="flex gap-2 ml-4 w-[calc(100%-1rem)]">
-                        <Button variant="outline" className="flex-1 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase" onClick={() => onPickChild(soul, spouseObj)}>
-                            <Users className="mr-1.5 h-3.5 w-3.5" /> Pick Existing Soul
-                        </Button>
                         <Button variant="outline" className="flex-1 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase" onClick={() => onAddChildForm(soul, spouseObj)}>
                             <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> New Record
                         </Button>
@@ -388,7 +254,7 @@ function FilteredSoulList({
   );
 }
 
-export function SoulsWonPage() {
+export default function SoulsWonPage() {
   const router = useRouter();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -410,10 +276,6 @@ export function SoulsWonPage() {
   const [shareWordSoulId, setShareWordSoulId] = useState<string | null>(null);
   const [prayerSoulId, setPrayerSoulId] = useState<string | null>(null);
   const [messageSoulId, setMessageSoulId] = useState<string | null>(null);
-
-  const [isChildSelectionOpen, setIsChildSelectionOpen] = useState(false);
-  const [activeParentGroup, setActiveParentGroup] = useState<{parent: Soul, spouse?: Soul | null} | null>(null);
-  const [isLinkingChild, setIsLinkingChild] = useState(false);
 
   const [selectedFilterGroup, setSelectedFilterGroup] = useState<{ type: 'age' | 'gender' | 'marital', value: string } | null>(null);
   const [logSoulDefaults, setLogSoulDefaults] = useState<any>({});
@@ -581,51 +443,6 @@ export function SoulsWonPage() {
     setLogSoulDefaults({ defaultLastName: p1.lastName, defaultLocation: p1.locationWon, defaultParentIds: parentIds, defaultParentNames: parentNames, defaultRelationship: 'Family' as any });
     setIsLogDialogOpen(true);
   }, []);
-
-  const handleLinkExistingChild = async (child: Soul) => {
-      if (!user || !firestore || !activeParentGroup || isLinkingChild) return;
-      setIsLinkingChild(true);
-      
-      const { parent, spouse } = activeParentGroup;
-      const batch = writeBatch(firestore);
-      
-      const parentNames = [parent.firstName];
-      const parentIds = [parent.id];
-      if (spouse) { parentNames.push(spouse.firstName); parentIds.push(spouse.id); }
-
-      const childRef = doc(firestore, `users/${user.uid}/souls`, child.id);
-      const globalChildRef = doc(firestore, 'souls', child.id);
-      batch.update(childRef, { 
-          parentIds: arrayUnion(...parentIds), 
-          parentNames: arrayUnion(...parentNames),
-          relationship: 'Family',
-          updatedAt: serverTimestamp() 
-      });
-      batch.update(globalChildRef, { 
-          parentIds: arrayUnion(...parentIds), 
-          parentNames: arrayUnion(...parentNames),
-          relationship: 'Family',
-          updatedAt: serverTimestamp() 
-      });
-
-      parentIds.forEach(pId => {
-          const pRef = doc(firestore, `users/${user.uid}/souls`, pId);
-          const gpRef = doc(firestore, 'souls', pId);
-          batch.update(pRef, { childrenIds: arrayUnion(child.id), updatedAt: serverTimestamp() });
-          batch.update(gpRef, { childrenIds: arrayUnion(child.id), updatedAt: serverTimestamp() });
-      });
-
-      try {
-          await batch.commit();
-          toast({ title: 'Household Updated', description: `${child.firstName} is now linked to the household.` });
-          setIsChildSelectionOpen(false);
-          setActiveParentGroup(null);
-      } catch (error) {
-          toast({ variant: 'destructive', title: 'Update Failed' });
-      } finally {
-          setIsLinkingChild(false);
-      }
-  };
 
   const handleExportHistory = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) return;
@@ -927,7 +744,6 @@ export function SoulsWonPage() {
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
                                   onSelectSoul={(s) => { setSelectedFilterGroup(null); setSelectedId(s.id); }} 
-                                  onPickChild={(parent, spouse) => { setSelectedFilterGroup(null); setActiveParentGroup({parent, spouse}); setIsChildSelectionOpen(true); }}
                                   onAddChildForm={handleAddChildForm}
                                   onShareWord={(s) => { setSelectedFilterGroup(null); setShareWordSoulId(s.id); }}
                                   onPray={(s) => { setSelectedFilterGroup(null); setPrayerSoulId(s.id); }}
@@ -963,7 +779,6 @@ export function SoulsWonPage() {
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
                                   onSelectSoul={(s) => { setSelectedFilterGroup(null); setSelectedId(s.id); }} 
-                                  onPickChild={(parent, spouse) => { setSelectedFilterGroup(null); setActiveParentGroup({parent, spouse}); setIsChildSelectionOpen(true); }}
                                   onAddChildForm={handleAddChildForm}
                                   onShareWord={(s) => { setSelectedFilterGroup(null); setShareWordSoulId(s.id); }}
                                   onPray={(s) => { setSelectedFilterGroup(null); setPrayerSoulId(s.id); }}
@@ -976,9 +791,9 @@ export function SoulsWonPage() {
             )
         )}
 
-        <LogFollowUpDialogLazy soul={soulForFollowUp} isOpen={!!followUpSoulId} onOpenChange={(isOpen) => !isOpen && setFollowUpSoulId(null)} onFollowUpLogged={() => setFollowUpSoulId(null)} userProfile={profileData} />
+        <LogFollowUpDialogLazy soul={soulForFollowUp} isOpen={!!followUpSoulId} onOpenChange={(isOpen) => !open && setFollowUpSoulId(null)} onFollowUpLogged={() => setFollowUpSoulId(null)} userProfile={profileData} />
         <ViewHistoryDialogLazy soul={soulForHistory} isOpen={!!historySoulId} onOpenChange={(open) => !open && setHistorySoulId(null)} />
-        <AssignFellowshipDialogLazy soul={soulToAssign} fellowships={fellowships || []} isOpen={!!assignSoulId} onOpenChange={(isOpen) => !isOpen && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
+        <AssignFellowshipDialogLazy soul={soulToAssign} fellowships={fellowships || []} isOpen={!!assignSoulId} onOpenChange={(isOpen) => !open && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
         <SoulAssessmentDialogLazy soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(open) => !open && setAssessmentSoulId(null)} />
         
         <ShareWordDialog 
@@ -1002,16 +817,6 @@ export function SoulsWonPage() {
           onChannelSelect={(channel: any) => { setMessageSoulId(null); setSelectedId(null); }}
         />
 
-        <ChildSelectionDialog 
-            isOpen={isChildSelectionOpen} 
-            onOpenChange={setIsChildSelectionOpen} 
-            souls={souls || []} 
-            parent={activeParentGroup?.parent || null} 
-            spouse={activeParentGroup?.spouse}
-            onShareWord={(s) => { handleLinkExistingChild(s); }}
-            isLoading={isLinkingChild}
-        />
-
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
                 <AlertDialogHeader className="text-left">
@@ -1033,7 +838,7 @@ export function SoulsWonPage() {
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <div className="flex items-center justify-between gap-4 text-left">
+                                <div className="flex items-center justify-between gap-4">
                                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
                                         <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
@@ -1117,7 +922,7 @@ export function SoulsWonPage() {
                     <div className="flex items-center justify-between gap-4">
                         <div className="min-w-0 flex-1">
                             <DrawerHeader className="text-left flex-shrink-0 p-0">
-                                <div className="flex items-center gap-2 mb-2"><Sparkles className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span></div>
+                                <div className="flex items-center gap-2 mb-2"><Sparkles className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity Hub</span></div>
                                 <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
                                     {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                                 </DrawerTitle>
