@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Camera, Video, X, FileUp, Sparkles, Music, Youtube } from "lucide-react";
+import { Loader2, Camera, Video, X, FileUp, Sparkles, Music, Youtube, Search, Check, PlayCircle } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
@@ -27,6 +27,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { searchWorshipSongs, type SearchSongsOutput } from "@/ai/flows/search-worship-songs";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -53,8 +54,8 @@ const formSchema = z.object({
   mediaType: z.enum(['image', 'video']).optional(),
   mediaUrl2: z.string().optional(),
   mediaType2: z.enum(['image', 'video']).optional(),
-  musicUrl: z.string().url("Please enter a valid YouTube URL.").optional().or(z.literal('')),
-  musicTitle: z.string().max(100, "Title too long").optional(),
+  musicUrl: z.string().optional().nullable().or(z.literal('')),
+  musicTitle: z.string().optional().nullable(),
 });
 
 type CreateTestimonyFormProps = {
@@ -71,6 +72,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const [mediaPreview1, setMediaPreview1] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
   const [mediaPreview2, setMediaPreview2] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
   
+  const [songSearchQuery, setSongSearchQuery] = useState('');
+  const [isSearchingSongs, setIsSearchingSongs] = useState(false);
+  const [songResults, setSongResults] = useState<SearchSongsOutput['songs']>([]);
+
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
   
@@ -83,6 +88,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     defaultValues: { content: "", category: undefined, musicUrl: "", musicTitle: "" },
   });
 
+  const selectedMusicUrl = form.watch('musicUrl');
+
   useEffect(() => {
     if (prayerRequest) {
       form.reset({
@@ -93,6 +100,20 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       form.reset({ category: 'Salvation', content: "" });
     }
   }, [prayerRequest, campaign, form]);
+
+  const handleScanSongs = async () => {
+    if (!songSearchQuery.trim()) return;
+    setIsSearchingSongs(true);
+    try {
+        const result = await searchWorshipSongs({ query: songSearchQuery.trim() });
+        setSongResults(result.songs);
+        if (result.songs.length === 0) toast({ title: "No songs found." });
+    } catch (e) {
+        toast({ variant: 'destructive', title: 'Search Failed' });
+    } finally {
+        setIsSearchingSongs(false);
+    }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, slot: 1 | 2) => {
     const file = e.target.files?.[0];
@@ -242,47 +263,47 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const renderMediaSlot = (slot: 1 | 2, preview: any, setPreview: any, inputRef: React.RefObject<HTMLInputElement | null>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
       return (
         <div className="space-y-3 flex-1 text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
-                <Camera className="h-3.5 w-3.5 text-left" /> Proof {slot} {slot === 2 && "(Optional)"}
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+                <Camera className="h-3.5 w-3.5" /> Proof {slot} {slot === 2 && "(Optional)"}
             </Label>
             
             {!preview ? (
                 <div 
                     className={cn(
-                        "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[120px] text-left",
+                        "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[120px]",
                         isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
                     )}
                     onClick={() => inputRef.current?.click()}
                 >
                     {isUploadingMedia === slot ? (
-                        <div className="flex flex-col items-center gap-2 text-left">
-                            <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
-                            <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center text-left">Optimizing...</p>
+                        <div className="flex flex-col items-center gap-2">
+                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                            <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
                         </div>
                     ) : (
                         <>
-                            <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform text-left">
-                                <FileUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary text-left" />
+                            <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                <FileUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                             </div>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Select Evidence</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select Evidence</p>
                         </>
                     )}
                 </div>
             ) : (
-                <div className="relative rounded-2xl overflow-hidden border-2 bg-muted aspect-square shadow-inner text-left">
+                <div className="relative rounded-2xl overflow-hidden border-2 bg-muted aspect-square shadow-inner">
                     {preview.type === 'image' ? (
-                        <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-contain text-left" unoptimized />
+                        <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-contain" unoptimized />
                     ) : (
-                        <video src={preview.url} className="w-full h-full object-contain text-left" playsInline controls />
+                        <video src={preview.url} className="w-full h-full object-contain" playsInline controls />
                     )}
                     <Button 
                         type="button" 
                         variant="destructive" 
                         size="icon" 
-                        className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg text-left" 
+                        className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg" 
                         onClick={() => { setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}
                     >
-                        <X className="h-3.5 w-3.5 text-left" />
+                        <X className="h-3.5 w-3.5" />
                     </Button>
                 </div>
             )}
@@ -305,14 +326,14 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
           <FormField control={form.control} name="category" render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl className="text-left">
-                      <SelectTrigger className="h-12 rounded-2xl border-2 text-left">
-                        <SelectValue placeholder="Share your testimony" className="text-left" />
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-2xl border-2">
+                        <SelectValue placeholder="Share your testimony" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded-2xl text-left">
+                    <SelectContent className="rounded-2xl">
                       {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat}>{cat}</SelectItem>))}
                     </SelectContent>
                   </Select>
@@ -323,11 +344,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
           <FormField control={form.control} name="content" render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Your Story</FormLabel>
-                <FormControl className="text-left">
+                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Story</FormLabel>
+                <FormControl>
                   <Textarea 
                     placeholder="Share what the Lord has done..." 
-                    className="min-h-[120px] rounded-[1.25rem] p-4 text-base leading-relaxed bg-muted/10 border-2 border-dashed transition-all focus:border-primary/40 focus:bg-muted/20 text-left" 
+                    className="min-h-[120px] rounded-[1.25rem] p-4 text-base leading-relaxed bg-muted/10 border-2 border-dashed transition-all focus:border-primary/40 focus:bg-muted/20" 
                     {...field} 
                   />
                 </FormControl>
@@ -346,43 +367,90 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 <Music className="h-4 w-4 text-primary" />
                 <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Worship (Optional)</h4>
             </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField
-                    control={form.control}
-                    name="musicTitle"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Song Title</FormLabel>
-                        <FormControl>
-                            <Input placeholder="e.g., Way Maker" {...field} className="h-10 rounded-xl bg-muted/20 border-none" />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="musicUrl"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">YouTube Link</FormLabel>
-                        <FormControl>
-                            <Input placeholder="https://youtube.com/..." {...field} className="h-10 rounded-xl bg-muted/20 border-none" />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
+            <div className="space-y-4">
+                <div className="flex gap-2">
+                    <Input 
+                        placeholder="Scan for worship songs..." 
+                        value={songSearchQuery}
+                        onChange={e => setSongSearchQuery(e.target.value)}
+                        className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold"
+                        onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleScanSongs())}
+                    />
+                    <Button 
+                        type="button" 
+                        onClick={handleScanSongs} 
+                        disabled={isSearchingSongs || !songSearchQuery.trim()}
+                        className="h-11 rounded-xl px-6 font-black uppercase tracking-widest text-[10px]"
+                    >
+                        {isSearchingSongs ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                        SCAN
+                    </Button>
+                </div>
+
+                {songResults.length > 0 && (
+                    <div className="grid gap-2 max-h-60 overflow-y-auto pr-1 animate-in fade-in slide-in-from-top-2">
+                        {songResults.map((song, idx) => (
+                            <button
+                                key={idx}
+                                type="button"
+                                onClick={() => {
+                                    form.setValue('musicUrl', song.url, { shouldDirty: true });
+                                    form.setValue('musicTitle', song.title, { shouldDirty: true });
+                                    setSongResults([]);
+                                    setSongSearchQuery('');
+                                    toast({ title: 'Song Selected', description: `"${song.title}" will accompany your story.` });
+                                }}
+                                className={cn(
+                                    "flex items-center justify-between p-3 rounded-xl border-2 transition-all text-left",
+                                    selectedMusicUrl === song.url ? "bg-primary/5 border-primary/40 ring-1 ring-primary/10" : "bg-card border-transparent hover:border-primary/10"
+                                )}
+                            >
+                                <div className="min-w-0 flex-1">
+                                    <p className="font-black text-xs uppercase tracking-tight truncate">{song.title}</p>
+                                    <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest truncate">{song.artist}</p>
+                                </div>
+                                {selectedMusicUrl === song.url ? <Check className="h-4 w-4 text-primary ml-2 shrink-0" /> : <PlayCircle className="h-4 w-4 text-primary/40 ml-2 shrink-0" />}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {selectedMusicUrl && (
+                    <div className="bg-primary/5 rounded-2xl p-4 border-2 border-dashed border-primary/20 flex items-center justify-between">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                                <Music className="h-4 w-4 text-primary" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[8px] font-black uppercase text-primary/60 tracking-widest">Active Sound</p>
+                                <p className="text-xs font-black uppercase tracking-tight truncate">{form.watch('musicTitle')}</p>
+                            </div>
+                        </div>
+                        <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10"
+                            onClick={() => {
+                                form.setValue('musicUrl', '', { shouldDirty: true });
+                                form.setValue('musicTitle', '', { shouldDirty: true });
+                            }}
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
             </div>
+            
             <p className="text-[9px] text-muted-foreground italic flex items-center gap-1.5 px-1">
-                <Info className="h-3 w-3" />
+                <Sparkles className="h-3 w-3 text-primary" />
                 Select any worship song to accompany your story.
             </p>
           </div>
 
-          <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting || isUploadingMedia !== null}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+          <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia !== null}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSubmitting ? 'PUBLISHING...' : 'PUBLISH TESTIMONY'}
           </Button>
         </form>
@@ -390,32 +458,3 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
-
-const compressImage = (file: File): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const img = new (window as any).Image();
-      img.src = URL.createObjectURL(file);
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const maxDimension = 1920;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > maxDimension) { height *= maxDimension / width; width = maxDimension; }
-        } else {
-          if (height > maxDimension) { width *= maxDimension / height; height = maxDimension; }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        ctx?.drawImage(img, 0, 0, width, height);
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob);
-          else reject(new Error('Canvas compression failed'));
-        }, 'image/jpeg', 0.7);
-      };
-      img.onerror = reject;
-    });
-  };
