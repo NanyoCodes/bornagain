@@ -388,7 +388,7 @@ function FilteredSoulList({
   );
 }
 
-export default function SoulsWonPage() {
+export function SoulsWonPage() {
   const router = useRouter();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -911,13 +911,13 @@ export default function SoulsWonPage() {
                                         <BarChart3 className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Harvest Demographic</span>
                                     </div>
-                                    <DrawerHeader className="text-left flex-shrink-0 p-0">
+                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight">{selectedFilterGroup?.value} Directory</DrawerTitle>
                                         <DrawerDescription className="text-sm font-medium mt-1">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                                     </DrawerHeader>
                                 </div>
                                 <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => setSelectedFilterGroup(null)}>
-                                    <X className="h-5 w-5" />
+                                    <X className="h-5 w-5 text-left" />
                                 </Button>
                             </div>
                         </div>
@@ -1015,7 +1015,7 @@ export default function SoulsWonPage() {
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
                 <AlertDialogHeader className="text-left">
-                    <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight text-left">Delete Record?</AlertDialogTitle>
+                    <AlertDialogTitle className="font-black text-2xl font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">This will permanently remove the record from your Kingdom journal. This action cannot be undone.</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left">
@@ -1117,7 +1117,7 @@ export default function SoulsWonPage() {
                     <div className="flex items-center justify-between gap-4">
                         <div className="min-w-0 flex-1">
                             <DrawerHeader className="text-left flex-shrink-0 p-0">
-                                <div className="flex items-center gap-2 mb-2"><Sparkles className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity Hub</span></div>
+                                <div className="flex items-center gap-2 mb-2"><Sparkles className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span></div>
                                 <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
                                     {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                                 </DrawerTitle>

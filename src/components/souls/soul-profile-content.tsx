@@ -203,15 +203,15 @@ export function SoulProfileContent({
   const { toast } = useToast();
   const router = useRouter();
 
-  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
-  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = React.useState(false);
-  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = React.useState(false);
-  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = React.useState(false);
-  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = React.useState(false);
-  const [isStudyWordOpen, setIsStudyWordOpen] = React.useState(false);
-  const [customMessageText, setCustomMessageText] = React.useState('');
-  const [clickedActionId, setClickedActionId] = React.useState<string | null>(null);
-  const [isActionSubmitting, setIsActionSubmitting] = React.useState(false);
+  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
+  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
+  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
+  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
+  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
+  const [isStudyWordOpen, setIsStudyWordOpen] = useState(false);
+  const [customMessageText, setCustomMessageText] = useState('');
+  const [clickedActionId, setClickedActionId] = useState<string | null>(null);
+  const [isActionSubmitting, setIsActionSubmitting] = useState(false);
 
   const address = useMemo(() => {
     const loc = soul.locationWon;
@@ -221,7 +221,7 @@ export function SoulProfileContent({
 
   const needs = soul.needsAssessment;
 
-  const sortedHistory = React.useMemo(() => {
+  const sortedHistory = useMemo(() => {
     if (!soul.followUpLog || soul.followUpLog.length === 0) return [];
     return [...soul.followUpLog].sort((a, b) => {
       const dateB = safeToDate(b.date)?.getTime() ?? 0;
@@ -390,7 +390,7 @@ export function SoulProfileContent({
     setCustomMessageText('');
   }
 
-  const uniquePartners = React.useMemo(() => {
+  const uniquePartners = useMemo(() => {
     const partners = currentUserProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
     partners.forEach(p => {

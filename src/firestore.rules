@@ -48,7 +48,7 @@ service cloud.firestore {
       return isAuthenticated() && 
              eId != null && 
              eId is string && 
-             eId != "" && 
+             eId != "" &&
              exists(/databases/$(database)/documents/events/$(eId)) && 
              get(/databases/$(database)/documents/events/$(eId)).data.organizerId == request.auth.uid;
     }
@@ -167,7 +167,7 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && request.resource.data.authorId == request.authorId;
+        allow delete: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
@@ -177,7 +177,7 @@ service cloud.firestore {
       match /foundational_armor/{armorIdx}/comments/{commentId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
+        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
@@ -230,7 +230,7 @@ service cloud.firestore {
       allow update: if isAuthenticated() && ( 
         (request.resource.data.authorId == request.auth.uid) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
-        (resource.data.get('answeredTestimonyId', '') != '' && (
+        (request.resource.data.get('answeredTestimonyId', '') != '' && (
           request.resource.data.status == 'pending' || 
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'answeredTestimonyId'])
         ))
