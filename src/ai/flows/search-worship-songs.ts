@@ -37,6 +37,7 @@ const searchWorshipSongsFlow = ai.defineFlow(
   async (input) => {
     const atmosphereQuery = input.atmosphere ? ` with a "${input.atmosphere}" atmosphere` : '';
     const response = await ai.generate({
+      model: 'googleai/gemini-1.5-flash',
       prompt: `You are a Kingdom Worship Expert. Find the most relevant, powerful, and diverse Christian worship songs for the query: "${input.query}"${atmosphereQuery}.
 
 Include a mix of global gospel styles:

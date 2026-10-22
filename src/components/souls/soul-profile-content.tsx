@@ -121,8 +121,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn, safeToDate } from "@/lib/utils";
 
-// --- Icons & Mappings ---
-
 export const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
     'studied_bible': BookOpen,
@@ -159,9 +157,6 @@ export const getStatusClasses = (status: FollowUpStatus | undefined): string => 
     }
 }
 
-/**
- * Ensures the profile photo displayed in the chat is always the most recent version.
- */
 function LiveChatAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
     const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
@@ -175,8 +170,6 @@ function LiveChatAvatar({ userId, fallbackUrl, fallbackInitials, className }: { 
         </Avatar>
     );
 }
-
-// --- Main Soul Profile Content ---
 
 export function SoulProfileContent({ 
   soul, 
@@ -272,7 +265,7 @@ export function SoulProfileContent({
     if (!soul) return;
     setClickedActionId(actionId);
 
-    if (actionId === 'phone_call' || actionId === 'text_message' || actionId === 'prayed_together') {
+    if (['phone_call', 'text_message', 'prayed_together'].includes(actionId)) {
         if (!soul.phone) {
             toast({ variant: 'destructive', title: 'Phone Missing', description: `Please save a number for ${soul.firstName} first.` });
             return;
@@ -400,25 +393,25 @@ export function SoulProfileContent({
   }, [currentUserProfile?.accountabilityPartners]);
 
   return (
-    <div className="space-y-6 text-left text-left">
-      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left text-left">
-        <CardHeader className="p-8 pb-4 text-center text-left text-left">
-            <div className="relative inline-block mx-auto mb-4 text-left text-left">
+    <div className="space-y-6 text-left">
+      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
+        <CardHeader className="p-8 pb-4 text-center">
+            <div className="relative inline-block mx-auto mb-4">
                 <Dialog>
                     <DialogTrigger asChild disabled={!soul.photoURL}>
-                        <div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95 text-left text-left", soul.photoURL && "cursor-pointer hover:scale-105")}>
-                            <Avatar className="h-full w-full border shadow-sm text-left text-left">
-                                <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left text-left" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl text-left text-left"> {soul.firstName?.charAt(0)}</AvatarFallback>
+                        <div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                            <Avatar className="h-full w-full border shadow-sm">
+                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl"> {soul.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         </div>
                     </DialogTrigger>
                     {soul.photoURL && (
-                        <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left text-left">
-                            <DialogHeader className="sr-only text-center text-left text-left"><DialogTitle className="text-left text-left">Profile Photo</DialogTitle></DialogHeader>
-                            <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
-                                    <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left" unoptimized />
+                        <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+                            <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
+                            <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                                    <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
                         </DialogContent>
@@ -427,111 +420,111 @@ export function SoulProfileContent({
                 {address && (
                     <Button 
                         size="icon" 
-                        className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background text-left text-left"
+                        className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background"
                         onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')}
                         title="View Map"
                     >
-                        <MapPin className="h-5 w-5 text-left text-left" />
+                        <MapPin className="h-5 w-5" />
                     </Button>
                 )}
             </div>
-            <div className="flex flex-col items-center gap-2 text-left text-left">
-                <CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center truncate w-full text-left text-left">
+            <div className="flex flex-col items-center gap-2">
+                <CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center truncate w-full">
                   {soul.firstName} {soul.lastName}
                 </CardTitle>
-                <div className="flex gap-2 justify-center items-center text-left text-left">
-                    <Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center text-left text-left", getStatusClasses(soul.status))} variant="outline">
+                <div className="flex gap-2 justify-center items-center">
+                    <Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center", getStatusClasses(soul.status))} variant="outline">
                         {soul.status}
                     </Badge>
                     <MutualConnectBadge soul={soul} />
                 </div>
             </div>
         </CardHeader>
-        <CardContent className="p-8 pt-0 space-y-6 text-left text-left text-left">
-            <Separator className="opacity-50 text-left text-left" />
+        <CardContent className="p-8 pt-0 space-y-6">
+            <Separator className="opacity-50" />
             
-            <div className="space-y-4 text-left text-left">
-                <div className="flex items-center justify-between text-left text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left">Spiritual Identity</p>
-                    <div className="flex items-center gap-1 text-left text-left">
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Spiritual Identity</p>
+                    <div className="flex items-center gap-1">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left">
-                                    <Download className="h-4 w-4 text-left text-left" />
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10">
+                                    <Download className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl text-left text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left text-left">Select Format</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="text-left text-left" />
-                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')} className="text-left text-left text-left">CSV Export</DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="text-left text-left text-left">PDF Report</DropdownMenuItem>
+                            <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl">
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black">Select Format</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>CSV Export</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left" onClick={() => onEdit(soul)}>
-                            <Edit className="h-4 w-4 text-left text-left" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}>
+                            <Edit className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-left text-left">
-                    <div className="space-y-1 text-left text-left">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Full Name</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left">{soul.firstName} {soul.lastName}</p>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Full Name</p>
+                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.firstName} {soul.lastName}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Gender/Age</p>
-                        <p className="text-[11px] sm:text-xs font-bold text-left text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
+                    <div className="space-y-1">
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Gender/Age</p>
+                        <p className="text-[11px] sm:text-xs font-bold">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Relationship</p>
-                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize text-left text-left">{soul.relationship || 'N/A'}</p>
+                    <div className="space-y-1">
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Relationship</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.relationship || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Work Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left">{soul.workStatus || 'N/A'}</p>
+                    <div className="space-y-1">
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Work Status</p>
+                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.workStatus || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Rel. Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left">{soul.maritalStatus || 'N/A'}</p>
+                    <div className="space-y-1">
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Rel. Status</p>
+                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.maritalStatus || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left text-left">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Nickname</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left">{soul.nickname || 'N/A'}</p>
+                    <div className="space-y-1">
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Nickname</p>
+                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.nickname || 'N/A'}</p>
                     </div>
                 </div>
             </div>
 
-            <Separator className="opacity-20 text-left text-left" />
+            <Separator className="opacity-20" />
 
-            <div className="space-y-3 text-left text-left">
-                <div className="flex items-center justify-between text-left text-left text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left">Contact Identity</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left" onClick={() => onEdit(soul)}>
-                        <Edit className="h-4 w-4 text-left text-left text-left" />
+            <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Contact Identity</p>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}>
+                        <Edit className="h-4 w-4" />
                     </Button>
                 </div>
-                <div className="space-y-2 text-left text-left">
+                <div className="space-y-2">
                     {soul.phone ? (
-                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left text-left">
-                            <Phone className="h-3.5 w-3.5 text-primary shrink-0 text-left text-left" />
+                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground">
+                            <Phone className="h-3.5 w-3.5 text-primary shrink-0" />
                             {soul.phone}
                         </div>
                     ) : (
-                        <p className="text-[9px] text-muted-foreground/40 italic text-left text-left">No phone recorded</p>
+                        <p className="text-[9px] text-muted-foreground/40 italic">No phone recorded</p>
                     )}
                     {soul.email && (
-                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left text-left">
-                            <Mail className="h-3.5 w-3.5 text-primary shrink-0 text-left text-left text-left" />
+                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground">
+                            <Mail className="h-3.5 w-3.5 text-primary shrink-0" />
                             {soul.email}
                         </div>
                     )}
                 </div>
             </div>
 
-            <Separator className="opacity-20 text-left text-left text-left" />
+            <Separator className="opacity-20" />
 
-            <div className="space-y-4 text-left text-left text-left">
-                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left">Relational Actions</p>
-                <div className="flex flex-col gap-2 text-left text-left text-left">
+            <div className="space-y-4">
+                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Relational Actions</p>
+                <div className="flex flex-col gap-2">
                     {actionItems.map(action => {
                         const Icon = iconMap[action.id] || Heart;
                         const isThisProcessing = clickedActionId === action.id && isActionSubmitting;
@@ -542,65 +535,65 @@ export function SoulProfileContent({
                             <Button
                                 key={action.id}
                                 variant="outline"
-                                className="flex items-center justify-start gap-3 h-12 px-4 rounded-xl border-2 border-transparent bg-muted/20 hover:bg-primary/5 hover:border-primary/10 transition-all text-left group text-left text-left"
+                                className="flex items-center justify-start gap-3 h-12 px-4 rounded-xl border-2 border-transparent bg-muted/20 hover:bg-primary/5 hover:border-primary/10 transition-all text-left group"
                                 onClick={() => handleActionClick(action.id)}
                                 disabled={isActionSubmitting}
                             >
-                                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors text-left text-left">
-                                    {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left text-left" /> : <Icon className="h-4 w-4 text-left text-left" />}
+                                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+                                    {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Icon className="h-4 w-4" />}
                                 </div>
-                                <span className="text-xs font-bold uppercase tracking-tight truncate flex-1 text-left text-left">{action.label}</span>
-                                <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity text-left text-left" />
+                                <span className="text-xs font-bold uppercase tracking-tight truncate flex-1">{action.label}</span>
+                                <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity" />
                             </Button>
                         )
                     })}
                 </div>
             </div>
 
-            <Separator className="opacity-20 text-left text-left text-left" />
+            <Separator className="opacity-20" />
 
-            <div className="space-y-4 text-left text-left text-left">
-                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left">Harvest Context</p>
-                <div className="space-y-1 text-left text-left">
-                    <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate text-left text-left">
-                        <Target className="h-3 w-3 text-primary text-left text-left" />
+            <div className="space-y-4">
+                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Harvest Context</p>
+                <div className="space-y-1">
+                    <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate">
+                        <Target className="h-3 w-3 text-primary" />
                         Source: {soul.source}
                     </p>
                 </div>
             </div>
 
-            <Separator className="opacity-20 text-left text-left text-left" />
+            <Separator className="opacity-20" />
 
-            <div className="space-y-4 text-left text-left text-left">
-                <div className="flex items-center justify-between text-left text-left text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left">Kingdom Placement</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left" onClick={() => onOpenAssignDialog(soul)}>
-                        <Edit className="h-4 w-4 text-left text-left text-left" />
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onOpenAssignDialog(soul)}>
+                        <Edit className="h-4 w-4" />
                     </Button>
                 </div>
-                <div className="space-y-3 text-left text-left text-left">
-                    <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left text-left text-left">
-                        <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left text-left text-left" />
-                        <div className="min-w-0 text-left text-left text-left">
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left text-left">Fellowship</p>
-                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left text-left">{soul.fellowshipName || 'No Fellowship'}</p>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10">
+                        <HeartHandshake className="h-4 w-4 text-primary shrink-0" />
+                        <div className="min-w-0">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Fellowship</p>
+                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.fellowshipName || 'No Fellowship'}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left text-left text-left">
-                        <Users className="h-4 w-4 text-blue-500 shrink-0 text-left text-left text-left" />
-                        <div className="min-w-0 text-left text-left text-left">
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left text-left">Association</p>
-                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left text-left">{soul.associationName || 'No Association'}</p>
+                    <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10">
+                        <Users className="h-4 w-4 text-blue-500 shrink-0" />
+                        <div className="min-w-0">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Association</p>
+                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.associationName || 'No Association'}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <Separator className="opacity-20 text-left text-left text-left" />
+            <Separator className="opacity-20" />
 
-            <div className="space-y-4 text-left text-left text-left">
-                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left">Spiritual Milestones</p>
-                <div className="grid grid-cols-2 gap-2 text-left text-left text-left">
+            <div className="space-y-4">
+                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Spiritual Milestones</p>
+                <div className="grid grid-cols-2 gap-2">
                     {[
                         { label: 'Church', val: soul.attendingChurch, icon: Church },
                         { label: 'Word Study', val: soul.inBibleStudy, icon: BookOpen },
@@ -608,119 +601,119 @@ export function SoulProfileContent({
                         { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck },
                     ].map(milestone => (
                         <div key={milestone.label} className={cn(
-                            "flex items-center gap-2 p-2 rounded-xl border transition-all text-left text-left text-left",
+                            "flex items-center gap-2 p-2 rounded-xl border transition-all",
                             milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40"
                         )}>
-                            <milestone.icon className="h-3 w-3 text-left text-left text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-tight text-left text-left text-left">{milestone.label}</span>
+                            <milestone.icon className="h-3 w-3" />
+                            <span className="text-[10px] font-black uppercase tracking-tight">{milestone.label}</span>
                         </div>
                     ))}
                 </div>
             </div>
 
-            <Separator className="opacity-20 text-left text-left text-left" />
-            <div className="space-y-4 text-left text-left text-left text-left">
-                <div className="flex items-center justify-between text-left text-left text-left text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left text-left text-left">
-                        <History className="h-3.5 w-3.5 text-left text-left text-left" /> Interaction History
+            <Separator className="opacity-20" />
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2">
+                        <History className="h-3.5 w-3.5" /> Interaction History
                     </p>
-                    <Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5 text-left text-left text-left text-left" onClick={() => onViewHistory(soul)}>
+                    <Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5" onClick={() => onViewHistory(soul)}>
                         View All
                     </Button>
                 </div>
-                <div className="space-y-4 pl-1 text-left text-left text-left">
+                <div className="space-y-4 pl-1">
                     {sortedHistory.length > 0 ? (
                         sortedHistory.slice(0, 3).map((log, index) => {
                             const date = safeToDate(log.date);
                             return (
                                 <React.Fragment key={index}>
-                                    <div className="relative text-left text-left text-left">
-                                        <div className="pl-4 border-l-4 border-primary/20 text-left text-left text-left">
-                                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left text-left text-left">
+                                    <div className="relative">
+                                        <div className="pl-4 border-l-4 border-primary/20">
+                                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">
                                                 {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                                 {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName}</span>}
                                             </p>
-                                            <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left text-left text-left">
+                                            <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic">
                                                 &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                             </p>
                                         </div>
                                     </div>
-                                    {index < 2 && sortedHistory.length > index + 1 && <Separator className="mt-4 opacity-10 text-left text-left text-left" />}
+                                    {index < 2 && sortedHistory.length > index + 1 && <Separator className="mt-4 opacity-10" />}
                                 </React.Fragment>
                             );
                         })
                     ) : (
-                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left text-left text-left">
-                            <p className="text-sm text-muted-foreground/40 italic text-left text-left">No interactions recorded.</p>
+                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5">
+                            <p className="text-sm text-muted-foreground/40 italic">No interactions recorded.</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left text-left text-left">
-                <div className="flex items-center justify-between text-left text-left text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left text-left text-left">
-                        <ClipboardList className="h-4 w-4 text-left text-left text-left" /> Assessed Needs
+            <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner">
+                <div className="flex items-center justify-between">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1">
+                        <ClipboardList className="h-4 w-4" /> Assessed Needs
                     </p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left" onClick={() => onAssess(soul)}>
-                        <Edit className="h-4 w-4 text-left text-left text-left" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onAssess(soul)}>
+                        <Edit className="h-4 w-4" />
                     </Button>
                 </div>
                 {needs ? (
-                    <div className="space-y-4 text-left text-left text-left">
-                        {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
+                    <div className="space-y-4">
+                        {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance">&ldquo;{needs.generalImpression}&rdquo;</p>}
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left text-left text-left">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {needs.emotionalNeeds && (
-                                <div className="space-y-1 text-left text-left text-left">
+                                <div className="space-y-1">
                                     <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge>
-                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left text-left">{needs.emotionalNeeds}</p>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2">{needs.emotionalNeeds}</p>
                                 </div>
                             )}
                             {needs.physicalNeeds && (
-                                <div className="space-y-1 text-left text-left text-left">
+                                <div className="space-y-1">
                                     <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge>
-                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left text-left">{needs.physicalNeeds}</p>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2">{needs.physicalNeeds}</p>
                                 </div>
                             )}
                             {needs.financialNeeds && (
-                                <div className="space-y-1 text-left text-left text-left">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left text-left">Financial</Badge>
-                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left text-left text-left">{needs.financialNeeds}</p>
+                                <div className="space-y-1">
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2">{needs.financialNeeds}</p>
                                 </div>
                             )}
                             {needs.socialNeeds && (
-                                <div className="space-y-1 text-left text-left text-left">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left text-left">Social</Badge>
-                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left text-left text-left">{needs.socialNeeds}</p>
+                                <div className="space-y-1">
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2">{needs.socialNeeds}</p>
                                 </div>
                             )}
                         </div>
 
                         {needs.followUpPlan && (
-                            <div className="pt-2 border-t border-primary/10 text-left text-left text-left text-left">
-                                <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left text-left text-left">
-                                    <Target className="h-2.5 w-2.5 text-left text-left text-left" /> Strategy
+                            <div className="pt-2 border-t border-primary/10">
+                                <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5">
+                                    <Target className="h-2.5 w-2.5" /> Strategy
                                 </p>
-                                <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left text-left text-left">{needs.followUpPlan}</p>
+                                <p className="text-[10px] text-muted-foreground leading-relaxed italic">{needs.followUpPlan}</p>
                             </div>
                         )}
                     </div>
                 ) : (
-                    <div className="py-4 text-center text-left text-left text-left">
-                        <Button variant="outline" size="sm" className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-left text-left text-left" onClick={() => onAssess(soul)}>
+                    <div className="py-4 text-center">
+                        <Button variant="outline" size="sm" className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5" onClick={() => onAssess(soul)}>
                             BEGIN ASSESSMENT
                         </Button>
                     </div>
                 )}
             </div>
 
-            <div className="pt-2 space-y-3 text-left text-left text-left">
-                <Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-left text-left text-left" onClick={() => onFollowUp(soul)}>
+            <div className="pt-2 space-y-3">
+                <Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20" onClick={() => onFollowUp(soul)}>
                     LOG FOLLOW-UP
                 </Button>
-                <Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px] text-left text-left" onClick={() => onDelete(soul)}>
-                    <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" /> DELETE RECORD
+                <Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px]" onClick={() => onDelete(soul)}>
+                    <Trash2 className="mr-2 h-4 w-4" /> DELETE RECORD
                 </Button>
             </div>
         </CardContent>
@@ -766,42 +759,42 @@ export function IntercessionHubDialog({
   useEffect(() => { if(isOpen && soul) setText(prayerTemplates[0].text.replace(/{name}/g, soul.firstName)); }, [isOpen, soul]);
 
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4 text-left text-left">
-        <div className="flex-1 min-w-0 text-left text-left text-left">
-            <div className="text-left p-0 text-left text-left text-left text-left">
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Kingdom Intercession</h2>
-                <p className="text-sm font-medium mt-1 text-left text-left text-left text-left">Draft a powerful prayer for {soul?.firstName}.</p>
+    <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
+        <div className="flex-1 min-w-0">
+            <div className="text-left p-0">
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</h2>
+                <p className="text-sm font-medium mt-1">Draft a powerful prayer for {soul?.firstName}.</p>
             </div>
         </div>
-        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left text-left" onClick={() => onOpenChange(false)}>
-            <X className="h-5 w-5 text-left text-left text-left" />
+        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
+            <X className="h-5 w-5" />
         </Button>
     </div>
   );
 
   const content = (
-    <div className="p-8 space-y-6 text-left text-left text-left">
-        <div className="space-y-3 text-left text-left text-left">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Select Focus</label>
-            <div className="flex flex-wrap gap-2 text-left text-left text-left">
+    <div className="p-8 space-y-6">
+        <div className="space-y-3">
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Focus</label>
+            <div className="flex flex-wrap gap-2">
                 {prayerTemplates.map(t => (
-                    <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-primary text-left text-left text-left" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
+                    <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-3 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-primary" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
                 ))}
             </div>
         </div>
-        <div className="space-y-2 text-left text-left text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Customize Message</Label>
-            <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left text-left text-left" />
+        <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
+            <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
         </div>
-        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left text-left text-left text-left">SEND</Button>
+        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">SEND</Button>
     </div>
   );
 
   if (isMobile) {
       return (
           <Sheet open={isOpen} onOpenChange={onOpenChange}>
-              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                  {header}<ScrollArea className="flex-grow text-left text-left text-left">{content}</ScrollArea>
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                  {header}<ScrollArea className="flex-grow">{content}</ScrollArea>
               </SheetContent>
           </Sheet>
       );
@@ -809,7 +802,7 @@ export function IntercessionHubDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
+        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
             {header}{content}
         </DialogContent>
     </Dialog>
@@ -829,29 +822,29 @@ export function MessageHubDialog({
 }) {
   const isMobile = useIsMobile();
   const header = (
-    <div className="p-8 border-b bg-muted/10 text-left flex items-center justify-between gap-4 text-left text-left text-left">
-        <div className="flex-1 min-w-0 text-left text-left text-left">
-            <div className="flex items-center gap-2 mb-1 text-left text-left text-left">
-                <MessageSquare className="h-4 w-4 text-primary text-left text-left text-left" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Channel Select</span>
+    <div className="p-8 border-b bg-muted/10 text-left flex items-center justify-between gap-4">
+        <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+                <MessageSquare className="h-4 w-4 text-primary" />
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
             </div>
-            <div className="text-left p-0 text-left text-left text-left text-left">
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Message Hub</h2>
-                <p className="text-sm font-medium text-left text-left text-left text-left">Encourage {soul?.firstName} via mobile.</p>
+            <div className="text-left p-0">
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Message Hub</h2>
+                <p className="text-sm font-medium">Encourage {soul?.firstName} via mobile.</p>
             </div>
         </div>
-        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left text-left" onClick={() => onOpenChange(false)}>
-            <X className="h-5 w-5 text-left text-left text-left" />
+        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
+            <X className="h-5 w-5" />
         </Button>
     </div>
   );
   const content = (
-    <div className="flex flex-col gap-3 p-8 text-left text-left text-left">
-        <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg text-center text-left text-left text-left text-left">
-            <WhatsAppIcon className="h-5 w-5 text-left text-left text-left" /> WhatsApp External
+    <div className="flex flex-col gap-3 p-8">
+        <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg text-center">
+            <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
         </Button>
-        <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary text-center text-left text-left text-left text-left">
-            <MessageSquare className="h-5 w-5 text-left text-left text-left" /> Standard SMS
+        <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary text-center">
+            <MessageSquare className="h-5 w-5" /> Standard SMS
         </Button>
     </div>
   );
@@ -859,7 +852,7 @@ export function MessageHubDialog({
   if (isMobile) {
       return (
           <Drawer open={isOpen} onOpenChange={onOpenChange}>
-              <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left text-left text-left">
+              <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
                   {header}{content}
               </DrawerContent>
           </Drawer>
@@ -868,7 +861,7 @@ export function MessageHubDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
           {header}{content}
       </DialogContent>
     </Dialog>
@@ -948,62 +941,62 @@ export function ShareWordDialog({
   };
 
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4 text-left text-left text-left">
-        <div className="flex-1 min-w-0 text-left text-left text-left">
-          <div className="flex items-center gap-3 mb-2 text-left text-left text-left">
+    <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 mb-2">
             {view !== 'hub' && (
-                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2 text-left text-left text-left" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
-                    <ArrowLeft className="h-4 w-4 text-left text-left text-left" />
+                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
+                    <ArrowLeft className="h-4 w-4" />
                 </Button>
             )}
-            <Target className="h-5 w-5 text-primary text-left text-left text-left" />
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left text-left">Kingdom Study</span>
+            <Target className="h-5 w-5 text-primary" />
+            <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
           </div>
-          <div className="text-left text-left text-left">
-            <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">
+          <div className="text-left">
+            <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
                 {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}
             </h2>
-            <p className="text-sm font-medium text-left text-left text-left">Access the word of God to share with converts.</p>
+            <p className="text-sm font-medium">Access the word of God to share with converts.</p>
           </div>
         </div>
-        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left text-left" onClick={() => onOpenChange(false)}>
-            <X className="h-5 w-5 text-left text-left text-left" />
+        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
+            <X className="h-5 w-5" />
         </Button>
     </div>
   );
 
   const body = (
-    <div className="flex-grow min-h-[300px] text-left text-left text-left text-left">
-        <div className="p-4 sm:p-10 text-left text-left text-left text-left">
+    <div className="flex-grow min-h-[300px]">
+        <div className="p-4 sm:p-10">
             {view === 'hub' && (
-                <div className="space-y-8 text-left text-left text-left text-left">
-                    <div className="relative text-left text-left text-left text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50 text-left text-left text-left text-left" />
-                        <Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-14 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-lg text-left text-left text-left text-left" />
+                <div className="space-y-8">
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50" />
+                        <Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-14 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-lg text-left" />
                     </div>
-                    <div className="grid grid-cols-2 gap-4 text-left text-left text-left text-left">
-                        <Button onClick={() => setView('books')} variant="outline" className="h-32 rounded-[2rem] gap-3 border-2 border-primary/20 text-primary flex flex-col text-center text-left text-left text-left text-left">
-                            <BookOpen className="h-8 w-8 mb-1 text-center text-left text-left text-left text-left" />
-                            <span className="font-black text-[10px] uppercase tracking-widest text-center text-left text-left text-left text-left">Browse Bible</span>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Button onClick={() => setView('books')} variant="outline" className="h-32 rounded-[2rem] gap-3 border-2 border-primary/20 text-primary flex flex-col text-center">
+                            <BookOpen className="h-8 w-8 mb-1 mx-auto" />
+                            <span className="font-black text-[10px] uppercase tracking-widest text-center">Browse Bible</span>
                         </Button>
-                        <Button variant="outline" asChild className="h-32 rounded-[2rem] gap-3 border-2 border-primary/20 text-primary flex flex-col text-center text-left text-left text-left text-left"><Link href="/dashboard/bible" className="text-left text-left text-left text-left text-left"><BookMarked className="h-8 w-8 mb-1 text-center text-left text-left text-left text-left" /><span className="font-black text-[10px] uppercase tracking-widest text-center text-left text-left text-left text-left">Open Reader</span></Link></Button>
+                        <Button variant="outline" asChild className="h-32 rounded-[2rem] gap-3 border-2 border-primary/20 text-primary flex flex-col text-center"><Link href="/dashboard/bible" className="text-center"><BookMarked className="h-8 w-8 mb-1 mx-auto" /><span className="font-black text-[10px] uppercase tracking-widest text-center">Open Reader</span></Link></Button>
                     </div>
                 </div>
             )}
             {view === 'books' && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-left text-left text-left text-left">
-                    {bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[10px] text-left text-left text-left text-left" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>))}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[10px]" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>))}
                 </div>
             )}
             {view === 'chapters' && (
-                <div className="grid grid-cols-5 sm:grid-cols-8 gap-2 text-left text-left text-left text-left">
-                    {selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (<Button key={ch.chapter} variant="outline" className="h-10 w-10 p-0 rounded-lg font-black text-sm text-left text-left text-left text-left" onClick={() => handleSelectChapter(ch.chapter)}>{ch.chapter}</Button>))}
+                <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
+                    {selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (<Button key={ch.chapter} variant="outline" className="h-10 w-10 p-0 rounded-lg font-black text-sm" onClick={() => handleSelectChapter(ch.chapter)}>{ch.chapter}</Button>))}
                 </div>
             )}
             {view === 'verses' && (
-                <div className="space-y-1 font-serif text-left text-left text-left text-left">
-                    {loadingVerses ? (<div className="flex justify-center py-20 text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left text-left text-left text-left" /></div>) : chapterContent?.verses.map(v => (
-                        <div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2 text-left text-left text-left text-left", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => toggleVerse(v.verse)}><sup className="text-[10px] font-black mr-2 opacity-40 text-left text-left text-left text-left"> {v.verse}</sup><span className="text-sm leading-relaxed text-left text-left text-left text-left">{v.text}</span></div>
+                <div className="space-y-1 font-serif">
+                    {loadingVerses ? (<div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>) : chapterContent?.verses.map(v => (
+                        <div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => toggleVerse(v.verse)}><sup className="text-[10px] font-black mr-2 opacity-40"> {v.verse}</sup><span className="text-sm leading-relaxed">{v.text}</span></div>
                     ))}
                 </div>
             )}
@@ -1012,17 +1005,17 @@ export function ShareWordDialog({
   );
 
   const footer = view === 'verses' && (
-    <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left text-left text-left text-left">
-        <Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold text-left text-left text-left text-left">Clear Selection</Button>
-        <Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest text-center text-left text-left text-left text-left">PREPARE SHARE ({selectedVerses.length})</Button>
+    <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3">
+        <Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold">Clear Selection</Button>
+        <Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest text-center">PREPARE SHARE ({selectedVerses.length})</Button>
     </div>
   );
 
   if (isMobile) {
       return (
           <Sheet open={isOpen} onOpenChange={onOpenChange}>
-              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                  {header}<ScrollArea className="flex-grow text-left text-left text-left">{body}</ScrollArea>{footer}
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                  {header}<ScrollArea className="flex-grow">{body}</ScrollArea>{footer}
               </SheetContent>
           </Sheet>
       );
@@ -1030,8 +1023,8 @@ export function ShareWordDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left flex flex-col text-left text-left text-left">
-        {header}<ScrollArea className="flex-grow text-left text-left text-left">{body}</ScrollArea>{footer || (<div className="p-6 border-t bg-muted/5 flex justify-end shrink-0 text-left text-left text-left text-left"><Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs text-left text-left text-left text-left">Close Hub</Button></div>)}
+      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">
+        {header}<ScrollArea className="flex-grow">{body}</ScrollArea>{footer || (<div className="p-6 border-t bg-muted/5 flex justify-end shrink-0"><Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs">Close Hub</Button></div>)}
       </DialogContent>
     </Dialog>
   );

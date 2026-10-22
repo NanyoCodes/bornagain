@@ -12,7 +12,6 @@ type AdsenseAdProps = {
 
 /**
  * @fileOverview Standard component for Google AdSense banners.
- * Configured for non-intrusive integration into the Kingdom feed.
  * Includes status checks to prevent multiple injection errors.
  */
 export function AdsenseAd({ adSlot, className }: AdsenseAdProps) {

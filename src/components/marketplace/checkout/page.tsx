@@ -33,6 +33,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn, safeToDate } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { AppShell } from '@/components/layout/app-shell';
 
 const currencyOptions = [
     { value: 'NGN', symbol: '₦' },
@@ -329,6 +330,8 @@ function CheckoutPageContent() {
 
 export default function CheckoutPage() {
     return (
-        <CheckoutPageContent />
+        <AppShell>
+            <CheckoutPageContent />
+        </AppShell>
     );
 }
