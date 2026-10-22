@@ -76,21 +76,17 @@ service cloud.firestore {
         ))
       );
 
-      match /cart/{itemId} {
-        allow read, list, write: if isOwner(userId);
-      }
-
       match /strongholds/{id} {
         allow read, write: if isOwner(userId);
       }
 
       match /souls/{soulId} {
-        allow read: if isOwner(userId) || 
-                    (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
+        allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
         allow create, delete: if isOwner(userId);
         allow update: if isAuthenticated() && (
           isOwner(userId) || 
-          (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))))
+          isFellowshipMember(resource.data.get('fellowshipId', '')) || 
+          isFellowshipMember(resource.data.get('associationId', ''))
         );
       }
       
@@ -119,10 +115,6 @@ service cloud.firestore {
       match /joinedEvents/{eventId} {
         allow get, list, write: if isOwner(userId);
       }
-
-      match /fellowships/{fellowshipId} {
-        allow get, list, write: if isOwner(userId);
-      }
     }
 
     match /events/{eventId} {
@@ -142,7 +134,7 @@ service cloud.firestore {
     }
 
     match /victoryCircles/{category} {
-      allow read: if isAuthenticated();
+      allow read, list: if true;
 
       match /posts/{postId} {
         allow get, list: if isAuthenticated();
@@ -167,7 +159,7 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
@@ -177,7 +169,7 @@ service cloud.firestore {
       match /foundational_armor/{armorIdx}/comments/{commentId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
@@ -187,8 +179,8 @@ service cloud.firestore {
       match /resources/{resourceId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
-        allow update: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow update: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
       }
     }
     
@@ -198,16 +190,17 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated() && (
         (resource.data.get('userId', '') == request.auth.uid) || 
         (resource.data.userId == request.auth.uid) || 
-        (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))))
+        isFellowshipMember(resource.data.get('fellowshipId', '')) ||
+        isFellowshipMember(resource.data.get('associationId', ''))
       );
     }
 
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || String(resource.data.authorId) == request.auth.uid);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (request.resource.data.authorId == request.auth.uid) || 
+        (resource.data.authorId == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 
@@ -229,7 +222,10 @@ service cloud.firestore {
       allow update: if isAuthenticated() && ( 
         (request.resource.data.authorId == request.auth.uid) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
-        (request.resource.data.status == 'pending' && !('answeredTestimonyId' in request.resource.data))
+        (resource.data.get('answeredTestimonyId', '') != '' && (
+          request.resource.data.status == 'pending' || 
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'answeredTestimonyId'])
+        ))
       );
     }
 
