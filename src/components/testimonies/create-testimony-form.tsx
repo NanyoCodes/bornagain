@@ -51,6 +51,15 @@ const testimonyCategories: TestimonyCategory[] = [
   'General'
 ];
 
+const atmospherePresets = [
+    { label: 'Grateful', icon: '🙏' },
+    { label: 'Victory', icon: '🏆' },
+    { label: 'Healing', icon: '🏥' },
+    { label: 'Power', icon: '🔥' },
+    { label: 'Peace', icon: '🕊️' },
+    { label: 'Joy', icon: '✨' },
+];
+
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
@@ -107,19 +116,23 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     }
   }, [prayerRequest, campaign, form]);
 
-  const handleScanSongs = async () => {
-    if (!songSearchQuery.trim()) return;
+  const handleScanSongs = async (atmosphere?: string) => {
+    const query = atmosphere || songSearchQuery.trim();
+    if (!query) return;
+
     setIsSearchingSongs(true);
     setSongResults([]);
     try {
-        const result = await searchWorshipSongs({ query: songSearchQuery.trim() });
+        const result = await searchWorshipSongs({ 
+            query: atmosphere ? `Gospel songs about ${atmosphere}` : query,
+            atmosphere: atmosphere
+        });
         if (result && result.songs) {
             setSongResults(result.songs);
             setIsResultsOpen(true);
-            if (result.songs.length === 0) toast({ title: "No matching songs found." });
         }
     } catch (e: any) {
-        toast({ variant: 'destructive', title: 'Library Access Failed' });
+        toast({ variant: 'destructive', title: 'Library Access Failed', description: 'Could not connect to the Kingdom music library.' });
     } finally {
         setIsSearchingSongs(false);
     }
@@ -273,7 +286,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       return (
         <div className="space-y-3 flex-1 text-left">
             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                <Camera className="h-3.5 w-3.5" /> Proof {slot} {slot === 2 && "(Optional)"}
+                <Camera className="h-3.5 w-3.5 text-primary" /> Proof {slot} {slot === 2 && "(Optional)"}
             </Label>
             
             {!preview ? (
@@ -397,15 +410,33 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           </div>
 
           <div className="space-y-4 pt-2 border-t border-dashed text-left">
-            <div className="flex items-center gap-2 px-1">
-                <Music className="h-4 w-4 text-primary" />
-                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Worship (Optional)</h4>
+            <div className="flex items-center justify-between px-1">
+                <div className="flex items-center gap-2">
+                    <Music className="h-4 w-4 text-primary" />
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Worship (Optional)</h4>
+                </div>
             </div>
 
             <div className="space-y-4">
+                <div className="flex flex-wrap gap-2 mb-2">
+                    {atmospherePresets.map(p => (
+                        <Button 
+                            key={p.label}
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="rounded-full h-8 px-3 text-[10px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary transition-all"
+                            onClick={() => handleScanSongs(p.label)}
+                        >
+                            <span className="mr-1.5">{p.icon}</span>
+                            {p.label}
+                        </Button>
+                    ))}
+                </div>
+
                 <div className="flex gap-2">
                     <Input 
-                        placeholder="Scan for worship songs..." 
+                        placeholder="Scan for specific gospel songs..." 
                         value={songSearchQuery}
                         onChange={e => setSongSearchQuery(e.target.value)}
                         className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold"
@@ -413,8 +444,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     />
                     <Button 
                         type="button" 
-                        onClick={handleScanSongs} 
-                        disabled={isSearchingSongs || !songSearchQuery.trim()}
+                        onClick={() => handleScanSongs()} 
+                        disabled={isSearchingSongs || (!songSearchQuery.trim())}
                         className="h-11 rounded-xl px-6 font-black uppercase tracking-widest text-[10px]"
                     >
                         {isSearchingSongs ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
@@ -494,3 +525,4 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
+

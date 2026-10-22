@@ -2,14 +2,15 @@
 /**
  * @fileOverview A Genkit flow for searching worship songs on YouTube.
  *
- * - searchWorshipSongs - A function that returns suggested worship songs based on a query.
+ * - searchWorshipSongs - A function that returns curated worship songs based on a query or atmosphere.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const SearchSongsInputSchema = z.object({
-  query: z.string().describe('The song title, artist, or theme to search for.'),
+  query: z.string().describe('The song title, artist, or keyword to search for.'),
+  atmosphere: z.string().optional().describe('The spiritual atmosphere or vibe (e.g., Victory, Healing, Gratitude).'),
 });
 export type SearchSongsInput = z.infer<typeof SearchSongsInputSchema>;
 
@@ -25,7 +26,7 @@ const SearchSongsOutputSchema = z.object({
 export type SearchSongsOutput = z.infer<typeof SearchSongsOutputSchema>;
 
 /**
- * Genkit flow for searching worship songs.
+ * Genkit flow for searching worship songs with a focus on diverse gospel genres.
  */
 const searchWorshipSongsFlow = ai.defineFlow(
   {
@@ -34,15 +35,21 @@ const searchWorshipSongsFlow = ai.defineFlow(
     outputSchema: SearchSongsOutputSchema,
   },
   async (input) => {
+    const atmosphereQuery = input.atmosphere ? ` with a "${input.atmosphere}" atmosphere` : '';
     const response = await ai.generate({
-      prompt: `You are a worship music expert. Find the most relevant and powerful Christian worship songs for the query: "${input.query}".
+      prompt: `You are a Kingdom Worship Expert. Find the most relevant, powerful, and diverse Christian worship songs for the query: "${input.query}"${atmosphereQuery}.
+
+Include a mix of global gospel styles:
+- Contemporary Worship (e.g., Elevation, Hillsong, Bethel)
+- Afro-Gospel & Highlife (e.g., Sinach, Nathaniel Bassey, Dunsin Oyekan)
+- Black Gospel & Soul (e.g., Maverick City, Tasha Cobbs, Kirk Franklin)
 
 Return a list of exactly 5 songs. Each must have:
 1. title: The accurate song name.
-2. artist: The primary worship leader or group (e.g., Maverick City Music, Hillsong, Sinach).
-3. url: A valid YouTube URL for a high-quality version of the song (e.g. https://www.youtube.com/watch?v=...).
+2. artist: The primary worship leader or group.
+3. url: A valid YouTube URL for a high-quality version of the song.
 
-Ensure the links are functional and the selections are edifying for a testimony context.`,
+Ensure the link is functional and the selection is highly edifying for a testimony context.`,
       output: {
         schema: SearchSongsOutputSchema,
       },

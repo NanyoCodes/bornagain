@@ -50,6 +50,15 @@ const testimonyCategories: TestimonyCategory[] = [
   'General'
 ];
 
+const atmospherePresets = [
+    { label: 'Grateful', icon: '🙏' },
+    { label: 'Victory', icon: '🏆' },
+    { label: 'Healing', icon: '🏥' },
+    { label: 'Power', icon: '🔥' },
+    { label: 'Peace', icon: '🕊️' },
+    { label: 'Joy', icon: '✨' },
+];
+
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
@@ -107,16 +116,20 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
   const selectedMusicUrl = useWatch({ control: form.control, name: 'musicUrl' });
 
-  const handleScanSongs = async () => {
-    if (!songSearchQuery.trim()) return;
+  const handleScanSongs = async (atmosphere?: string) => {
+    const query = atmosphere || songSearchQuery.trim();
+    if (!query) return;
+
     setIsSearchingSongs(true);
     setSongResults([]);
     try {
-        const result = await searchWorshipSongs({ query: songSearchQuery.trim() });
+        const result = await searchWorshipSongs({ 
+            query: atmosphere ? `Gospel songs about ${atmosphere}` : query,
+            atmosphere: atmosphere
+        });
         if (result && result.songs) {
             setSongResults(result.songs);
             setIsResultsOpen(true);
-            if (result.songs.length === 0) toast({ title: "No matching songs found." });
         }
     } catch (e: any) {
         toast({ variant: 'destructive', title: 'Library Access Failed' });
@@ -320,7 +333,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             >
                 <div className="min-w-0 flex-1 text-left">
                     <p className="font-black text-sm uppercase tracking-tight truncate group-hover:text-primary transition-colors text-left">{song.title}</p>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate text-left">{song.artist}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{song.artist}</p>
                 </div>
                 <PlayCircle className="h-5 w-5 text-primary/40 group-hover:text-primary transition-colors ml-3 shrink-0" />
             </button>
@@ -375,9 +388,25 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             </div>
 
             <div className="space-y-4">
+                <div className="flex flex-wrap gap-2 mb-2">
+                    {atmospherePresets.map(p => (
+                        <Button 
+                            key={p.label}
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="rounded-full h-8 px-3 text-[10px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary transition-all"
+                            onClick={() => handleScanSongs(p.label)}
+                        >
+                            <span className="mr-1.5">{p.icon}</span>
+                            {p.label}
+                        </Button>
+                    ))}
+                </div>
+
                 <div className="flex gap-2">
                     <Input 
-                        placeholder="Scan for worship songs..." 
+                        placeholder="Scan for specific gospel songs..." 
                         value={songSearchQuery}
                         onChange={e => setSongSearchQuery(e.target.value)}
                         className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold"
@@ -385,11 +414,11 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                     />
                     <Button 
                         type="button" 
-                        onClick={handleScanSongs} 
-                        disabled={isSearchingSongs || !songSearchQuery.trim()}
+                        onClick={() => handleScanSongs()} 
+                        disabled={isSearchingSongs || (!songSearchQuery.trim())}
                         className="h-11 rounded-xl px-6 font-black uppercase tracking-widest text-[10px]"
                     >
-                        {isSearchingSongs ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                        {isSearchingSongs ? <Loader2 className="h-4 w-4 animate-spin text-left" /> : <Search className="h-4 w-4" />}
                         SCAN
                     </Button>
                 </div>
@@ -465,3 +494,4 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     </Form>
   );
 }
+
