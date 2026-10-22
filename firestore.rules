@@ -48,7 +48,7 @@ service cloud.firestore {
       return isAuthenticated() && 
              eId != null && 
              eId is string && 
-             eId != "" && 
+             eId != "" &&
              exists(/databases/$(database)/documents/events/$(eId)) && 
              get(/databases/$(database)/documents/events/$(eId)).data.organizerId == request.auth.uid;
     }

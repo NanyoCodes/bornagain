@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from "react";
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { format, differenceInMinutes } from "date-fns";
 import { 
   BookOpen, 
@@ -14,7 +14,6 @@ import {
   MessageSquare, 
   Loader2, 
   Check,
-  ChevronDown,
   Award,
   HandHeart,
   PartyPopper,
@@ -463,7 +462,7 @@ export function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.firstName} {soul.lastName}</p>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest">Gender/Age</p>
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Gender/Age</p>
                         <p className="text-[11px] sm:text-xs font-bold">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
                     <div className="space-y-1">

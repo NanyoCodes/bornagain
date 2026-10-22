@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,28 +11,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useRef, useEffect } from "react";
-import { Loader2, Camera, Video, X, FileUp, Sparkles, Music, Info, Search, Check, PlayCircle, ChevronDown } from "lucide-react";
+import { useState, useRef } from "react";
+import { Loader2, Camera, X, FileUp } from "lucide-react";
 import { Testimony, TestimonyCategory } from "@/lib/types";
 import { useFirestore, useUser, useStorage } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { searchWorshipSongs, type SearchSongsOutput } from "@/ai/flows/search-worship-songs";
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const testimonyCategories: TestimonyCategory[] = [
   'Healing', 
@@ -57,8 +50,6 @@ const formSchema = z.object({
   mediaType: z.enum(['image', 'video', 'audio']).optional().nullable(),
   mediaUrl2: z.string().optional().nullable(),
   mediaType2: z.enum(['image', 'video', 'audio']).optional().nullable(),
-  musicUrl: z.string().url("Please enter a valid YouTube URL.").optional().nullable().or(z.literal('')),
-  musicTitle: z.string().max(100, "Title too long").optional().nullable(),
 });
 
 type EditTestimonyFormProps = {
@@ -70,7 +61,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState<number | null>(null);
-  const isMobile = useIsMobile();
   
   const [mediaPreview1, setMediaPreview1] = useState<{ url: string, type: 'image' | 'video' | 'audio' } | null>(
     testimony.mediaUrl ? { url: testimony.mediaUrl, type: testimony.mediaType as any } : null
@@ -78,11 +68,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const [mediaPreview2, setMediaPreview2] = useState<{ url: string, type: 'image' | 'video' | 'audio' } | null>(
     testimony.mediaUrl2 ? { url: testimony.mediaUrl2, type: testimony.mediaType2 as any } : null
   );
-
-  const [songSearchQuery, setSongSearchQuery] = useState('');
-  const [isSearchingSongs, setIsSearchingSongs] = useState(false);
-  const [songResults, setSongResults] = useState<SearchSongsOutput['songs']>([]);
-  const [isResultsOpen, setIsResultsOpen] = useState(false);
 
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
@@ -100,8 +85,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       mediaType: testimony.mediaType || null,
       mediaUrl2: testimony.mediaUrl2 || null,
       mediaType2: testimony.mediaType2 || null,
-      musicUrl: testimony.musicUrl || "",
-      musicTitle: testimony.musicTitle || "",
     },
   });
 
@@ -203,8 +186,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         mediaType: values.mediaType || null,
         mediaUrl2: values.mediaUrl2 || null,
         mediaType2: values.mediaType2 || null,
-        musicUrl: values.musicUrl || null,
-        musicTitle: values.musicTitle || null,
         updatedAt: serverTimestamp(),
     };
 

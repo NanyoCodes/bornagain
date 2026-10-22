@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Camera, Video, X, FileUp, Sparkles, Music, Youtube, Search, Check, PlayCircle, ChevronDown } from "lucide-react";
+import { Loader2, Camera, X, FileUp, Sparkles } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
@@ -26,14 +26,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { searchWorshipSongs, type SearchSongsOutput } from "@/ai/flows/search-worship-songs";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const testimonyCategories: TestimonyCategory[] = [
   'Healing', 
@@ -51,15 +45,6 @@ const testimonyCategories: TestimonyCategory[] = [
   'General'
 ];
 
-const atmospherePresets = [
-    { label: 'Grateful', icon: '🙏' },
-    { label: 'Victory', icon: '🏆' },
-    { label: 'Healing', icon: '🏥' },
-    { label: 'Power', icon: '🔥' },
-    { label: 'Peace', icon: '🕊️' },
-    { label: 'Joy', icon: '✨' },
-];
-
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
@@ -67,8 +52,6 @@ const formSchema = z.object({
   mediaType: z.enum(['image', 'video']).optional(),
   mediaUrl2: z.string().optional(),
   mediaType2: z.enum(['image', 'video']).optional(),
-  musicUrl: z.string().optional().nullable().or(z.literal('')),
-  musicTitle: z.string().optional().nullable(),
 });
 
 type CreateTestimonyFormProps = {
@@ -85,14 +68,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const [mediaPreview1, setMediaPreview1] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
   const [mediaPreview2, setMediaPreview2] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
   
-  const [songSearchQuery, setSongSearchQuery] = useState('');
-  const [isSearchingSongs, setIsSearchingSongs] = useState(false);
-  const [songResults, setSongResults] = useState<SearchSongsOutput['songs']>([]);
-  const [isResultsOpen, setIsResultsOpen] = useState(false);
-
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
-  const isMobile = useIsMobile();
   
   const { user } = useUser();
   const firestore = useFirestore();
@@ -100,10 +77,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { content: "", category: undefined, musicUrl: "", musicTitle: "" },
+    defaultValues: { content: "", category: undefined },
   });
-
-  const selectedMusicUrl = form.watch('musicUrl');
 
   useEffect(() => {
     if (prayerRequest) {
@@ -115,28 +90,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       form.reset({ category: 'Salvation', content: "" });
     }
   }, [prayerRequest, campaign, form]);
-
-  const handleScanSongs = async (atmosphere?: string) => {
-    const queryStr = atmosphere || songSearchQuery.trim();
-    if (!queryStr) return;
-
-    setIsSearchingSongs(true);
-    setSongResults([]);
-    try {
-        const result = await searchWorshipSongs({ 
-            query: atmosphere ? `Gospel songs about ${atmosphere}` : queryStr,
-            atmosphere: atmosphere
-        });
-        if (result && result.songs) {
-            setSongResults(result.songs);
-            setIsResultsOpen(true);
-        }
-    } catch (e: any) {
-        toast({ variant: 'destructive', title: 'Scanner Offline', description: 'Could not connect to the Kingdom library.' });
-    } finally {
-        setIsSearchingSongs(false);
-    }
-  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, slot: 1 | 2) => {
     const file = e.target.files?.[0];
@@ -243,8 +196,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           mediaType: values.mediaType || null,
           mediaUrl2: values.mediaUrl2 || null,
           mediaType2: values.mediaType2 || null,
-          musicUrl: values.musicUrl || null,
-          musicTitle: values.musicTitle || null,
       };
 
       if (campaign) { testimonyData.campaignId = campaign.id; testimonyData.campaignTitle = campaign.title; }
@@ -334,31 +285,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       );
   };
 
-  const resultsList = (
-    <div className="space-y-2 p-1 text-left">
-        {songResults.map((song, idx) => (
-            <button
-                key={idx}
-                type="button"
-                onClick={() => {
-                    form.setValue('musicUrl', song.url, { shouldDirty: true });
-                    form.setValue('musicTitle', song.title, { shouldDirty: true });
-                    setIsResultsOpen(false);
-                    setSongSearchQuery('');
-                    toast({ title: 'Song Selected', description: `"${song.title}" will accompany your story.` });
-                }}
-                className="flex items-center justify-between p-4 rounded-2xl border-2 border-transparent bg-muted/5 hover:bg-primary/5 hover:border-primary/20 transition-all text-left w-full group"
-            >
-                <div className="min-w-0 flex-1">
-                    <p className="font-black text-sm uppercase tracking-tight truncate group-hover:text-primary transition-colors">{song.title}</p>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">{song.artist}</p>
-                </div>
-                <PlayCircle className="h-5 w-5 text-primary/40 group-hover:text-primary transition-colors ml-3 shrink-0" />
-            </button>
-        ))}
-    </div>
-  );
-
   return (
     <div className="space-y-6">
       {prayerRequest && (
@@ -415,41 +341,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           </Button>
         </form>
       </Form>
-
-      {isMobile ? (
-        <Drawer open={isResultsOpen} onOpenChange={setIsResultsOpen}>
-            <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <DrawerHeader className="p-0 text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left">
-                            <Music className="h-4 w-4 text-primary" />
-                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Library</span>
-                        </div>
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Select Worship</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Choose a song to accompany your story.</DrawerDescription>
-                        <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
-                    </DrawerHeader>
-                </div>
-                <ScrollArea className="flex-grow p-6">
-                    {resultsList}
-                </ScrollArea>
-            </DrawerContent>
-        </Drawer>
-      ) : (
-        <Dialog open={isResultsOpen} onOpenChange={setIsResultsOpen}>
-            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[80dvh] text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                    <DialogHeader className="text-left p-0">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Select Worship</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1 text-left">Pick a song from the Kingdom library.</DialogDescription>
-                    </DialogHeader>
-                </div>
-                <ScrollArea className="flex-grow p-6">
-                    {resultsList}
-                </ScrollArea>
-            </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 }

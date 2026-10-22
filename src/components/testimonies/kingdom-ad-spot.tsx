@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Store, CalendarDays, ArrowRight, Info, Sparkles } from "lucide-react";
+import { Store, CalendarDays, Info, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 import { useFirestore, useCollection } from '@/firebase';
@@ -44,28 +44,28 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
     return (
         <Card className="rounded-none sm:rounded-[2.5rem] border-y sm:border border-border border-x-0 sm:border-x border-t-4 border-t-primary shadow-lg bg-[#09090b] overflow-hidden group text-left transition-all duration-300 hover:border-primary/20 text-left">
             <CardContent className="p-0 text-left">
-                <div className="flex flex-row items-center justify-between gap-4 p-4 sm:p-5 text-left">
-                    <div className="flex items-center gap-4 min-w-0 flex-1 text-left">
+                <div className="flex flex-row items-center justify-between gap-4 p-5 sm:p-7 text-left">
+                    <div className="flex items-center gap-5 min-w-0 flex-1 text-left">
                         <div className={cn(
-                            "h-12 w-12 sm:h-14 sm:w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl transition-transform group-hover:scale-110 duration-500 text-left",
+                            "h-14 w-14 sm:h-16 sm:w-16 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl transition-transform group-hover:scale-110 duration-500 text-left",
                             isBusiness 
                                 ? "bg-gradient-to-br from-indigo-600 to-purple-600" 
                                 : "bg-gradient-to-br from-orange-600 to-red-600"
                         )}>
                             {isBusiness ? (
-                                <Store className="h-6 w-6 text-white text-left" />
+                                <Store className="h-7 w-7 text-white text-left" />
                             ) : (
-                                <CalendarDays className="h-6 w-6 text-white text-left" />
+                                <CalendarDays className="h-7 w-7 text-white text-left" />
                             )}
                         </div>
                         <div className="min-w-0 flex-1 text-left">
                             <div className="flex items-center gap-2 mb-1 text-left">
-                                <Sparkles className="h-3.5 w-3.5 text-primary animate-pulse text-left" />
-                                <h3 className="text-sm sm:text-base font-black uppercase tracking-tight text-white truncate text-left">
+                                <Sparkles className="h-4 w-4 text-primary animate-pulse text-left" />
+                                <h3 className="text-base sm:text-lg font-black uppercase tracking-tight text-white truncate text-left">
                                     {activeAd?.title || (isBusiness ? "Kingdom Enterprise" : "Kingdom Mission")}
                                 </h3>
                             </div>
-                            <p className="text-[10px] sm:text-xs text-zinc-400 font-medium leading-relaxed truncate italic text-left">
+                            <p className="text-xs sm:text-sm text-zinc-400 font-medium leading-relaxed truncate italic text-left">
                                 {activeAd?.description || (isBusiness 
                                     ? "Empowering the Body through economic unity."
                                     : "Mobilize the saints for your next outreach.")}
@@ -78,7 +78,7 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
                             <Info className="h-2.5 w-2.5 text-primary/40 text-left" />
                             SPONSORED
                         </div>
-                        <Button asChild size="sm" className="h-9 px-6 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 transition-all active:scale-95 text-center text-left">
+                        <Button asChild size="lg" className="h-11 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 transition-all active:scale-95 text-center text-left">
                             <Link href={activeAd?.url || "/contact"} className="text-center text-left">
                                 {isBusiness ? "BOOST" : "MISSION"}
                             </Link>
