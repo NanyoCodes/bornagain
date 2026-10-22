@@ -50,15 +50,6 @@ const testimonyCategories: TestimonyCategory[] = [
   'General'
 ];
 
-const atmospherePresets = [
-    { label: 'Grateful', icon: '🙏' },
-    { label: 'Victory', icon: '🏆' },
-    { label: 'Healing', icon: '🏥' },
-    { label: 'Power', icon: '🔥' },
-    { label: 'Peace', icon: '🕊️' },
-    { label: 'Joy', icon: '✨' },
-];
-
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
@@ -113,30 +104,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       musicTitle: testimony.musicTitle || "",
     },
   });
-
-  const selectedMusicUrl = useWatch({ control: form.control, name: 'musicUrl' });
-
-  const handleScanSongs = async (atmosphere?: string) => {
-    const query = atmosphere || songSearchQuery.trim();
-    if (!query) return;
-
-    setIsSearchingSongs(true);
-    setSongResults([]);
-    try {
-        const result = await searchWorshipSongs({ 
-            query: atmosphere ? `Gospel songs about ${atmosphere}` : query,
-            atmosphere: atmosphere
-        });
-        if (result && result.songs) {
-            setSongResults(result.songs);
-            setIsResultsOpen(true);
-        }
-    } catch (e: any) {
-        toast({ variant: 'destructive', title: 'Library Access Failed' });
-    } finally {
-        setIsSearchingSongs(false);
-    }
-  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, slot: 1 | 2) => {
     const file = e.target.files?.[0];
@@ -316,31 +283,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     );
   };
 
-  const resultsList = (
-    <div className="space-y-2 p-1 text-left">
-        {songResults.map((song, idx) => (
-            <button
-                key={idx}
-                type="button"
-                onClick={() => {
-                    form.setValue('musicUrl', song.url, { shouldDirty: true });
-                    form.setValue('musicTitle', song.title, { shouldDirty: true });
-                    setIsResultsOpen(false);
-                    setSongSearchQuery('');
-                    toast({ title: 'Song Selected', description: `"${song.title}" will accompany your story.` });
-                }}
-                className="flex items-center justify-between p-4 rounded-2xl border-2 border-transparent bg-muted/5 hover:bg-primary/5 hover:border-primary/20 transition-all text-left w-full group"
-            >
-                <div className="min-w-0 flex-1 text-left">
-                    <p className="font-black text-sm uppercase tracking-tight truncate group-hover:text-primary transition-colors text-left">{song.title}</p>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{song.artist}</p>
-                </div>
-                <PlayCircle className="h-5 w-5 text-primary/40 group-hover:text-primary transition-colors ml-3 shrink-0" />
-            </button>
-        ))}
-    </div>
-  );
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
@@ -381,117 +323,11 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
              {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
         </div>
 
-        <div className="space-y-4 pt-2 border-t border-dashed text-left">
-            <div className="flex items-center gap-2 px-1">
-                <Music className="h-4 w-4 text-primary" />
-                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Worship (Optional)</h4>
-            </div>
-
-            <div className="space-y-4">
-                <div className="flex flex-wrap gap-2 mb-2">
-                    {atmospherePresets.map(p => (
-                        <Button 
-                            key={p.label}
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="rounded-full h-8 px-3 text-[10px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary transition-all"
-                            onClick={() => handleScanSongs(p.label)}
-                        >
-                            <span className="mr-1.5">{p.icon}</span>
-                            {p.label}
-                        </Button>
-                    ))}
-                </div>
-
-                <div className="flex gap-2">
-                    <Input 
-                        placeholder="Scan for specific gospel songs..." 
-                        value={songSearchQuery}
-                        onChange={e => setSongSearchQuery(e.target.value)}
-                        className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold"
-                        onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleScanSongs())}
-                    />
-                    <Button 
-                        type="button" 
-                        onClick={() => handleScanSongs()} 
-                        disabled={isSearchingSongs || (!songSearchQuery.trim())}
-                        className="h-11 rounded-xl px-6 font-black uppercase tracking-widest text-[10px]"
-                    >
-                        {isSearchingSongs ? <Loader2 className="h-4 w-4 animate-spin text-left" /> : <Search className="h-4 w-4" />}
-                        SCAN
-                    </Button>
-                </div>
-
-                {selectedMusicUrl && (
-                    <div className="bg-primary/5 rounded-2xl p-4 border-2 border-dashed border-primary/20 flex items-center justify-between animate-in zoom-in">
-                        <div className="flex items-center gap-3 min-w-0">
-                            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                                <Music className="h-4 w-4 text-primary" />
-                            </div>
-                            <div className="min-w-0">
-                                <p className="text-[8px] font-black uppercase text-primary/60 tracking-widest">Active Sound</p>
-                                <p className="text-xs font-black uppercase tracking-tight text-foreground truncate mt-0.5">{form.watch('musicTitle')}</p>
-                            </div>
-                        </div>
-                        <Button 
-                            type="button" 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10"
-                            onClick={() => {
-                                form.setValue('musicUrl', '', { shouldDirty: true });
-                                form.setValue('musicTitle', '', { shouldDirty: true });
-                            }}
-                        >
-                            <X className="h-4 w-4" />
-                        </Button>
-                    </div>
-                )}
-            </div>
-        </div>
-
         <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting || isUploadingMedia !== null}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
           {isSubmitting ? 'SAVING...' : 'SAVE CHANGES'}
         </Button>
       </form>
-
-      {isMobile ? (
-        <Drawer open={isResultsOpen} onOpenChange={setIsResultsOpen}>
-            <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <DrawerHeader className="p-0 text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left">
-                            <Music className="h-4 w-4 text-primary" />
-                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Library</span>
-                        </div>
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Select Worship</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Choose a song to accompany your story.</DrawerDescription>
-                        <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
-                    </DrawerHeader>
-                </div>
-                <ScrollArea className="flex-grow p-6">
-                    {resultsList}
-                </ScrollArea>
-            </DrawerContent>
-        </Drawer>
-      ) : (
-        <Dialog open={isResultsOpen} onOpenChange={setIsResultsOpen}>
-            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[80dvh] text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                    <DialogHeader className="text-left p-0">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Select Worship</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1 text-left">Pick a song from the Kingdom library.</DialogDescription>
-                    </DialogHeader>
-                </div>
-                <ScrollArea className="flex-grow p-6">
-                    {resultsList}
-                </ScrollArea>
-            </DialogContent>
-        </Dialog>
-      )}
     </Form>
   );
 }
-

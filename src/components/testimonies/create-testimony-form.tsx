@@ -117,14 +117,14 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   }, [prayerRequest, campaign, form]);
 
   const handleScanSongs = async (atmosphere?: string) => {
-    const query = atmosphere || songSearchQuery.trim();
-    if (!query) return;
+    const queryStr = atmosphere || songSearchQuery.trim();
+    if (!queryStr) return;
 
     setIsSearchingSongs(true);
     setSongResults([]);
     try {
         const result = await searchWorshipSongs({ 
-            query: atmosphere ? `Gospel songs about ${atmosphere}` : query,
+            query: atmosphere ? `Gospel songs about ${atmosphere}` : queryStr,
             atmosphere: atmosphere
         });
         if (result && result.songs) {
@@ -132,7 +132,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             setIsResultsOpen(true);
         }
     } catch (e: any) {
-        toast({ variant: 'destructive', title: 'Library Access Failed', description: 'Could not connect to the Kingdom music library.' });
+        toast({ variant: 'destructive', title: 'Scanner Offline', description: 'Could not connect to the Kingdom library.' });
     } finally {
         setIsSearchingSongs(false);
     }
@@ -373,7 +373,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
           <FormField control={form.control} name="category" render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Category</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl border-2">
@@ -391,7 +391,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
           <FormField control={form.control} name="content" render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Story</FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Your Story</FormLabel>
                 <FormControl>
                   <Textarea 
                     placeholder="Share what the Lord has done..." 
@@ -407,78 +407,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           <div className="flex gap-4">
              {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
              {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
-          </div>
-
-          <div className="space-y-4 pt-2 border-t border-dashed text-left">
-            <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-2">
-                    <Music className="h-4 w-4 text-primary" />
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Worship (Optional)</h4>
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                <div className="flex flex-wrap gap-2 mb-2">
-                    {atmospherePresets.map(p => (
-                        <Button 
-                            key={p.label}
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="rounded-full h-8 px-3 text-[10px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary transition-all"
-                            onClick={() => handleScanSongs(p.label)}
-                        >
-                            <span className="mr-1.5">{p.icon}</span>
-                            {p.label}
-                        </Button>
-                    ))}
-                </div>
-
-                <div className="flex gap-2">
-                    <Input 
-                        placeholder="Scan for specific gospel songs..." 
-                        value={songSearchQuery}
-                        onChange={e => setSongSearchQuery(e.target.value)}
-                        className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold"
-                        onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleScanSongs())}
-                    />
-                    <Button 
-                        type="button" 
-                        onClick={() => handleScanSongs()} 
-                        disabled={isSearchingSongs || (!songSearchQuery.trim())}
-                        className="h-11 rounded-xl px-6 font-black uppercase tracking-widest text-[10px]"
-                    >
-                        {isSearchingSongs ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                        SCAN
-                    </Button>
-                </div>
-
-                {selectedMusicUrl && (
-                    <div className="bg-primary/5 rounded-2xl p-4 border-2 border-dashed border-primary/20 flex items-center justify-between animate-in zoom-in">
-                        <div className="flex items-center gap-3 min-w-0">
-                            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                                <Music className="h-4 w-4 text-primary" />
-                            </div>
-                            <div className="min-w-0">
-                                <p className="text-[8px] font-black uppercase text-primary/60 tracking-widest">Active Sound</p>
-                                <p className="text-xs font-black uppercase tracking-tight text-foreground truncate mt-0.5">{form.watch('musicTitle')}</p>
-                            </div>
-                        </div>
-                        <Button 
-                            type="button" 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10"
-                            onClick={() => {
-                                form.setValue('musicUrl', '', { shouldDirty: true });
-                                form.setValue('musicTitle', '', { shouldDirty: true });
-                            }}
-                        >
-                            <X className="h-4 w-4" />
-                        </Button>
-                    </div>
-                )}
-            </div>
           </div>
 
           <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia !== null}>
@@ -499,7 +427,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                         </div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Select Worship</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left">Choose a song to accompany your story.</DrawerDescription>
-                        <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
+                        <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow p-6">
@@ -525,4 +453,3 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
-
