@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -531,8 +532,8 @@ function TestimoniesContent() {
                 <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
                   <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                     <DialogHeader className="text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Make changes to your testimony here.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Edit Testimony</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="flex-1 min-h-0 text-left">
@@ -552,7 +553,7 @@ function TestimoniesContent() {
                 </DialogContent>
               </Dialog>
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
+                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
                   <div className="p-8 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">
@@ -565,7 +566,7 @@ function TestimoniesContent() {
                 </DialogContent>
               </Dialog>
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
                   <div className="p-8 border-b bg-muted/10 text-left text-left">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -1019,21 +1020,19 @@ export function SoulProfileContent({
           onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setIsCommChannelDialogOpen(true); }}
       />
 
-      {/* Help with a need dialog */}
+      {/* Help with a need drawer */}
       <Drawer open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
         <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-          <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-              <div className="flex items-center justify-between gap-4 text-left">
-                  <div className="flex-1 min-w-0 text-left">
-                      <DrawerHeader className="text-left flex-shrink-0 p-0">
-                          <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support details</DrawerTitle>
-                          <DrawerDescription className="text-sm font-medium mt-1 text-left">Record the physical or spiritual support provided.</DrawerDescription>
-                      </DrawerHeader>
-                  </div>
-                  <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 text-left" onClick={() => setIsHelpNeedDialogOpen(false)}>
-                    <X className="h-5 w-5 text-left" />
-                  </Button>
+          <div className="p-8 border-b shrink-0 bg-muted/10 text-left flex items-center justify-between gap-4">
+              <div className="flex-1 min-w-0 text-left">
+                  <DrawerHeader className="text-left flex-shrink-0 p-0">
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support details</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1 text-left">Record the physical or spiritual support provided.</DrawerDescription>
+                  </DrawerHeader>
               </div>
+              <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 text-left" onClick={() => setIsHelpNeedDialogOpen(false)}>
+                <X className="h-5 w-5 text-left" />
+              </Button>
           </div>
           <div className="p-8 space-y-6 text-left">
               <div className="space-y-2 text-left">

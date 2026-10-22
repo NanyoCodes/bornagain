@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -47,7 +48,7 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
         <Card className="rounded-none sm:rounded-2xl border-y sm:border border-border border-x-0 sm:border-x border-t-4 border-t-primary shadow-none sm:shadow-md bg-[#09090b] overflow-hidden group text-left transition-all duration-300 hover:border-primary/20 text-left">
             <CardContent className="p-0 text-left">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-3 sm:p-4 text-left">
-                    <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left">
+                    <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left text-left">
                         <div className={cn(
                             "h-12 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-lg transition-transform group-hover:scale-110 duration-500 text-left",
                             isBusiness 
@@ -61,13 +62,13 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
                             )}
                         </div>
                         <div className="min-w-0 flex-1 text-left text-left text-left">
-                            <div className="flex items-center gap-2 mb-0.5 text-left text-left">
-                                <Sparkles className="h-3 w-3 text-primary animate-pulse text-left" />
-                                <h3 className="text-sm font-black uppercase tracking-tight text-white truncate text-left">
+                            <div className="flex items-center gap-2 mb-0.5 text-left text-left text-left">
+                                <Sparkles className="h-3 w-3 text-primary animate-pulse text-left text-left" />
+                                <h3 className="text-sm font-black uppercase tracking-tight text-white truncate text-left text-left">
                                     {activeAd?.title || (isBusiness ? "Kingdom Enterprise" : "Kingdom Mission")}
                                 </h3>
                             </div>
-                            <p className="text-[10px] sm:text-xs text-zinc-400 font-medium leading-tight truncate italic text-left">
+                            <p className="text-[10px] sm:text-xs text-zinc-400 font-medium leading-tight truncate italic text-left text-left">
                                 {activeAd?.description || (isBusiness 
                                     ? "Empowering the Body through economic unity."
                                     : "Mobilize the saints for your next outreach.")}
@@ -75,15 +76,15 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
                         </div>
                     </div>
                     
-                    <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto text-left text-left">
-                        <div className="hidden md:flex flex-col items-end text-right text-left">
+                    <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto text-left text-left text-left">
+                        <div className="hidden md:flex flex-col items-end text-right text-left text-left">
                              <div className="flex items-center gap-1 text-[8px] text-zinc-500 font-black uppercase tracking-[0.2em] text-right text-left text-left">
-                                <Info className="h-2.5 w-2.5 text-primary/40 text-left" />
+                                <Info className="h-2.5 w-2.5 text-primary/40 text-left text-left" />
                                 SPONSORED
                             </div>
                         </div>
                         <Button asChild size="sm" className="flex-1 sm:flex-none h-9 px-6 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-lg shadow-primary/20 bg-primary text-white hover:bg-primary/90 transition-all active:scale-95 text-center text-left text-left">
-                            <Link href={activeAd?.url || "/contact"} className="text-center text-left">
+                            <Link href={activeAd?.url || "/contact"} className="text-center text-left text-left">
                                 {isBusiness ? "BOOST BUSINESS" : "FEATURE EVENT"}
                             </Link>
                         </Button>
