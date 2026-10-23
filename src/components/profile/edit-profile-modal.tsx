@@ -716,6 +716,67 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+          
+          <div className="space-y-4 text-left">
+            <div className="flex items-center justify-between px-1">
+                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Living Testimonies (Video)</Label>
+                <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => append({ url: '', title: '' })}
+                    className="h-8 rounded-xl font-bold border-primary/20 text-primary hover:bg-primary/5 uppercase text-[9px]"
+                >
+                    <Plus className="mr-1.5 h-3 w-3" /> Add Video
+                </Button>
+            </div>
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <Card key={field.id} className="rounded-2xl border-none shadow-inner bg-muted/10 relative overflow-hidden">
+                        <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="icon" 
+                            className="absolute top-2 right-2 h-7 w-7 text-destructive hover:bg-destructive/10 rounded-full"
+                            onClick={() => remove(index)}
+                        >
+                            <X className="h-3.5 w-3.5" />
+                        </Button>
+                        <CardContent className="p-5 space-y-4">
+                             <div className="grid gap-3 text-left">
+                                <FormField
+                                    control={form.control}
+                                    name={`videoTestimonies.${index}.title`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input placeholder="Video Title (Optional)" {...field} className="h-10 bg-background border-none shadow-sm rounded-xl font-bold text-xs" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name={`videoTestimonies.${index}.url`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <div className="relative">
+                                                    <Youtube className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-600" />
+                                                    <Input placeholder="YouTube URL" {...field} className="h-10 bg-background border-none shadow-sm rounded-xl pl-10 text-xs font-medium" />
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                             </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+          </div>
 
           <div className="flex gap-4">
              <Button type="button" variant="outline" onClick={onClose} className="h-14 flex-1 rounded-2xl font-black uppercase tracking-widest">Cancel</Button>

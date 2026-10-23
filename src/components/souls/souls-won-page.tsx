@@ -179,7 +179,7 @@ function FilteredSoulList({
                         <div className="min-w-0 flex-1 pr-1 text-left">
                             <div className="flex items-center gap-2 flex-wrap text-left">
                                 <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left">{soul.firstName} {soul.lastName}</p>
-                                <Badge variant="outline" className={cn("h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50", getStatusClasses(soul.status))}>{soul.status}</Badge>
+                                <Badge variant="outline" className={cn("text-[8px] h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50", getStatusClasses(soul.status))}>{soul.status}</Badge>
                             </div>
                             <CollapsibleTrigger asChild onClick={(e) => e.stopPropagation()}>
                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 group/trigger hover:opacity-80 transition-opacity text-left">
@@ -528,13 +528,6 @@ export default function SoulsWonPage() {
     }
     updateDoc(soulRef, updateData).then(() => { updateDoc(globalSoulRef, updateData); toast({ title: "Community Assignment Updated" }); setAssignSoulId(null); });
   };
-
-  const filteredSouls = useMemo(() => {
-    if (!souls) return [];
-    if (!searchTerm) return souls;
-    const term = searchTerm.toLowerCase();
-    return souls.filter(s => `${s.firstName} ${s.lastName}`.toLowerCase().includes(term) || (s.nickname && s.nickname.toLowerCase().includes(term)) || (s.phone && s.phone.toLowerCase().includes(term)));
-  }, [souls, searchTerm]);
 
   const handleDeleteSoul = () => {
     if (!soulToDelete || !user || !firestore) return;
