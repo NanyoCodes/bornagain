@@ -119,7 +119,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Image from 'next/image';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Testimony, FollowUpStatus, Soul } from "@/lib/types";
+import type { Testimony, FollowUpStatus, Soul, DailyDevotional, TestimonyComment } from "@/lib/types";
 
 export function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (

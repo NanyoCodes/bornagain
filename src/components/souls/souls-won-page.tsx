@@ -363,7 +363,7 @@ export default function SoulsWonPage() {
                 const soulSpouse = (soul.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
                 return (soulSpouse === otherFull || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFull || otherSpouse === s.firstName.toLowerCase());
+                       (otherSpouse === soulFull || otherSpouse === soul.firstName.toLowerCase());
               });
               if (spouse) { processedIds.add(spouse.id); stats.married.list.push({ ...soul, spouseRecord: spouse }); }
               else { stats.married.list.push(soul); }
@@ -838,9 +838,9 @@ export default function SoulsWonPage() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <div className="flex items-center justify-between gap-4 text-left text-left text-left">
-                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
-                                        <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle>
-                                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Record a new life won for Christ.</DrawerDescription>
+                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left">
+                                        <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Add New Soul</DrawerTitle>
+                                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Record a new life won for Christ.</DrawerDescription>
                                     </DrawerHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left text-left" onClick={() => setIsLogDialogOpen(false)}>
                                         <X className="h-5 w-5 text-left text-left text-left" />
@@ -876,7 +876,7 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                                 <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left text-left">
                                     <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
@@ -954,3 +954,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+
