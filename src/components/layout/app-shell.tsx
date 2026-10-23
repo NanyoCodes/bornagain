@@ -202,9 +202,9 @@ function CartButton() {
                         <ShoppingCart className="h-5 w-5 text-primary text-left" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Offering</span>
                     </div>
-                    <DrawerHeader className="text-left flex-shrink-0 p-0">
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Review selection for gifting.</DrawerDescription>
+                    <DrawerHeader className="text-center flex-shrink-0 p-0">
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center">Kindness Package</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-center text-balance">Review selection for gifting.</DrawerDescription>
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>
@@ -221,9 +221,9 @@ function CartButton() {
                 <ShoppingCart className="h-3.5 w-3.5 text-primary text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kindness Package</span>
             </div>
-            <DialogHeader className="text-left p-0">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Pending Offering</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left">Review the provisions in your active package.</DialogDescription>
+            <DialogHeader className="text-center p-0">
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center">Pending Offering</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-center text-balance">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
         </div>
         <ScrollArea className="flex-grow text-left">{listContent}</ScrollArea>
@@ -730,8 +730,8 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] flex flex-col items-center justify-center gap-2">
               <SheetHeader className="text-center flex-shrink-0 p-0">
-                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center">Complete Your Identity</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1 text-zinc-400 text-center text-balance">Join the global movement by introducing yourself to the Body.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">Complete Your Identity</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1 text-zinc-400 text-center text-balance text-left">Join the global movement by introducing yourself to the Body.</SheetDescription>
               </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8 text-left">
@@ -742,10 +742,10 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-[500px] rounded-[2.5rem] overflow-hidden p-0 text-left border-none shadow-2xl">
-            <div className="p-8 border-b bg-muted/10 flex flex-col items-center justify-center gap-2 text-center">
+            <div className="p-8 border-b bg-muted/10 flex flex-col items-center justify-center gap-2 text-center text-left">
               <DialogHeader className="text-center p-0">
-                <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight text-center">Activate Profile</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-zinc-400 text-center text-balance">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight text-center text-left">Activate Profile</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-zinc-400 text-center text-balance text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
             <div className="p-8 max-h-[70vh] overflow-y-auto text-left">

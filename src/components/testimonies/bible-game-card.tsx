@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle } from "lucide-react";
+import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -37,17 +37,38 @@ const bibleQuizzes = [
     correct: "Kingdom",
     options: ["Grace", "Power", "Kingdom", "Peace"],
     ref: "Matthew 6:33"
+  },
+  {
+    text: "Trust in the Lord with all your ______, and lean not on your own understanding.",
+    correct: "Heart",
+    options: ["Might", "Soul", "Heart", "Mind"],
+    ref: "Proverbs 3:5"
+  },
+  {
+    text: "Jesus wept. (Shortest verse in the Bible). This happened at the tomb of ______.",
+    correct: "Lazarus",
+    options: ["Peter", "Lazarus", "John", "Moses"],
+    ref: "John 11:35"
+  },
+  {
+    text: "The fruit of the Spirit is love, joy, ______, forbearance, kindness, goodness, faithfulness...",
+    correct: "Peace",
+    options: ["Power", "Peace", "Hope", "Strength"],
+    ref: "Galatians 5:22"
   }
 ];
 
 export function BibleGameCard() {
+    const [quizIndex, setQuizIndex] = useState(0);
     const [gameState, setGameState] = useState<'playing' | 'correct' | 'wrong'>('playing');
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-    const quiz = useMemo(() => {
-        // Randomly select one on mount
-        return bibleQuizzes[Math.floor(Math.random() * bibleQuizzes.length)];
+    useEffect(() => {
+        // Randomize initial quiz
+        setQuizIndex(Math.floor(Math.random() * bibleQuizzes.length));
     }, []);
+
+    const quiz = bibleQuizzes[quizIndex];
 
     const handleCheck = (option: string) => {
         setSelectedOption(option);
@@ -56,6 +77,12 @@ export function BibleGameCard() {
         } else {
             setGameState('wrong');
         }
+    };
+
+    const nextChallenge = () => {
+        setQuizIndex((prev) => (prev + 1) % bibleQuizzes.length);
+        setGameState('playing');
+        setSelectedOption(null);
     };
 
     return (
@@ -97,31 +124,36 @@ export function BibleGameCard() {
                     ))}
                 </div>
 
-                <AnimatePresence>
+                <AnimatePresence mode="wait">
                     {gameState !== 'playing' && (
                         <motion.div 
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className={cn(
-                                "p-6 rounded-2xl flex flex-col items-center text-center gap-3 border-2 border-dashed animate-in zoom-in duration-300",
-                                gameState === 'correct' ? "bg-green-500/5 border-green-500/20 text-green-500" : "bg-red-500/5 border-red-500/20 text-red-500"
-                            )}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="space-y-6"
                         >
-                            <div className="flex items-center gap-2">
-                                {gameState === 'correct' ? <Trophy className="h-5 w-5 animate-bounce" /> : <ShieldAlert className="h-5 w-5" />}
-                                <span className="font-black uppercase tracking-[0.2em] text-xs">
-                                    {gameState === 'correct' ? "EXCELLENT, BELIEVER!" : "RETURN TO THE WORD"}
-                                </span>
-                            </div>
-                            <p className="text-sm font-bold italic opacity-80 text-center">
-                                &ldquo;The correct word is <span className="underline underline-offset-4 decoration-2"> {quiz.correct}</span>. Ref: {quiz.ref}&rdquo;
-                            </p>
-                            {gameState === 'correct' && (
-                                <div className="flex items-center gap-2 mt-2 px-4 py-1.5 bg-green-600 text-white rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg">
-                                    <Sparkles className="h-3 w-3" />
-                                    GLORY TO GOD
+                            <div className={cn(
+                                "p-6 rounded-2xl flex flex-col items-center text-center gap-3 border-2 border-dashed",
+                                gameState === 'correct' ? "bg-green-500/5 border-green-500/20 text-green-500" : "bg-red-500/5 border-red-500/20 text-red-500"
+                            )}>
+                                <div className="flex items-center gap-2">
+                                    {gameState === 'correct' ? <Trophy className="h-5 w-5 animate-bounce" /> : <ShieldAlert className="h-5 w-5" />}
+                                    <span className="font-black uppercase tracking-[0.2em] text-xs">
+                                        {gameState === 'correct' ? "EXCELLENT, BELIEVER!" : "RETURN TO THE WORD"}
+                                    </span>
                                 </div>
-                            )}
+                                <p className="text-sm font-bold italic opacity-80 text-center">
+                                    &ldquo;The correct word is <span className="underline underline-offset-4 decoration-2"> {quiz.correct}</span>. Ref: {quiz.ref}&rdquo;
+                                </p>
+                            </div>
+
+                            <Button 
+                                onClick={nextChallenge}
+                                className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-xl flex items-center justify-center gap-3"
+                            >
+                                NEXT CHALLENGE
+                                <ArrowRight className="h-5 w-5" />
+                            </Button>
                         </motion.div>
                     )}
                 </AnimatePresence>
