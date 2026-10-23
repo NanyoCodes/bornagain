@@ -45,7 +45,8 @@ import {
   Trash2,
   MapPin,
   Info,
-  Calendar
+  Calendar,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,8 +71,17 @@ import {
   DialogTitle, 
   DialogDescription, 
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
+  DialogClose
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
     Drawer,
     DrawerContent,
@@ -85,6 +95,7 @@ import {
   doc, 
   updateDoc, 
   arrayUnion, 
+  arrayRemove, 
   collection, 
   query, 
   serverTimestamp, 
@@ -441,7 +452,7 @@ export function ShareWordDialog({
   );
 }
 
-function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
+function LiveAuthorAvatarComponent({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
     const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
     const { data: profile } = useDoc<UserProfile>(userRef);
@@ -636,7 +647,7 @@ export function SoulProfileContent({
     setIsShareTargetDialogOpen(false);
   };
 
-  const handleShareToPartner = async (partner: UserProfileType['accountabilityPartners'][0]) => {
+  const handleShareToPartner = async (partner: UserProfile['accountabilityPartners'][0]) => {
       if (!user || !firestore || !soul || !currentUserProfile) return;
       const wonAt = safeToDate(soul.wonAt);
       const text = `SHARING SOUL DATA: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nLet's coordinate follow-up on Testify.`;
@@ -650,7 +661,7 @@ export function SoulProfileContent({
               chatId = snap.docs[0].id;
           } else {
               const otherDoc = await getDoc(doc(firestore, 'users', partner.userId));
-              const otherProfile = otherDoc.data() as UserProfileType;
+              const otherProfile = otherDoc.data() as UserProfile;
               const newChat = {
                   participantIds,
                   participantInfo: {
