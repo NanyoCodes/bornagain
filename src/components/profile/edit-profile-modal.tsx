@@ -38,6 +38,7 @@ import { Country, State } from 'country-state-city';
 import { motion, AnimatePresence } from "framer-motion";
 import { format, differenceInYears } from "date-fns";
 import { cn, safeToDate } from "@/lib/utils";
+import Link from 'next/link';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -580,7 +581,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                         <FormItem className="text-left">
                           <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
                             <User className="h-3.5 w-3.5" />
-                            {isPersonal ? 'Role / Job Title' : 'Entity Role'}
+                            ROLE
                           </FormLabel>
                           <FormControl>
                             <Input placeholder={isPersonal ? "e.g., Manager, Student, Director..." : "e.g., Lead Pastor, Admin..."} {...field} value={field.value ?? ''} className="text-base h-11" />

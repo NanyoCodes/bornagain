@@ -149,7 +149,7 @@ function FilteredSoulList({
             const soulSpouse = (soul.spouseName || "").toLowerCase();
             const otherSpouse = (other.spouseName || "").toLowerCase();
             return (soulSpouse === otherFull || soulSpouse === other.firstName.toLowerCase()) &&
-                   (otherSpouse === soulFull || otherSpouse === soul.firstName.toLowerCase());
+                   (otherSpouse === soulFull || otherSpouse === s.firstName.toLowerCase());
         }) : null;
 
         const children = allSouls.filter(child => soul.childrenIds?.includes(child.id));
@@ -762,7 +762,7 @@ export default function SoulsWonPage() {
                                         <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left" />
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Demographic View</span>
                                     </div>
-                                    <DialogHeader className="text-left p-0 text-left text-left text-left">
+                                    <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
                                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
                                         <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Viewing all souls within this demographic group.</DialogDescription>
                                     </DialogHeader>
@@ -933,8 +933,8 @@ export default function SoulsWonPage() {
                         </Button>
                     </div>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
                                 soul={souls.find(s => s.id === selectedId)!} 
