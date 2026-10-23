@@ -70,16 +70,8 @@ import {
   DialogTitle, 
   DialogDescription, 
   DialogTrigger,
-  DialogFooter,
-  DialogClose
+  DialogFooter
 } from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
 import {
     Drawer,
     DrawerContent,
@@ -87,21 +79,12 @@ import {
     DrawerTitle,
     DrawerDescription,
 } from "@/components/ui/drawer";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { cn, safeToDate, haversineDistance } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
 import { 
   doc, 
   updateDoc, 
   arrayUnion, 
-  arrayRemove, 
   collection, 
   query, 
   serverTimestamp, 
@@ -110,8 +93,7 @@ import {
   where,
   writeBatch,
   setDoc,
-  getDoc,
-  deleteDoc
+  getDoc
 } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { getBibleChapter, type BibleChapterOutput } from "@/ai/flows/get-bible-chapter-flow";
@@ -121,14 +103,25 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { MutualConnectBadge } from "./mutual-connect-badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Image from 'next/image';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Testimony, FollowUpStatus, Soul, DailyDevotional, TestimonyComment, UserProfile as UserProfileType } from "@/lib/types";
-import { CommentSection } from "../testimonies/comment-section";
-import { CreateTestimonyForm } from "../testimonies/create-testimony-form";
+import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
+
+export const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+    'matchmaking': HeartHandshake,
+};
 
 export function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -236,7 +229,7 @@ export function MessageHubDialog({
   const header = (
     <div className="p-8 border-b bg-muted/10 text-left flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 text-left">
                 <MessageSquare className="h-4 w-4 text-primary" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
             </div>
@@ -446,6 +439,36 @@ export function ShareWordDialog({
       </DialogContent>
     </Dialog>
   );
+}
+
+function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const photoURL = profile?.photoURL;
+    
+    return (
+        <Dialog>
+            <DialogTrigger asChild disabled={!photoURL}>
+                <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
+                    <Avatar className="h-full w-full border shadow-sm">
+                        <AvatarImage src={photoURL} className="object-cover" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{fallbackInitials || 'U'}</AvatarFallback>
+                    </Avatar>
+                </div>
+            </DialogTrigger>
+            {photoURL && (
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
+                    <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                            <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
+                        </div>
+                    </div>
+                </DialogContent>
+            )}
+        </Dialog>
+    );
 }
 
 export function SoulProfileContent({ 
@@ -668,6 +691,8 @@ export function SoulProfileContent({
     });
     return Array.from(uniqueMap.values());
   }, [currentUserProfile?.accountabilityPartners]);
+
+  const initials = (soul.firstName?.charAt(0) || '') + (soul.lastName?.charAt(0) || '');
 
   return (
     <div className="space-y-6 text-left">

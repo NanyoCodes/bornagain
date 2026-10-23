@@ -148,7 +148,7 @@ function FilteredSoulList({
             const soulSpouse = (soul.spouseName || "").toLowerCase();
             const otherSpouse = (other.spouseName || "").toLowerCase();
             return (soulSpouse === otherFull || soulSpouse === other.firstName.toLowerCase()) &&
-                   (otherSpouse === soulFull || otherSpouse === soul.firstName.toLowerCase());
+                   (otherSpouse === soulFull || otherSpouse === s.firstName.toLowerCase());
         }) : null;
 
         const children = allSouls.filter(child => soul.childrenIds?.includes(child.id));
@@ -824,7 +824,7 @@ export default function SoulsWonPage() {
                 <AlertDialogFooter className="gap-3 mt-6 text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Removal
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Removal
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
