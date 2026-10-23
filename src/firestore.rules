@@ -49,7 +49,7 @@ service cloud.firestore {
 
       allow update: if isAuthenticated() && (
         isOwner(userId) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink', 'organizationId']) && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink', 'organizationId', 'accountType', 'churchName']) && (
           isOwner(userId) ||
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
           (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)

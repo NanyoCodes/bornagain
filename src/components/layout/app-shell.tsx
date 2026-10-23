@@ -569,6 +569,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   const { userProfile, loading: profileLoading } = useUserProfile();
   const router = useRouter();
   const pathname = usePathname();
+  const firestore = useFirestore();
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
@@ -729,10 +730,6 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] flex items-center justify-between gap-4">
               <SheetHeader className="text-left flex-shrink-0 p-0">
-                <div className="flex items-center gap-2 mb-1">
-                    <ShieldAlert className="h-5 w-5 text-primary" />
-                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Mandatory Setup</span>
-                </div>
                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Complete Your Identity</SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1 text-zinc-400">Join the global movement by introducing yourself to the Body.</SheetDescription>
               </SheetHeader>
@@ -747,10 +744,6 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           <DialogContent hideCloseButton className="sm:max-w-[500px] rounded-[2.5rem] overflow-hidden p-0 text-left border-none shadow-2xl">
             <div className="p-8 border-b bg-muted/10 flex items-center justify-between gap-4">
               <DialogHeader className="text-left p-0">
-                <div className="flex items-center gap-2 mb-1">
-                    <ShieldAlert className="h-5 w-5 text-primary" />
-                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Mandatory Setup</span>
-                </div>
                 <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight">Activate Profile</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1 text-zinc-400">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>

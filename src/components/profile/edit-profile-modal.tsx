@@ -255,6 +255,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         lastName: values.lastName,
         fullName_lowercase: displayName.toLowerCase(),
         name_tokens: displayName.toLowerCase().split(/\s+/).filter(Boolean),
+        email: user.email,
         bio: values.bio || "",
         personalMessage: values.personalMessage || "",
         maritalStatus: isPersonal ? values.maritalStatus || "" : "",
@@ -356,10 +357,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left relative z-10">
            <div className="bg-primary/5 p-8 rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center text-center space-y-4">
-                <div className="flex items-center gap-2 mb-2">
-                    <ShieldCheck className="h-5 w-5 text-primary" />
-                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Verification Protocol</span>
-                </div>
                 <FormField
                     control={form.control}
                     name="photoURL"
