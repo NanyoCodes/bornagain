@@ -7,13 +7,16 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Camera, X, Loader2, Crop as CropIcon, Trash2 } from 'lucide-react';
+import { Camera, X, Loader2, Crop as CropIcon, Trash2, Sparkles, ShieldCheck, Flame } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+
+const logo = PlaceHolderImages.find(img => img.id === 'logo');
 
 function getCroppedImg(
   image: HTMLImageElement,
@@ -214,6 +217,11 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
               )}
             </div>
           )}
+          {!previewUrl && (
+            <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shadow-lg border-2 border-background animate-bounce">
+                Mandatory
+            </div>
+          )}
         </div>
         
         {isLoading ? (
@@ -222,21 +230,26 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">Transmitting...</span>
           </div>
         ) : (
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all uppercase tracking-widest text-[10px]">
-                <Camera className="mr-2 h-4 w-4 text-primary"/>
-                Set Photo
-            </Button>
-            {previewUrl && (
-              <Button 
-                type="button" 
-                variant="ghost" 
-                className="h-10 px-6 rounded-full font-bold text-destructive hover:text-destructive hover:bg-destructive/10 uppercase tracking-widest text-[10px]" 
-                onClick={handleRemoveImage}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Remove
-              </Button>
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col sm:flex-row gap-2">
+                <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all uppercase tracking-widest text-[10px]">
+                    <Camera className="mr-2 h-4 w-4 text-primary"/>
+                    Set Photo
+                </Button>
+                {previewUrl && (
+                <Button 
+                    type="button" 
+                    variant="ghost" 
+                    className="h-10 px-6 rounded-full font-bold text-destructive hover:text-destructive hover:bg-destructive/10 uppercase tracking-widest text-[10px]" 
+                    onClick={handleRemoveImage}
+                >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Remove
+                </Button>
+                )}
+            </div>
+            {!previewUrl && (
+                <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] animate-pulse">Identity verification requires a photo</p>
             )}
           </div>
         )}
@@ -251,14 +264,28 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
       <Dialog open={isCropModalOpen} onOpenChange={(open) => { if (!isLoading) setIsCropModalOpen(open); }}>
         <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
-          <div className="p-4 sm:p-8 border-b bg-muted/10 shrink-0">
-            <DialogHeader className="text-left">
-                <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">Refine Frame</DialogTitle>
-                <DialogDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Adjust the crop to set your Kingdom asset appearance.</DialogDescription>
+          <div className="p-6 sm:p-10 border-b bg-muted/10 shrink-0 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-5">
+                {logo && <Avatar className="h-24 w-24 grayscale"><AvatarImage src={logo.imageUrl} /></Avatar>}
+            </div>
+            <DialogHeader className="text-left relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                    <CropIcon className="h-4 w-4 text-primary" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Identity Hub</span>
+                </div>
+                <DialogTitle className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Refine Your Image</DialogTitle>
+                <DialogDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Set your focus for the global Kingdom directory.</DialogDescription>
             </DialogHeader>
           </div>
-          <ScrollArea className="flex-1 min-h-0 bg-black/5">
-            <div className="p-4 sm:p-8 overflow-hidden flex justify-center items-center min-h-[300px]">
+          <ScrollArea className="flex-1 min-h-0 bg-black/5 relative">
+             <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center overflow-hidden">
+                <div className="grid grid-cols-4 gap-8 rotate-12">
+                    {[...Array(12)].map((_, i) => (
+                        <ShieldCheck key={i} className="h-24 w-24 text-primary" />
+                    ))}
+                </div>
+            </div>
+            <div className="p-4 sm:p-10 overflow-hidden flex justify-center items-center min-h-[300px] relative z-10">
               {imgSrc && (
                 <ReactCrop
                   crop={crop}
@@ -266,7 +293,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
                   onComplete={(c) => setCompletedCrop(c)}
                   aspect={cropAspect}
                   circularCrop={circularCrop}
-                  className="max-h-full shadow-2xl rounded-lg"
+                  className="max-h-full shadow-2xl rounded-lg border-4 border-background"
                 >
                   <img
                     ref={imgRef}
@@ -279,11 +306,11 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
               )}
             </div>
           </ScrollArea>
-          <DialogFooter className="p-4 sm:p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0">
+          <DialogFooter className="p-6 sm:p-10 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0">
             <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12">Cancel</Button>
             <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest">
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
-              {isLoading ? 'OPTIMIZING...' : 'CONFIRM & UPLOAD'}
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+              {isLoading ? 'OPTIMIZING...' : 'ACTIVATE IDENTITY'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -291,3 +318,4 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     </>
   );
 }
+

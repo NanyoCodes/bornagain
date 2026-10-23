@@ -731,7 +731,7 @@ export default function SoulsWonPage() {
                                         <DrawerDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                                     </DrawerHeader>
                                 </div>
-                                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => setSelectedFilterGroup(null)}>
+                                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setSelectedFilterGroup(null)}>
                                     <X className="h-5 w-5 text-left" />
                                 </Button>
                             </div>

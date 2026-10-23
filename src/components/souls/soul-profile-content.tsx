@@ -715,7 +715,7 @@ export function SoulProfileContent({
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Select Format</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Select Format</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => onExportSingle(soul, 'csv')}>CSV Export</DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
