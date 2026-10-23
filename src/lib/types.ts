@@ -1,4 +1,3 @@
-
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -133,6 +132,7 @@ export type UserProfile = {
   lastActive?: Timestamp;
   isVendor?: boolean;
   organizationId?: string;
+  kingdomPoints?: number;
 };
 
 export type OrganizationType = "Church Department" | "Business" | "Ministry" | "Other";
