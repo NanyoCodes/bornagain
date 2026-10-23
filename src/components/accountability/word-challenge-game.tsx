@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -43,13 +42,12 @@ import {
     orderBy, 
     limit,
     deleteDoc,
-    setDoc,
     onSnapshot
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 import type { UserProfile, GameSession, GameInvitation } from '@/lib/types';
 import { format, differenceInMinutes } from 'date-fns';
 
@@ -185,7 +183,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             // Notify partner
             await addDoc(collection(firestore, `users/${partnerId}/notifications`), {
                 userId: partnerId,
-                type: 'org_invite', // Re-using type or we could add 'game_challenge'
+                type: 'org_invite',
                 title: 'Kingdom Challenge!',
                 message: `${userProfile?.firstName} has challenged you to sharpen the Word. Enter the arena!`,
                 link: `/accountability/challenge/${user.uid}`,
@@ -268,7 +266,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 path: userRef.path,
                 operation: 'update',
                 requestResourceData: { kingdomPoints: `increment by ${totalPoints}` }
-            }, user);
+            } satisfies SecurityRuleContext, user);
             errorEmitter.emit('permission-error', permissionError);
         });
 
@@ -572,29 +570,4 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             </div>
         </div>
     );
-}
-
-// Internal implementation of useCollection to ensure stability
-function useCollection<T extends { id: string }>(
-    q: import('firebase/firestore').Query | null
-) {
-    const [data, setData] = useState<T[] | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        if (!q) {
-            setData(null);
-            setLoading(false);
-            return;
-        }
-        setLoading(true);
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const results = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
-            setData(results);
-            setLoading(false);
-        });
-        return () => unsubscribe();
-    }, [q]);
-
-    return { data, loading };
 }
