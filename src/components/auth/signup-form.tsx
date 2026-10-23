@@ -1,8 +1,7 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -17,8 +16,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-import { Loader2, Mail, Lock } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Loader2, Mail, Lock, User } from "lucide-react";
 import { createUserWithEmailAndPassword, updateProfile, AuthError, sendEmailVerification, setPersistence, browserLocalPersistence, signOut } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
@@ -56,6 +55,21 @@ export function SignUpForm() {
   const auth = useAuth();
   const firestore = useFirestore();
 
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      accountType: 'Personal',
+      acceptTerms: false,
+    },
+  });
+
+  const watchedAccountType = useWatch({ control: form.control, name: "accountType" });
+  const isPersonal = watchedAccountType === 'Personal';
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     if (!auth || !firestore) {
@@ -81,7 +95,7 @@ export function SignUpForm() {
 
       const userDocRef = doc(firestore, "users", user.uid);
       const fullName = `${values.firstName} ${values.lastName}`;
-      const nameTokens = fullName.toLowerCase().split(' ').filter(Boolean);
+      const nameTokens = fullName.toLowerCase().split(/\s+/).filter(Boolean);
 
       const userData = {
         firstName: values.firstName,
@@ -102,7 +116,6 @@ export function SignUpForm() {
         errorEmitter.emit('permission-error', permissionError);
       });
 
-      // Force signout to prevent entering the app unverified
       await signOut(auth);
 
       toast({
@@ -140,18 +153,6 @@ export function SignUpForm() {
     }
   }
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      accountType: 'Personal',
-      acceptTerms: false,
-    },
-  });
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 text-left">
@@ -160,7 +161,7 @@ export function SignUpForm() {
           name="accountType"
           render={({ field }) => (
             <FormItem className="text-left">
-              <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary">Account Type</FormLabel>
+              <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary">Account Identity</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="h-11 rounded-xl">
@@ -174,21 +175,23 @@ export function SignUpForm() {
                   <SelectItem value="Corporate">Corporate / Business</SelectItem>
                 </SelectContent>
               </Select>
-              <FormMessage className="text-left" />
+              <FormMessage />
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4 text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
           <FormField
             control={form.control}
             name="firstName"
             render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-left">First Name</FormLabel>
-                <FormControl className="text-left">
-                    <Input placeholder="John" {...field} className="pl-3 rounded-xl h-11 text-left" />
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
+                    {isPersonal ? 'First Name' : 'Primary Contact First Name'}
+                </FormLabel>
+                <FormControl>
+                    <Input placeholder="John" {...field} className="rounded-xl h-11 text-left" />
                 </FormControl>
-                <FormMessage className="text-left" />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -197,11 +200,13 @@ export function SignUpForm() {
             name="lastName"
             render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-left">Last Name</FormLabel>
-                <FormControl className="text-left">
-                    <Input placeholder="Doe" {...field} className="pl-3 rounded-xl h-11 text-left" />
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
+                    {isPersonal ? 'Last Name' : 'Primary Contact Last Name'}
+                </FormLabel>
+                <FormControl>
+                    <Input placeholder="Doe" {...field} className="rounded-xl h-11 text-left" />
                 </FormControl>
-                <FormMessage className="text-left" />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -211,14 +216,14 @@ export function SignUpForm() {
           name="email"
           render={({ field }) => (
             <FormItem className="text-left">
-              <FormLabel className="text-left">Email Address</FormLabel>
-              <div className="relative text-left">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground text-left" />
-                <FormControl className="text-left">
+              <FormLabel>Email Address</FormLabel>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <FormControl>
                     <Input placeholder="name@example.com" {...field} className="pl-10 rounded-xl h-11 text-left" />
                 </FormControl>
               </div>
-              <FormMessage className="text-left" />
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -227,14 +232,14 @@ export function SignUpForm() {
           name="password"
           render={({ field }) => (
             <FormItem className="text-left">
-              <FormLabel className="text-left">Password</FormLabel>
-              <div className="relative text-left">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground text-left" />
-                <FormControl className="text-left">
+              <FormLabel>Password</FormLabel>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <FormControl>
                     <Input type="password" placeholder="********" {...field} className="pl-10 rounded-xl h-11 text-left" />
                 </FormControl>
               </div>
-              <FormMessage className="text-left" />
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -244,27 +249,27 @@ export function SignUpForm() {
           name="acceptTerms"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-2xl border p-4 bg-muted/20 text-left">
-              <FormControl className="text-left">
+              <FormControl>
                 <Checkbox
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
               <div className="space-y-1 leading-none text-left">
-                <FormLabel className="text-xs leading-normal cursor-pointer font-medium text-left">
+                <FormLabel className="text-xs leading-normal cursor-pointer font-medium">
                   I agree to respect all users and abide by the Testify guidelines.
                 </FormLabel>
-                <FormDescription className="text-[10px] text-left">
+                <FormDescription className="text-[10px]">
                    Read our <Link href="/terms-of-service" className="underline hover:text-primary">Terms of Service</Link> for details.
                 </FormDescription>
-                <FormMessage className="text-left" />
+                <FormMessage />
               </div>
             </FormItem>
           )}
         />
 
-        <Button type="submit" variant="destructive" className="w-full h-11 rounded-xl font-bold shadow-md text-left" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+        <Button type="submit" variant="default" className="w-full h-12 rounded-xl font-bold shadow-lg shadow-primary/20 uppercase tracking-widest text-xs" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Create account
         </Button>
       </form>

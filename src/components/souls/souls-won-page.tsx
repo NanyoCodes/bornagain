@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -149,7 +148,7 @@ function FilteredSoulList({
             const soulSpouse = (soul.spouseName || "").toLowerCase();
             const otherSpouse = (other.spouseName || "").toLowerCase();
             return (soulSpouse === otherFull || soulSpouse === other.firstName.toLowerCase()) &&
-                   (otherSpouse === soulFull || otherSpouse === s.firstName.toLowerCase());
+                   (otherSpouse === soulFull || otherSpouse === soul.firstName.toLowerCase());
         }) : null;
 
         const children = allSouls.filter(child => soul.childrenIds?.includes(child.id));
@@ -860,7 +859,7 @@ export default function SoulsWonPage() {
                                 <div className="flex items-center justify-between gap-4 text-left text-left text-left">
                                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Edit Record</DrawerTitle>
-                                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update soul identity and mission details.</DrawerDescription>
+                                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Update soul identity and mission details.</DrawerDescription>
                                     </DrawerHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left text-left" onClick={() => setEditSoulId(null)}>
                                         <X className="h-5 w-5 text-left text-left text-left" />
@@ -902,7 +901,7 @@ export default function SoulsWonPage() {
                                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Update soul identity and mission details.</DrawerDescription>
                                     </DialogHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left text-left text-left" onClick={() => setEditSoulId(null)}>
-                                        <X className="h-5 w-5 text-left text-left text-left text-left" />
+                                        <X className="h-5 w-5 text-left text-left text-left" />
                                     </Button>
                                 </div>
                             </div>
