@@ -16,7 +16,6 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   AuthError,
-  signOut,
 } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { doc, setDoc } from 'firebase/firestore';
@@ -53,7 +52,6 @@ export default function SignUpPage() {
     }
     const authProvider = new GoogleAuthProvider();
     try {
-      // Persistence is handled globally.
       const result = await signInWithPopup(auth, authProvider);
       const loggedUser = result.user;
       
@@ -115,9 +113,9 @@ export default function SignUpPage() {
     <AuthLayout>
       <div className="space-y-6 text-left">
         <div className="grid gap-2 text-left">
-          <h1 className="text-2xl md:text-3xl font-bold text-left">Join the Movement</h1>
-          <p className="text-balance text-muted-foreground text-left">
-            Create your account to start sharing testimonies and winning souls.
+          <h1 className="text-2xl md:text-4xl font-black font-headline tracking-tight uppercase text-left">Registration</h1>
+          <p className="text-balance text-muted-foreground font-medium text-sm text-left">
+            Register as a <span className="text-primary font-bold">Personal</span>, <span className="text-primary font-bold">Church</span>, <span className="text-primary font-bold">Department</span> or <span className="text-primary font-bold">Corporate</span> account to start mobilizing for the Kingdom.
           </p>
         </div>
 
