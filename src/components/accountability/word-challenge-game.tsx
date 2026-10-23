@@ -4,14 +4,15 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw, Loader2, ArrowLeft, Target, Award, Star, Info } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUser, useFirestore, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useUserProfile, useDoc } from '@/firebase';
 import { doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import type { UserProfile } from '@/lib/types';
 
 const bibleQuizzes = [
   {
@@ -70,6 +71,13 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [points, setPoints] = useState(0);
 
+    const partnerDocRef = useMemo(() => {
+        if (!firestore || !partnerId) return null;
+        return doc(firestore, 'users', partnerId);
+    }, [firestore, partnerId]);
+
+    const { data: partnerProfile } = useDoc<UserProfile>(partnerDocRef);
+
     useEffect(() => {
         setQuizIndex(Math.floor(Math.random() * bibleQuizzes.length));
     }, []);
@@ -91,7 +99,6 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     lastGameAt: serverTimestamp()
                 };
                 
-                // Non-blocking update per guidelines
                 updateDoc(userRef, updateData).catch(async (serverError) => {
                     const permissionError = new FirestorePermissionError({
                         path: userRef.path,
@@ -113,14 +120,24 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     };
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
-            <div className="flex items-center justify-between px-4 sm:px-0">
-                <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full">
+        <div className="max-w-2xl mx-auto space-y-6 text-left">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-0">
+                <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full self-start sm:self-auto">
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
-                <div className="flex items-center gap-3 bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20">
-                    <Star className="h-4 w-4 text-primary fill-current" />
-                    <span className="font-black text-xs uppercase tracking-widest text-primary">Your Points: {(userProfile?.kingdomPoints || 0) + points}</span>
+                <div className="flex items-center gap-2 sm:gap-4 text-left">
+                    <div className="flex items-center gap-3 bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 shadow-sm text-left">
+                        <Star className="h-4 w-4 text-primary fill-current" />
+                        <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-primary text-left">
+                            You: {(userProfile?.kingdomPoints || 0) + points}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-3 bg-muted/30 px-4 py-1.5 rounded-full border border-dashed text-left">
+                        <Trophy className="h-4 w-4 text-muted-foreground opacity-60" />
+                        <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-muted-foreground text-left">
+                            {partnerName.split(' ')[0]}: {partnerProfile?.kingdomPoints || 0}
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -128,10 +145,10 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 <CardHeader className="p-8 sm:p-10 pb-4 text-center">
                     <div className="flex items-center justify-center gap-2 mb-2 text-left">
                         <Gamepad2 className="h-5 w-5 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Challenge with {partnerName}</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Challenge</span>
                     </div>
                     <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none text-left">Sharpening the Word</CardTitle>
-                    <CardDescription className="text-zinc-400 text-sm font-medium mt-3 text-left">Passage completion for spiritual strength.</CardDescription>
+                    <CardDescription className="text-zinc-400 text-sm font-medium mt-3 text-left">Sharpen each other as you complete these passages.</CardDescription>
                 </CardHeader>
                 
                 <CardContent className="p-8 sm:p-12 pt-0 space-y-8">
