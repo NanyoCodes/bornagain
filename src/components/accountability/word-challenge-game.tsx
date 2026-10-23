@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -111,7 +112,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 </Button>
                 <div className="flex items-center gap-3 bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20">
                     <Star className="h-4 w-4 text-primary fill-current" />
-                    <span className="font-black text-xs uppercase tracking-widest text-primary">Your Points: {userProfile?.kingdomPoints || 0 + points}</span>
+                    <span className="font-black text-xs uppercase tracking-widest text-primary">Your Points: {(userProfile?.kingdomPoints || 0) + points}</span>
                 </div>
             </div>
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -90,7 +91,7 @@ const accountabilityVerses = [
     { text: "Bear one another's burdens, and so fulfill the law of Christ.", ref: "Galatians 6:2" },
 ];
 
-function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }) {
+function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partnerCount?: number, pendingCount?: number }) {
     const verse = useMemo(() => accountabilityVerses[Math.floor(Math.random() * accountabilityVerses.length)], []);
 
     return (
@@ -124,17 +125,17 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }) {
 
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
                 <CardHeader className="p-5 pb-2 text-left">
-                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2 text-left text-left">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2 text-left">
                         <BookOpen className="h-4 w-4 text-primary" /> Iron Sharpens Iron
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-5 pt-4 text-left">
-                    <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 relative group text-left">
+                    <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 relative group">
                         <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
                         <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance">
                             &ldquo;{verse.text}&rdquo;
                         </p>
-                        <p className="text-[9px] font-black text-primary text-right mt-3 uppercase tracking-widest text-right">— {verse.ref}</p>
+                        <p className="text-[9px] font-black text-primary text-right mt-3 uppercase tracking-widest">— {verse.ref}</p>
                     </div>
                 </CardContent>
             </Card>
@@ -165,22 +166,22 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
         return (
             <div className="flex justify-around items-center h-12 bg-muted/5 rounded-xl border border-dashed text-left">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground animate-pulse text-left">Checking records...</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground animate-pulse">Checking records...</span>
             </div>
         );
     }
 
     return (
-        <div className="grid grid-cols-4 gap-1 items-center h-14 text-left">
+        <div className="grid grid-cols-4 gap-1 items-center h-14">
             {disciplines.map(d => (
-                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0 text-left">
+                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0">
                     {completedOnDate.includes(d.id) ? (
-                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center text-left">
-                            <CheckCircle2 className="h-4 w-4 text-green-500 text-left" />
+                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center">
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
                         </div>
                     ) : (
-                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-left">
-                            <XCircle className="h-4 w-4 text-muted-foreground/30 text-left" />
+                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
+                            <XCircle className="h-4 w-4 text-muted-foreground/30" />
                         </div>
                     )}
                     <span className={cn(
@@ -198,7 +199,7 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
     </svg>
   );
 }
@@ -237,10 +238,10 @@ function PartnerCard({
                  <div className="flex items-start gap-4 min-w-0 w-full text-left">
                     <Dialog>
                       <DialogTrigger asChild disabled={!livePhotoURL}>
-                        <div className="relative cursor-pointer active:scale-95 transition-transform hover:scale-105 shrink-0 text-left">
+                        <div className="relative cursor-pointer active:scale-95 transition-transform hover:scale-105 shrink-0">
                             <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm text-left">
-                                <AvatarImage src={livePhotoURL} className="object-cover text-left" />
-                                <AvatarFallback className="font-black text-lg bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-center"> {partner.firstName?.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={livePhotoURL} className="object-cover" />
+                                <AvatarFallback className="font-black text-lg bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full">{partner.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         </div>
                       </DialogTrigger>
@@ -255,20 +256,20 @@ function PartnerCard({
                           </DialogContent>
                       )}
                     </Dialog>
-                    <div className="min-w-0 flex-1 text-left">
-                        <div className="group inline-flex flex-col text-left max-w-full text-left">
-                            <Link href={`/profile/${partner.userId}`} className="text-sm sm:text-base font-black truncate hover:underline leading-none uppercase tracking-tight max-w-[140px] sm:max-w-[200px] text-left"> {partner.firstName} {partner.lastName}</Link>
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 truncate text-left">Spiritual Partner</span>
+                    <div className="min-w-0 flex-1">
+                        <div className="group inline-flex flex-col text-left max-w-full">
+                            <Link href={`/profile/${partner.userId}`} className="text-sm sm:text-base font-black truncate hover:underline leading-none uppercase tracking-tight max-w-[140px] sm:max-w-[200px]"> {partner.firstName} {partner.lastName}</Link>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 truncate">Spiritual Partner</span>
                         </div>
                         <div className="flex items-center justify-between w-full mt-4 text-left">
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-9 w-9 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" onClick={() => onNudge({...partner, phone})}>
-                                            <BellRing className="h-4 w-4 text-left" />
+                                        <Button variant="outline" size="icon" className="h-9 w-9 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background" onClick={() => onNudge({...partner, phone})}>
+                                            <BellRing className="h-4 w-4" />
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left">Nudge {partner.firstName}</p></TooltipContent>
+                                    <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase">Nudge {partner.firstName}</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
 
@@ -278,66 +279,66 @@ function PartnerCard({
                                         <Button 
                                             variant="outline" 
                                             size="icon" 
-                                            className="h-9 w-9 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" 
+                                            className="h-9 w-9 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background" 
                                             onClick={() => setIsMessageOpen(true)}
                                         >
-                                            <Smartphone className="h-4 w-4 text-left" />
+                                            <Smartphone className="h-4 w-4" />
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left">Connect Externally</p></TooltipContent>
+                                    <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase">Connect Externally</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
 
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-9 w-9 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" onClick={() => router.push(`/dashboard/accountability/challenge/${partner.userId}`)}>
+                                        <Button variant="outline" size="icon" className="h-9 w-9 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" onClick={() => router.push(`/accountability/challenge/${partner.userId}`)}>
                                             <Gamepad2 className="h-4 w-4 text-left" />
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left">Kingdom Challenge</p></TooltipContent>
+                                    <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase">Kingdom Challenge</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
 
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-9 w-9 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" onClick={() => router.push('/growth')}>
-                                            <TrendingUp className="h-4 w-4 text-left" />
+                                        <Button variant="outline" size="icon" className="h-9 w-9 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background" onClick={() => router.push('/growth')}>
+                                            <TrendingUp className="h-4 w-4" />
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left">Growth Hub</p></TooltipContent>
+                                    <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase">Growth Hub</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
 
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-9 w-9 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" onClick={() => onChat(partner)}>
-                                            <MessagesSquare className="h-4 w-4 text-left" />
+                                        <Button variant="outline" size="icon" className="h-9 w-9 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background" onClick={() => onChat(partner)}>
+                                            <MessagesSquare className="h-4 w-4" />
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left">Chat with {partner.firstName}</p></TooltipContent>
+                                    <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase">Chat with {partner.firstName}</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         </div>
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-left">
-                                <MoreVertical className="h-4 w-4 text-left" />
+                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                                <MoreVertical className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl text-left">
                             <DropdownMenuItem onSelect={() => router.push(`/profile/${partner.userId}`)} className="rounded-lg text-left">
-                                <User className="mr-2 h-4 w-4 text-left" /> View Identity
+                                <User className="mr-2 h-4 w-4" /> View Identity
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => router.push('/dashboard/bible')} className="rounded-lg text-left">
-                                <BookOpen className="mr-2 h-4 w-4 text-left" /> Word Study
+                                <BookOpen className="mr-2 h-4 w-4" /> Word Study
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator className="text-left" />
-                            <DropdownMenuItem className="text-destructive focus:text-destructive rounded-lg text-left" onSelect={() => onRemove(partner)}>
-                                <UserX className="mr-2 h-4 w-4 text-left" /> End Alliance
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-destructive focus:text-destructive rounded-lg" onSelect={() => onRemove(partner)}>
+                                <UserX className="mr-2 h-4 w-4" /> End Alliance
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -345,10 +346,10 @@ function PartnerCard({
             </CardHeader>
             <CardContent className="px-4 sm:px-6 pb-6 text-left">
                 <div className="pt-4 border-t border-dashed space-y-4 text-left">
-                    <div className="flex justify-between items-center gap-2 text-left">
-                        <div className="flex items-center gap-1.5 text-left">
-                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
-                            <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-left">Discipline Records</h4>
+                    <div className="flex justify-between items-center gap-2">
+                        <div className="flex items-center gap-1.5">
+                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                            <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Discipline Records</h4>
                         </div>
                         <Input 
                             type="date" 
@@ -364,14 +365,14 @@ function PartnerCard({
             <Dialog open={isMessageOpen} onOpenChange={setIsMessageOpen}>
                 {isMobile ? (
                     <Drawer open={isMessageOpen} onOpenChange={setIsMessageOpen}>
-                        <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                        <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-center space-y-2 text-left">
                                     <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
                                         <MessageSquare className="h-7 w-7 text-primary text-center text-left" />
                                     </div>
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-center text-balance text-center text-left">Message {partner.firstName}</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium text-center text-balance text-center text-left">Choose how to encourage your partner externally.</DrawerDescription>
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-center text-balance">Message {partner.firstName}</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium text-center text-balance">Choose how to encourage your partner externally.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <div className="p-8 flex flex-col gap-3 text-left">
@@ -386,7 +387,7 @@ function PartnerCard({
                                         window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
                                         setIsMessageOpen(false);
                                     }} 
-                                    className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center text-left"
+                                    className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left"
                                 >
                                     <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp
                                 </Button>
@@ -401,7 +402,7 @@ function PartnerCard({
                                         setIsMessageOpen(false);
                                     }} 
                                     variant="outline" 
-                                    className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center text-left"
+                                    className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left"
                                 >
                                     <MessageSquare className="h-5 w-5 text-left" /> Standard SMS
                                 </Button>
@@ -409,13 +410,13 @@ function PartnerCard({
                         </DrawerContent>
                     </Drawer>
                 ) : (
-                    <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left">
-                        <DialogHeader className="text-center space-y-2 text-left">
+                    <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
+                        <DialogHeader className="text-center space-y-2">
                             <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
                                 <MessageSquare className="h-7 w-7 text-primary text-center text-left" />
                             </div>
-                            <DialogTitle className="text-2xl font-black font-headline uppercase text-center text-balance text-center text-left">Message {partner.firstName}</DialogTitle>
-                            <DialogDescription className="text-sm font-medium text-center text-balance text-center text-left">Choose how to encourage your partner externally.</DialogDescription>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase text-center text-balance">Message {partner.firstName}</DialogTitle>
+                            <DialogDescription className="text-sm font-medium text-center text-balance">Choose how to encourage your partner externally.</DialogDescription>
                         </DialogHeader>
                         <div className="flex flex-col gap-3 pt-6 text-left">
                             <Button 
@@ -429,7 +430,7 @@ function PartnerCard({
                                     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
                                     setIsMessageOpen(false);
                                 }} 
-                                className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center text-left"
+                                className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left"
                             >
                                 <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp
                             </Button>
@@ -444,7 +445,7 @@ function PartnerCard({
                                     setIsMessageOpen(false);
                                 }} 
                                 variant="outline" 
-                                className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center text-left"
+                                className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left"
                             >
                                 <MessageSquare className="h-5 w-5 text-left" /> Standard SMS
                             </Button>
@@ -696,3 +697,4 @@ export default function AccountabilityPage() {
     </div>
   );
 }
+
