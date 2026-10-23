@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Integrated Game Session tracking for mutual growth - 2025-06-25T18:30:00Z
+    // Deployment trigger: Fixed Game Invitation permissions and resolved authorId hallucinations - 2025-06-26T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -127,9 +126,16 @@ service cloud.firestore {
     }
 
     match /gameSessions/{sessionId} {
-      allow read, list: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+      allow read, list: if isAuthenticated() && request.auth.uid in resource.data.get('participantIds', []);
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false;
+    }
+
+    match /gameInvitations/{invitationId} {
+        allow read, list: if isAuthenticated() && request.auth.uid in resource.data.get('participantIds', []);
+        allow create: if isAuthenticated() && request.resource.data.hostId == request.auth.uid;
+        allow update: if isAuthenticated() && request.auth.uid in resource.data.get('participantIds', []);
+        allow delete: if isAuthenticated() && request.auth.uid in resource.data.get('participantIds', []);
     }
 
     match /events/{eventId} {
@@ -163,9 +169,9 @@ service cloud.firestore {
         match /comments/{commentId} {
           allow get, list: if isAuthenticated();
           allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-          allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
           allow update: if isAuthenticated() && (
-            (request.resource.data.authorId == request.authorId) ||
+            (resource.data.authorId == request.auth.uid) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
           );
         }
@@ -174,9 +180,9 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
         allow update: if isAuthenticated() && (
-          (request.resource.data.authorId == request.authorId) ||
+          (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
         );
       }
@@ -184,9 +190,9 @@ service cloud.firestore {
       match /foundational_armor/{armorIdx}/comments/{commentId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
         allow update: if isAuthenticated() && (
-          (request.resource.data.authorId == request.authorId) ||
+          (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
         );
       }
@@ -194,8 +200,8 @@ service cloud.firestore {
       match /resources/{resourceId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
-        allow update: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
+        allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
       }
     }
     
@@ -212,7 +218,7 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || String(resource.data.authorId) == request.auth.uid);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
       allow update: if isAuthenticated() && ( 
         (resource.data.authorId == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
@@ -221,9 +227,9 @@ service cloud.firestore {
       match /comments/{commentId} {
           allow get, list: if true;
           allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-          allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
           allow update: if isAuthenticated() && (
-            (request.resource.data.authorId == request.authorId) ||
+            (request.resource.data.authorId == request.auth.uid) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
           );
       }
@@ -294,9 +300,9 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              (request.resource.data.authorId == request.authorId) ||
+              (request.resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }
