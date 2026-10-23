@@ -7,7 +7,7 @@ import { collection, query, doc, updateDoc, writeBatch, where, getDoc, serverTim
 import type { Notification, Soul } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles, X, ShoppingBag, Package, Cake } from 'lucide-react';
+import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles, X, ShoppingBag, Package, Cake, Gamepad2 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -33,11 +33,14 @@ const NOTIFICATION_TYPES = [
   'new_order', 
   'order_update',
   'birthday_reminder',
-  'pending_provision'
+  'pending_provision',
+  'org_invite'
 ];
 
 function getNotificationIcon(type: string, actionId?: string) {
     switch (type) {
+        case 'org_invite':
+            return <Gamepad2 className="h-4 w-4 text-primary" />;
         case 'birthday_reminder':
             return <Cake className="h-4 w-4 text-primary" />;
         case 'new_order':
@@ -167,17 +170,17 @@ export default function NotificationsPage() {
     <div className="flex flex-col h-full w-full bg-background overflow-hidden text-left">
       <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4 text-left">
         <div className="flex flex-col gap-6 text-left text-left text-left">
-            <div className="flex items-center justify-between gap-4 text-left text-left text-left">
-                <div className="flex items-center gap-4 min-w-0 text-left text-left text-left text-left">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left">
+            <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left">
+                <div className="flex items-center gap-4 min-w-0 text-left text-left text-left text-left text-left">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left">
                         <ArrowLeft className="h-6 w-6 text-left text-left text-left" />
-                        <span className="sr-only text-left text-left text-left">Back</span>
+                        <span className="sr-only text-left text-left text-left text-left">Back</span>
                     </Button>
                     <div className="space-y-0.5 sm:space-y-1 min-w-0 text-left text-left text-left">
                         <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight uppercase truncate text-left text-left text-left">
                         Notifications
                         </h1>
-                        <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate text-left text-left text-left">
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate text-left text-left text-left text-left">
                         Kingdom Alerts
                         </p>
                         {!loading && notifications && notifications.length > 0 && unreadCount > 0 && (
@@ -193,9 +196,9 @@ export default function NotificationsPage() {
                     </div>
                 </div>
                 {logo && (
-                    <Link href="/testimonies" className="shrink-0 transition-transform active:scale-95 text-left text-left">
+                    <Link href="/testimonies" className="shrink-0 transition-transform active:scale-95 text-left text-left text-left">
                         <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg text-left text-left">
-                            <AvatarImage src={logo.imageUrl} alt="Testify" className="object-cover text-left text-left" />
+                            <AvatarImage src={logo.imageUrl} alt="Testify" className="object-cover text-left text-left text-left" />
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-left text-left">T</AvatarFallback>
                         </Avatar>
                     </Link>
@@ -203,7 +206,7 @@ export default function NotificationsPage() {
             </div>
 
             <Tabs value={filter} onValueChange={setFilter} className="w-full text-left text-left text-left">
-                <TabsList className="grid w-full grid-cols-4 h-11 bg-muted/30 p-1 rounded-2xl text-left text-left text-left">
+                <TabsList className="grid w-full grid-cols-4 h-11 bg-muted/30 p-1 rounded-2xl text-left text-left text-left text-left">
                     <TabsTrigger value="all" className="text-[10px] font-black uppercase tracking-widest rounded-xl text-left text-left">All</TabsTrigger>
                     <TabsTrigger value="unread" className="text-[10px] font-black uppercase tracking-widest rounded-xl text-left text-left">Unread</TabsTrigger>
                     <TabsTrigger value="kindness" className="text-[10px] font-black uppercase tracking-widest rounded-xl text-left text-left">Kindness</TabsTrigger>
@@ -221,10 +224,10 @@ export default function NotificationsPage() {
                         <div className="divide-y p-4 text-left">
                         {[...Array(5)].map((_, i) => (
                             <div key={i} className="py-6 flex items-start gap-4 text-left">
-                                <Skeleton className="h-10 w-10 rounded-full shrink-0 text-left" />
+                                <Skeleton className="h-10 w-10 rounded-full shrink-0 text-left text-left" />
                                 <div className="flex-1 space-y-2 text-left">
-                                    <Skeleton className="h-4 w-3/4 text-left" />
-                                    <Skeleton className="h-3 w-1/2 text-left" />
+                                    <Skeleton className="h-4 w-3/4 text-left text-left" />
+                                    <Skeleton className="h-3 w-1/2 text-left text-left" />
                                 </div>
                             </div>
                         ))}
@@ -270,15 +273,15 @@ export default function NotificationsPage() {
                                                     )}>
                                                         {notification.title}
                                                     </p>
-                                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0 text-left">
+                                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0 text-left text-left">
                                                         {isPendingAction ? 'ACTION REQUIRED' : (createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : '')}
                                                     </span>
                                                 </div>
-                                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance text-left">
+                                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance text-left text-left">
                                                     {notification.message}
                                                 </p>
                                                 {createdAt && (
-                                                    <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5 text-left">
+                                                    <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5 text-left text-left">
                                                         {format(createdAt, 'PPP')}
                                                     </p>
                                                 )}
@@ -286,7 +289,7 @@ export default function NotificationsPage() {
                                             {(!notification.isRead || isPendingAction) && (
                                                 <div className="shrink-0 flex items-center h-full pt-1.5 sm:pt-2 text-left">
                                                     <div className={cn(
-                                                        "h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)] text-left",
+                                                        "h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)] text-left text-left",
                                                         isPendingAction ? "bg-primary scale-125" : "bg-primary"
                                                     )} />
                                                 </div>
@@ -299,7 +302,7 @@ export default function NotificationsPage() {
                     </div>
                     
                     <footer className="p-8 text-center space-y-2 border-t mt-auto text-left">
-                        <p className="text-[9px] sm:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 text-left text-left">
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 text-left text-left text-left">
                           <CircleAlert className="h-3 w-3 text-left text-left" /> Notifications are purged after 30 days of inactivity
                         </p>
                     </footer>
