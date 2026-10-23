@@ -1,16 +1,17 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw, Loader2, ArrowLeft, Target, Award, Star } from "lucide-react";
+import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw, Loader2, ArrowLeft, Target, Award, Star, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser, useFirestore, useUserProfile } from '@/firebase';
 import { doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const bibleQuizzes = [
   {
@@ -68,7 +69,6 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     const [gameState, setGameState] = useState<'playing' | 'correct' | 'wrong'>('playing');
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [points, setPoints] = useState(0);
-    const [isUpdating, setIsUpdating] = useState(false);
 
     useEffect(() => {
         setQuizIndex(Math.floor(Math.random() * bibleQuizzes.length));
@@ -77,7 +77,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     const quiz = bibleQuizzes[quizIndex];
     const firstName = userProfile?.firstName || 'Believer';
 
-    const handleCheck = async (option: string) => {
+    const handleCheck = (option: string) => {
         setSelectedOption(option);
         if (option === quiz.correct) {
             setGameState('correct');
@@ -85,13 +85,21 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             setPoints(prev => prev + winPoints);
             
             if (user && firestore) {
-                setIsUpdating(true);
                 const userRef = doc(firestore, 'users', user.uid);
-                await updateDoc(userRef, {
+                const updateData = {
                     kingdomPoints: increment(winPoints),
                     lastGameAt: serverTimestamp()
-                }).catch(console.error);
-                setIsUpdating(false);
+                };
+                
+                // Non-blocking update per guidelines
+                updateDoc(userRef, updateData).catch(async (serverError) => {
+                    const permissionError = new FirestorePermissionError({
+                        path: userRef.path,
+                        operation: 'update',
+                        requestResourceData: updateData
+                    }, user);
+                    errorEmitter.emit('permission-error', permissionError);
+                });
             }
         } else {
             setGameState('wrong');
@@ -118,12 +126,12 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
             <Card className="rounded-none sm:rounded-[2.5rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden group transition-all hover:border-primary/40 text-left">
                 <CardHeader className="p-8 sm:p-10 pb-4 text-center">
-                    <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="flex items-center justify-center gap-2 mb-2 text-left">
                         <Gamepad2 className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Challenge with {partnerName}</span>
                     </div>
-                    <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none">Sharpening the Word</CardTitle>
-                    <CardDescription className="text-zinc-400 text-sm font-medium mt-3">Passage completion for spiritual strength.</CardDescription>
+                    <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none text-left">Sharpening the Word</CardTitle>
+                    <CardDescription className="text-zinc-400 text-sm font-medium mt-3 text-left">Passage completion for spiritual strength.</CardDescription>
                 </CardHeader>
                 
                 <CardContent className="p-8 sm:p-12 pt-0 space-y-8">
@@ -186,7 +194,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     onClick={nextChallenge}
                                     className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-2xl flex items-center justify-center gap-4 transition-all active:scale-95"
                                 >
-                                    {isUpdating ? <Loader2 className="h-6 w-6 animate-spin" /> : <RefreshCw className="h-6 w-6" />}
+                                    <RefreshCw className="h-6 w-6" />
                                     CONTINUE CHALLENGE
                                 </Button>
                             </motion.div>
@@ -198,11 +206,11 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 </CardFooter>
             </Card>
 
-            <div className="p-6 bg-muted/20 rounded-[2.5rem] border border-dashed flex items-start gap-4 shadow-inner">
-                <Info className="h-6 w-6 text-primary shrink-0 mt-1 opacity-60" />
-                <div className="space-y-1">
-                    <h4 className="font-black text-xs uppercase tracking-widest">About Challenges</h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed font-medium">Challenge results are visible to your partner, encouraging a healthy and holy competition in the Word of Truth.</p>
+            <div className="p-6 bg-muted/20 rounded-[2.5rem] border border-dashed flex items-start gap-4 shadow-inner text-left">
+                <Info className="h-6 w-6 text-primary shrink-0 mt-1 opacity-60 text-left" />
+                <div className="space-y-1 text-left">
+                    <h4 className="font-black text-xs uppercase tracking-widest text-left">About Challenges</h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">Challenge results are visible to your partner, encouraging a healthy and holy competition in the Word of Truth.</p>
                 </div>
             </div>
         </div>
