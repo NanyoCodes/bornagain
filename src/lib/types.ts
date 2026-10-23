@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -133,6 +134,17 @@ export type UserProfile = {
   isVendor?: boolean;
   organizationId?: string;
   kingdomPoints?: number;
+};
+
+export type GameSession = {
+  id: string;
+  participantIds: string[];
+  userId: string;
+  partnerId: string;
+  score: number;
+  correctCount: number;
+  wrongCount: number;
+  createdAt: Timestamp;
 };
 
 export type OrganizationType = "Church Department" | "Business" | "Ministry" | "Other";

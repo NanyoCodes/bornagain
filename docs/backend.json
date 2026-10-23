@@ -235,7 +235,8 @@
           "description": "Timestamp of the user's last activity."
         },
         "isVendor": { "type": "boolean" },
-        "organizationId": { "type": "string", "description": "The ID of the organization this user belongs to." }
+        "organizationId": { "type": "string", "description": "The ID of the organization this user belongs to." },
+        "kingdomPoints": { "type": "number", "description": "Total spiritual engagement points." }
       },
       "required": [
         "firstName",
@@ -243,65 +244,20 @@
         "email"
       ]
     },
-    "Organization": {
-      "title": "Organization",
-      "description": "Represents a corporate or church department account.",
+    "GameSession": {
+      "title": "Game Session",
+      "description": "A recorded session of a Kingdom challenge between partners.",
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "description": { "type": "string" },
-        "type": { "type": "string", "enum": ["Church Department", "Business", "Ministry", "Other"] },
-        "organizerId": { "type": "string" },
-        "organizerName": { "type": "string" },
-        "memberIds": { "type": "array", "items": { "type": "string" } },
-        "photoURL": { "type": "string", "format": "uri" },
-        "location": { "type": "string" },
-        "createdAt": { "type": "object" },
-        "status": { "type": "string", "enum": ["active", "deleted"] }
-      },
-      "required": ["name", "type", "organizerId"]
-    },
-    "SharedBook": {
-      "title": "Shared Book",
-      "description": "A spiritual resource shared with an accountability alliance.",
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "author": { "type": "string" },
-        "url": { "type": "string", "format": "uri" },
-        "uploaderId": { "type": "string" },
-        "partnerIds": { "type": "array", "items": { "type": "string" } },
-        "createdAt": { "type": "object" }
-      },
-      "required": ["title", "url", "uploaderId"]
-    },
-    "BookReadingProgress": {
-      "title": "Book Reading Progress",
-      "description": "Tracks progress through a shared book.",
-      "type": "object",
-      "properties": {
+        "participantIds": { "type": "array", "items": { "type": "string" } },
         "userId": { "type": "string" },
-        "bookId": { "type": "string" },
-        "bookTitle": { "type": "string" },
-        "bookUrl": { "type": "string" },
-        "lastPageRead": { "type": "number" },
-        "updatedAt": { "type": "object" }
-      },
-      "required": ["userId", "bookId", "lastPageRead"]
-    },
-    "Ad": {
-      "title": "Ad",
-      "description": "Represents an advertisement or boosted post.",
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "description": { "type": "string" },
-        "url": { "type": "string", "format": "uri" },
-        "type": { "type": "string", "enum": ["testimony_boost", "business", "event"] },
-        "authorId": { "type": "string" },
-        "status": { "type": "string", "enum": ["pending", "active", "expired"] },
+        "partnerId": { "type": "string" },
+        "score": { "type": "number" },
+        "correctCount": { "type": "number" },
+        "wrongCount": { "type": "number" },
         "createdAt": { "type": "object" }
-      }
+      },
+      "required": ["participantIds", "userId", "score"]
     }
   },
   "auth": {
@@ -318,21 +274,9 @@
       },
       "description": "Stores public user profile data, keyed by user ID."
     },
-    "/organizations/{orgId}": {
-      "schema": { "$ref": "#/entities/Organization" },
-      "description": "Corporate or department accounts."
-    },
-    "/sharedBooks/{bookId}": {
-      "schema": { "$ref": "#/entities/SharedBook" },
-      "description": "Books shared between partners."
-    },
-    "/bookReadingProgress/{progressId}": {
-      "schema": { "$ref": "#/entities/BookReadingProgress" },
-      "description": "Reading progress logs."
-    },
-    "/ads/{adId}": {
-      "schema": { "$ref": "#/entities/Ad" },
-      "description": "Ad requests and active promotions."
+    "/gameSessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/GameSession" },
+      "description": "History of Word challenges."
     }
   }
 }
