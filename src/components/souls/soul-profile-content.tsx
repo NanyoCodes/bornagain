@@ -80,6 +80,13 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+} from "@/components/ui/drawer";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -119,6 +126,8 @@ import Image from 'next/image';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Testimony, FollowUpStatus, Soul, DailyDevotional, TestimonyComment, UserProfile as UserProfileType } from "@/lib/types";
+import { CommentSection } from "../testimonies/comment-section";
+import { CreateTestimonyForm } from "../testimonies/create-testimony-form";
 
 export function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (

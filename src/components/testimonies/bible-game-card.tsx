@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUserProfile } from '@/firebase';
 
 const bibleQuizzes = [
   {
@@ -59,16 +60,17 @@ const bibleQuizzes = [
 ];
 
 export function BibleGameCard() {
+    const { userProfile } = useUserProfile();
     const [quizIndex, setQuizIndex] = useState(0);
     const [gameState, setGameState] = useState<'playing' | 'correct' | 'wrong'>('playing');
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
     useEffect(() => {
-        // Randomize initial quiz
         setQuizIndex(Math.floor(Math.random() * bibleQuizzes.length));
     }, []);
 
     const quiz = bibleQuizzes[quizIndex];
+    const firstName = userProfile?.firstName || 'Believer';
 
     const handleCheck = (option: string) => {
         setSelectedOption(option);
@@ -139,7 +141,7 @@ export function BibleGameCard() {
                                 <div className="flex items-center gap-2">
                                     {gameState === 'correct' ? <Trophy className="h-5 w-5 animate-bounce" /> : <ShieldAlert className="h-5 w-5" />}
                                     <span className="font-black uppercase tracking-[0.2em] text-xs">
-                                        {gameState === 'correct' ? "EXCELLENT, BELIEVER!" : "RETURN TO THE WORD"}
+                                        {gameState === 'correct' ? `EXCELLENT, ${firstName.toUpperCase()}!` : "RETURN TO THE WORD"}
                                     </span>
                                 </div>
                                 <p className="text-sm font-bold italic opacity-80 text-center">
