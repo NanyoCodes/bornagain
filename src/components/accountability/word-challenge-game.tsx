@@ -1,14 +1,44 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw, Loader2, ArrowLeft, Target, Award, Star, Info, Timer, History, Play } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { 
+    Gamepad2, 
+    Trophy, 
+    ShieldAlert, 
+    BookOpen, 
+    Sparkles, 
+    CheckCircle2, 
+    XCircle, 
+    ArrowRight, 
+    RefreshCw, 
+    Loader2, 
+    ArrowLeft, 
+    Target, 
+    Award, 
+    Star, 
+    Info, 
+    Timer, 
+    History, 
+    Play 
+} from "lucide-react";
 import { cn, safeToDate } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser, useFirestore, useUserProfile, useDoc, useCollection } from '@/firebase';
-import { doc, updateDoc, increment, serverTimestamp, collection, addDoc, query, where, orderBy, limit } from 'firebase/firestore';
+import { 
+    doc, 
+    updateDoc, 
+    increment, 
+    serverTimestamp, 
+    collection, 
+    addDoc, 
+    query, 
+    where, 
+    orderBy, 
+    limit 
+} from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -89,14 +119,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             collection(firestore, 'gameSessions'),
             where('participantIds', 'array-contains', user.uid),
             orderBy('createdAt', 'desc'),
-            limit(5)
+            limit(10)
         );
     }, [firestore, user?.uid, partnerId]);
-    const { data: history } = useCollection<GameSession>(historyQuery);
+    const { data: allHistory } = useCollection<GameSession>(historyQuery);
 
     const filteredHistory = useMemo(() => {
-        return history?.filter(s => s.participantIds.includes(partnerId)) || [];
-    }, [history, partnerId]);
+        return allHistory?.filter(s => s.participantIds.includes(partnerId)) || [];
+    }, [allHistory, partnerId]);
 
     // Timer Logic
     useEffect(() => {
@@ -139,38 +169,35 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             createdAt: serverTimestamp()
         };
 
-        try {
-            // Save Session History
-            await addDoc(collection(firestore, 'gameSessions'), sessionData);
+        // 1. Save Session History
+        addDoc(collection(firestore, 'gameSessions'), sessionData)
+            .catch(err => console.error("History save failed", err));
 
-            // Update Global Points
-            const userRef = doc(firestore, 'users', user.uid);
-            updateDoc(userRef, {
-                kingdomPoints: increment(totalPoints),
-                lastGameAt: serverTimestamp()
-            }).catch(async (serverError) => {
-                const permissionError = new FirestorePermissionError({
-                    path: userRef.path,
-                    operation: 'update',
-                    requestResourceData: { kingdomPoints: `increment by ${totalPoints}` }
-                }, user);
-                errorEmitter.emit('permission-error', permissionError);
-            });
+        // 2. Update Global Points (Non-blocking)
+        const userRef = doc(firestore, 'users', user.uid);
+        updateDoc(userRef, {
+            kingdomPoints: increment(totalPoints),
+            lastGameAt: serverTimestamp()
+        }).catch(async (serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: userRef.path,
+                operation: 'update',
+                requestResourceData: { kingdomPoints: `increment by ${totalPoints}` }
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        });
 
-            toast({ title: 'Victory Recorded!', description: `Session saved with ${totalPoints} Kingdom Points.` });
-        } catch (error) {
-            console.error("Save Session Error:", error);
-        } finally {
-            setIsSavingSession(false);
-        }
+        toast({ title: 'Victory Recorded!', description: `Session saved with ${totalPoints} Kingdom Points.` });
+        setIsSavingSession(false);
     };
 
     const handleCheck = (option: string) => {
+        if (!isGameActive || gameState !== 'playing') return;
+        
         setSelectedOption(option);
         if (option === bibleQuizzes[quizIndex].correct) {
             setGameState('correct');
             setCorrectCount(prev => prev + 1);
-            // Move to next automatically after a brief pause
             setTimeout(() => {
                 if (isGameActive) nextChallenge();
             }, 800);
@@ -219,14 +246,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                         <Gamepad2 className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Arena of Truth</span>
                     </div>
-                    <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none">Sharpening the Word</CardTitle>
+                    <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none text-center">Sharpening the Word</CardTitle>
                     {!isGameActive && gameState !== 'finished' && (
-                        <CardDescription className="text-zinc-400 text-sm font-medium mt-3">Ready to sharpen your knowledge? 60 seconds on the clock.</CardDescription>
+                        <CardDescription className="text-zinc-400 text-sm font-medium mt-3 text-center">Ready to sharpen your knowledge? 60 seconds on the clock.</CardDescription>
                     )}
                 </CardHeader>
                 
                 <CardContent className="p-8 sm:p-12 pt-0 space-y-8">
-                    {!isGameActive && gameState === 'playing' && (
+                    {!isGameActive && gameState !== 'finished' && (
                         <div className="py-12 flex flex-col items-center gap-8">
                             <div className="h-24 w-24 rounded-[2rem] bg-primary/10 flex items-center justify-center shadow-inner border-2 border-dashed border-primary/30">
                                 <Timer className="h-10 w-10 text-primary animate-pulse" />
@@ -252,7 +279,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     )}>
                                         <Timer className="h-6 w-6" />
                                     </div>
-                                    <div>
+                                    <div className="text-left">
                                         <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Time Remaining</p>
                                         <p className={cn("text-2xl font-black tracking-tighter", timeLeft <= 10 ? "text-red-500" : "text-white")}>
                                             {timeLeft}s
@@ -260,7 +287,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Accuracy</p>
+                                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Current Gain</p>
                                     <p className="text-2xl font-black text-green-500 tracking-tighter">+{correctCount * 10}</p>
                                 </div>
                             </div>
@@ -345,7 +372,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 </CardFooter>
             </Card>
 
-            <div className="space-y-6">
+            <div className="space-y-6 text-left">
                 <div className="flex items-center justify-between px-4 sm:px-1">
                     <div className="flex items-center gap-2">
                         <History className="h-4 w-4 text-primary" />
@@ -393,11 +420,11 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 </div>
             </div>
 
-            <div className="p-6 bg-muted/20 rounded-[2.5rem] border border-dashed flex items-start gap-4 shadow-inner">
+            <div className="p-6 bg-muted/20 rounded-[2.5rem] border border-dashed flex items-start gap-4 shadow-inner text-left">
                 <Info className="h-6 w-6 text-primary shrink-0 mt-1 opacity-60" />
                 <div className="space-y-1">
                     <h4 className="font-black text-xs uppercase tracking-widest">Spiritual Training</h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed font-medium">Challenges are shared sessions. Your scores are visible to your partner, encouraging mutual excellence and accountability in the Word of Truth.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">Challenges are shared sessions. Your scores are visible to your partner, encouraging mutual excellence and accountability in the Word of Truth.</p>
                 </div>
             </div>
         </div>
