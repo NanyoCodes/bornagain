@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "UserProfile": {
@@ -258,6 +257,20 @@
         "createdAt": { "type": "object" }
       },
       "required": ["participantIds", "userId", "score"]
+    },
+    "GameInvitation": {
+      "title": "Game Invitation",
+      "description": "A request for a live Word challenge.",
+      "type": "object",
+      "properties": {
+        "hostId": { "type": "string" },
+        "guestId": { "type": "string" },
+        "participantIds": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["pending", "accepted", "declined", "expired"] },
+        "createdAt": { "type": "object" },
+        "acceptedAt": { "type": "object" }
+      },
+      "required": ["hostId", "guestId", "participantIds", "status"]
     }
   },
   "auth": {
@@ -277,6 +290,10 @@
     "/gameSessions/{sessionId}": {
       "schema": { "$ref": "#/entities/GameSession" },
       "description": "History of Word challenges."
+    },
+    "/gameInvitations/{invitationId}": {
+        "schema": { "$ref": "#/entities/GameInvitation" },
+        "description": "Real-time handshakes for live challenges."
     }
   }
 }

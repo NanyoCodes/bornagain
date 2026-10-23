@@ -147,6 +147,18 @@ export type GameSession = {
   createdAt: Timestamp;
 };
 
+export type GameInvitationStatus = 'pending' | 'accepted' | 'declined' | 'expired';
+
+export type GameInvitation = {
+    id: string;
+    hostId: string;
+    guestId: string;
+    participantIds: string[];
+    status: GameInvitationStatus;
+    createdAt: Timestamp;
+    acceptedAt?: Timestamp;
+};
+
 export type OrganizationType = "Church Department" | "Business" | "Ministry" | "Other";
 
 export type Organization = {
