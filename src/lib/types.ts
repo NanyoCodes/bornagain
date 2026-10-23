@@ -74,6 +74,7 @@ export type UserProfile = {
   maritalStatus?: string;
   workStatus?: string;
   organizationName?: string;
+  churchName?: string;
   roleInOrganization?: string;
   videoTestimonies?: VideoTestimony[];
   dateOfBirth?: Timestamp | null;
