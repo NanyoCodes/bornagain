@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -362,7 +363,7 @@ export default function SoulsWonPage() {
                 const soulSpouse = (soul.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
                 return (soulSpouse === otherFull || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFull || otherSpouse === soul.firstName.toLowerCase());
+                       (otherSpouse === soulFull || otherSpouse === s.firstName.toLowerCase());
               });
               if (spouse) { processedIds.add(spouse.id); stats.married.list.push({ ...soul, spouseRecord: spouse }); }
               else { stats.married.list.push(soul); }
@@ -724,7 +725,7 @@ export default function SoulsWonPage() {
                                 <div className="min-w-0 text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left">
                                         <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Harvest Demographic</span>
                                     </div>
                                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
@@ -755,7 +756,7 @@ export default function SoulsWonPage() {
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
-                            <div className="flex items-center justify-between gap-4 text-left text-left text-left">
+                            <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left">
                                 <div className="min-w-0 text-left text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
                                         <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left" />
@@ -766,8 +767,8 @@ export default function SoulsWonPage() {
                                         <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Viewing all souls within this demographic group.</DialogDescription>
                                     </DialogHeader>
                                 </div>
-                                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => setSelectedFilterGroup(null)}>
-                                    <X className="h-5 w-5 text-left text-left text-left" />
+                                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left text-left text-left" onClick={() => setSelectedFilterGroup(null)}>
+                                    <X className="h-5 w-5 text-left text-left text-left text-left" />
                                 </Button>
                             </div>
                         </div>
@@ -876,7 +877,7 @@ export default function SoulsWonPage() {
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                                 <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left text-left">
                                     <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
                                         <DialogTitle className="text-2xl font-bold font-headline text-left text-left text-left text-left">Add New Soul</DialogTitle>
@@ -916,7 +917,7 @@ export default function SoulsWonPage() {
         
         <Drawer open={!!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                     <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left">
                         <div className="min-w-0 text-left text-left text-left text-left">
                             <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left">

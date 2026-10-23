@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,11 +18,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState, useMemo, useEffect } from "react";
-import { Loader2, LocateFixed, Video, Map as MapIcon, Youtube, Plus, Trash2, ExternalLink, Info, MessageSquare, Briefcase, User, Globe, Camera } from "lucide-react";
+import { Loader2, LocateFixed, Video, Map as MapIcon, Youtube, Plus, Trash2, ExternalLink, Info, MessageSquare, Briefcase, User, Globe, Camera, Building2 } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc, serverTimestamp, collection, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
-import type { UserProfile } from "@/lib/types";
+import type { UserProfile, UserAccountType } from "@/lib/types";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { LocationProfileInput } from "../common/location-profile-input";
@@ -35,7 +36,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Country, State } from 'country-state-city';
 import { motion, AnimatePresence } from "framer-motion";
-import { format } from "date-fns";
+import { format, differenceInYears } from "date-fns";
 import { cn, safeToDate } from "@/lib/utils";
 
 const libraries: ('places')[] = ['places'];
@@ -51,6 +52,7 @@ const videoSchema = z.object({
 });
 
 const formSchema = z.object({
+  accountType: z.enum(['Personal', 'Church', 'Church Department', 'Corporate']),
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
   lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
   photoURL: z.string().optional(),
@@ -130,13 +132,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
   const countriesList = useMemo(() => Country.getAllCountries(), []);
 
-  const initialVideos = useMemo(() => {
-    return userProfile.videoTestimonies || [];
-  }, [userProfile.videoTestimonies]);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      accountType: userProfile.accountType || 'Personal',
       firstName: userProfile.firstName || "",
       lastName: userProfile.lastName || "",
       photoURL: userProfile.photoURL || "",
@@ -146,7 +145,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       workStatus: userProfile.workStatus || "",
       organizationName: userProfile.organizationName || "",
       roleInOrganization: userProfile.roleInOrganization || "",
-      videoTestimonies: initialVideos,
+      videoTestimonies: userProfile.videoTestimonies || [],
       dateOfBirth: safeToDate(userProfile.dateOfBirth) || null,
       city: userProfile.location?.city || "",
       state: userProfile.location?.state || "",
@@ -167,8 +166,15 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const watchedLng = form.watch('longitude');
   const watchedCountryName = form.watch('country');
   const watchedWorkStatus = useWatch({ control: form.control, name: "workStatus" });
+  const watchedAccountType = useWatch({ control: form.control, name: "accountType" });
+
+  const isPersonal = watchedAccountType === 'Personal';
 
   const organizationLabel = useMemo(() => {
+      if (watchedAccountType === 'Church') return 'Church Name';
+      if (watchedAccountType === 'Church Department') return 'Department Name';
+      if (watchedAccountType === 'Corporate') return 'Company Name';
+      
       switch(watchedWorkStatus) {
           case 'Employed': return 'Company Name';
           case 'Business Owner': return 'Business Name';
@@ -176,11 +182,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           case 'Self-Employed': return 'Organization / Project Name';
           default: return 'Organization Name';
       }
-  }, [watchedWorkStatus]);
+  }, [watchedWorkStatus, watchedAccountType]);
 
   const showOrganizationField = useMemo(() => {
-      return ['Employed', 'Business Owner', 'Student', 'Self-Employed', 'Other'].includes(watchedWorkStatus || '');
-  }, [watchedWorkStatus]);
+      return !isPersonal || ['Employed', 'Business Owner', 'Student', 'Self-Employed', 'Other'].includes(watchedWorkStatus || '');
+  }, [watchedWorkStatus, isPersonal]);
 
   const selectedCountry = useMemo(() => 
     countriesList.find(c => c.name === watchedCountryName), 
@@ -235,18 +241,19 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     };
 
     const firestoreUpdatePayload = {
+        accountType: values.accountType,
         firstName: values.firstName,
         lastName: values.lastName,
         fullName_lowercase: displayName.toLowerCase(),
         name_tokens: displayName.toLowerCase().split(/\s+/).filter(Boolean),
         bio: values.bio || "",
         personalMessage: values.personalMessage || "",
-        maritalStatus: values.maritalStatus || "",
-        workStatus: values.workStatus || "",
+        maritalStatus: isPersonal ? values.maritalStatus || "" : "",
+        workStatus: isPersonal ? values.workStatus || "" : "",
         organizationName: values.organizationName || "",
         roleInOrganization: values.roleInOrganization || "",
         videoTestimonies: values.videoTestimonies,
-        dateOfBirth: values.dateOfBirth || null,
+        dateOfBirth: isPersonal ? values.dateOfBirth || null : null,
         location: authorLocation,
         phone: values.phone || "",
         photoURL: values.photoURL || "",
@@ -339,7 +346,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 control={form.control}
                 name="photoURL"
                 render={({ field }) => (
-                    <FormItem className="flex flex-col items-center py-4">
+                    <FormItem className="flex flex-col items-center py-4 text-left">
                         <FormControl>
                             <ImageUpload
                                 initialImageUrl={field.value}
@@ -353,13 +360,43 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     </FormItem>
                 )}
             />
+
+          <FormField
+            control={form.control}
+            name="accountType"
+            render={({ field }) => (
+              <FormItem className="text-left">
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                  <Building2 className="h-3.5 w-3.5" />
+                  Account Identity Type
+                </FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger className="h-11 rounded-xl text-base">
+                      <SelectValue placeholder="Select Type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="Personal">Personal Account</SelectItem>
+                    <SelectItem value="Church">Church Account</SelectItem>
+                    <SelectItem value="Church Department">Church Department</SelectItem>
+                    <SelectItem value="Corporate">Corporate / Business</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="grid grid-cols-2 gap-4 text-left">
             <FormField
               control={form.control}
               name="firstName"
               render={({ field }) => (
                 <FormItem className="text-left">
-                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">First Name</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">
+                    {isPersonal ? 'First Name' : 'Primary Contact First Name'}
+                  </FormLabel>
                   <FormControl className="text-left">
                     <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base h-11 text-left" />
                   </FormControl>
@@ -372,7 +409,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               name="lastName"
               render={({ field }) => (
                 <FormItem className="text-left">
-                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Last Name</FormLabel>
+                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">
+                    {isPersonal ? 'Last Name' : 'Primary Contact Last Name'}
+                  </FormLabel>
                   <FormControl className="text-left">
                     <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base h-11 text-left" />
                   </FormControl>
@@ -392,7 +431,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                   Message to the World
                 </FormLabel>
                 <FormControl className="text-left">
-                  <Input placeholder="e.g., Jesus is Lord of all!" {...field} value={field.value ?? ''} className="text-base h-11 font-medium text-left" />
+                  <Input placeholder={isPersonal ? "e.g., Jesus is Lord of all!" : "e.g., Growing the Kingdom workforce together."} {...field} value={field.value ?? ''} className="text-base h-11 font-medium text-left" />
                 </FormControl>
                 <FormDescription className="text-[10px] text-left">A prominent short message shown at the top of your profile.</FormDescription>
                 <FormMessage className="text-left" />
@@ -400,88 +439,92 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             )}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-              <FormField
-                control={form.control}
-                name="maritalStatus"
-                render={({ field }) => (
-                  <FormItem className="text-left">
-                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Relationship Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                      <FormControl className="text-left">
-                        <SelectTrigger className="h-11 rounded-xl text-base text-left">
-                          <SelectValue placeholder="Select Status" className="text-left" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="text-left">
-                        <SelectItem value="Single" className="text-left">Single</SelectItem>
-                        <SelectItem value="Married" className="text-left">Married</SelectItem>
-                        <SelectItem value="Engaged" className="text-left">Engaged</SelectItem>
-                        <SelectItem value="Separated" className="text-left">Separated</SelectItem>
-                        <SelectItem value="Divorced" className="text-left">Divorced</SelectItem>
-                        <SelectItem value="Widowed" className="text-left">Widowed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="text-left" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="workStatus"
-                render={({ field }) => (
-                  <FormItem className="text-left">
-                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Work Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                      <FormControl className="text-left">
-                        <SelectTrigger className="h-11 rounded-xl text-base text-left">
-                          <SelectValue placeholder="Select Status" className="text-left" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="text-left">
-                        <SelectItem value="Employed" className="text-left">Employed</SelectItem>
-                        <SelectItem value="Self-Employed" className="text-left">Self-Employed</SelectItem>
-                        <SelectItem value="Business Owner" className="text-left">Business Owner</SelectItem>
-                        <SelectItem value="Unemployed" className="text-left">Unemployed</SelectItem>
-                        <SelectItem value="Student" className="text-left">Student</SelectItem>
-                        <SelectItem value="Retired" className="text-left">Retired</SelectItem>
-                        <SelectItem value="Other" className="text-left">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="text-left" />
-                  </FormItem>
-                )}
-              />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-              <FormField
-                control={form.control}
-                name="dateOfBirth"
-                render={({ field }) => (
+          {isPersonal && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                <FormField
+                    control={form.control}
+                    name="maritalStatus"
+                    render={({ field }) => (
                     <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Date of Birth</FormLabel>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Relationship Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl className="text-left">
-                            <Input 
-                                type="date"
-                                value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                                onChange={(e) => {
-                                    if (e.target.value) {
-                                        const [year, month, day] = e.target.value.split('-').map(Number);
-                                        field.onChange(new Date(year, month - 1, day));
-                                    } else {
-                                        field.onChange(null);
-                                    }
-                                }}
-                                className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-base text-left"
-                                max={format(new Date(), "yyyy-MM-dd")}
-                            />
+                            <SelectTrigger className="h-11 rounded-xl text-base text-left">
+                            <SelectValue placeholder="Select Status" className="text-left" />
+                            </SelectTrigger>
                         </FormControl>
+                        <SelectContent className="text-left">
+                            <SelectItem value="Single" className="text-left">Single</SelectItem>
+                            <SelectItem value="Married" className="text-left">Married</SelectItem>
+                            <SelectItem value="Engaged" className="text-left">Engaged</SelectItem>
+                            <SelectItem value="Separated" className="text-left">Separated</SelectItem>
+                            <SelectItem value="Divorced" className="text-left">Divorced</SelectItem>
+                            <SelectItem value="Widowed" className="text-left">Widowed</SelectItem>
+                        </SelectContent>
+                        </Select>
                         <FormMessage className="text-left" />
                     </FormItem>
-                )}
-            />
-          </div>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="workStatus"
+                    render={({ field }) => (
+                    <FormItem className="text-left">
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Work Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                        <FormControl className="text-left">
+                            <SelectTrigger className="h-11 rounded-xl text-base text-left">
+                            <SelectValue placeholder="Select Status" className="text-left" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="text-left">
+                            <SelectItem value="Employed" className="text-left">Employed</SelectItem>
+                            <SelectItem value="Self-Employed" className="text-left">Self-Employed</SelectItem>
+                            <SelectItem value="Business Owner" className="text-left">Business Owner</SelectItem>
+                            <SelectItem value="Unemployed" className="text-left">Unemployed</SelectItem>
+                            <SelectItem value="Student" className="text-left">Student</SelectItem>
+                            <SelectItem value="Retired" className="text-left">Retired</SelectItem>
+                            <SelectItem value="Other" className="text-left">Other</SelectItem>
+                        </SelectContent>
+                        </Select>
+                        <FormMessage className="text-left" />
+                    </FormItem>
+                    )}
+                />
+            </div>
+          )}
+
+          {isPersonal && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                <FormField
+                    control={form.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                        <FormItem className="text-left">
+                            <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Date of Birth</FormLabel>
+                            <FormControl className="text-left">
+                                <Input 
+                                    type="date"
+                                    value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                                    onChange={(e) => {
+                                        if (e.target.value) {
+                                            const [year, month, day] = e.target.value.split('-').map(Number);
+                                            field.onChange(new Date(year, month - 1, day));
+                                        } else {
+                                            field.onChange(null);
+                                        }
+                                    }}
+                                    className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-base text-left"
+                                    max={format(new Date(), "yyyy-MM-dd")}
+                                />
+                            </FormControl>
+                            <FormMessage className="text-left" />
+                        </FormItem>
+                    )}
+                />
+            </div>
+          )}
 
           <AnimatePresence>
             {showOrganizationField && (
@@ -515,10 +558,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                       <FormItem className="text-left">
                         <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left">
                           <User className="h-3.5 w-3.5 text-left" />
-                          Role / Job Title
+                          {isPersonal ? 'Role / Job Title' : 'Entity Role'}
                         </FormLabel>
                         <FormControl className="text-left">
-                          <Input placeholder="e.g., Manager, Student, Director..." {...field} value={field.value ?? ''} className="text-base h-11 text-left" />
+                          <Input placeholder={isPersonal ? "e.g., Manager, Student, Director..." : "e.g., Lead Pastor, Admin..."} {...field} value={field.value ?? ''} className="text-base h-11 text-left" />
                         </FormControl>
                         <FormMessage className="text-left" />
                       </FormItem>
@@ -534,9 +577,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="bio"
             render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">ABOUT YOURSELF</FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">
+                    {isPersonal ? 'ABOUT YOURSELF' : 'VISION & MISSION'}
+                </FormLabel>
                 <FormControl className="text-left">
-                  <Textarea placeholder="Share your personal testimony..." className="resize-none text-base min-h-[100px] text-left" {...field} />
+                  <Textarea placeholder={isPersonal ? "Share your personal testimony..." : "Describe the vision and impact of this organization..."} className="resize-none text-base min-h-[100px] text-left" {...field} />
                 </FormControl>
                 <FormMessage className="text-left" />
               </FormItem>
@@ -572,10 +617,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                                 Create YouTube Channel
                                 <ExternalLink className="ml-2 h-3 w-3 text-left" />
                             </Button>
-                            <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1 text-left">
-                                <Info className="h-3 w-3 text-left" />
-                                Record, upload to YouTube, and paste the link here.
-                            </p>
                         </div>
                     </CardContent>
                 </Card>
@@ -590,7 +631,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                                 className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-background border shadow-sm text-destructive hover:text-destructive hover:bg-destructive/10 text-left"
                                 onClick={() => remove(index)}
                             >
-                                <Trash2 className="h-3.5 w-3.5 text-left" />
+                                <X className="h-3.5 w-3.5 text-left" />
                             </Button>
                             <div className="grid gap-3 text-left">
                                 <FormField
@@ -775,7 +816,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
           <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : null}
-            Update
+            Update Identity
           </Button>
         </form>
       </Form>

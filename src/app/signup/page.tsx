@@ -1,8 +1,9 @@
+
 'use client';
 
 /**
  * @fileOverview This page handles the dedicated sign-up experience.
- * It includes robust error handling and automatic redirection for already-authenticated users.
+ * Updated to reflect Church and Corporate registration options.
  */
 
 import Link from 'next/link';
@@ -69,6 +70,7 @@ export default function SignUpPage() {
         name_tokens: nameTokens,
         email: loggedUser.email,
         photoURL: loggedUser.photoURL,
+        accountType: 'Personal', // Default social signup to Personal
       };
 
       await setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
@@ -115,7 +117,7 @@ export default function SignUpPage() {
         <div className="grid gap-2 text-left">
           <h1 className="text-2xl md:text-4xl font-black font-headline tracking-tight uppercase text-left">Registration</h1>
           <p className="text-balance text-muted-foreground font-medium text-sm text-left">
-            Register as a <span className="text-primary font-bold">Personal</span>, <span className="text-primary font-bold">Church</span>, <span className="text-primary font-bold">Department</span> or <span className="text-primary font-bold">Corporate</span> account to start mobilizing for the Kingdom.
+            Register as a <span className="text-primary font-bold">Personal</span>, <span className="text-primary font-bold">Church</span>, <span className="text-primary font-bold">Church Department</span> or <span className="text-primary font-bold">Corporate</span> account to start mobilizing for the Kingdom.
           </p>
         </div>
 

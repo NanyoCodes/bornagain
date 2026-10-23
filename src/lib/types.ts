@@ -56,6 +56,8 @@ export type VideoTestimony = {
   title?: string;
 };
 
+export type UserAccountType = 'Personal' | 'Church' | 'Church Department' | 'Corporate';
+
 export type UserProfile = {
   id: string;
   firstName: string;
@@ -64,6 +66,7 @@ export type UserProfile = {
   name_tokens?: string[];
   email: string;
   photoURL?: string;
+  accountType?: UserAccountType;
   backgroundImage?: string;
   backgroundOverlayOpacity?: number;
   bio?: string;

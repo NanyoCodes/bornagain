@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +25,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 
 const formSchema = z.object({
@@ -38,6 +40,9 @@ const formSchema = z.object({
   }),
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
+  }),
+  accountType: z.enum(['Personal', 'Church', 'Church Department', 'Corporate'], {
+    required_error: "Please select an account type.",
   }),
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: "You must accept the terms and conditions to continue.",
@@ -85,6 +90,7 @@ export function SignUpForm() {
         name_tokens: nameTokens,
         email: values.email,
         photoURL: user.photoURL,
+        accountType: values.accountType,
       };
 
       await setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
@@ -141,6 +147,7 @@ export function SignUpForm() {
       lastName: "",
       email: "",
       password: "",
+      accountType: 'Personal',
       acceptTerms: false,
     },
   });
@@ -148,6 +155,29 @@ export function SignUpForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 text-left">
+        <FormField
+          control={form.control}
+          name="accountType"
+          render={({ field }) => (
+            <FormItem className="text-left">
+              <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary">Account Type</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="h-11 rounded-xl">
+                    <SelectValue placeholder="Select Type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="Personal">Personal Account</SelectItem>
+                  <SelectItem value="Church">Church Account</SelectItem>
+                  <SelectItem value="Church Department">Church Department</SelectItem>
+                  <SelectItem value="Corporate">Corporate / Business</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage className="text-left" />
+            </FormItem>
+          )}
+        />
         <div className="grid grid-cols-2 gap-4 text-left">
           <FormField
             control={form.control}
