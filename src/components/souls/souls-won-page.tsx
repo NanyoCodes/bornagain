@@ -755,7 +755,7 @@ export default function SoulsWonPage() {
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
-                            <div className="flex items-center justify-between gap-4 text-left text-left text-left">
+                            <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left">
                                 <div className="min-w-0 text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
                                         <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left" />
@@ -900,7 +900,7 @@ export default function SoulsWonPage() {
                                         <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Edit Record</DialogTitle>
                                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Update soul identity and mission details.</DrawerDescription>
                                     </DialogHeader>
-                                    <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left text-left text-left" onClick={() => setEditSoulId(null)}>
+                                    <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left text-left" onClick={() => setEditSoulId(null)}>
                                         <X className="h-5 w-5 text-left text-left text-left" />
                                     </Button>
                                 </div>

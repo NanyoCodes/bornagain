@@ -34,7 +34,8 @@ import {
   X,
   Utensils,
   Info,
-  ChevronDown
+  ChevronDown,
+  ShieldAlert
 } from "lucide-react";
 
 import {
@@ -74,7 +75,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn, safeToDate } from "@/lib/utils";
-import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
+import { useUser, useAuth, useDoc, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
@@ -725,11 +726,15 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
-              <SheetHeader className="text-left flex-shrink-0">
-                <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] flex items-center justify-between gap-4">
+              <SheetHeader className="text-left flex-shrink-0 p-0">
+                <div className="flex items-center gap-2 mb-1">
+                    <ShieldAlert className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Mandatory Setup</span>
+                </div>
+                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Complete Your Identity</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1 text-zinc-400">Join the global movement by introducing yourself to the Body.</SheetDescription>
               </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8 text-left">
@@ -739,14 +744,18 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-            <div className="p-6 border-b bg-muted/10">
+          <DialogContent hideCloseButton className="sm:max-w-[500px] rounded-[2.5rem] overflow-hidden p-0 text-left border-none shadow-2xl">
+            <div className="p-8 border-b bg-muted/10 flex items-center justify-between gap-4">
               <DialogHeader className="text-left p-0">
-                <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                <div className="flex items-center gap-2 mb-1">
+                    <ShieldAlert className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Mandatory Setup</span>
+                </div>
+                <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight">Activate Profile</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-zinc-400">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
+            <div className="p-8 max-h-[70vh] overflow-y-auto text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -780,7 +789,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
                 <div className="relative mx-auto w-fit text-left text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
                 </div>
             </div>
         }>
