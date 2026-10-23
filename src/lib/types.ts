@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -127,6 +128,23 @@ export type UserProfile = {
   monthlySoulsGoal?: number;
   lastActive?: Timestamp;
   isVendor?: boolean;
+  organizationId?: string;
+};
+
+export type OrganizationType = "Church Department" | "Business" | "Ministry" | "Other";
+
+export type Organization = {
+  id: string;
+  name: string;
+  description: string;
+  type: OrganizationType;
+  organizerId: string;
+  organizerName: string;
+  memberIds: string[];
+  photoURL?: string;
+  location?: string;
+  createdAt: Timestamp;
+  status: 'active' | 'deleted';
 };
 
 export type CircleResource = {
@@ -399,7 +417,7 @@ export type ChatMessage = {
 export type Notification = {
   id: string;
   userId: string;
-  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request' | 'request_accepted' | 'request_declined' | 'accountability_partner_removed' | 'new_soul_in_fellowship' | 'soul_unassigned_from_fellowship' | 'new_order' | 'order_update' | 'birthday_reminder' | 'pending_provision';
+  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request' | 'request_accepted' | 'request_declined' | 'accountability_partner_removed' | 'new_soul_in_fellowship' | 'soul_unassigned_from_fellowship' | 'new_order' | 'order_update' | 'birthday_reminder' | 'pending_provision' | 'org_invite';
   title: string;
   message: string;
   link?: string;

@@ -234,13 +234,32 @@
           "type": "object",
           "description": "Timestamp of the user's last activity."
         },
-        "isVendor": { "type": "boolean" }
+        "isVendor": { "type": "boolean" },
+        "organizationId": { "type": "string", "description": "The ID of the organization this user belongs to." }
       },
       "required": [
         "firstName",
         "lastName",
         "email"
       ]
+    },
+    "Organization": {
+      "title": "Organization",
+      "description": "Represents a corporate or church department account.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["Church Department", "Business", "Ministry", "Other"] },
+        "organizerId": { "type": "string" },
+        "organizerName": { "type": "string" },
+        "memberIds": { "type": "array", "items": { "type": "string" } },
+        "photoURL": { "type": "string", "format": "uri" },
+        "location": { "type": "string" },
+        "createdAt": { "type": "object" },
+        "status": { "type": "string", "enum": ["active", "deleted"] }
+      },
+      "required": ["name", "type", "organizerId"]
     },
     "SharedBook": {
       "title": "Shared Book",
@@ -298,6 +317,10 @@
         "$ref": "#/entities/UserProfile"
       },
       "description": "Stores public user profile data, keyed by user ID."
+    },
+    "/organizations/{orgId}": {
+      "schema": { "$ref": "#/entities/Organization" },
+      "description": "Corporate or department accounts."
     },
     "/sharedBooks/{bookId}": {
       "schema": { "$ref": "#/entities/SharedBook" },
