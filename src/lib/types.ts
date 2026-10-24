@@ -1,4 +1,3 @@
-
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -134,13 +133,17 @@ export type UserProfile = {
   isVendor?: boolean;
   organizationId?: string;
   kingdomPoints?: number;
+  lastGameAt?: Timestamp;
 };
+
+export type GameSessionType = 'word' | 'prayer' | 'trivia';
 
 export type GameSession = {
   id: string;
   participantIds: string[];
   userId: string;
   partnerId: string;
+  gameType: GameSessionType;
   score: number;
   correctCount: number;
   wrongCount: number;
@@ -155,6 +158,7 @@ export type GameInvitation = {
     guestId: string;
     participantIds: string[];
     status: GameInvitationStatus;
+    gameType: GameSessionType;
     timerDuration?: number;
     createdAt: Timestamp;
     acceptedAt?: Timestamp;
