@@ -45,43 +45,13 @@ import {
     orderBy, 
     limit,
     deleteDoc,
-    onSnapshot
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 import type { UserProfile, GameSession, GameInvitation, GameSessionType } from '@/lib/types';
 import { format, differenceInMinutes } from 'date-fns';
 import { Label } from '../ui/label';
-
-// MASSIVE SCRIPTURE DATASET
-const gameData: Record<GameSessionType, any[]> = {
-  word: [
-    { text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal ______.", correct: "Life", options: ["Life", "Wealth", "Glory", "Peace"], ref: "John 3:16" },
-    { text: "The Lord is my shepherd, I shall not ______.", correct: "Want", options: ["Fear", "Wait", "Want", "Fall"], ref: "Psalm 23:1" },
-    { text: "I can do all things through ______ who strengthens me.", correct: "Christ", options: ["Faith", "Christ", "Prayer", "Effort"], ref: "Philippians 4:13" },
-    { text: "In the beginning was the ______, and the ______ was with God, and the ______ was God.", correct: "Word", options: ["Light", "Word", "Spirit", "Life"], ref: "John 1:1" },
-    { text: "But seek first the ______ of God and his righteousness, and all these things will be added to you.", correct: "Kingdom", options: ["Grace", "Power", "Kingdom", "Peace"], ref: "Matthew 6:33" },
-    { text: "Trust in the Lord with all your ______, and lean not on your own understanding.", correct: "Heart", options: ["Might", "Soul", "Heart", "Mind"], ref: "Proverbs 3:5" },
-    { text: "The fruit of the Spirit is love, joy, ______, forbearance, kindness, goodness, faithfulness...", correct: "Peace", options: ["Power", "Peace", "Hope", "Strength"], ref: "Galatians 5:22" },
-    { text: "For I know the plans I have for you, declares the Lord, plans to ______ you and not to harm you.", correct: "Prosper", options: ["Help", "Prosper", "Heal", "Guide"], ref: "Jeremiah 29:11" },
-    { text: "Your word is a ______ for my feet, a light on my path.", correct: "Lamp", options: ["Guide", "Light", "Lamp", "Fire"], ref: "Psalm 119:105" },
-    { text: "But you will receive ______ when the Holy Spirit comes on you.", correct: "Power", options: ["Peace", "Wisdom", "Power", "Grace"], ref: "Acts 1:8" }
-  ],
-  prayer: [
-    { text: "I am feeling overwhelmed and anxious today. Which word should I stand on?", correct: "1 Peter 5:7", options: ["1 Peter 5:7", "Luke 12:15", "James 4:6", "Exodus 14:14"], ref: "Cast all your anxiety on him." },
-    { text: "I need divine healing in my body. Which promise is for me?", correct: "Isaiah 53:5", options: ["Isaiah 53:5", "Psalm 23:1", "John 14:6", "Acts 1:8"], ref: "By His wounds we are healed." },
-    { text: "I am facing a giant that seems too big. What should I declare?", correct: "1 Samuel 17:47", options: ["1 Samuel 17:47", "John 3:16", "Proverbs 3:5", "Psalm 119:105"], ref: "The battle is the Lord's." },
-    { text: "I need wisdom for a difficult decision. Where should I look?", correct: "James 1:5", options: ["James 1:5", "Mark 11:24", "Isaiah 40:31", "Hebrews 11:1"], ref: "If any of you lacks wisdom..." }
-  ],
-  trivia: [
-    { text: "Who was the first person to see the resurrected Jesus?", correct: "Mary Magdalene", options: ["Peter", "John", "Mary Magdalene", "Thomas"], ref: "John 20:14" },
-    { text: "How many days and nights did Jonah spend in the belly of the big fish?", correct: "3", options: ["1", "3", "7", "40"], ref: "Jonah 1:17" },
-    { text: "What was the first miracle Jesus performed?", correct: "Water into wine", options: ["Healing the blind", "Water into wine", "Walking on water", "Feeding 5000"], ref: "John 2:1-11" },
-    { text: "Who was the oldest man mentioned in the Bible?", correct: "Methuselah", options: ["Adam", "Noah", "Methuselah", "Abraham"], ref: "Genesis 5:27" }
-  ]
-};
+import { BIBLE_GAME_DATA } from '@/lib/bible-game-data';
 
 const timerOptions = [30, 60, 90, 120];
 
@@ -220,7 +190,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     };
 
     const handleStart = (type: GameSessionType = activeGameType) => {
-        const pool = gameData[type];
+        const pool = BIBLE_GAME_DATA[type];
         setQuizIndex(Math.floor(Math.random() * pool.length));
         setCorrectCount(0);
         setWrongCount(0);
@@ -268,7 +238,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     const handleCheck = (option: string) => {
         if (!isGameActive || gameState !== 'playing') return;
         
-        const pool = gameData[activeGameType];
+        const pool = BIBLE_GAME_DATA[activeGameType];
         setSelectedOption(option);
         if (option === pool[quizIndex].correct) {
             setGameState('correct');
@@ -286,8 +256,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     };
 
     const nextChallenge = () => {
-        const pool = gameData[activeGameType];
-        // Ensure "new" challenge per turn by avoiding same index if pool > 1
+        const pool = BIBLE_GAME_DATA[activeGameType];
         let nextIdx = Math.floor(Math.random() * pool.length);
         if (pool.length > 1 && nextIdx === quizIndex) {
             nextIdx = (nextIdx + 1) % pool.length;
@@ -297,7 +266,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         setSelectedOption(null);
     };
 
-    const quiz = gameData[activeGameType][quizIndex];
+    const quiz = BIBLE_GAME_DATA[activeGameType][quizIndex];
 
     const historyQuery = useMemo(() => {
         if (!firestore || !user?.uid || !partnerId) return null;
@@ -377,7 +346,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                                     )}
                                                 >
                                                     <type.icon className="h-6 w-6" />
-                                                    <span className="text-[10px] font-black uppercase tracking-widest">{type.label}</span>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-center">{type.label}</span>
                                                 </Button>
                                             ))}
                                         </div>
@@ -450,16 +419,16 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
 
                     {isGameActive && (
-                        <div className="space-y-6 sm:space-y-8 animate-in fade-in zoom-in duration-500">
+                        <div className="space-y-6 sm:space-y-8 animate-in fade-in zoom-in duration-500 text-left">
                             <div className="flex items-center justify-between px-2">
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3 text-left">
                                     <div className={cn(
                                         "h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2",
                                         timeLeft <= 10 ? "bg-red-500 border-red-400 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary"
                                     )}>
                                         <Timer className="h-5 w-5 sm:h-6 sm:w-6" />
                                     </div>
-                                    <div>
+                                    <div className="text-left">
                                         <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Left</p>
                                         <p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>
                                             {timeLeft}s
@@ -473,7 +442,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             </div>
 
                             <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-12 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[160px] flex items-center justify-center">
-                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left">
                                     {activeGameType === 'word' ? <BookOpen className="h-16 w-16 sm:h-20 sm:w-20 text-primary" /> : <Target className="h-16 w-16 sm:h-20 sm:w-20 text-primary" />}
                                 </div>
                                 <AnimatePresence mode="wait">
@@ -489,13 +458,13 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </AnimatePresence>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                            <div className="grid grid-cols-2 gap-2 sm:gap-4 text-left">
                                 {quiz.options.map(opt => (
                                     <Button
                                         key={opt}
                                         variant="outline"
                                         className={cn(
-                                            "h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2",
+                                            "h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center",
                                             gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_25px_rgba(22,163,74,0.4)]" : 
                                             gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : 
                                             "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/20"
@@ -511,18 +480,18 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
 
                     {gameState === 'finished' && (
-                        <div className="space-y-8 sm:space-y-10 animate-in slide-in-from-bottom-6 duration-700">
+                        <div className="space-y-8 sm:space-y-10 animate-in slide-in-from-bottom-6 duration-700 text-left">
                             <div className="text-center space-y-4">
                                 <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10">
                                     <Award className="h-10 w-10 sm:h-12 sm:w-12 text-white" />
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-center">
                                     <h3 className="text-2xl sm:text-3xl font-black uppercase text-white">Session Complete!</h3>
                                     <p className="text-zinc-400 font-medium text-sm">Excellent labor in the Word.</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
                                 <div className="bg-zinc-900 rounded-2xl sm:rounded-3xl p-3 sm:p-5 text-center border border-white/5">
                                     <p className="text-[9px] sm:text-xs font-black text-primary uppercase mb-1">Points</p>
                                     <p className="text-lg sm:text-3xl font-black text-white">{correctCount * 10}</p>
@@ -539,7 +508,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
                             <Button 
                                 onClick={() => setGameState('playing')}
-                                className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-2xl flex items-center justify-center gap-4 transition-all active:scale-95"
+                                className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-2xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
                             >
                                 <RefreshCw className="h-5 w-5" />
                                 NEW SESSION
@@ -548,46 +517,46 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
                 </CardContent>
                 <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5">
-                     <p className="text-[8px] sm:text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em]">Iron Sharpens Iron • Growth • Victory</p>
+                     <p className="text-[8px] sm:text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">Iron Sharpens Iron • Growth • Victory</p>
                 </CardFooter>
             </Card>
 
-            <div className="space-y-6">
-                <div className="flex items-center justify-between px-1">
-                    <div className="flex items-center gap-2">
-                        <History className="h-4 w-4 text-primary" />
+            <div className="space-y-6 text-left">
+                <div className="flex items-center justify-between px-1 text-left">
+                    <div className="flex items-center gap-2 text-left">
+                        <History className="h-4 w-4 text-primary text-left" />
                         <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground">Arena History</h4>
                     </div>
                     <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60">Recent Results</Badge>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 text-left">
                     {filteredHistory.length > 0 ? filteredHistory.map(session => {
                         const date = safeToDate(session.createdAt);
                         const isMyScore = session.userId === user?.uid;
                         return (
-                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all">
-                                <div className="flex items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all text-left">
+                                <div className="flex items-center justify-between gap-4 text-left">
+                                    <div className="flex items-center gap-4 flex-1 min-w-0 text-left">
                                         <div className={cn(
-                                            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner",
+                                            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner text-left",
                                             isMyScore ? "bg-primary/10 text-primary border-primary/20" : "bg-muted/40 text-muted-foreground"
                                         )}>
                                             {isMyScore ? <Star className="h-5 w-5" /> : <Award className="h-5 w-5" />}
                                         </div>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="font-black text-sm uppercase tracking-tight truncate leading-tight">
+                                        <div className="min-w-0 flex-1 text-left">
+                                            <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">
                                                 {isMyScore ? 'My Victory' : `${partnerName.split(' ')[0]}'s Result`}
                                             </p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50">{session.gameType || 'Word'}</Badge>
-                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                                            <div className="flex items-center gap-2 mt-1 text-left">
+                                                <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left">{session.gameType || 'Word'}</Badge>
+                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                                     {date ? format(date, 'MMM d, p') : 'Recently'}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-right">
+                                    <div className="text-right shrink-0">
                                         <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none">{session.score}</p>
                                         <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1">POINTS</p>
                                     </div>
@@ -595,21 +564,21 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             </Card>
                         );
                     }) : (
-                        <div className="py-12 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed">
-                            <History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3" />
-                            <p className="text-xs text-muted-foreground italic px-12 text-balance leading-relaxed">No recorded sessions in the history. Start sharpening each other to see results here.</p>
+                        <div className="py-12 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed text-left">
+                            <History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-left" />
+                            <p className="text-xs text-muted-foreground italic px-12 text-balance leading-relaxed text-center">No recorded sessions in the history. Start sharpening each other to see results here.</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            <div className="p-6 bg-muted/20 rounded-[2.5rem] border border-dashed flex items-start gap-4 shadow-inner">
-                <div className="h-6 w-6 text-primary shrink-0 mt-1 opacity-60">
-                    <Info className="h-6 w-6" />
+            <div className="p-6 bg-muted/20 rounded-[2.5rem] border border-dashed flex items-start gap-4 shadow-inner text-left">
+                <div className="h-6 w-6 text-primary shrink-0 mt-1 opacity-60 text-left">
+                    <Info className="h-6 w-6 text-left" />
                 </div>
-                <div className="space-y-1">
-                    <h4 className="font-black text-xs uppercase tracking-widest">About Challenges</h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed font-medium text-balance">Live challenges are synchronized. Once the guest accepts, the timer begins for both participants. Your Kingdom Points reflect your growth and knowledge of Truth.</p>
+                <div className="space-y-1 text-left">
+                    <h4 className="font-black text-xs uppercase tracking-widest text-left">About Challenges</h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed font-medium text-balance text-left">Live challenges are synchronized. Once the guest accepts, the timer begins for both participants. Your Kingdom Points reflect your growth and knowledge of Truth.</p>
                 </div>
             </div>
         </div>
