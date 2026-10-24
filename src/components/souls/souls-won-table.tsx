@@ -50,7 +50,7 @@ const SoulCard = React.memo(({ soul, onClick }: {
                     </Avatar>
                     <div className="min-w-0 text-left">
                         <div className="flex items-center gap-2 text-left flex-wrap">
-                            <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight text-left">
+                            <p className="font-bold text-[13px] sm:text-base leading-tight capitalize tracking-tight text-left">
                               {soul.firstName || 'Unknown'} {soul.lastName || ''}
                             </p>
                         </div>
@@ -86,7 +86,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
                         </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-left">
-                        <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left">
+                        <div className="font-black text-xs sm:text-sm md:text-base capitalize tracking-tight text-left">
                             {soul.firstName} {soul.lastName}
                         </div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left"><Church className="h-3 w-3 shrink-0 text-left" />{soul.church}</div>}

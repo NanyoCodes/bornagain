@@ -95,34 +95,34 @@ function FullDevotionalDialog({
     if (!mounted) return <>{children}</>;
 
     const content = (
-        <div className="space-y-8" onClick={stopPropagation}>
+        <div className="space-y-8 text-left" onClick={stopPropagation}>
             <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
-                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-left text-balance relative z-10 break-words [overflow-wrap:anywhere]">{devotional.text}</p>
-                <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10 break-words [overflow-wrap:anywhere]">— {devotional.scripture}</p>
+                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-left text-balance relative z-10 break-words">{devotional.text}</p>
+                <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10">— {devotional.scripture}</p>
             </div>
             
             {devotional.prayer && (
-                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden">
+                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden text-left">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                             <HandHeart className="h-4 w-4 text-primary" />
                         </div>
                         <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">PRAYER FOR TODAY</span>
                     </div>
-                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance break-words [overflow-wrap:anywhere] text-left">
+                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance break-words text-left">
                         &ldquo;{devotional.prayer}&rdquo;
                     </p>
                 </div>
             )}
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-dashed pt-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-dashed pt-8 text-left">
                 <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit">
                     <Sparkles className="h-4 w-4 text-primary fill-current" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
                 </div>
 
-                <div className="flex items-center gap-2 flex-wrap justify-center w-full sm:w-auto">
+                <div className="flex items-center gap-2 flex-wrap justify-center w-full sm:w-auto text-left">
                     <div className="flex items-center gap-1.5 flex-wrap justify-center">
                         <Button 
                             onClick={(e) => onReaction('amen', e)} 
@@ -168,8 +168,8 @@ function FullDevotionalDialog({
                 </div>
             </div>
 
-            <div ref={commentsRef} className="border-t border-dashed pt-8">
-                <div className="flex items-center gap-3 mb-6 px-1">
+            <div ref={commentsRef} className="border-t border-dashed pt-8 text-left">
+                <div className="flex items-center gap-3 mb-6 px-1 text-left">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                         <MessageSquare className="h-4 w-4 text-primary" />
                     </div>
@@ -185,17 +185,17 @@ function FullDevotionalDialog({
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                         <SheetHeader className="text-left flex-shrink-0 text-left">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3 text-balance">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
                             </SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow">
-                        <div className="p-8 pb-32">
+                        <div className="p-8 pb-32 text-left">
                             {content}
                         </div>
                     </ScrollArea>
@@ -209,27 +209,29 @@ function FullDevotionalDialog({
             <DialogTrigger asChild onClick={stopPropagation}>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                <div className="p-8 border-b bg-muted/10">
-                    <div className="flex items-center gap-3 mb-2">
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="flex items-center gap-3 mb-2 text-left">
                         <Target className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
-                    <DialogHeader>
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3 text-balance text-left">
+                    <DialogHeader className="text-left">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
                             <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                             {devotional.title}
                         </DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1 text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="max-h-[70vh]">
-                    <div className="p-8">
-                        {content}
-                    </div>
-                </ScrollArea>
-                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3">
-                    <Button variant="outline" onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="rounded-full px-8 font-bold">Close Word</Button>
+                <div className="flex-1 min-h-0">
+                  <ScrollArea className="h-full">
+                      <div className="p-8 text-left">
+                          {content}
+                      </div>
+                  </ScrollArea>
+                </div>
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0">
+                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold text-left">Close Word</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -423,8 +425,8 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     };
 
     return (
-        <Card onClick={onClick} className="cursor-pointer rounded-2xl border transition-all duration-300 shadow-md sm:shadow-lg border-t-2 border-t-primary/10 border-b-8 border-b-primary/10 sm:border-b-8 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="p-4 sm:p-6 pb-2">
+        <Card onClick={onClick} className="cursor-pointer rounded-2xl border transition-all duration-300 shadow-md sm:shadow-lg border-t-2 border-t-primary/10 border-b-8 border-b-primary/10 sm:border-b-8 bg-card/50 backdrop-blur-sm text-left">
+            <CardHeader className="p-4 sm:p-6 pb-2 text-left">
                 <div className="flex justify-between items-start gap-4">
                     <div className="min-w-0 flex-1">
                         <CardTitle className="text-lg sm:text-xl font-black leading-tight mb-2 uppercase tracking-tight break-words [overflow-wrap:anywhere]">
@@ -433,7 +435,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                         <div className="space-y-2">
                           <CardDescription className="flex items-center gap-2 text-[11px] sm:text-xs font-medium">
                               <LiveAvatar userId={fellowship.organizerId} fallbackUrl={fellowship.organizerPhotoURL} fallbackInitials={fellowship.organizerName?.charAt(0)} className="h-5 w-5 border shadow-sm" />
-                              <span className="leading-tight truncate">
+                              <span className="leading-tight">
                                 Organized by{" "}
                                 <Link 
                                     href={isOrganizer ? '/profile' : `/profile/${fellowship.organizerId}`}
@@ -522,8 +524,8 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium break-words [overflow-wrap:anywhere] text-left">{fellowship.description}</p>
                 
                 {todayDevotional && (
-                    <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 relative group/devo overflow-hidden shadow-inner">
-                        <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover/devo:opacity-[0.06] transition-opacity">
+                    <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 relative group/devo overflow-hidden shadow-inner text-left">
+                        <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover/devo:opacity-[0.06] transition-opacity text-left">
                             <BookOpen className="h-12 w-12 text-primary rotate-12" />
                         </div>
                         <div className="flex items-center gap-2 mb-2">
@@ -541,7 +543,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                 &ldquo;{todayDevotional.text}&rdquo;
                             </p>
                             {todayDevotional.prayer && (
-                                <div className="mt-2 pl-3 border-l-2 border-primary/20">
+                                <div className="mt-2 pl-3 border-l-2 border-primary/20 text-left">
                                     <p className="text-[9px] font-black uppercase text-primary/60 mb-0.5">Prayer focus</p>
                                     <p className="text-[10px] text-muted-foreground italic line-clamp-1 leading-tight break-words [overflow-wrap:anywhere] text-left">
                                         &ldquo;{todayDevotional.prayer}&rdquo;
@@ -553,7 +555,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                 {totalReactions > 0 || commentCount > 0 ? (
                                     <div className="flex items-center gap-3">
                                         {totalReactions > 0 && (
-                                            <div className="flex items-center gap-1 bg-background/50 px-1.5 py-0.5 rounded-full border border-primary/10 shadow-sm">
+                                            <div className="flex items-center gap-1 bg-background/50 px-1.5 py-0.5 rounded-full border border-primary/10 shadow-sm text-left">
                                                 <div className="flex items-center -space-x-1">
                                                     {supporters.length > 0 && <HandHeart className="h-3 w-3 text-primary fill-current" />}
                                                     {inspiredBy.length > 0 && <Sparkles className="h-3 w-3 text-chart-3 fill-current" />}

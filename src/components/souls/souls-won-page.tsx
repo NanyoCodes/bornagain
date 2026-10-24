@@ -178,7 +178,7 @@ function FilteredSoulList({
                         </CollapsibleTrigger>
                         <div className="min-w-0 flex-1 pr-1 text-left">
                             <div className="flex items-center gap-2 flex-wrap text-left">
-                                <p className="font-black text-[14px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left">{soul.firstName} {soul.lastName}</p>
+                                <p className="font-black text-[14px] sm:text-base uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                                 <Badge variant="outline" className={cn("text-[8px] h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50", getStatusClasses(soul.status))}>{soul.status}</Badge>
                             </div>
                             <CollapsibleTrigger asChild onClick={(e) => e.stopPropagation()}>
