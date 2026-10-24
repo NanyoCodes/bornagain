@@ -58,6 +58,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { ScrollArea } from '../ui/scroll-area';
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const timerOptions = [30, 60, 90, 120];
 
@@ -392,7 +393,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         onClick={handleSendChallenge} 
                                         disabled={isRequesting}
                                         size="lg" 
-                                        className="w-full h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30"
+                                        className="w-full h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-center"
                                     >
                                         {isRequesting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
                                         ISSUE CHALLENGE
@@ -423,7 +424,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         <p className="text-xs font-bold text-primary uppercase tracking-widest">Mode: {invitation.gameType} • Duration: {invitation.timerDuration}s</p>
                                     </div>
                                     <div className="flex flex-col gap-3">
-                                        <Button onClick={handleAcceptChallenge} size="lg" className="h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl">
+                                        <Button onClick={handleAcceptChallenge} size="lg" className="h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl text-center">
                                             <Check className="mr-2 h-5 w-5" /> ACCEPT CHALLENGE
                                         </Button>
                                         <Button variant="ghost" onClick={handleDeclineChallenge} className="text-destructive font-black uppercase tracking-widest text-xs">
@@ -525,7 +526,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
                             <Button 
                                 onClick={() => setGameState('playing')}
-                                className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95"
+                                className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
                             >
                                 <RefreshCw className="h-5 w-5" />
                                 NEW SESSION
@@ -598,11 +599,11 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     <MessagesSquare className="h-6 w-6 text-primary" />
                 </div>
                 <div className="space-y-3 flex-1 text-center sm:text-left">
-                    <div className="space-y-1">
-                        <h4 className="font-black text-sm uppercase tracking-tight text-foreground">Post-Session Fellowship</h4>
-                        <p className="text-xs text-muted-foreground leading-relaxed font-medium text-balance">The arena is for sharpening, but the hub is for building. Continue the conversation with your partner after each session.</p>
+                    <div className="space-y-1 text-left sm:text-left">
+                        <h4 className="font-black text-sm uppercase tracking-tight text-foreground text-center sm:text-left">Post-Session Fellowship</h4>
+                        <p className="text-xs text-muted-foreground leading-relaxed font-medium text-balance text-center sm:text-left">The arena is for sharpening, but the hub is for building. Continue the conversation with your partner after each session.</p>
                     </div>
-                    <Button variant="outline" size="sm" className="rounded-xl h-9 px-6 font-bold border-primary/20 text-primary hover:bg-primary/5" onClick={() => router.push('/chats')}>
+                    <Button variant="outline" size="sm" className="rounded-xl h-9 px-6 font-bold border-primary/20 text-primary hover:bg-primary/5 text-center sm:text-left" onClick={() => router.push('/chats')}>
                         OPEN KINGDOM CHAT
                     </Button>
                 </div>
