@@ -121,6 +121,7 @@ import Image from 'next/image';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Soul, FollowUpStatus } from "@/lib/types";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -555,7 +556,7 @@ export function ShareWordDialog({
             {view === 'chapters' && renderChapters}
             {view === 'verses' && renderVerses}
         </div>
-    </ScrollArea>
+  </ScrollArea>
   );
 
   const footer = view === 'verses' && (
@@ -847,11 +848,11 @@ export function SoulProfileContent({
                 {address && (
                     <Button 
                         size="icon" 
-                        className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background text-left"
+                        className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background text-left text-left"
                         onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')}
                         title="View Map"
                     >
-                        <MapPin className="h-5 w-5 text-left text-left" />
+                        <MapPin className="h-5 w-5 text-left text-left text-left" />
                     </Button>
                 )}
             </div>
@@ -903,19 +904,19 @@ export function SoulProfileContent({
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p>
-                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize text-left">{soul.relationship || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.relationship || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.workStatus || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.workStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Rel. Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.maritalStatus || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.maritalStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nickname</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.nickname || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.nickname || 'N/A'}</p>
                     </div>
                 </div>
             </div>
@@ -929,18 +930,18 @@ export function SoulProfileContent({
                         <Edit className="h-4 w-4 text-left" />
                     </Button>
                 </div>
-                <div className="space-y-2 text-left">
+                <div className="space-y-2 text-left text-left">
                     {soul.phone ? (
-                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left">
-                            <Phone className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
+                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left text-left">
+                            <Phone className="h-3.5 w-3.5 text-primary shrink-0 text-left text-left" />
                             {soul.phone}
                         </div>
                     ) : (
-                        <p className="text-[9px] text-muted-foreground/40 italic text-left">No phone recorded</p>
+                        <p className="text-[9px] text-muted-foreground/40 italic text-left text-left">No phone recorded</p>
                     )}
                     {soul.email && (
-                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left">
-                            <Mail className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
+                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left text-left">
+                            <Mail className="h-3.5 w-3.5 text-primary shrink-0 text-left text-left" />
                             {soul.email}
                         </div>
                     )}
@@ -966,11 +967,11 @@ export function SoulProfileContent({
                                 onClick={() => handleActionClick(action.id)}
                                 disabled={isActionSubmitting}
                             >
-                                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors text-left">
-                                    {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left" /> : <Icon className="h-4 w-4 text-left" />}
+                                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors text-left text-left">
+                                    {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left text-left" /> : <Icon className="h-4 w-4 text-left text-left" />}
                                 </div>
-                                <span className="text-xs font-bold uppercase tracking-tight truncate flex-1 text-left">{action.label}</span>
-                                <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity text-left" />
+                                <span className="text-xs font-bold uppercase tracking-tight truncate flex-1 text-left text-left">{action.label}</span>
+                                <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity text-left text-left" />
                             </Button>
                         )
                     })}
@@ -982,8 +983,8 @@ export function SoulProfileContent({
             <div className="space-y-4 text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Harvest Context</p>
                 <div className="space-y-1 text-left">
-                    <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate text-left">
-                        <Target className="h-3 w-3 text-primary text-left" />
+                    <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 text-left">
+                        <Target className="h-3 w-3 text-primary text-left text-left" />
                         Source: {soul.source}
                     </p>
                 </div>
@@ -994,23 +995,23 @@ export function SoulProfileContent({
             <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onOpenAssignDialog(soul)}>
-                        <Edit className="h-4 w-4 text-left" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left" onClick={() => onOpenAssignDialog(soul)}>
+                        <Edit className="h-4 w-4 text-left text-left" />
                     </Button>
                 </div>
                 <div className="space-y-3 text-left">
-                    <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left">
-                        <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left" />
-                        <div className="min-w-0 text-left">
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p>
-                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p>
+                    <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left text-left">
+                        <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left text-left" />
+                        <div className="min-w-0 text-left text-left">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Fellowship</p>
+                            <p className="text-[11px] sm:text-xs font-bold capitalize text-left text-left">{soul.fellowshipName || 'No Fellowship'}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left">
-                        <Users className="h-4 w-4 text-blue-500 shrink-0 text-left" />
-                        <div className="min-w-0 text-left">
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p>
-                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p>
+                    <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left text-left">
+                        <Users className="h-4 w-4 text-blue-500 shrink-0 text-left text-left" />
+                        <div className="min-w-0 text-left text-left">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Association</p>
+                            <p className="text-[11px] sm:text-xs font-bold capitalize text-left text-left">{soul.associationName || 'No Association'}</p>
                         </div>
                     </div>
                 </div>
@@ -1031,8 +1032,8 @@ export function SoulProfileContent({
                             "flex items-center gap-2 p-2 rounded-xl border transition-all text-left",
                             milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40"
                         )}>
-                            <milestone.icon className="h-3 w-3 text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-tight text-left">{milestone.label}</span>
+                            <milestone.icon className="h-3 w-3 text-left text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-tight text-left text-left">{milestone.label}</span>
                         </div>
                     ))}
                 </div>
@@ -1042,7 +1043,7 @@ export function SoulProfileContent({
             <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left">
-                        <History className="h-3.5 w-3.5 text-left" /> Interaction History
+                        <History className="h-3.5 w-3.5 text-left text-left" /> Interaction History
                     </p>
                     <Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5 text-left" onClick={() => onViewHistory(soul)}>
                         View All
@@ -1053,19 +1054,17 @@ export function SoulProfileContent({
                         sortedHistory.slice(0, 3).map((log, index) => {
                             const date = safeToDate(log.date);
                             return (
-                                <React.Fragment key={index}>
-                                    <div className="relative text-left">
-                                        <div className="pl-4 border-l-4 border-primary/20 text-left">
-                                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left">
-                                                {date ? format(date, "MMM d, yyyy") : 'Recently'}
-                                                {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName}</span>}
-                                            </p>
-                                            <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left">
-                                                &ldquo;{log.note || 'Interaction logged.'}&rdquo;
-                                            </p>
-                                        </div>
+                                <div key={index} className="relative text-left">
+                                    <div className="pl-4 border-l-4 border-primary/20 text-left">
+                                        <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left">
+                                            {date ? format(date, "MMM d, yyyy") : 'Recently'}
+                                            {log.memberName && <span className="ml-2 text-primary/40 text-left">• By {log.memberName}</span>}
+                                        </p>
+                                        <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left">
+                                            &ldquo;{log.note || 'Interaction logged.'}&rdquo;
+                                        </p>
                                     </div>
-                                </React.Fragment>
+                                </div>
                             );
                         })
                     ) : (
@@ -1079,10 +1078,10 @@ export function SoulProfileContent({
             <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left">
                 <div className="flex items-center justify-between text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left">
-                        <ClipboardList className="h-4 w-4 text-left" /> Assessed Needs
+                        <ClipboardList className="h-4 w-4 text-left text-left" /> Assessed Needs
                     </p>
-                    <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onAssess(soul)}>
-                        <Edit className="h-4 w-4 text-left" />
+                    <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full text-primary hover:bg-primary/10 text-left text-left" onClick={() => onAssess(soul)}>
+                        <Edit className="h-4 w-4 text-left text-left" />
                     </Button>
                 </div>
                 {needs ? (
@@ -1119,7 +1118,7 @@ export function SoulProfileContent({
                         {needs.followUpPlan && (
                             <div className="pt-2 border-t border-primary/10 text-left">
                                 <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left">
-                                    <Target className="h-2.5 w-2.5 text-left" /> Strategy
+                                    <Target className="h-2.5 w-2.5 text-left text-left" /> Strategy
                                 </p>
                                 <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p>
                             </div>
@@ -1139,7 +1138,7 @@ export function SoulProfileContent({
                     LOG FOLLOW-UP
                 </Button>
                 <Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px] text-center text-left" onClick={() => onDelete(soul)}>
-                    <Trash2 className="mr-2 h-4 w-4 text-left" /> DELETE RECORD
+                    <Trash2 className="mr-2 h-4 w-4 text-left text-left" /> DELETE RECORD
                 </Button>
             </div>
         </Card>
