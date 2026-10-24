@@ -28,7 +28,8 @@ import {
     X,
     ChevronDown,
     HandHeart,
-    HelpCircle
+    HelpCircle,
+    MessagesSquare
 } from "lucide-react";
 import { cn, safeToDate } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -52,8 +53,20 @@ import type { UserProfile, GameSession, GameInvitation, GameSessionType } from '
 import { format, differenceInMinutes } from 'date-fns';
 import { Label } from '../ui/label';
 import { BIBLE_GAME_DATA } from '@/lib/bible-game-data';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
+import { ScrollArea } from '../ui/scroll-area';
 
 const timerOptions = [30, 60, 90, 120];
+
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  );
+}
 
 export function WordChallengeGame({ partnerId, partnerName }: { partnerId: string, partnerName: string }) {
     const { user } = useUser();
@@ -61,6 +74,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     const firestore = useFirestore();
     const { toast } = useToast();
     const router = useRouter();
+    const isMobile = useIsMobile();
 
     // Game States
     const [isGameActive, setIsGameActive] = useState(false);
@@ -146,9 +160,11 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         try {
             await addDoc(collection(firestore, 'gameInvitations'), invitationData);
             
-            await addDoc(collection(firestore, `users/${partnerId}/notifications`), {
+            const notificationRef = doc(collection(firestore, `users/${partnerId}/notifications`));
+            await setDoc(notificationRef, {
                 userId: partnerId,
                 type: 'org_invite',
+                targetId: user.uid,
                 title: 'Kingdom Challenge!',
                 message: `${userProfile?.firstName} has challenged you to a ${selectedTimer}s ${activeGameType} battle!`,
                 link: `/accountability/challenge/${user.uid}`,
@@ -157,8 +173,12 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             });
 
             toast({ title: 'Challenge Issued', description: `Waiting for ${partnerName.split(' ')[0]} to accept.` });
-        } catch (e) {
-            toast({ variant: 'destructive', title: 'Request Failed' });
+        } catch (e: any) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: 'gameInvitations',
+                operation: 'create',
+                requestResourceData: invitationData
+            }, user));
         } finally {
             setIsRequesting(false);
         }
@@ -206,10 +226,6 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         if (!user || !firestore) return;
         setIsSavingSession(true);
 
-        if (invitation) {
-            deleteDoc(doc(firestore, 'gameInvitations', invitation.id)).catch(() => {});
-        }
-
         const totalPoints = correctCount * 10;
         const sessionData = {
             participantIds: [user.uid, partnerId].sort(),
@@ -222,17 +238,25 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             createdAt: serverTimestamp()
         };
 
-        addDoc(collection(firestore, 'gameSessions'), sessionData)
-            .catch(err => console.error("History save failed", err));
+        try {
+            await addDoc(collection(firestore, 'gameSessions'), sessionData);
+            
+            const userRef = doc(firestore, 'users', user.uid);
+            await updateDoc(userRef, {
+                kingdomPoints: increment(totalPoints),
+                lastGameAt: serverTimestamp()
+            });
 
-        const userRef = doc(firestore, 'users', user.uid);
-        updateDoc(userRef, {
-            kingdomPoints: increment(totalPoints),
-            lastGameAt: serverTimestamp()
-        }).catch(() => {});
+            if (invitation) {
+                await deleteDoc(doc(firestore, 'gameInvitations', invitation.id));
+            }
 
-        toast({ title: 'Victory Recorded!', description: `Session saved with ${totalPoints} Kingdom Points.` });
-        setIsSavingSession(false);
+            toast({ title: 'Victory Recorded!', description: `Session saved with ${totalPoints} Kingdom Points.` });
+        } catch (err: any) {
+            console.error("History save failed", err);
+        } finally {
+            setIsSavingSession(false);
+        }
     };
 
     const handleCheck = (option: string) => {
@@ -277,14 +301,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             limit(15)
         );
     }, [firestore, user?.uid, partnerId]);
-    const { data: allHistory } = useCollection<GameSession>(historyQuery);
+    const { data: allHistory, loading: historyLoading } = useCollection<GameSession>(historyQuery);
 
     const filteredHistory = useMemo(() => {
         return allHistory?.filter(s => s.participantIds.includes(partnerId)) || [];
     }, [allHistory, partnerId]);
 
     return (
-        <div className="max-w-3xl mx-auto space-y-6 pb-32 px-4 sm:px-0 text-left">
+        <div className="max-w-4xl mx-auto space-y-6 pb-32 px-4 sm:px-6 text-left">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full self-start sm:self-auto border bg-background shadow-sm">
                     <ArrowLeft className="h-4 w-4" />
@@ -293,7 +317,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     <div className="flex-1 sm:flex-none flex items-center gap-3 bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 shadow-sm min-w-0">
                         <Star className="h-4 w-4 text-primary fill-current shrink-0" />
                         <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-primary truncate">
-                            You: {(userProfile?.kingdomPoints || 0) + (correctCount * 10)}
+                            You: {(userProfile?.kingdomPoints || 0) + (isGameActive ? correctCount * 10 : 0)}
                         </span>
                     </div>
                     <div className="flex-1 sm:flex-none flex items-center gap-3 bg-muted/30 px-4 py-1.5 rounded-full border border-dashed min-w-0 relative">
@@ -311,7 +335,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 </div>
             </div>
 
-            <Card className="rounded-[2rem] sm:rounded-[2.5rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden group transition-all hover:border-primary/40 text-left">
+            <Card className="rounded-[2rem] sm:rounded-[3rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden group transition-all hover:border-primary/40 text-left">
                 <CardHeader className="p-6 sm:p-10 pb-4 text-center">
                     <div className="flex items-center justify-center gap-2 mb-2">
                         <Gamepad2 className="h-5 w-5 text-primary" />
@@ -330,23 +354,23 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 <div className="w-full space-y-8">
                                     <div className="space-y-4">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Choose Challenge Type</Label>
-                                        <div className="grid grid-cols-3 gap-2">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                             {[
                                                 { id: 'word', label: 'Word Arena', icon: BookOpen },
                                                 { id: 'prayer', label: 'Prayer Altar', icon: HandHeart },
-                                                { id: 'trivia', label: 'Trivia', icon: HelpCircle }
+                                                { id: 'trivia', label: 'Kingdom Trivia', icon: HelpCircle }
                                             ].map(type => (
                                                 <Button 
                                                     key={type.id}
                                                     variant="outline"
                                                     onClick={() => setActiveGameType(type.id as any)}
                                                     className={cn(
-                                                        "h-24 flex flex-col gap-2 rounded-2xl border-2 transition-all",
+                                                        "h-20 sm:h-28 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-4 sm:gap-2 px-6 sm:px-4 rounded-2xl border-2 transition-all text-left sm:text-center",
                                                         activeGameType === type.id ? "bg-primary/20 border-primary text-primary shadow-lg" : "bg-zinc-900/50 border-zinc-800 text-zinc-500 hover:border-primary/40"
                                                     )}
                                                 >
-                                                    <type.icon className="h-6 w-6" />
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-center">{type.label}</span>
+                                                    <type.icon className="h-6 w-6 shrink-0" />
+                                                    <span className="text-[11px] font-black uppercase tracking-widest">{type.label}</span>
                                                 </Button>
                                             ))}
                                         </div>
@@ -419,7 +443,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
 
                     {isGameActive && (
-                        <div className="space-y-6 sm:space-y-8 animate-in fade-in zoom-in duration-500 text-left">
+                        <div className="space-y-6 sm:space-y-10 animate-in fade-in zoom-in duration-500 text-left">
                             <div className="flex items-center justify-between px-2">
                                 <div className="flex items-center gap-3 text-left">
                                     <div className={cn(
@@ -441,30 +465,30 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </div>
                             </div>
 
-                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-12 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[160px] flex items-center justify-center">
+                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-12 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[180px] flex items-center justify-center">
                                 <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left">
-                                    {activeGameType === 'word' ? <BookOpen className="h-16 w-16 sm:h-20 sm:w-20 text-primary" /> : <Target className="h-16 w-16 sm:h-20 sm:w-20 text-primary" />}
+                                    <BookOpen className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12" />
                                 </div>
                                 <AnimatePresence mode="wait">
                                     <motion.p 
                                         key={quizIndex}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
-                                        className="text-base sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance"
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 1.05 }}
+                                        className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance"
                                     >
                                         &ldquo;{quiz.text}&rdquo;
                                     </motion.p>
                                 </AnimatePresence>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2 sm:gap-4 text-left">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                                 {quiz.options.map(opt => (
                                     <Button
                                         key={opt}
                                         variant="outline"
                                         className={cn(
-                                            "h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center",
+                                            "h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal",
                                             gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_25px_rgba(22,163,74,0.4)]" : 
                                             gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : 
                                             "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/20"
@@ -480,35 +504,35 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
 
                     {gameState === 'finished' && (
-                        <div className="space-y-8 sm:space-y-10 animate-in slide-in-from-bottom-6 duration-700 text-left">
+                        <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-left">
                             <div className="text-center space-y-4">
-                                <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10">
-                                    <Award className="h-10 w-10 sm:h-12 sm:w-12 text-white" />
+                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10">
+                                    <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white" />
                                 </div>
                                 <div className="space-y-1 text-center">
-                                    <h3 className="text-2xl sm:text-3xl font-black uppercase text-white">Session Complete!</h3>
-                                    <p className="text-zinc-400 font-medium text-sm">Excellent labor in the Word.</p>
+                                    <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight">Session Complete!</h3>
+                                    <p className="text-zinc-400 font-medium text-sm sm:text-base">Excellent labor in the Word.</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-3xl p-3 sm:p-5 text-center border border-white/5">
-                                    <p className="text-[9px] sm:text-xs font-black text-primary uppercase mb-1">Points</p>
-                                    <p className="text-lg sm:text-3xl font-black text-white">{correctCount * 10}</p>
+                            <div className="grid grid-cols-3 gap-3 sm:gap-6 text-center">
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner">
+                                    <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest">Points</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white">{correctCount * 10}</p>
                                 </div>
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-3xl p-3 sm:p-5 text-center border border-white/5">
-                                    <p className="text-[9px] sm:text-xs font-black text-green-500 uppercase mb-1">Correct</p>
-                                    <p className="text-lg sm:text-3xl font-black text-white">{correctCount}</p>
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner">
+                                    <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest">Correct</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white">{correctCount}</p>
                                 </div>
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-3xl p-3 sm:p-5 text-center border border-white/5">
-                                    <p className="text-[9px] sm:text-xs font-black text-red-500 uppercase mb-1">Errors</p>
-                                    <p className="text-lg sm:text-3xl font-black text-white">{wrongCount}</p>
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner">
+                                    <p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest">Errors</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white">{wrongCount}</p>
                                 </div>
                             </div>
 
                             <Button 
                                 onClick={() => setGameState('playing')}
-                                className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-2xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
+                                className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-2xl flex items-center justify-center gap-4 transition-all active:scale-95"
                             >
                                 <RefreshCw className="h-5 w-5" />
                                 NEW SESSION
@@ -517,7 +541,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
                 </CardContent>
                 <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5">
-                     <p className="text-[8px] sm:text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">Iron Sharpens Iron • Growth • Victory</p>
+                     <p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">Iron Sharpens Iron • Growth • Victory</p>
                 </CardFooter>
             </Card>
 
@@ -527,15 +551,19 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                         <History className="h-4 w-4 text-primary text-left" />
                         <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground">Arena History</h4>
                     </div>
-                    <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60">Recent Results</Badge>
+                    <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60">Past Sessions</Badge>
                 </div>
 
-                <div className="space-y-2 text-left">
-                    {filteredHistory.length > 0 ? filteredHistory.map(session => {
+                <div className="space-y-3 text-left">
+                    {historyLoading ? (
+                        <div className="space-y-3">
+                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl" />)}
+                        </div>
+                    ) : filteredHistory.length > 0 ? filteredHistory.map(session => {
                         const date = safeToDate(session.createdAt);
                         const isMyScore = session.userId === user?.uid;
                         return (
-                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all text-left">
+                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all">
                                 <div className="flex items-center justify-between gap-4 text-left">
                                     <div className="flex items-center gap-4 flex-1 min-w-0 text-left">
                                         <div className={cn(
@@ -558,27 +586,32 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     </div>
                                     <div className="text-right shrink-0">
                                         <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none">{session.score}</p>
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1">POINTS</p>
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right">POINTS</p>
                                     </div>
                                 </div>
                             </Card>
                         );
                     }) : (
-                        <div className="py-12 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed text-left">
+                        <div className="py-16 text-center bg-muted/20 rounded-[2.5rem] border-2 border-dashed text-left">
                             <History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-left" />
-                            <p className="text-xs text-muted-foreground italic px-12 text-balance leading-relaxed text-center">No recorded sessions in the history. Start sharpening each other to see results here.</p>
+                            <p className="text-xs text-muted-foreground italic px-12 text-balance leading-relaxed text-center">No recorded sessions between you and {partnerName}. Start sharpening each other to see results!</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            <div className="p-6 bg-muted/20 rounded-[2.5rem] border border-dashed flex items-start gap-4 shadow-inner text-left">
-                <div className="h-6 w-6 text-primary shrink-0 mt-1 opacity-60 text-left">
-                    <Info className="h-6 w-6 text-left" />
+            <div className="p-8 bg-muted/20 rounded-[2.5rem] border border-dashed flex flex-col sm:flex-row items-center sm:items-start gap-6 shadow-inner text-left">
+                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 shadow-sm">
+                    <MessagesSquare className="h-6 w-6 text-primary" />
                 </div>
-                <div className="space-y-1 text-left">
-                    <h4 className="font-black text-xs uppercase tracking-widest text-left">About Challenges</h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed font-medium text-balance text-left">Live challenges are synchronized. Once the guest accepts, the timer begins for both participants. Your Kingdom Points reflect your growth and knowledge of Truth.</p>
+                <div className="space-y-3 flex-1 text-center sm:text-left">
+                    <div className="space-y-1">
+                        <h4 className="font-black text-sm uppercase tracking-tight text-foreground">Post-Session Fellowship</h4>
+                        <p className="text-xs text-muted-foreground leading-relaxed font-medium text-balance">The arena is for sharpening, but the hub is for building. Continue the conversation with your partner after each session.</p>
+                    </div>
+                    <Button variant="outline" size="sm" className="rounded-xl h-9 px-6 font-bold border-primary/20 text-primary hover:bg-primary/5" onClick={() => router.push('/chats')}>
+                        OPEN KINGDOM CHAT
+                    </Button>
                 </div>
             </div>
         </div>
