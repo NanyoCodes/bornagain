@@ -123,18 +123,76 @@ import { useRouter } from "next/navigation";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
-export const iconMap: Record<string, any> = {
-    'prayed_together': Sparkles,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
-    'matchmaking': HeartHandshake,
+function getYouTubeEmbedUrl(url: string | undefined | null) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  if (match && match[2].length === 11) {
+    return `https://www.youtube.com/embed/${match[2]}`;
+  }
+  return null;
+}
+
+function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const photoURL = profile?.photoURL;
+    
+    return (
+        <Dialog>
+            <DialogTrigger asChild disabled={!photoURL}>
+                <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
+                    <Avatar className="h-full w-full border shadow-sm">
+                        <AvatarImage src={photoURL} className="object-cover" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full">{fallbackInitials || 'U'}</AvatarFallback>
+                    </Avatar>
+                </div>
+            </DialogTrigger>
+            {photoURL && (
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
+                    <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                            <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
+                        </div>
+                    </div>
+                </DialogContent>
+            )}
+        </Dialog>
+    );
+}
+
+const MediaPreview = ({ url, type }: { url: string, type: 'image' | 'video' | 'audio' }) => {
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted aspect-square group/media cursor-pointer">
+                    {type === 'image' ? (
+                        <Image src={url} alt="Proof" fill className="object-cover transition-transform group-hover/media:scale-105" unoptimized />
+                    ) : (
+                        <video src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline autoPlay loop />
+                    )}
+                    <div className="absolute inset-0 bg-black/20 group-hover/media:bg-transparent transition-colors duration-500" />
+                    <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 opacity-0 group-hover/media:opacity-100 transition-opacity shadow-2xl">
+                        <Sparkles className="h-3 w-3 sm:h-4 w-4 text-primary animate-pulse" />
+                    </div>
+                </div>
+            </DialogTrigger>
+            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+                <DialogHeader className="sr-only text-center"><DialogTitle>Full View</DialogTitle></DialogHeader>
+                <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                        {type === 'image' ? (
+                            <Image src={url} alt="Proof Full" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
+                        ) : (
+                            <video src={url} className="w-full h-full object-contain" playsInline controls autoPlay />
+                        )}
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
 };
 
 export function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
