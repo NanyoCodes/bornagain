@@ -117,7 +117,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { MutualConnectBadge } from "./mutual-connect-badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
-import Image from 'next/image';
+import NextImage from 'next/image';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Soul, FollowUpStatus } from "@/lib/types";
@@ -172,6 +172,7 @@ export function IntercessionHubDialog({
 }) {
   const [text, setText] = useState('');
   const isMobile = useIsMobile();
+
   useEffect(() => { 
     if(isOpen && soul) {
         setText(prayerTemplates[0].text.replace(/{name}/g, soul.firstName));
@@ -848,7 +849,7 @@ export function SoulProfileContent({
                 {address && (
                     <Button 
                         size="icon" 
-                        className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background text-left text-left"
+                        className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background text-left text-left text-left"
                         onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')}
                         title="View Map"
                     >
