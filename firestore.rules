@@ -127,7 +127,7 @@ service cloud.firestore {
 
     match /gameSessions/{sessionId} {
       allow read, list: if isAuthenticated() && request.auth.uid in resource.data.get('participantIds', []);
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && (request.resource.data.userId == request.auth.uid || request.resource.data.partnerId == request.auth.uid);
       allow update, delete: if false;
     }
 
@@ -302,7 +302,7 @@ service cloud.firestore {
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
             allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              (request.resource.data.authorId == request.auth.uid) ||
+              (request.resource.data.authorId == request.authorId) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }
