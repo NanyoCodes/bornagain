@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -267,6 +268,7 @@
         "guestId": { "type": "string" },
         "participantIds": { "type": "array", "items": { "type": "string" } },
         "status": { "type": "string", "enum": ["pending", "accepted", "declined", "expired"] },
+        "timerDuration": { "type": "number", "description": "The duration of the challenge in seconds." },
         "createdAt": { "type": "object" },
         "acceptedAt": { "type": "object" }
       },

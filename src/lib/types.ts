@@ -155,6 +155,7 @@ export type GameInvitation = {
     guestId: string;
     participantIds: string[];
     status: GameInvitationStatus;
+    timerDuration?: number;
     createdAt: Timestamp;
     acceptedAt?: Timestamp;
 };

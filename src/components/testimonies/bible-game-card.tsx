@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -9,54 +10,37 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUserProfile } from '@/firebase';
 
 const bibleQuizzes = [
-  {
-    text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal ______.",
-    correct: "Life",
-    options: ["Life", "Wealth", "Glory", "Peace"],
-    ref: "John 3:16"
-  },
-  {
-    text: "The Lord is my shepherd, I shall not ______.",
-    correct: "Want",
-    options: ["Fear", "Wait", "Want", "Fall"],
-    ref: "Psalm 23:1"
-  },
-  {
-    text: "I can do all things through ______ who strengthens me.",
-    correct: "Christ",
-    options: ["Faith", "Christ", "Prayer", "Effort"],
-    ref: "Philippians 4:13"
-  },
-  {
-    text: "In the beginning was the ______, and the ______ was with God, and the ______ was God.",
-    correct: "Word",
-    options: ["Light", "Word", "Spirit", "Life"],
-    ref: "John 1:1"
-  },
-  {
-    text: "But seek first the ______ of God and his righteousness, and all these things will be added to you.",
-    correct: "Kingdom",
-    options: ["Grace", "Power", "Kingdom", "Peace"],
-    ref: "Matthew 6:33"
-  },
-  {
-    text: "Trust in the Lord with all your ______, and lean not on your own understanding.",
-    correct: "Heart",
-    options: ["Might", "Soul", "Heart", "Mind"],
-    ref: "Proverbs 3:5"
-  },
-  {
-    text: "Jesus wept. (Shortest verse in the Bible). This happened at the tomb of ______.",
-    correct: "Lazarus",
-    options: ["Peter", "Lazarus", "John", "Moses"],
-    ref: "John 11:35"
-  },
-  {
-    text: "The fruit of the Spirit is love, joy, ______, forbearance, kindness, goodness, faithfulness...",
-    correct: "Peace",
-    options: ["Power", "Peace", "Hope", "Strength"],
-    ref: "Galatians 5:22"
-  }
+  { text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal ______.", correct: "Life", options: ["Life", "Wealth", "Glory", "Peace"], ref: "John 3:16" },
+  { text: "The Lord is my shepherd, I shall not ______.", correct: "Want", options: ["Fear", "Wait", "Want", "Fall"], ref: "Psalm 23:1" },
+  { text: "I can do all things through ______ who strengthens me.", correct: "Christ", options: ["Faith", "Christ", "Prayer", "Effort"], ref: "Philippians 4:13" },
+  { text: "In the beginning was the ______, and the ______ was with God, and the ______ was God.", correct: "Word", options: ["Light", "Word", "Spirit", "Life"], ref: "John 1:1" },
+  { text: "But seek first the ______ of God and his righteousness, and all these things will be added to you.", correct: "Kingdom", options: ["Grace", "Power", "Kingdom", "Peace"], ref: "Matthew 6:33" },
+  { text: "Trust in the Lord with all your ______, and lean not on your own understanding.", correct: "Heart", options: ["Might", "Soul", "Heart", "Mind"], ref: "Proverbs 3:5" },
+  { text: "Jesus wept. (Shortest verse in the Bible). This happened at the tomb of ______.", correct: "Lazarus", options: ["Peter", "Lazarus", "John", "Moses"], ref: "John 11:35" },
+  { text: "The fruit of the Spirit is love, joy, ______, forbearance, kindness, goodness, faithfulness...", correct: "Peace", options: ["Power", "Peace", "Hope", "Strength"], ref: "Galatians 5:22" },
+  { text: "For I know the plans I have for you, declares the Lord, plans to ______ you and not to harm you.", correct: "Prosper", options: ["Help", "Prosper", "Heal", "Guide"], ref: "Jeremiah 29:11" },
+  { text: "Your word is a ______ for my feet, a light on my path.", correct: "Lamp", options: ["Guide", "Light", "Lamp", "Fire"], ref: "Psalm 119:105" },
+  { text: "But you will receive ______ when the Holy Spirit comes on you.", correct: "Power", options: ["Peace", "Wisdom", "Power", "Grace"], ref: "Acts 1:8" },
+  { text: "The name of the Lord is a fortified ______, the righteous run to it and are safe.", correct: "Tower", options: ["City", "Tower", "Wall", "Rock"], ref: "Proverbs 18:10" },
+  { text: "He has shown you, O mortal, what is good. And what does the Lord require of you? To act ______ and to love mercy.", correct: "Justly", options: ["Wisely", "Justly", "Holy", "Boldly"], ref: "Micah 6:8" },
+  { text: "Be still, and know that I am ______; I will be exalted among the nations.", correct: "God", options: ["Lord", "God", "King", "With you"], ref: "Psalm 46:10" },
+  { text: "Now ______ is confidence in what we hope for and assurance about what we do not see.", correct: "Faith", options: ["Faith", "Love", "Hope", "Prayer"], ref: "Hebrews 11:1" },
+  { text: "If any of you lacks ______, you should ask God, who gives generously to all.", correct: "Wisdom", options: ["Faith", "Peace", "Wisdom", "Strength"], ref: "James 1:5" },
+  { text: "Do not be conformed to this ______, but be transformed by the renewing of your mind.", correct: "World", options: ["Age", "World", "Sin", "Life"], ref: "Romans 12:2" },
+  { text: "The ______ of the Lord is the beginning of wisdom.", correct: "Fear", options: ["Love", "Word", "Fear", "Spirit"], ref: "Proverbs 9:10" },
+  { text: "Come to me, all you who are weary and burdened, and I will give you ______.", correct: "Rest", options: ["Peace", "Life", "Strength", "Rest"], ref: "Matthew 11:28" },
+  { text: "I am the way and the ______ and the life. No one comes to the Father except through me.", correct: "Truth", options: ["Truth", "Light", "Word", "Spirit"], ref: "John 14:6" },
+  { text: "Let everything that has breath ______ the Lord.", correct: "Praise", options: ["Love", "Fear", "Serve", "Praise"], ref: "Psalm 150:6" },
+  { text: "God is our ______ and strength, an ever-present help in trouble.", correct: "Refuge", options: ["Refuge", "Shield", "Rock", "King"], ref: "Psalm 46:1" },
+  { text: "The thief comes only to steal and kill and destroy; I have come that they may have ______.", correct: "Life", options: ["Hope", "Peace", "Life", "Freedom"], ref: "John 10:10" },
+  { text: "Greater is he that is in you, than he that is in the ______.", correct: "World", options: ["Darkness", "World", "Flesh", "Enemy"], ref: "1 John 4:4" },
+  { text: "The grass withers and the flowers fall, but the ______ of our God endures forever.", correct: "Word", options: ["Word", "Love", "Spirit", "Kingdom"], ref: "Isaiah 40:8" },
+  { text: "Blessed are the ______ in heart, for they will see God.", correct: "Pure", options: ["Kind", "Pure", "Humble", "Merciful"], ref: "Matthew 5:8" },
+  { text: "But the fruit of the Spirit is love, joy, peace, ______, kindness, goodness, faithfulness...", correct: "Patience", options: ["Power", "Wisdom", "Patience", "Grace"], ref: "Galatians 5:22" },
+  { text: "For we walk by ______, not by sight.", correct: "Faith", options: ["Spirit", "Faith", "Truth", "Grace"], ref: "2 Corinthians 5:7" },
+  { text: "Jesus Christ is the ______ yesterday and today and forever.", correct: "Same", options: ["Lord", "King", "Same", "God"], ref: "Hebrews 13:8" },
+  { text: "Create in me a pure ______, O God, and renew a steadfast spirit within me.", correct: "Heart", options: ["Heart", "Soul", "Mind", "Spirit"], ref: "Psalm 51:10" },
+  { text: "Every good and perfect ______ is from above, coming down from the Father.", correct: "Gift", options: ["Gift", "Word", "Grace", "Seed"], ref: "James 1:17" }
 ];
 
 export function BibleGameCard() {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -25,7 +26,8 @@ import {
     Play,
     Send,
     Check,
-    X
+    X,
+    ChevronDown
 } from "lucide-react";
 import { cn, safeToDate } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -52,49 +54,39 @@ import type { UserProfile, GameSession, GameInvitation } from '@/lib/types';
 import { format, differenceInMinutes } from 'date-fns';
 
 const bibleQuizzes = [
-  {
-    text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal ______.",
-    correct: "Life",
-    options: ["Life", "Wealth", "Glory", "Peace"],
-    ref: "John 3:16"
-  },
-  {
-    text: "The Lord is my shepherd, I shall not ______.",
-    correct: "Want",
-    options: ["Fear", "Wait", "Want", "Fall"],
-    ref: "Psalm 23:1"
-  },
-  {
-    text: "I can do all things through ______ who strengthens me.",
-    correct: "Christ",
-    options: ["Faith", "Christ", "Prayer", "Effort"],
-    ref: "Philippians 4:13"
-  },
-  {
-    text: "In the beginning was the ______, and the ______ was with God, and the ______ was God.",
-    correct: "Word",
-    options: ["Light", "Word", "Spirit", "Life"],
-    ref: "John 1:1"
-  },
-  {
-    text: "But seek first the ______ of God and his righteousness, and all these things will be added to you.",
-    correct: "Kingdom",
-    options: ["Grace", "Power", "Kingdom", "Peace"],
-    ref: "Matthew 6:33"
-  },
-  {
-    text: "Trust in the Lord with all your ______, and lean not on your own understanding.",
-    correct: "Heart",
-    options: ["Might", "Soul", "Heart", "Mind"],
-    ref: "Proverbs 3:5"
-  },
-  {
-    text: "The fruit of the Spirit is love, joy, ______, forbearance, kindness, goodness, faithfulness...",
-    correct: "Peace",
-    options: ["Power", "Peace", "Hope", "Strength"],
-    ref: "Galatians 5:22"
-  }
+  { text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal ______.", correct: "Life", options: ["Life", "Wealth", "Glory", "Peace"], ref: "John 3:16" },
+  { text: "The Lord is my shepherd, I shall not ______.", correct: "Want", options: ["Fear", "Wait", "Want", "Fall"], ref: "Psalm 23:1" },
+  { text: "I can do all things through ______ who strengthens me.", correct: "Christ", options: ["Faith", "Christ", "Prayer", "Effort"], ref: "Philippians 4:13" },
+  { text: "In the beginning was the ______, and the ______ was with God, and the ______ was God.", correct: "Word", options: ["Light", "Word", "Spirit", "Life"], ref: "John 1:1" },
+  { text: "But seek first the ______ of God and his righteousness, and all these things will be added to you.", correct: "Kingdom", options: ["Grace", "Power", "Kingdom", "Peace"], ref: "Matthew 6:33" },
+  { text: "Trust in the Lord with all your ______, and lean not on your own understanding.", correct: "Heart", options: ["Might", "Soul", "Heart", "Mind"], ref: "Proverbs 3:5" },
+  { text: "The fruit of the Spirit is love, joy, ______, forbearance, kindness, goodness, faithfulness...", correct: "Peace", options: ["Power", "Peace", "Hope", "Strength"], ref: "Galatians 5:22" },
+  { text: "For I know the plans I have for you, declares the Lord, plans to ______ you and not to harm you.", correct: "Prosper", options: ["Help", "Prosper", "Heal", "Guide"], ref: "Jeremiah 29:11" },
+  { text: "Your word is a ______ for my feet, a light on my path.", correct: "Lamp", options: ["Guide", "Light", "Lamp", "Fire"], ref: "Psalm 119:105" },
+  { text: "But you will receive ______ when the Holy Spirit comes on you.", correct: "Power", options: ["Peace", "Wisdom", "Power", "Grace"], ref: "Acts 1:8" },
+  { text: "The name of the Lord is a fortified ______, the righteous run to it and are safe.", correct: "Tower", options: ["City", "Tower", "Wall", "Rock"], ref: "Proverbs 18:10" },
+  { text: "He has shown you, O mortal, what is good. And what does the Lord require of you? To act ______ and to love mercy.", correct: "Justly", options: ["Wisely", "Justly", "Holy", "Boldly"], ref: "Micah 6:8" },
+  { text: "Be still, and know that I am ______; I will be exalted among the nations.", correct: "God", options: ["Lord", "God", "King", "With you"], ref: "Psalm 46:10" },
+  { text: "Now ______ is confidence in what we hope for and assurance about what we do not see.", correct: "Faith", options: ["Faith", "Love", "Hope", "Prayer"], ref: "Hebrews 11:1" },
+  { text: "If any of you lacks ______, you should ask God, who gives generously to all.", correct: "Wisdom", options: ["Faith", "Peace", "Wisdom", "Strength"], ref: "James 1:5" },
+  { text: "Do not be conformed to this ______, but be transformed by the renewing of your mind.", correct: "World", options: ["Age", "World", "Sin", "Life"], ref: "Romans 12:2" },
+  { text: "The ______ of the Lord is the beginning of wisdom.", correct: "Fear", options: ["Love", "Word", "Fear", "Spirit"], ref: "Proverbs 9:10" },
+  { text: "Come to me, all you who are weary and burdened, and I will give you ______.", correct: "Rest", options: ["Peace", "Life", "Strength", "Rest"], ref: "Matthew 11:28" },
+  { text: "I am the way and the ______ and the life. No one comes to the Father except through me.", correct: "Truth", options: ["Truth", "Light", "Word", "Spirit"], ref: "John 14:6" },
+  { text: "Let everything that has breath ______ the Lord.", correct: "Praise", options: ["Love", "Fear", "Serve", "Praise"], ref: "Psalm 150:6" },
+  { text: "God is our ______ and strength, an ever-present help in trouble.", correct: "Refuge", options: ["Refuge", "Shield", "Rock", "King"], ref: "Psalm 46:1" },
+  { text: "The thief comes only to steal and kill and destroy; I have come that they may have ______.", correct: "Life", options: ["Hope", "Peace", "Life", "Freedom"], ref: "John 10:10" },
+  { text: "Greater is he that is in you, than he that is in the ______.", correct: "World", options: ["Darkness", "World", "Flesh", "Enemy"], ref: "1 John 4:4" },
+  { text: "The grass withers and the flowers fall, but the ______ of our God endures forever.", correct: "Word", options: ["Word", "Love", "Spirit", "Kingdom"], ref: "Isaiah 40:8" },
+  { text: "Blessed are the ______ in heart, for they will see God.", correct: "Pure", options: ["Kind", "Pure", "Humble", "Merciful"], ref: "Matthew 5:8" },
+  { text: "But the fruit of the Spirit is love, joy, peace, ______, kindness, goodness, faithfulness...", correct: "Patience", options: ["Power", "Wisdom", "Patience", "Grace"], ref: "Galatians 5:22" },
+  { text: "For we walk by ______, not by sight.", correct: "Faith", options: ["Spirit", "Faith", "Truth", "Grace"], ref: "2 Corinthians 5:7" },
+  { text: "Jesus Christ is the ______ yesterday and today and forever.", correct: "Same", options: ["Lord", "King", "Same", "God"], ref: "Hebrews 13:8" },
+  { text: "Create in me a pure ______, O God, and renew a steadfast spirit within me.", correct: "Heart", options: ["Heart", "Soul", "Mind", "Spirit"], ref: "Psalm 51:10" },
+  { text: "Every good and perfect ______ is from above, coming down from the Father.", correct: "Gift", options: ["Gift", "Word", "Grace", "Seed"], ref: "James 1:17" }
 ];
+
+const timerOptions = [30, 60, 90, 120];
 
 export function WordChallengeGame({ partnerId, partnerName }: { partnerId: string, partnerName: string }) {
     const { user } = useUser();
@@ -106,6 +98,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     // Game States
     const [isGameActive, setIsGameActive] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60);
+    const [selectedTimer, setSelectedTimer] = useState(60);
     const [correctCount, setCorrectCount] = useState(0);
     const [wrongCount, setWrongCount] = useState(0);
     const [quizIndex, setQuizIndex] = useState(0);
@@ -144,12 +137,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     useEffect(() => {
         if (invitation?.status === 'accepted' && !isGameActive && gameState === 'playing') {
             const timeSinceAccepted = differenceInMinutes(new Date(), safeToDate(invitation.acceptedAt) || new Date());
-            // Only auto-start if the acceptance was very recent (within 1 min)
             if (timeSinceAccepted < 1) {
+                const duration = invitation.timerDuration || 60;
+                setTimeLeft(duration);
+                setSelectedTimer(duration);
                 setIsGameActive(true);
             }
         }
-    }, [invitation?.status, isGameActive, gameState, invitation?.acceptedAt]);
+    }, [invitation?.status, isGameActive, gameState, invitation?.acceptedAt, invitation?.timerDuration]);
 
     // Timer Logic
     useEffect(() => {
@@ -174,18 +169,18 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             guestId: partnerId,
             participantIds,
             status: 'pending' as const,
+            timerDuration: selectedTimer,
             createdAt: serverTimestamp()
         };
 
         try {
             await addDoc(collection(firestore, 'gameInvitations'), invitationData);
             
-            // Notify partner
             await addDoc(collection(firestore, `users/${partnerId}/notifications`), {
                 userId: partnerId,
                 type: 'org_invite',
                 title: 'Kingdom Challenge!',
-                message: `${userProfile?.firstName} has challenged you to sharpen the Word. Enter the arena!`,
+                message: `${userProfile?.firstName} has challenged you to a ${selectedTimer}s Word battle!`,
                 link: `/accountability/challenge/${user.uid}`,
                 isRead: false,
                 createdAt: serverTimestamp()
@@ -207,6 +202,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 status: 'accepted',
                 acceptedAt: serverTimestamp()
             });
+            const duration = invitation.timerDuration || 60;
+            setSelectedTimer(duration);
+            setTimeLeft(duration);
             handleStart();
         } catch (e) {
             toast({ variant: 'destructive', title: 'Acceptance Failed' });
@@ -223,7 +221,6 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         setQuizIndex(Math.floor(Math.random() * bibleQuizzes.length));
         setCorrectCount(0);
         setWrongCount(0);
-        setTimeLeft(60);
         setGameState('playing');
         setIsGameActive(true);
         setSelectedOption(null);
@@ -236,7 +233,6 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         if (!user || !firestore) return;
         setIsSavingSession(true);
 
-        // Clean up invitation
         if (invitation) {
             deleteDoc(doc(firestore, 'gameInvitations', invitation.id)).catch(() => {});
         }
@@ -252,11 +248,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             createdAt: serverTimestamp()
         };
 
-        // 1. Save Session History
         addDoc(collection(firestore, 'gameSessions'), sessionData)
             .catch(err => console.error("History save failed", err));
 
-        // 2. Update Global Points (Non-blocking)
         const userRef = doc(firestore, 'users', user.uid);
         updateDoc(userRef, {
             kingdomPoints: increment(totalPoints),
@@ -283,13 +277,13 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             setCorrectCount(prev => prev + 1);
             setTimeout(() => {
                 if (isGameActive) nextChallenge();
-            }, 800);
+            }, 500);
         } else {
             setGameState('wrong');
             setWrongCount(prev => prev + 1);
             setTimeout(() => {
                 if (isGameActive) nextChallenge();
-            }, 1200);
+            }, 800);
         }
     };
 
@@ -352,32 +346,54 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     </div>
                     <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none">Sharpening the Word</CardTitle>
                     {!isGameActive && gameState !== 'finished' && (
-                        <CardDescription className="text-zinc-400 text-sm font-medium mt-3">Iron sharpens iron. Challenging your partner starts the live session.</CardDescription>
+                        <CardDescription className="text-zinc-400 text-sm font-medium mt-3">Iron sharpens iron. Issuing a challenge allows your partner to enter the timed arena with you.</CardDescription>
                     )}
                 </CardHeader>
                 
                 <CardContent className="p-6 sm:p-12 pt-0 space-y-8">
                     {!isGameActive && gameState !== 'finished' && (
-                        <div className="py-8 sm:py-12 flex flex-col items-center gap-8">
+                        <div className="py-4 sm:py-8 flex flex-col items-center gap-8">
                             <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-[2rem] bg-primary/10 flex items-center justify-center shadow-inner border-2 border-dashed border-primary/30">
                                 <Timer className="h-10 w-10 text-primary animate-pulse" />
                             </div>
                             
                             {!invitation ? (
-                                <Button 
-                                    onClick={handleSendChallenge} 
-                                    disabled={isRequesting}
-                                    size="lg" 
-                                    className="w-full h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30"
-                                >
-                                    {isRequesting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
-                                    SEND CHALLENGE
-                                </Button>
+                                <div className="w-full space-y-6">
+                                    <div className="space-y-3">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Select Session Duration</Label>
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {timerOptions.map(opt => (
+                                                <Button 
+                                                    key={opt}
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setSelectedTimer(opt)}
+                                                    className={cn(
+                                                        "h-10 rounded-xl font-black text-xs transition-all",
+                                                        selectedTimer === opt ? "bg-primary text-white border-none shadow-lg" : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                                                    )}
+                                                >
+                                                    {opt}s
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <Button 
+                                        onClick={handleSendChallenge} 
+                                        disabled={isRequesting}
+                                        size="lg" 
+                                        className="w-full h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30"
+                                    >
+                                        {isRequesting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
+                                        SEND CHALLENGE
+                                    </Button>
+                                </div>
                             ) : invitation.hostId === user?.uid ? (
                                 <div className="space-y-4 w-full text-center">
                                     <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse">
-                                        Waiting for {partnerName.split(' ')[0]}...
+                                        Waiting for {partnerName.split(' ')[0]} to join...
                                     </Badge>
+                                    <p className="text-[10px] text-zinc-500 font-bold uppercase">Duration: {invitation.timerDuration}s</p>
                                     <Button variant="ghost" onClick={() => deleteDoc(doc(firestore!, 'gameInvitations', invitation.id))} className="text-muted-foreground uppercase text-[10px] font-bold">
                                         Cancel Request
                                     </Button>
@@ -386,11 +402,11 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 <div className="space-y-6 w-full text-center animate-in slide-in-from-bottom-4">
                                     <div className="space-y-2">
                                         <p className="text-sm font-black text-primary uppercase tracking-widest"> {partnerName.split(' ')[0]} HAS CHALLENGED YOU!</p>
-                                        <p className="text-xs text-zinc-500">The arena is ready for dual sharpening.</p>
+                                        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Session Length: {invitation.timerDuration}s</p>
                                     </div>
                                     <div className="flex flex-col gap-3">
                                         <Button onClick={handleAcceptChallenge} size="lg" className="h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl">
-                                            <Check className="mr-2 h-5 w-5" /> ACCEPT CHALLENGE
+                                            <Check className="mr-2 h-5 w-5" /> ACCEPT & ENTER
                                         </Button>
                                         <Button variant="ghost" onClick={handleDeclineChallenge} className="text-destructive font-black uppercase tracking-widest text-xs">
                                             DECLINE
@@ -421,14 +437,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         <Timer className="h-5 w-5 sm:h-6 sm:w-6" />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Arena Time</p>
+                                        <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Left</p>
                                         <p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>
                                             {timeLeft}s
                                         </p>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Arena Gain</p>
+                                    <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Session Gain</p>
                                     <p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10}</p>
                                 </div>
                             </div>
@@ -503,7 +519,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-2xl flex items-center justify-center gap-4 transition-all active:scale-95"
                             >
                                 <RefreshCw className="h-5 w-5" />
-                                CHALLENGE AGAIN
+                                NEW SESSION
                             </Button>
                         </div>
                     )}
@@ -547,7 +563,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     </div>
                                     <div className="text-right">
                                         <p className="text-lg font-black text-primary tracking-tighter leading-none">{session.score}</p>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">Kingdom Pts</p>
+                                        <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">Points</p>
                                     </div>
                                 </div>
                             </Card>
