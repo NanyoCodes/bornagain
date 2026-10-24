@@ -1000,7 +1000,7 @@ export function SoulProfileContent({
                         <Edit className="h-4 w-4 text-left text-left" />
                     </Button>
                 </div>
-                <div className="space-y-3 text-left">
+                <div className="space-y-3 text-left text-left">
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left text-left">
                         <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left text-left" />
                         <div className="min-w-0 text-left text-left">
