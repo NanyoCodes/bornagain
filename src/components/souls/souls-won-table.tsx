@@ -49,7 +49,7 @@ const SoulCard = React.memo(({ soul, onClick }: {
                         </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-left">
-                        <div className="flex items-center gap-2 text-left flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap text-left">
                             <p className="font-bold text-[13px] sm:text-base leading-tight capitalize tracking-tight text-left">
                               {soul.firstName || 'Unknown'} {soul.lastName || ''}
                             </p>
@@ -135,12 +135,12 @@ export function SoulsWonTable({
 
   if (loading || !mounted) {
     return (
-        <div className="space-y-4 text-left text-left">
+        <div className="space-y-4 text-left">
             {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center space-x-4 p-4 border-b last:border-0 bg-card/50 backdrop-blur-sm rounded-xl text-left text-left text-left text-left">
-                    <Skeleton className="h-12 w-12 rounded-full text-left text-left text-left text-left" />
-                    <div className="space-y-2 flex-1 text-left text-left text-left text-left"><Skeleton className="h-5 w-3/4 text-left text-left text-left text-left" /><Skeleton className="h-4 w-1/2 text-left text-left text-left text-left" /></div>
-                    <Skeleton className="h-9 w-24 rounded-xl text-left text-left text-left text-left" />
+                <div key={i} className="flex items-center space-x-4 p-4 border-b last:border-0 bg-card/50 backdrop-blur-sm rounded-xl text-left">
+                    <Skeleton className="h-12 w-12 rounded-full text-left" />
+                    <div className="space-y-2 flex-1 text-left"><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-1/2 text-left" /></div>
+                    <Skeleton className="h-9 w-24 rounded-xl text-left" />
                 </div>
             ))}
         </div>
@@ -149,14 +149,14 @@ export function SoulsWonTable({
   
   if (souls.length === 0) {
     return (
-        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left text-left text-left text-left">
-            <CardContent className="text-left text-left text-left text-left">
-                <div className="text-center py-24 flex flex-col items-center text-left text-left text-left text-left">
-                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20 text-left text-left text-left text-left">
-                        <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left text-left text-left text-left" />
+        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left">
+            <CardContent className="text-left">
+                <div className="text-center py-24 flex flex-col items-center text-left">
+                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20 text-left">
+                        <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left" />
                     </div>
-                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Your Harvest Field</h3>
-                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center text-left text-left text-left text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Your Harvest Field</h3>
+                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>
         </Card>
@@ -164,32 +164,32 @@ export function SoulsWonTable({
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start text-left text-left text-left text-left">
-        <div className="flex-1 w-full text-left text-left text-left text-left">
+    <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
+        <div className="flex-1 w-full text-left">
             {isMobile ? (
-                <div className="space-y-px text-left text-left text-left text-left">
+                <div className="space-y-px text-left">
                     {souls.map((soul) => (
                         <SoulCard key={soul.id} soul={soul} onClick={() => onSelect(soul.id)} />
                     ))}
                 </div>
             ) : (
-                <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left">
-                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left">
-                            <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left" />
+                <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left">
+                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
+                            <Heart className="h-6 w-6 text-primary fill-current text-left" />
                             Harvest Dashboard
                         </CardTitle>
-                        <CardDescription className="text-base font-medium text-left text-left text-left text-left">Keep track of spiritual development and community integration.</CardDescription>
+                        <CardDescription className="text-base font-medium text-left">Keep track of spiritual development and community integration.</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-0 text-left text-left text-left text-left">
-                        <div className="overflow-x-auto text-left text-left text-left text-left">
-                            <Table className="text-left text-left text-left text-left">
-                                <TableHeader className="bg-muted/10 text-left text-left text-left text-left">
-                                    <TableRow className="hover:bg-transparent text-left text-left text-left text-left">
-                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Soul Identity</TableHead>
+                    <CardContent className="p-0 text-left">
+                        <div className="overflow-x-auto text-left">
+                            <Table className="text-left">
+                                <TableHeader className="bg-muted/10 text-left">
+                                    <TableRow className="hover:bg-transparent text-left">
+                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
                                     </TableRow>
                                 </TableHeader>
-                                <TableBody className="text-left text-left text-left text-left">
+                                <TableBody className="text-left">
                                     {souls.map((soul) => (
                                     <SoulTableRow 
                                         key={soul.id} 

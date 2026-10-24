@@ -171,14 +171,18 @@ export function IntercessionHubDialog({
 }) {
   const [text, setText] = useState('');
   const isMobile = useIsMobile();
-  useEffect(() => { if(isOpen && soul) setText(prayerTemplates[0].text.replace(/{name}/g, soul.firstName)); }, [isOpen, soul]);
+  useEffect(() => { 
+    if(isOpen && soul) {
+        setText(prayerTemplates[0].text.replace(/{name}/g, soul.firstName));
+    }
+  }, [isOpen, soul]);
 
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
             <div className="text-left p-0">
                 <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</h2>
-                <p className="text-sm font-medium mt-1 text-left text-left">Draft a powerful prayer for {soul?.firstName}.</p>
+                <p className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</p>
             </div>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
@@ -241,28 +245,28 @@ export function MessageHubDialog({
   const isMobile = useIsMobile();
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
-        <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1 text-left">
-                <MessageSquare className="h-4 w-4 text-primary text-left" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Channel Select</span>
+        <div className="flex-1 min-w-0 text-left">
+            <div className="flex items-center gap-2 mb-1">
+                <MessageSquare className="h-4 w-4 text-primary" />
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
             </div>
-            <div className="text-left p-0">
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</h2>
-                <p className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</p>
+            <div>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Message Hub</h2>
+                <p className="text-sm font-medium">Encourage {soul?.firstName} via mobile.</p>
             </div>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
-            <X className="h-5 w-5 text-left" />
+            <X className="h-5 w-5" />
         </Button>
     </div>
   );
   const content = (
     <div className="flex flex-col gap-3 p-8 text-left">
         <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg text-center">
-            <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External
+            <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
         </Button>
         <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary text-center">
-            <MessageSquare className="h-5 w-5 text-left" /> Standard SMS
+            <MessageSquare className="h-5 w-5" /> Standard SMS
         </Button>
     </div>
   );
@@ -322,7 +326,7 @@ export function ShareWordDialog({
   }, [isOpen]);
 
   const constructInvitationMessage = useCallback((verseText: string, reference: string, link: string) => {
-    return `"${verseText.trim()}" — ${reference}\n\nJoin the harvest at Testify! Share your miracles, win souls for Christ, and glorify God. Visit: ${window.location.origin}/bible`;
+    return `"${verseText.trim()}" — ${reference}\n\nJoin the harvest at Testify! Visit: ${window.location.origin}/bible`;
   }, []);
 
   const handleSearch = async () => {
@@ -486,7 +490,7 @@ export function ShareWordDialog({
   );
 
   const renderVerses = (
-    <div className="space-y-4 pb-12 text-left text-left">
+    <div className="space-y-4 pb-12 text-left">
        <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left">
           <p className="text-[10px] font-black uppercase text-primary mb-1 text-left">SELECTED FOR SHARING</p>
           <p className="text-xs font-bold text-muted-foreground text-left">
@@ -519,29 +523,27 @@ export function ShareWordDialog({
   const desc = view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBook || 'Bible'} for the harvest.`;
 
   const header = (
-    <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-      <div className="flex items-center justify-between gap-4 text-left">
-        <div className="min-w-0 text-left">
-          <div className="flex items-center gap-3 mb-2 text-left text-left">
-            {view !== 'hub' && (
-                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2 text-left" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
-                    <ArrowLeft className="h-4 w-4 text-left" />
-                </Button>
-            )}
-            <Target className="h-5 w-5 text-primary text-left" />
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
-          </div>
-          <DialogHeader className="text-left p-0 text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{title}</DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm font-medium text-left text-left">{desc}</DialogDescription>
-          </DialogHeader>
+    <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
+      <div className="min-w-0 text-left">
+        <div className="flex items-center gap-3 mb-2 text-left">
+          {view !== 'hub' && (
+              <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2 text-left" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
+                  <ArrowLeft className="h-4 w-4 text-left" />
+              </Button>
+          )}
+          <Target className="h-5 w-5 text-primary text-left" />
+          <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
         </div>
-        {view !== 'hub' && (
-            <Button variant="outline" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40 text-left" onClick={() => onOpenChange(false)}>
-                <X className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
-            </Button>
-        )}
+        <DialogHeader className="text-left p-0">
+          <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm font-medium text-left">{desc}</DialogDescription>
+        </DialogHeader>
       </div>
+      {view !== 'hub' && (
+          <Button variant="outline" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40 text-left" onClick={() => onOpenChange(false)}>
+              <X className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
+          </Button>
+      )}
     </div>
   );
 
@@ -583,7 +585,7 @@ export function ShareWordDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left text-left">
+      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
         {header}
         {body}
         {footer || (
@@ -818,7 +820,7 @@ export function SoulProfileContent({
   }, [currentUserProfile?.accountabilityPartners]);
 
   return (
-    <div className="space-y-6 text-left text-left">
+    <div className="space-y-6 text-left">
       <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
         <CardHeader className="p-8 pb-4 text-center text-left">
             <div className="relative inline-block mx-auto mb-4 text-left">
@@ -854,7 +856,7 @@ export function SoulProfileContent({
                 )}
             </div>
             <div className="flex flex-col items-center gap-2 text-left">
-                <CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center truncate w-full text-left">
+                <CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center w-full text-left">
                   {soul.firstName} {soul.lastName}
                 </CardTitle>
                 <div className="flex gap-2 justify-center items-center text-left">
@@ -866,7 +868,7 @@ export function SoulProfileContent({
             </div>
         </CardHeader>
         <CardContent className="p-8 pt-0 space-y-6 text-left">
-            <Separator className="opacity-50 text-left text-left" />
+            <Separator className="opacity-50 text-left" />
             
             <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between text-left">
@@ -886,39 +888,39 @@ export function SoulProfileContent({
                             </DropdownMenuContent>
                         </DropdownMenu>
                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onEdit(soul)}>
-                            <Edit className="h-4 w-4 text-left text-left" />
+                            <Edit className="h-4 w-4 text-left" />
                         </Button>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-left text-left">
-                    <div className="space-y-1 text-left text-left">
+                <div className="grid grid-cols-2 gap-4 text-left">
+                    <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Full Name</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left">{soul.firstName} {soul.lastName}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
+                    <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
+                    <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize text-left">{soul.relationship || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
+                    <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.workStatus || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
+                    <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Rel. Status</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.maritalStatus || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
+                    <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nickname</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.nickname || 'N/A'}</p>
                     </div>
                 </div>
             </div>
 
-            <Separator className="opacity-20 text-left text-left" />
+            <Separator className="opacity-20 text-left" />
 
             <div className="space-y-3 text-left">
                 <div className="flex items-center justify-between text-left">
@@ -945,7 +947,7 @@ export function SoulProfileContent({
                 </div>
             </div>
 
-            <Separator className="opacity-20 text-left text-left" />
+            <Separator className="opacity-20 text-left" />
 
             <div className="space-y-4 text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Relational Actions</p>
@@ -1063,7 +1065,6 @@ export function SoulProfileContent({
                                             </p>
                                         </div>
                                     </div>
-                                    {index < 2 && sortedHistory.length > index + 1 && <Separator className="mt-4 opacity-10 text-left" />}
                                 </React.Fragment>
                             );
                         })
