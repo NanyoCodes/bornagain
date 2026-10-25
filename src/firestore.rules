@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Fixed Game Invitation permissions and resolved authorId hallucinations - 2025-06-26T10:00:00Z
+    // Deployment trigger: Fixed Game Invitation permissions and unified Arena rules - 2025-06-26T14:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -118,16 +118,16 @@ service cloud.firestore {
     }
 
     match /gameSessions/{sessionId} {
-      allow read, list: if isAuthenticated() && request.auth.uid in resource.data.get('participantIds', []);
+      allow read, list: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
       allow create: if isAuthenticated() && (request.resource.data.userId == request.auth.uid || request.resource.data.partnerId == request.auth.uid);
       allow update, delete: if false;
     }
 
     match /gameInvitations/{invitationId} {
-        allow read, list: if isAuthenticated() && request.auth.uid in resource.data.get('participantIds', []);
+        allow read, list: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
         allow create: if isAuthenticated() && request.resource.data.hostId == request.auth.uid;
-        allow update: if isAuthenticated() && request.auth.uid in resource.data.get('participantIds', []);
-        allow delete: if isAuthenticated() && request.auth.uid in resource.data.get('participantIds', []);
+        allow update: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+        allow delete: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
     }
 
     match /events/{eventId} {
@@ -182,7 +182,7 @@ service cloud.firestore {
       match /foundational_armor/{armorIdx}/comments/{commentId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))

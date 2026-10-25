@@ -46,6 +46,7 @@ import {
     orderBy, 
     limit,
     deleteDoc,
+    setDoc
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -151,31 +152,35 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             createdAt: serverTimestamp()
         };
 
-        try {
-            await addDoc(collection(firestore, 'gameInvitations'), invitationData);
-            
-            const notificationRef = doc(collection(firestore, `users/${partnerId}/notifications`));
-            await setDoc(notificationRef, {
-                userId: partnerId,
-                type: 'org_invite',
-                targetId: user.uid,
-                title: 'Kingdom Challenge!',
-                message: `${userProfile?.firstName} has challenged you to a ${selectedTimer}s ${activeGameType} battle!`,
-                link: `/accountability/challenge/${user.uid}`,
-                isRead: false,
-                createdAt: serverTimestamp()
-            });
+        const invitationRef = doc(collection(firestore, 'gameInvitations'));
+        
+        setDoc(invitationRef, invitationData)
+            .then(async () => {
+                const notificationRef = doc(collection(firestore, `users/${partnerId}/notifications`));
+                await setDoc(notificationRef, {
+                    userId: partnerId,
+                    type: 'org_invite',
+                    targetId: user.uid,
+                    title: 'Kingdom Challenge!',
+                    message: `${userProfile?.firstName} has challenged you to a ${selectedTimer}s ${activeGameType} battle!`,
+                    link: `/accountability/challenge/${user.uid}`,
+                    isRead: false,
+                    createdAt: serverTimestamp()
+                });
 
-            toast({ title: 'Challenge Issued', description: `Waiting for ${partnerName.split(' ')[0]} to accept.` });
-        } catch (e: any) {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({
-                path: 'gameInvitations',
-                operation: 'create',
-                requestResourceData: invitationData
-            }, user));
-        } finally {
-            setIsRequesting(false);
-        }
+                toast({ title: 'Challenge Issued', description: `Waiting for ${partnerName.split(' ')[0]} to accept.` });
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: 'gameInvitations',
+                    operation: 'create',
+                    requestResourceData: invitationData
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsRequesting(false);
+            });
     };
 
     const handleAcceptChallenge = async () => {
@@ -232,25 +237,28 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             createdAt: serverTimestamp()
         };
 
-        try {
-            await addDoc(collection(firestore, 'gameSessions'), sessionData);
-            
-            const userRef = doc(firestore, 'users', user.uid);
-            await updateDoc(userRef, {
-                kingdomPoints: increment(totalPoints),
-                lastGameAt: serverTimestamp()
+        const sessionRef = doc(collection(firestore, 'gameSessions'));
+        
+        setDoc(sessionRef, sessionData)
+            .then(async () => {
+                const userRef = doc(firestore, 'users', user.uid);
+                await updateDoc(userRef, {
+                    kingdomPoints: increment(totalPoints),
+                    lastGameAt: serverTimestamp()
+                });
+
+                if (invitation) {
+                    await deleteDoc(doc(firestore, 'gameInvitations', invitation.id));
+                }
+
+                toast({ title: 'Victory Recorded!', description: `Session saved with ${totalPoints} Kingdom Points.` });
+            })
+            .catch(async (error) => {
+                console.error("Session result save failed", error);
+            })
+            .finally(() => {
+                setIsSavingSession(false);
             });
-
-            if (invitation) {
-                await deleteDoc(doc(firestore, 'gameInvitations', invitation.id));
-            }
-
-            toast({ title: 'Victory Recorded!', description: `Session saved with ${totalPoints} Kingdom Points.` });
-        } catch (err: any) {
-            console.error("History save failed", err);
-        } finally {
-            setIsSavingSession(false);
-        }
     };
 
     const handleCheck = (option: string) => {
