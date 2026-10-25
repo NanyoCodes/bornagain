@@ -82,6 +82,21 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import type { CircleResource } from '@/lib/types';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
+  insecurity: [
+    { verse: "Psalm 91:1-2", text: "Whoever dwells in the shelter of the Most High will rest in the shadow of the Almighty. I will say of the Lord, 'He is my refuge and my fortress, my God, in whom I trust.'", prayer: "Lord, I refuse to live in fear. You are my refuge and my safe house. I rest secure under Your wings today. Amen." },
+    { verse: "Proverbs 3:25-26", text: "Have no fear of sudden disaster... for the Lord will be at your side and will keep your foot from being snared.", prayer: "Father, I trust You to be my constant companion. Guard my steps and preserve my peace in every season. Amen." },
+    { verse: "Isaiah 54:14", text: "In righteousness you will be established: Tyranny will be far from you; you will have nothing to fear. Terror will be far removed; it will not come near you.", prayer: "I declare that terror and fear have no place in my heart or my home. I am established in Your righteousness. Amen." }
+  ],
+  kidnapping: [
+    { verse: "Psalm 124:7", text: "We have escaped like a bird from the fowler’s snare; the snare has been broken, and we have escaped.", prayer: "Lord, I speak a total break of every snare of captivity. Deliver the innocent and lead them to safety by Your mighty hand. Amen." },
+    { verse: "Isaiah 49:25", text: "But this is what the Lord says: 'Yes, captives will be taken from warriors, and plunder retrieved from the fierce; I will contend with those who contend with you, and your children I will save.'", prayer: "I stand on Your promise to contend with the fierce. Rescue the captives and save our children, O God. Amen." },
+    { verse: "Psalm 18:48", text: "He delivers me from my enemies; You exalt me above those who rise up against me; You rescue me from the violent man.", prayer: "Thank You for being a Rescuer. Deliver us from the hands of violent men and establish our safety. Amen." }
+  ],
+  violent_crime: [
+    { verse: "Psalm 34:17", text: "The righteous cry out, and the Lord hears them; he delivers them from all their troubles.", prayer: "We cry out for our land, Lord. Deliver us from the plague of violence and murder. Let Your peace reign. Amen." },
+    { verse: "Psalm 55:9", text: "Lord, confuse the wicked, confound their words, for I see violence and strife in the city.", prayer: "Confuse the plans of the wicked, Father. Frustrate the counsel of those who plot destruction in our cities. Amen." },
+    { verse: "Matthew 10:28", text: "Do not be afraid of those who kill the body but cannot kill the soul.", prayer: "I refuse to be intimidated by the spirit of death. My life is hidden in Christ, and my eternity is secure. Amen." }
+  ],
   pride: [
     { verse: "Proverbs 16:18", text: "Pride goes before destruction, a haughty spirit before a fall.", prayer: "Lord, strip away my pride and clothe me in Your humility. Let me never forget that You are the source of my strength. Amen." },
     { verse: "James 4:6", text: "God opposes the proud but shows favor to the humble.", prayer: "I choose to humble myself before You today, Lord. May Your favor rest upon me as I decrease and You increase. Amen." },
@@ -92,30 +107,10 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "Philippians 4:6-7", text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.", prayer: "I trade my worry for Your peace that surpasses understanding. Guard my heart and mind in Christ Jesus. Amen." },
     { verse: "Matthew 6:34", text: "Therefore do not worry about tomorrow, for tomorrow will worry about itself.", prayer: "Help me to live fully in today, trusting Your provision for every moment. Amen." }
   ],
-  marital_strife: [
-    { verse: "Ephesians 5:21", text: "Submit to one another out of reverence for Christ.", prayer: "Lord, teach us the beauty of mutual submission. May our home be a sanctuary of peace and holy agreement. Amen." },
-    { verse: "Colossians 3:14", text: "And over all these virtues put on love, which binds them all together in perfect unity.", prayer: "We put on love today, Father. Let Your perfect unity dissolve every root of strife in our marriage. Amen." },
-    { verse: "Matthew 19:6", text: "So they are no longer two, but one flesh. Therefore what God has joined together, let no one separate.", prayer: "We stand on the authority of Your joining, O God. Protect our union from every external and internal attack. Amen." }
-  ],
-  parenting_challenges: [
-    { verse: "Proverbs 22:6", text: "Start children off on the way they should go, and even when they are old they will not turn from it.", prayer: "Lord, give me wisdom to lead my children. May the seeds of truth I plant today bear eternal fruit. Amen." },
-    { verse: "Psalm 127:3", text: "Children are a heritage from the Lord, offspring a reward from him.", prayer: "Thank You for the gift of my children. Help me to steward them for Your glory and not my own. Amen." },
-    { verse: "Ephesians 6:4", text: "Fathers, do not exasperate your children; instead, bring them up in the training and instruction of the Lord.", prayer: "Spirit of God, season my discipline with grace and my instruction with Your Word. Amen." }
-  ],
-  workplace_conflicts: [
-    { verse: "Colossians 3:23", text: "Whatever you do, work at it with all your heart, as working for the Lord, not for human masters.", prayer: "Jesus, I work for You today. Let Your excellence be seen in me, regardless of the environment. Amen." },
-    { verse: "Proverbs 16:7", text: "When the Lord takes pleasure in anyone’s way, he makes even their enemies live at peace with them.", prayer: "I choose to please You, Lord. I trust You to bring peace and favor into my workplace atmosphere. Amen." },
-    { verse: "Matthew 5:9", text: "Blessed are the peacemakers, for they will be called children of God.", prayer: "Make me a portal of peace in my office. Let my responses diffuse tension and bring Your light. Amen." }
-  ],
   lust: [
     { verse: "1 Corinthians 10:13", text: "No temptation has overtaken you except what is common to mankind. And God is faithful; he will not let you be tempted beyond what you can bear.", prayer: "Lord, I thank You for providing a way out. I choose Your path of escape and declare my freedom in Christ. Amen." },
     { verse: "Matthew 5:28", text: "But I tell you that anyone who looks at a woman lustfully has already committed adultery with her in his heart.", prayer: "Father, purify my vision and my heart. Let my eyes see only what is holy and honoring to You. Amen." },
     { verse: "1 John 2:16", text: "For everything in the world—the lust of the flesh, the lust of the eyes, and the pride of life—comes not from the Father but from the world.", prayer: "I reject the cravings of this world. I feast my soul on Your presence and Your Word. Amen." }
-  ],
-  fear: [
-    { verse: "2 Timothy 1:7", text: "For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.", prayer: "I cast out fear and receive Your power, love, and sound mind, Father. Amen." },
-    { verse: "Psalm 27:1", text: "The Lord is my light and my salvation—whom shall I fear? The Lord is the stronghold of my life—of whom shall you be afraid?", prayer: "You are my stronghold, O God. I am secure in Your salvation. Amen." },
-    { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "Thank You for being with me always. I am not alone. Amen." }
   ],
   other: [
     { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "I cast out fear today. You are my God, and You are holding my hand. Amen." },

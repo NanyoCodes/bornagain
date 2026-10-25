@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -196,7 +195,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
   const contentBody = (
     <div className="p-8 space-y-6 text-left">
         <div className="space-y-3 text-left">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Select Focus</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Focus</label>
             <div className="flex flex-wrap gap-2 text-left">
                 {prayerTemplates.map(t => (
                     <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-primary text-left" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
@@ -478,4 +477,3 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
     </React.Fragment>
   );
 }
-

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -392,9 +391,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
                 </CardHeader>
                 
-                <CardContent className={cn("p-6 sm:p-12 pt-0 space-y-8", isGameActive ? "text-left" : "text-center")}>
+                <CardContent className={cn("p-6 sm:p-12 pt-0 space-y-8", isGameActive ? "text-left" : "text-center flex flex-col items-center justify-center")}>
                     {!isGameActive && gameState !== 'finished' && (
-                        <div className="py-4 sm:py-8 flex flex-col items-center gap-8 text-center">
+                        <div className="py-4 sm:py-8 flex flex-col items-center gap-8 text-center w-full">
                             {!invitation ? (
                                 <div className="w-full space-y-8 text-left">
                                     <div className="space-y-4 text-left">

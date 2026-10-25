@@ -55,6 +55,30 @@ import { collection, getCountFromServer } from 'firebase/firestore';
 
 const strongholdCategories = [
     { 
+        name: 'Insecurity', 
+        desc: 'Victory over personal and national safety fears through divine protection.', 
+        mission: 'Psalm 91:1 - He who dwells in the shelter of the Most High will rest in the shadow of the Almighty.',
+        icon: ShieldAlert, 
+        color: 'text-red-600', 
+        bg: 'bg-red-600/10' 
+    },
+    { 
+        name: 'Kidnapping', 
+        desc: 'Divine deliverance from the hands of the wicked and the snares of captivity.', 
+        mission: 'Psalm 124:7 - We have escaped like a bird from the fowler’s snare; the snare has been broken, and we have escaped.',
+        icon: Target, 
+        color: 'text-orange-600', 
+        bg: 'bg-orange-600/10' 
+    },
+    { 
+        name: 'Violent Crime', 
+        desc: 'Victory over murder, brutality, and the spirit of destruction in our land.', 
+        mission: 'Psalm 18:48 - You deliver me from my enemies; you exalt me above my adversaries; you rescue me from violent men.',
+        icon: ShieldCheck, 
+        color: 'text-indigo-600', 
+        bg: 'bg-indigo-600/10' 
+    },
+    { 
         name: 'Pride', 
         desc: 'Overcoming the ego to embrace humility in Christ.', 
         mission: 'Proverbs 16:18 - Pride goes before destruction, a haughty spirit before a fall.',
