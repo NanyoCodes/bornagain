@@ -355,7 +355,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-32 px-4 sm:px-6 text-left">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full self-start sm:self-auto border bg-background shadow-sm">
+                <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full self-start sm:self-auto border bg-background shadow-sm text-left">
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
@@ -388,18 +388,18 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     </div>
                     <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none">Sharpening the Word</CardTitle>
                     {!isGameActive && gameState !== 'finished' && (
-                        <CardDescription className="text-zinc-400 text-sm font-medium mt-3">Select a challenge type and duration to begin.</CardDescription>
+                        <CardDescription className="text-zinc-400 text-sm font-medium mt-3 text-center">Select a challenge type and duration to begin.</CardDescription>
                     )}
                 </CardHeader>
                 
                 <CardContent className={cn("p-6 sm:p-12 pt-0 space-y-8", isGameActive ? "text-left" : "text-center")}>
                     {!isGameActive && gameState !== 'finished' && (
-                        <div className="py-4 sm:py-8 flex flex-col items-center gap-8">
+                        <div className="py-4 sm:py-8 flex flex-col items-center gap-8 text-center">
                             {!invitation ? (
                                 <div className="w-full space-y-8 text-left">
                                     <div className="space-y-4 text-left">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Choose Challenge Type</Label>
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
                                             {[
                                                 { id: 'word', label: 'Word Arena', icon: BookOpen },
                                                 { id: 'prayer', label: 'Prayer Altar', icon: HandHeart },
@@ -423,7 +423,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
                                     <div className="space-y-4 text-left">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Select Session Duration</Label>
-                                        <div className="grid grid-cols-4 gap-2">
+                                        <div className="grid grid-cols-4 gap-2 text-left">
                                             {timerOptions.map(opt => (
                                                 <Button 
                                                     key={opt}
@@ -452,33 +452,33 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </div>
                             ) : invitation.hostId === user?.uid ? (
                                 <div className="space-y-6 w-full flex flex-col items-center justify-center text-center">
-                                    <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mx-auto border-2 border-dashed border-primary/20">
+                                    <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mx-auto border-2 border-dashed border-primary/20 text-center">
                                         <Loader2 className="h-10 w-10 text-primary animate-spin" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse">
+                                    <div className="space-y-2 text-center">
+                                        <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse text-center">
                                             Waiting for {partnerName.split(' ')[0]}...
                                         </Badge>
-                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{invitation.gameType} Challenge • {invitation.timerDuration}s</p>
+                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">{invitation.gameType} Challenge • {invitation.timerDuration}s</p>
                                     </div>
-                                    <Button variant="ghost" onClick={() => deleteDoc(doc(firestore!, 'gameInvitations', invitation.id))} className="text-muted-foreground uppercase text-[10px] font-bold">
+                                    <Button variant="ghost" onClick={() => deleteDoc(doc(firestore!, 'gameInvitations', invitation.id))} className="text-muted-foreground uppercase text-[10px] font-bold text-center">
                                         Cancel Request
                                     </Button>
                                 </div>
                             ) : (
                                 <div className="space-y-6 w-full flex flex-col items-center justify-center text-center animate-in slide-in-from-bottom-4">
-                                    <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2">
+                                    <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2 text-center">
                                         <Target className="h-10 w-10 text-primary animate-bounce" />
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="text-lg font-black text-white uppercase tracking-widest"> {partnerName.split(' ')[0].toUpperCase()} HAS CHALLENGED YOU!</p>
-                                        <p className="text-xs font-bold text-primary uppercase tracking-widest">Mode: {invitation.gameType} • Duration: {invitation.timerDuration}s</p>
+                                    <div className="space-y-1 text-center">
+                                        <p className="text-lg font-black text-white uppercase tracking-widest text-center"> {partnerName.split(' ')[0].toUpperCase()} HAS CHALLENGED YOU!</p>
+                                        <p className="text-xs font-bold text-primary uppercase tracking-widest text-center">Mode: {invitation.gameType} • Duration: {invitation.timerDuration}s</p>
                                     </div>
-                                    <div className="flex flex-col gap-3 w-full max-w-xs">
-                                        <Button onClick={handleAcceptChallenge} size="lg" className="h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl">
+                                    <div className="flex flex-col gap-3 w-full max-w-xs text-center">
+                                        <Button onClick={handleAcceptChallenge} size="lg" className="h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl text-center">
                                             <Check className="mr-2 h-5 w-5" /> ACCEPT CHALLENGE
                                         </Button>
-                                        <Button variant="ghost" onClick={handleDeclineChallenge} className="text-destructive font-black uppercase tracking-widest text-xs">
+                                        <Button variant="ghost" onClick={handleDeclineChallenge} className="text-destructive font-black uppercase tracking-widest text-xs text-center">
                                             DECLINE
                                         </Button>
                                     </div>
@@ -488,30 +488,30 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
 
                     {isGameActive && (
-                        <div className="space-y-6 sm:space-y-10 animate-in fade-in zoom-in duration-500">
-                            <div className="flex items-center justify-between px-2">
-                                <div className="flex items-center gap-3">
+                        <div className="space-y-6 sm:space-y-10 animate-in fade-in zoom-in duration-500 text-left">
+                            <div className="flex items-center justify-between px-2 text-left">
+                                <div className="flex items-center gap-3 text-left">
                                     <div className={cn(
-                                        "h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2",
+                                        "h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2 text-left",
                                         timeLeft <= 10 ? "bg-red-500 border-red-400 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary"
                                     )}>
-                                        <Timer className="h-5 w-5 sm:h-6 sm:w-6" />
+                                        <Timer className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
                                     </div>
-                                    <div>
-                                        <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Left</p>
-                                        <p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>
+                                    <div className="text-left">
+                                        <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Left</p>
+                                        <p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>
                                             {timeLeft}s
                                         </p>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Session Gain</p>
-                                    <p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10}</p>
+                                <div className="text-right text-left">
+                                    <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right text-left">Session Gain</p>
+                                    <p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right text-left">+{correctCount * 10}</p>
                                 </div>
                             </div>
 
-                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[180px] flex items-center justify-center">
-                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[180px] flex items-center justify-center text-center">
+                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left">
                                     <BookOpen className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12" />
                                 </div>
                                 <AnimatePresence mode="wait">
@@ -527,7 +527,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </AnimatePresence>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                                 {quiz.options.map(opt => (
                                     <Button
                                         key={opt}
@@ -551,16 +551,16 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     {gameState === 'finished' && (
                         <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center">
                             <div className="text-center space-y-4">
-                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10">
+                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-center">
                                     <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white" />
                                 </div>
-                                <div className="space-y-1">
-                                    <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight">Session Complete!</h3>
-                                    <p className="text-zinc-400 font-medium text-sm sm:text-base">Excellent labor in the Word.</p>
+                                <div className="space-y-1 text-center">
+                                    <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center">Session Complete!</h3>
+                                    <p className="text-zinc-400 font-medium text-sm sm:text-base text-center">Excellent labor in the Word.</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-3 sm:gap-6">
+                            <div className="grid grid-cols-3 gap-3 sm:gap-6 text-center">
                                 <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner">
                                     <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest">Points</p>
                                     <p className="text-xl sm:text-4xl font-black text-white">{correctCount * 10}</p>
@@ -575,11 +575,11 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-4 text-center">
                                 <Button 
                                     onClick={handleOpenPrivateChat}
                                     size="lg"
-                                    className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-primary text-white hover:bg-primary/90 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95"
+                                    className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-primary text-white hover:bg-primary/90 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
                                 >
                                     <MessagesSquare className="h-5 w-5" />
                                     OPEN KINGDOM CHAT
@@ -587,7 +587,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 <Button 
                                     onClick={() => setGameState('playing')}
                                     variant="outline"
-                                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-transparent border-white/10 text-zinc-400 hover:bg-white/5 shadow-md flex items-center justify-center gap-4 transition-all active:scale-95"
+                                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-transparent border-white/10 text-zinc-400 hover:bg-white/5 shadow-md flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
                                 >
                                     <RefreshCw className="h-5 w-5" />
                                     NEW SESSION
@@ -596,61 +596,61 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5">
-                     <p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">Iron Sharpens Iron • Growth • Victory</p>
+                <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5 text-center">
+                     <p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">Iron Sharpens Iron • Growth • Victory</p>
                 </CardFooter>
             </Card>
 
             <div className="space-y-6 text-left">
-                <div className="flex items-center justify-between px-1">
-                    <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between px-1 text-left">
+                    <div className="flex items-center gap-2 text-left">
                         <History className="h-4 w-4 text-primary" />
                         <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground">Arena History</h4>
                     </div>
                     <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60">Past Sessions</Badge>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-3 text-left">
                     {historyLoading ? (
-                        <div className="space-y-3">
-                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl" />)}
+                        <div className="space-y-3 text-left">
+                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl text-left" />)}
                         </div>
                     ) : filteredHistory.length > 0 ? filteredHistory.map(session => {
                         const date = safeToDate(session.createdAt);
                         const isMyScore = session.userId === user?.uid;
                         return (
-                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all">
-                                <div className="flex items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all text-left">
+                                <div className="flex items-center justify-between gap-4 text-left">
+                                    <div className="flex items-center gap-4 flex-1 min-w-0 text-left">
                                         <div className={cn(
-                                            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner",
+                                            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner text-left",
                                             isMyScore ? "bg-primary/10 text-primary border-primary/20" : "bg-muted/40 text-muted-foreground"
                                         )}>
-                                            {isMyScore ? <Star className="h-5 w-5" /> : <Award className="h-5 w-5" />}
+                                            {isMyScore ? <Star className="h-5 w-5 text-left" /> : <Award className="h-5 w-5 text-left" />}
                                         </div>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="font-black text-sm uppercase tracking-tight truncate leading-tight">
+                                        <div className="min-w-0 flex-1 text-left">
+                                            <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">
                                                 {isMyScore ? 'My Victory' : `${partnerName.split(' ')[0]}'s Result`}
                                             </p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50">{session.gameType || 'Word'}</Badge>
-                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                                            <div className="flex items-center gap-2 mt-1 text-left">
+                                                <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left">{session.gameType || 'Word'}</Badge>
+                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                                     {date ? format(date, 'MMM d, p') : 'Recently'}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none">{session.score}</p>
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1">POINTS</p>
+                                    <div className="text-right text-left">
+                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none text-right">{session.score}</p>
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right">POINTS</p>
                                     </div>
                                 </div>
                             </Card>
                         );
                     }) : (
-                        <div className="py-16 text-center bg-muted/20 rounded-[2.5rem] border-2 border-dashed">
-                            <History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3" />
-                            <p className="text-xs text-muted-foreground italic px-12 text-balance">No recorded sessions between you and {partnerName}. Start sharpening each other to see results!</p>
+                        <div className="py-16 text-center bg-muted/20 rounded-[2.5rem] border-2 border-dashed text-center">
+                            <History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-center" />
+                            <p className="text-xs text-muted-foreground italic px-12 text-balance text-center">No recorded sessions between you and {partnerName}. Start sharpening each other to see results!</p>
                         </div>
                     )}
                 </div>
