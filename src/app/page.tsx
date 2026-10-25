@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -307,7 +308,7 @@ export default function LandingPage() {
               <Badge variant="outline" className="px-4 py-1.5 rounded-full border-primary/20 text-primary font-black uppercase tracking-widest text-[10px]">
                 Interactive Spiritual Exercise
               </Badge>
-              <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase">Sharpen Your Knowledge</h2>
+              <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-balance">Sharpen Your Knowledge</h2>
               <p className="text-muted-foreground text-base max-w-lg mx-auto font-medium italic">
                 Experience one of our Kingdom Arena exercises. Test your word knowledge and align your spirit with Truth.
               </p>
@@ -338,7 +339,7 @@ export default function LandingPage() {
 
               <div className="space-y-6">
                 {loadingTestimonies ? (
-                  <div className="flex justify-center"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
+                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
                 ) : testimonies?.map((t, idx) => (
                   <motion.div 
                     key={t.id}
@@ -404,7 +405,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="bg-muted/50 border-t py-16">
-        <div className="max-w-7xl mx-auto px-8">
+        <div className="max-w-7xl mx-auto px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
@@ -429,17 +430,17 @@ export default function LandingPage() {
             </div>
 
             <div className="space-y-4 text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Platform</h4>
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Platform</h4>
               <ul className="space-y-3">
-                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Testimonies</Link></li>
-                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Mission Hub</Link></li>
-                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Harvest Progress</Link></li>
-                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Directory</Link></li>
+                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Testimonies</Link></li>
+                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Mission Hub</Link></li>
+                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Harvest Progress</Link></li>
+                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Directory</Link></li>
               </ul>
             </div>
 
             <div className="space-y-4 text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Ministry</h4>
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Ministry</h4>
               <ul className="space-y-3">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Our Story</Link></li>
                 <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Partner With Us</Link></li>

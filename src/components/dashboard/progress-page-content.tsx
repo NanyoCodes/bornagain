@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -11,7 +12,6 @@ import {
 import {
   format,
   differenceInDays,
-  isSameMonth,
 } from 'date-fns';
 import {
   ArrowRight,
@@ -43,7 +43,7 @@ import {
   getCountFromServer,
   getDocs,
 } from 'firebase/firestore';
-import type { Soul, UserProfile, Testimony, ReadingHistoryItem, Campaign, Fellowship, SoulRelationship } from '@/lib/types';
+import type { Soul, UserProfile, Testimony, Campaign, Fellowship } from '@/lib/types';
 import { useMemo, useEffect, useState, useCallback } from 'react';
 import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-card';
 import { RelationshipTrackerCard } from '@/components/dashboard/relationship-tracker-card';
@@ -56,19 +56,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { safeToDate, cn } from '@/lib/utils';
-import { actionItems } from '@/lib/follow-up-data';
 import { welcomeScriptures } from '@/lib/verses';
 import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import { useToast } from '@/hooks/use-toast';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart'), {
   loading: () => <Skeleton className="h-[300px] w-full" />,
   ssr: false
 });
-
-const chartColors = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 function RecentSoulsList() {
   const { user } = useUser();
@@ -77,18 +73,14 @@ function RecentSoulsList() {
   const { data: souls, loading } = useCollection<Soul>(soulsQuery);
   
   if (loading) return <div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="flex items-center gap-4 text-left"><Skeleton className="h-10 w-10 rounded-full text-left" /><div className="space-y-1 flex-1 text-left"><Skeleton className="h-4 w-2/4 text-left" /><Skeleton className="h-4 w-1/4 text-left" /></div></div>))}</div>;
-  if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30 text-left"><div className="mx-auto h-12 w-12 text-muted-foreground flex items-center justify-center text-left"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold text-center">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground text-center">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4">
-          <Link href="/dashboard/souls-won" className="text-left">
-            Get Started <ArrowRight className="ml-2 h-4 w-4 text-left" />
-          </Link>
-        </Button></div>;
+  if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30 text-left"><div className="mx-auto h-12 w-12 text-muted-foreground flex items-center justify-center text-left"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold text-center">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground text-center">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4 mx-auto block text-left"><Link href="/souls-won" className="text-left">Get Started <ArrowRight className="ml-2 h-4 w-4 text-left" /></Link></Button></div>;
   
   return (
     <div className="space-y-1 text-left">
       {souls.map((soul) => { 
         const wonAt = safeToDate(soul.wonAt); 
         return (
-          <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors text-left" prefetch={true}>
+          <Link href="/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors text-left" prefetch={true}>
             <Avatar className="h-10 w-10 border text-left">
               <AvatarImage src={soul.photoURL ?? undefined} className="object-cover" />
               <AvatarFallback className="font-black bg-primary/5 text-primary text-xs flex items-center justify-center h-full w-full text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
@@ -121,45 +113,36 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
     setLoading(true);
     try {
       const cityLower = location.city.toLowerCase();
-      
       const soulsQuery = query(collection(firestore, 'souls'), where('userLocation.city_lowercase', '==', cityLower));
       const usersQuery = query(collection(firestore, 'users'), where('location.city_lowercase', '==', cityLower));
-      
-      const [soulsSnapshot, usersSnapshot] = await Promise.all([
-        getDocs(soulsQuery),
-        getCountFromServer(usersQuery)
-      ]);
-      
+      const [soulsSnapshot, usersSnapshot] = await Promise.all([getDocs(soulsQuery), getCountFromServer(usersQuery)]);
       const uniqueSoulIdentifiers = new Set<string>();
       soulsSnapshot.docs.forEach(doc => {
           const data = doc.data() as Soul;
           const identifier = (data.phone || data.email || `${data.firstName}_${data.lastName}`).toLowerCase().replace(/\s+/g, '');
           uniqueSoulIdentifiers.add(identifier);
       });
-      
       setCityCount(uniqueSoulIdentifiers.size + usersSnapshot.data().count);
     } catch (error) { 
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'souls/users', operation: 'list' }, user)); 
-    } finally { 
-      setLoading(false); 
-    }
+    } finally { setLoading(false); }
   }, [firestore, user, location.city]);
 
   useEffect(() => { fetchCounts(); }, [fetchCounts]);
   
   return (
     <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
-      <CardHeader className="flex flex-row items-start justify-between pb-4 text-left">
+      <CardHeader className="flex flex-row items-start justify-between pb-4 text-left text-left">
         <div className="min-w-0 pr-4 text-left">
           <CardTitle className="text-lg text-left">City Impact</CardTitle>
           <CardDescription className="truncate text-left">Unique Kingdom connections in your area.</CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading} className="shrink-0 text-left">
           {loading ? <Loader2 className="h-4 w-4 animate-spin text-left" /> : <RefreshCw className="h-4 w-4 text-left" />}
-          <span className="sr-only">Refresh stats</span>
+          <span className="sr-only text-left">Refresh stats</span>
         </Button>
       </CardHeader>
-      <CardContent className="text-left">
+      <CardContent className="text-left text-left">
         {location.city ? (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border bg-primary/5 text-left">
             <div className="min-w-0 text-left">
@@ -181,7 +164,7 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
           <div className="text-center py-6 border-2 border-dashed rounded-lg bg-muted/20 text-left">
             <p className="text-xs text-muted-foreground px-4 text-center text-left">Complete your profile with a city to see local Kingdom impact.</p>
             <Button asChild variant="link" size="sm" className="mt-1 h-auto py-0 mx-auto block w-fit text-left">
-              <Link href="/dashboard/profile" className="text-left">Update Profile</Link>
+              <Link href="/profile" className="text-left">Update Profile</Link>
             </Button>
           </div>
         )}
@@ -309,14 +292,14 @@ export function ProgressPageContent() {
                 {userProfile && <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />}
                 
                 <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b-0 overflow-hidden bg-transparent text-left">
-                  <CardHeader className="text-left">
-                    <CardTitle className="text-lg flex items-center gap-2 text-left">
-                      <Target className="h-5 w-5 text-primary text-left" />
+                  <CardHeader className="text-left text-left">
+                    <CardTitle className="text-lg flex items-center gap-2 text-left text-left">
+                      <Target className="h-5 w-5 text-primary text-left text-left" />
                       Monthly Harvest
                     </CardTitle>
-                    <CardDescription className="text-left">Souls won in the last 3 months.</CardDescription>
+                    <CardDescription className="text-left text-left">Souls won in the last 3 months.</CardDescription>
                   </CardHeader>
-                  <CardContent className="pt-2 text-left">
+                  <CardContent className="pt-2 text-left text-left">
                     <MonthlyStatsChart data={progressData} monthlySoulsGoal={userProfile?.monthlySoulsGoal || 10} />
                   </CardContent>
                 </Card>
@@ -325,12 +308,12 @@ export function ProgressPageContent() {
             <div className="flex flex-col divide-y lg:border-l bg-muted/5 text-left">
                 <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left">
                   <CardHeader className="text-left">
-                      <CardTitle className="text-lg flex items-center gap-2 text-left">
-                      <Heart className="h-5 w-5 text-primary text-left" />
+                      <CardTitle className="text-lg flex items-center gap-2 text-left text-left">
+                      <Heart className="h-5 w-5 text-primary text-left text-left" />
                       Prayer Reminders
                       </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-left">
+                  <CardContent className="space-y-2 text-left text-left">
                       {soulsWon && soulsWon.length > 0 ? (
                           soulsWon
                               .filter(soul => soul.status !== 'Established')
@@ -352,7 +335,7 @@ export function ProgressPageContent() {
                                           <p className="text-[10px] text-muted-foreground text-left">{soul.daysSinceContact} days idle</p>
                                       </div>
                                       <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-7 text-[10px] uppercase font-bold text-left">
-                                          <Link href="/dashboard/souls-won" className="text-left">Follow-up</Link>
+                                          <Link href="/souls-won" className="text-left">Follow-up</Link>
                                       </Button>
                                   </div>
                               ))

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -240,7 +241,7 @@ export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }
   function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
       <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
       </svg>
     );
   }
@@ -434,7 +435,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
   const isRestrictedForMatchmaking = soul.age && soul.age < 20;
 
   return (
-    <div className="space-y-6">
+    <>
         <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
             <CardHeader className="p-8 pb-4 text-center text-left">
                 <div className="relative inline-block mx-auto mb-4 text-left">
@@ -457,7 +458,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                 <Separator className="opacity-20 text-left" />
                 <div className="space-y-4 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Harvest Context</p><div className="space-y-1 text-left"><p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 text-left text-left"><Target className="h-3 w-3 text-primary text-left" />Source: {soul.source}</p></div></div>
                 <Separator className="opacity-20 text-left" />
-                <div className="space-y-4 text-left"><div className="flex items-center justify-between text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onOpenAssignDialog(soul)}><Edit className="h-4 w-4 text-left" /></Button></div><div className="space-y-3 text-left"><div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left"><HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left" /><div className="min-w-0 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p></div></div><div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left"><Users className="h-4 w-4 text-blue-500 shrink-0 text-left" /><div className="min-w-0 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.associationName || 'No Association'}</p></div></div></div></div>
+                <div className="space-y-4 text-left"><div className="flex items-center justify-between text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onOpenAssignDialog(soul)}><Edit className="h-4 w-4 text-left" /></Button></div><div className="space-y-3 text-left"><div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left"><HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left" /><div className="min-w-0 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p></div></div><div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left"><Users className="h-4 w-4 text-blue-500 shrink-0 text-left" /><div className="min-w-0 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.associationName || 'No Association'}</p></div></div></div></div>
                 <Separator className="opacity-20 text-left" />
                 <div className="space-y-4 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Milestones</p><div className="grid grid-cols-2 gap-2 text-left">{[{ label: 'Church', val: soul.attendingChurch, icon: Church }, { label: 'Word Study', val: soul.inBibleStudy, icon: BookOpen }, { label: 'Prayer', val: soul.attendingPrayer, icon: Zap }, { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck }].map(milestone => (
                   <div key={milestone.label} className={cn("flex items-center gap-2 p-2 rounded-xl border transition-all text-left", milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40")}>
@@ -474,6 +475,6 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
         <IntercessionHubDialog isOpen={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen} soul={soul} onComplete={(msg) => { setCustomMessageText(msg); setIsPrayerCustomizationOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} />
         <MessageHubDialog isOpen={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen} soul={soul} onChannelSelect={handleCommChoice} />
         <ShareWordDialog isOpen={isStudyWordOpen} onOpenChange={setIsStudyWordOpen} soul={soul} onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} />
-    </div>
+    </>
   );
 }

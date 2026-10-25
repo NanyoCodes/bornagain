@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useUser } from '@/firebase';
@@ -48,7 +49,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     <div className="flex-1 min-w-0 text-left text-left">
                         <div className="flex justify-between items-baseline gap-2 mb-0.5 text-left text-left text-left">
                             <h3 className={cn(
-                                "font-bold truncate text-sm sm:text-base leading-none text-left text-left", 
+                                "font-bold text-sm sm:text-base leading-none text-left text-left", 
                                 isUnread ? "text-primary" : "text-foreground"
                             )}>
                                 {chat.campaignTitle}
@@ -127,7 +128,7 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                 <div className="flex-1 min-w-0 text-left text-left text-left">
                     <div className="flex justify-between items-baseline gap-2 mb-0.5 text-left text-left text-left">
                         <h3 className={cn(
-                            "font-bold truncate text-sm sm:text-base leading-none text-left text-left text-left", 
+                            "font-bold text-sm sm:text-base leading-none text-left text-left text-left", 
                             isUnread ? "text-primary" : "text-foreground"
                         )}>
                             {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
@@ -221,24 +222,24 @@ export default function ChatsPage() {
     return (
         <div className="flex flex-col h-full w-full bg-background overflow-hidden text-left">
             <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4 text-left">
-                <div className="flex items-center justify-between gap-4 text-left text-left">
-                    <div className="flex items-center gap-4 text-left text-left">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
-                            <ArrowLeft className="h-6 w-6 text-left text-left" />
-                            <span className="sr-only text-left text-left">Back</span>
+                <div className="flex items-center justify-between gap-4 text-left text-left text-left">
+                    <div className="flex items-center gap-4 text-left text-left text-left">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left">
+                            <ArrowLeft className="h-6 w-6 text-left text-left text-left" />
+                            <span className="sr-only text-left text-left text-left">Back</span>
                         </Button>
-                        <div className="min-w-0 text-left text-left">
-                            <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase truncate text-left text-left">
+                        <div className="min-w-0 text-left text-left text-left">
+                            <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase truncate text-left text-left text-left">
                                 Conversations
                             </h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-1 uppercase tracking-[0.2em] truncate text-left text-left">Kingdom Messages</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-1 uppercase tracking-[0.2em] truncate text-left text-left text-left">Kingdom Messages</p>
                         </div>
                     </div>
                     {logo && (
-                        <Link href="/testimonies" className="shrink-0 transition-transform active:scale-95">
-                            <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg">
-                                <AvatarImage src={logo.imageUrl} alt="Testify" className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary">T</AvatarFallback>
+                        <Link href="/testimonies" className="shrink-0 transition-transform active:scale-95 text-left text-left">
+                            <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg text-left text-left">
+                                <AvatarImage src={logo.imageUrl} alt="Testify" className="object-cover text-left text-left" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-left text-left">T</AvatarFallback>
                             </Avatar>
                         </Link>
                     )}
@@ -246,34 +247,34 @@ export default function ChatsPage() {
             </div>
 
             <div className="flex-1 min-h-0 px-0 sm:px-6 md:px-8 pb-4 text-left">
-                <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl text-left">
-                    <ScrollArea className="flex-1 w-full text-left">
-                        <div className="flex flex-col text-left">
+                <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl text-left text-left">
+                    <ScrollArea className="flex-1 w-full text-left text-left">
+                        <div className="flex flex-col text-left text-left">
                             {loading && (
-                                <div className="divide-y text-left">
+                                <div className="divide-y text-left text-left">
                                     {[...Array(5)].map((_, i) => (
-                                        <div key={i} className="flex items-center gap-4 p-4 text-left">
-                                            <Skeleton className="h-10 w-10 rounded-full shrink-0 text-left" />
-                                            <div className="flex-1 space-y-2 min-w-0 text-left">
-                                                <Skeleton className="h-4 w-1/2 text-left" />
-                                                <Skeleton className="h-3 w-3/4 text-left" />
+                                        <div key={i} className="flex items-center gap-4 p-4 text-left text-left">
+                                            <Skeleton className="h-10 w-10 rounded-full shrink-0 text-left text-left" />
+                                            <div className="flex-1 space-y-2 min-w-0 text-left text-left">
+                                                <Skeleton className="h-4 w-1/2 text-left text-left" />
+                                                <Skeleton className="h-3 w-3/4 text-left text-left" />
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             )}
                             {!loading && chats?.length === 0 && (
-                                <div className="flex-1 flex flex-col items-center justify-center py-24 text-center px-8 text-left">
-                                    <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
-                                        <MessageSquare className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
+                                <div className="flex-1 flex flex-col items-center justify-center py-24 text-center px-8 text-left text-left">
+                                    <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left">
+                                        <MessageSquare className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left" />
                                     </div>
-                                    <h3 className="text-xl font-bold font-headline uppercase tracking-tight text-left">Quiet Field</h3>
-                                    <p className="mt-2 text-sm text-muted-foreground max-w-[280px] leading-relaxed italic text-left">
+                                    <h3 className="text-xl font-bold font-headline uppercase tracking-tight text-left text-left">Quiet Field</h3>
+                                    <p className="mt-2 text-sm text-muted-foreground max-w-[280px] leading-relaxed italic text-left text-left">
                                         Your ministry conversations will appear here. Join a campaign or nudge a partner to start!
                                     </p>
                                 </div>
                             )}
-                            <div className="flex flex-col text-left">
+                            <div className="flex flex-col text-left text-left">
                                 {!loading && user && chats?.map(chat => (
                                     <ChatListItem 
                                         key={chat.id} 
