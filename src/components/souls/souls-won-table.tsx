@@ -78,15 +78,15 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
             onClick={() => onSelect()}
         >
             <TableCell className="font-medium p-4 text-left">
-                <div className="flex items-center gap-4 text-left">
+                <div className="flex items-center gap-4 text-left text-left">
                     <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 text-left")}>
                         <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">
                             {soul.firstName?.charAt(0) || 'S'}
                         </AvatarFallback>
                     </Avatar>
-                    <div className="min-w-0 text-left">
-                        <div className="font-black text-xs sm:text-sm md:text-base capitalize tracking-tight text-left">
+                    <div className="min-w-0 text-left text-left">
+                        <div className="font-black text-xs sm:text-sm md:text-base capitalize tracking-tight text-left text-left">
                             {soul.firstName} {soul.lastName}
                         </div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium opacity-70 text-left"><Church className="h-3 w-3 shrink-0 text-left" />{soul.church}</div>}
