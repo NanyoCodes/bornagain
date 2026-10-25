@@ -443,14 +443,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         onClick={handleSendChallenge} 
                                         disabled={isRequesting}
                                         size="lg" 
-                                        className="w-full h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-center text-left"
+                                        className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-center text-left"
                                     >
                                         {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Send className="mr-2 h-4 w-4 text-left" />}
                                         ISSUE CHALLENGE
                                     </Button>
                                 </div>
                             ) : invitation.hostId === user?.uid ? (
-                                <div className="space-y-6 w-full text-center">
+                                <div className="space-y-6 w-full flex flex-col items-center justify-center text-center">
                                     <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mx-auto border-2 border-dashed border-primary/20">
                                         <Loader2 className="h-10 w-10 text-primary animate-spin" />
                                     </div>
@@ -465,7 +465,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     </Button>
                                 </div>
                             ) : (
-                                <div className="space-y-6 w-full text-center animate-in slide-in-from-bottom-4">
+                                <div className="space-y-6 w-full flex flex-col items-center justify-center text-center animate-in slide-in-from-bottom-4">
                                     <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2 text-center">
                                         <Target className="h-10 w-10 text-primary animate-bounce text-left" />
                                     </div>
@@ -473,8 +473,8 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         <p className="text-lg font-black text-white uppercase tracking-widest text-center"> {partnerName.split(' ')[0].toUpperCase()} HAS CHALLENGED YOU!</p>
                                         <p className="text-xs font-bold text-primary uppercase tracking-widest text-center">Mode: {invitation.gameType} • Duration: {invitation.timerDuration}s</p>
                                     </div>
-                                    <div className="flex flex-col gap-3 text-center">
-                                        <Button onClick={handleAcceptChallenge} size="lg" className="h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl text-left">
+                                    <div className="flex flex-col gap-3 text-center w-full max-w-xs">
+                                        <Button onClick={handleAcceptChallenge} size="lg" className="h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl text-left">
                                             <Check className="mr-2 h-5 w-5 text-left" /> ACCEPT CHALLENGE
                                         </Button>
                                         <Button variant="ghost" onClick={handleDeclineChallenge} className="text-destructive font-black uppercase tracking-widest text-xs text-left">
@@ -581,7 +581,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-primary text-white hover:bg-primary/90 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
                                 >
                                     <MessagesSquare className="h-5 w-5 text-left text-left" />
-                                    OPEN PRIVATE CHAT
+                                    OPEN KINGDOM CHAT
                                 </Button>
                                 <Button 
                                     onClick={() => setGameState('playing')}

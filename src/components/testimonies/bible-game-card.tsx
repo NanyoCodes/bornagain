@@ -63,16 +63,16 @@ export function BibleGameCard() {
     return (
         <Card className="rounded-none sm:rounded-[2rem] border-y sm:border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden mb-6 group transition-all hover:border-primary/40 text-left">
             <CardHeader className="p-6 sm:p-8 pb-4 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="flex items-center justify-center gap-2 mb-2 text-left">
                     {getIcon()}
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">{getLabel()}</span>
                 </div>
-                <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white">Interactive Kingdom Exercise</CardTitle>
-                <CardDescription className="text-zinc-400 text-sm font-medium">Test your knowledge and align your spirit with Truth.</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-center">Interactive Kingdom Exercise</CardTitle>
+                <CardDescription className="text-zinc-400 text-sm font-medium text-center">The game can be shared to invite believers</CardDescription>
             </CardHeader>
             <CardContent className="p-6 sm:p-10 pt-0 space-y-8 text-left">
                 <div className="bg-zinc-900 rounded-[1.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[160px] flex items-center justify-center">
-                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left">
                         <Target className="h-16 w-16 text-primary" />
                     </div>
                     <AnimatePresence mode="wait">
@@ -81,14 +81,14 @@ export function BibleGameCard() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
-                            className="text-lg sm:text-xl font-serif italic leading-relaxed text-zinc-200 text-balance"
+                            className="text-lg sm:text-xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center"
                         >
                             &ldquo;{quiz.text}&rdquo;
                         </motion.p>
                     </AnimatePresence>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3 text-left">
                     {quiz.options.map(opt => (
                         <Button
                             key={opt}
@@ -113,13 +113,13 @@ export function BibleGameCard() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="space-y-6"
+                            className="space-y-6 text-left"
                         >
                             <div className={cn(
-                                "p-6 rounded-2xl flex flex-col items-center text-center gap-3 border-2 border-dashed",
+                                "p-6 rounded-2xl flex flex-col items-center text-center gap-3 border-2 border-dashed text-center",
                                 gameState === 'correct' ? "bg-green-500/5 border-green-500/20 text-green-500" : "bg-red-500/5 border-red-500/20 text-red-500"
                             )}>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 text-left">
                                     {gameState === 'correct' ? <Trophy className="h-5 w-5 animate-bounce" /> : <ShieldAlert className="h-5 w-5" />}
                                     <span className="font-black uppercase tracking-[0.2em] text-xs">
                                         {gameState === 'correct' ? `WELL DONE, ${firstName.toUpperCase()}!` : "STAY IN THE WORD"}
@@ -145,8 +145,8 @@ export function BibleGameCard() {
                     )}
                 </AnimatePresence>
             </CardContent>
-            <CardFooter className="p-3 bg-black/40 text-center justify-center">
-                 <p className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em]">Faith • Power • Truth</p>
+            <CardFooter className="p-3 bg-black/40 text-center justify-center text-left">
+                 <p className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">Faith • Power • Truth</p>
             </CardFooter>
         </Card>
     );
