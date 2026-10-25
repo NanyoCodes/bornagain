@@ -14,7 +14,6 @@ import {
     XCircle, 
     ArrowRight, 
     RefreshCw, 
-    Loader2, 
     ArrowLeft, 
     Target, 
     Award, 
@@ -55,13 +54,21 @@ import { format, differenceInMinutes } from 'date-fns';
 import { Label } from '../ui/label';
 import { BIBLE_GAME_DATA } from '@/lib/bible-game-data';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { ScrollArea } from '../ui/scroll-area';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const timerOptions = [30, 60, 90, 120];
+
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+    </svg>
+  );
+}
 
 export function WordChallengeGame({ partnerId, partnerName }: { partnerId: string, partnerName: string }) {
     const { user } = useUser();
@@ -154,10 +161,11 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
         const invitationRef = doc(collection(firestore, 'gameInvitations'));
         
+        // Follow non-blocking mutation pattern
         setDoc(invitationRef, invitationData)
             .then(async () => {
                 const notificationRef = doc(collection(firestore, `users/${partnerId}/notifications`));
-                await setDoc(notificationRef, {
+                setDoc(notificationRef, {
                     userId: partnerId,
                     type: 'org_invite',
                     targetId: user.uid,
@@ -166,7 +174,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     link: `/accountability/challenge/${user.uid}`,
                     isRead: false,
                     createdAt: serverTimestamp()
-                });
+                }).catch(() => {});
 
                 toast({ title: 'Challenge Issued', description: `Waiting for ${partnerName.split(' ')[0]} to accept.` });
             })
@@ -175,7 +183,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     path: 'gameInvitations',
                     operation: 'create',
                     requestResourceData: invitationData
-                }, user);
+                } satisfies SecurityRuleContext, user);
                 errorEmitter.emit('permission-error', permissionError);
             })
             .finally(() => {
@@ -186,25 +194,25 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     const handleAcceptChallenge = async () => {
         if (!invitation || !firestore || !user) return;
         
-        try {
-            await updateDoc(doc(firestore, 'gameInvitations', invitation.id), {
-                status: 'accepted',
-                acceptedAt: serverTimestamp()
-            });
+        const invitationRef = doc(firestore, 'gameInvitations', invitation.id);
+        updateDoc(invitationRef, {
+            status: 'accepted',
+            acceptedAt: serverTimestamp()
+        }).then(() => {
             const duration = invitation.timerDuration || 60;
             const type = invitation.gameType || 'word';
             setActiveGameType(type);
             setSelectedTimer(duration);
             setTimeLeft(duration);
             handleStart(type);
-        } catch (e) {
+        }).catch(() => {
             toast({ variant: 'destructive', title: 'Acceptance Failed' });
-        }
+        });
     };
 
     const handleDeclineChallenge = async () => {
         if (!invitation || !firestore) return;
-        await updateDoc(doc(firestore, 'gameInvitations', invitation.id), { status: 'declined' });
+        updateDoc(doc(firestore, 'gameInvitations', invitation.id), { status: 'declined' });
         setGameState('playing');
     };
 
@@ -345,7 +353,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     </div>
                     <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none">Sharpening the Word</CardTitle>
                     {!isGameActive && gameState !== 'finished' && (
-                        <CardDescription className="text-zinc-400 text-sm font-medium mt-3">Select a challenge type and duration to begin.</CardDescription>
+                        <CardDescription className="text-zinc-400 text-sm font-medium mt-3 text-center">Select a challenge type and duration to begin.</CardDescription>
                     )}
                 </CardHeader>
                 
@@ -455,15 +463,15 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         <Timer className="h-5 w-5 sm:h-6 sm:w-6" />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Left</p>
-                                        <p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>
+                                        <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Left</p>
+                                        <p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>
                                             {timeLeft}s
                                         </p>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Session Gain</p>
-                                    <p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10}</p>
+                                    <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Session Gain</p>
+                                    <p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right">+{correctCount * 10}</p>
                                 </div>
                             </div>
 
@@ -477,7 +485,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 1.05 }}
-                                        className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance"
+                                        className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center"
                                     >
                                         &ldquo;{quiz.text}&rdquo;
                                     </motion.p>
@@ -512,23 +520,23 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white" />
                                 </div>
                                 <div className="space-y-1 text-center">
-                                    <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight">Session Complete!</h3>
-                                    <p className="text-zinc-400 font-medium text-sm sm:text-base">Excellent labor in the Word.</p>
+                                    <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center">Session Complete!</h3>
+                                    <p className="text-zinc-400 font-medium text-sm sm:text-base text-center">Excellent labor in the Word.</p>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-3 gap-3 sm:gap-6 text-center">
                                 <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner">
-                                    <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest">Points</p>
-                                    <p className="text-xl sm:text-4xl font-black text-white">{correctCount * 10}</p>
+                                    <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center">Points</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white text-center">{correctCount * 10}</p>
                                 </div>
                                 <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner">
-                                    <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest">Correct</p>
-                                    <p className="text-xl sm:text-4xl font-black text-white">{correctCount}</p>
+                                    <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center">Correct</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white text-center">{correctCount}</p>
                                 </div>
                                 <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner">
-                                    <p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest">Errors</p>
-                                    <p className="text-xl sm:text-4xl font-black text-white">{wrongCount}</p>
+                                    <p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center">Errors</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white text-center">{wrongCount}</p>
                                 </div>
                             </div>
 
@@ -551,9 +559,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 <div className="flex items-center justify-between px-1 text-left">
                     <div className="flex items-center gap-2 text-left">
                         <History className="h-4 w-4 text-primary text-left" />
-                        <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground">Arena History</h4>
+                        <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground text-left">Arena History</h4>
                     </div>
-                    <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60">Past Sessions</Badge>
+                    <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60 text-left">Past Sessions</Badge>
                 </div>
 
                 <div className="space-y-3 text-left">
@@ -565,14 +573,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                         const date = safeToDate(session.createdAt);
                         const isMyScore = session.userId === user?.uid;
                         return (
-                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all">
+                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all text-left">
                                 <div className="flex items-center justify-between gap-4 text-left">
                                     <div className="flex items-center gap-4 flex-1 min-w-0 text-left">
                                         <div className={cn(
                                             "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner text-left",
                                             isMyScore ? "bg-primary/10 text-primary border-primary/20" : "bg-muted/40 text-muted-foreground"
                                         )}>
-                                            {isMyScore ? <Star className="h-5 w-5" /> : <Award className="h-5 w-5" />}
+                                            {isMyScore ? <Star className="h-5 w-5 text-left" /> : <Award className="h-5 w-5 text-left" />}
                                         </div>
                                         <div className="min-w-0 flex-1 text-left">
                                             <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">
@@ -587,7 +595,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         </div>
                                     </div>
                                     <div className="text-right shrink-0">
-                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none">{session.score}</p>
+                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none text-right">{session.score}</p>
                                         <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right">POINTS</p>
                                     </div>
                                 </div>
@@ -603,8 +611,8 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             </div>
 
             <div className="p-8 bg-muted/20 rounded-[2.5rem] border border-dashed flex flex-col sm:flex-row items-center sm:items-start gap-6 shadow-inner text-left">
-                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 shadow-sm">
-                    <MessagesSquare className="h-6 w-6 text-primary" />
+                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 shadow-sm text-left">
+                    <MessagesSquare className="h-6 w-6 text-primary text-left" />
                 </div>
                 <div className="space-y-3 flex-1 text-center sm:text-left">
                     <div className="space-y-1 text-left sm:text-left">
@@ -612,7 +620,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                         <p className="text-xs text-muted-foreground leading-relaxed font-medium text-balance text-center sm:text-left">The arena is for sharpening, but the hub is for building. Continue the conversation with your partner after each session.</p>
                     </div>
                     <Button variant="outline" size="sm" className="rounded-xl h-9 px-6 font-bold border-primary/20 text-primary hover:bg-primary/5 text-center sm:text-left" onClick={() => router.push('/chats')}>
-                        OPEN KINGDOM CHAT
+                        Open private chat
                     </Button>
                 </div>
             </div>

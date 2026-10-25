@@ -114,7 +114,7 @@ import { getBibleChapter, type BibleChapterOutput } from "@/ai/flows/get-bible-c
 import { bibleData } from "@/lib/bible-data";
 import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-data";
 import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors";
 import { MutualConnectBadge } from "./mutual-connect-badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -214,7 +214,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
         <div className="space-y-3 text-left"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Focus</label><div className="flex flex-wrap gap-2 text-left">{prayerTemplates.map(t => (
           <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-primary text-left" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
         ))}</div></div>
-        <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label><Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" /></div>
+        <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Message</Label><Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" /></div>
         <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">SEND</Button>
     </div>
   );
@@ -288,7 +288,7 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
 
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
-      <div className="min-w-0 text-left text-left">
+      <div className="min-w-0 text-left">
         <div className="flex items-center gap-3 mb-2 text-left">
           {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4 text-left" /></Button>}
           <Target className="h-5 w-5 text-primary text-left" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
@@ -299,28 +299,26 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
     </div>
   );
 
-  const body = (
-    <ScrollArea className="flex-grow min-h-[300px] text-left">
-        <div className="p-4 sm:p-10 text-left">
-            {view === 'hub' && (
-                <div className="space-y-8 text-left">
-                    <div className="relative text-left"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
-                    {searchResults.map((res, idx) => (<Button key={idx} variant="outline" className="w-full h-auto p-4 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left border-2 border-dashed text-left" onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary text-left">{res.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-4 text-left">"{res.text.trim()}"</p></Button>))}
-                    <div className="grid grid-cols-2 gap-4 text-left"><Button onClick={() => setView('books')} variant="outline" className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center text-left"><BookOpen className="h-6 w-6 mb-1 text-left" /><span className="text-[10px] font-black uppercase text-center text-left">Browse Bible</span></Button><Button variant="outline" asChild className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center text-left"><Link href="/dashboard/bible" className="text-center text-left"><BookMarked className="h-6 w-6 mb-1 text-left" /><span className="text-[10px] font-black uppercase text-center text-left">Open Reader</span></Link></Button></div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left text-left">{kingdomVerses.map((v, idx) => (<Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:border-primary/10 transition-all text-left block text-left" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary text-left">{v.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-2 text-left">"{v.text}"</p></Button>))}</div>
-                </div>
-            )}
-            {view === 'books' && <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2 text-left">{bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[9px] text-center text-left" onClick={() => { setSelectedBook(book.name); setView('chapters'); }}>{book.name}</Button>))}</div>}
-            {view === 'chapters' && <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2 text-left">{selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (<Button key={ch.chapter} variant="outline" className="h-9 w-9 p-0 rounded-lg font-black text-xs text-center text-left" onClick={() => handleSelectChapter(ch.chapter)}>{ch.chapter}</Button>))}</div>}
-            {view === 'verses' && <div className="space-y-4 pb-12 text-left"><div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left"><p className="text-[10px] font-black uppercase text-primary mb-1 text-left">SELECTED</p><p className="text-xs font-bold text-muted-foreground text-left">{selectedVerses.length > 0 ? `${selectedBook} ${selectedChapter}:${selectedVerses.join(', ')}` : 'Select verses below...'}</p></div><div className="space-y-1 font-serif text-left">{loadingVerses ? <div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div> : chapterContent?.verses.map(v => (<div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2 text-left text-left", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => setSelectedVerses(prev => prev.includes(v.verse) ? prev.filter(vs => vs !== v.verse) : [...prev, v.verse].sort((a,b)=>a-b))}><sup className="text-[10px] font-black mr-2 opacity-40">{v.verse}</sup><span className="text-sm leading-relaxed text-left">{v.text}</span></div>))}</div></div>}
-        </div>
-    </ScrollArea>
+  const content = (
+    <div className="p-4 sm:p-10 text-left">
+        {view === 'hub' && (
+            <div className="space-y-8 text-left">
+                <div className="relative text-left"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
+                {searchResults.map((res, idx) => (<Button key={idx} variant="outline" className="w-full h-auto p-4 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left border-2 border-dashed text-left" onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary text-left">{res.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-4 text-left">"{res.text.trim()}"</p></Button>))}
+                <div className="grid grid-cols-2 gap-4 text-left"><Button onClick={() => setView('books')} variant="outline" className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center text-left"><BookOpen className="h-6 w-6 mb-1 text-left" /><span className="text-[10px] font-black uppercase text-center text-left">Browse Bible</span></Button><Button variant="outline" asChild className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center text-left"><Link href="/dashboard/bible" className="text-center text-left"><BookMarked className="h-6 w-6 mb-1 text-left" /><span className="text-[10px] font-black uppercase text-center text-left">Open Reader</span></Link></Button></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left text-left">{kingdomVerses.map((v, idx) => (<Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:border-primary/10 transition-all text-left block text-left" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary text-left">{v.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-2 text-left">"{v.text}"</p></Button>))}</div>
+            </div>
+        )}
+        {view === 'books' && <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2 text-left">{bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[9px] text-center text-left" onClick={() => { setSelectedBook(book.name); setView('chapters'); }}>{book.name}</Button>))}</div>}
+        {view === 'chapters' && <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2 text-left">{selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (<Button key={ch.chapter} variant="outline" className="h-9 w-9 p-0 rounded-lg font-black text-xs text-center text-left" onClick={() => handleSelectChapter(ch.chapter)}>{ch.chapter}</Button>))}</div>}
+        {view === 'verses' && <div className="space-y-4 pb-12 text-left"><div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left"><p className="text-[10px] font-black uppercase text-primary mb-1 text-left">SELECTED</p><p className="text-xs font-bold text-muted-foreground text-left">{selectedVerses.length > 0 ? `${selectedBook} ${selectedChapter}:${selectedVerses.join(', ')}` : 'Select verses below...'}</p></div><div className="space-y-1 font-serif text-left">{loadingVerses ? <div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div> : chapterContent?.verses.map(v => (<div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2 text-left text-left", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => setSelectedVerses(prev => prev.includes(v.verse) ? prev.filter(vs => vs !== v.verse) : [...prev, v.verse].sort((a,b)=>a-b))}><sup className="text-[10px] font-black mr-2 opacity-40">{v.verse}</sup><span className="text-sm leading-relaxed text-left">{v.text}</span></div>))}</div></div>}
+    </div>
   );
 
   const footer = view === 'verses' && <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0 text-left"><Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold text-center">Clear</Button><Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-[2] font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center text-left">SHARE SELECTED ({selectedVerses.length})</Button></div>;
 
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow text-left">{body}</ScrollArea>{footer}</SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">{header}<ScrollArea className="flex-1 min-h-0 text-left">{body}</ScrollArea>{footer}</DialogContent></Dialog>;
+  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow text-left">{content}</ScrollArea>{footer}</SheetContent></Sheet>;
+  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">{header}<ScrollArea className="flex-1 min-h-0 text-left">{content}</ScrollArea>{footer}</DialogContent></Dialog>;
 }
 
 export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, onAssess, onOpenAssignDialog, onExportSingle, onDelete }: { soul: Soul; onFollowUp: (s: Soul) => void; onViewHistory: (s: Soul) => void; onEdit: (s: Soul) => void; onAssess: (s: Soul) => void; onOpenAssignDialog: (s: Soul) => void; onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void; onDelete: (s: Soul) => void; }) {
@@ -463,4 +461,3 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
     </>
   );
 }
-

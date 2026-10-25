@@ -31,13 +31,13 @@ function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, classNam
                 </Avatar>
             </DialogTrigger>
             {currentPhotoUrl && (
-                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
-                    <DialogHeader className="sr-only">
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+                    <DialogHeader className="sr-only text-center">
                         <DialogTitle>Profile Photo</DialogTitle>
                         <DialogDescription>Full screen view of participant's photo.</DialogDescription>
                     </DialogHeader>
-                    <div className="relative h-full w-full flex items-center justify-center p-4">
-                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                    <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                             <Image 
                                 src={currentPhotoUrl} 
                                 alt="Participant" 
@@ -83,7 +83,7 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
                 <div className="min-w-0 flex-1 text-left">
                     <Link 
                         href={id === user?.uid ? '/profile' : `/profile/${id}`} 
-                        className="font-bold truncate text-sm sm:text-base hover:underline leading-tight uppercase tracking-tight block text-left"
+                        className="font-bold text-sm sm:text-base hover:underline leading-tight uppercase tracking-tight block text-left"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {p.firstName} {p.lastName}
