@@ -1,16 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw, HandHeart, Target, HelpCircle } from "lucide-react";
+import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw, HandHeart, Target, HelpCircle, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserProfile } from '@/firebase';
 import { BIBLE_GAME_DATA } from '@/lib/bible-game-data';
+import { useToast } from '@/hooks/use-toast';
 
 export function BibleGameCard() {
     const { userProfile } = useUserProfile();
+    const { toast } = useToast();
     const [gameType, setGameType] = useState<'word' | 'prayer' | 'trivia'>('word');
     const [quizIndex, setQuizIndex] = useState(0);
     const [gameState, setGameState] = useState<'playing' | 'correct' | 'wrong'>('playing');
@@ -44,6 +46,25 @@ export function BibleGameCard() {
         setSelectedOption(null);
     };
 
+    const handleShare = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const shareUrl = `${window.location.origin}/signup`;
+        const text = "Sharpen your knowledge of the Word in the Kingdom Arena! Join the movement at Testify.";
+        
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Kingdom Arena | Testify',
+                    text: text,
+                    url: shareUrl,
+                });
+            } catch (err) {}
+        } else {
+            navigator.clipboard.writeText(`${text} ${shareUrl}`);
+            toast({ title: "Invite Copied", description: "Share the link with fellow believers." });
+        }
+    };
+
     const getIcon = () => {
         switch(gameType) {
             case 'word': return <BookOpen className="h-5 w-5 text-primary" />;
@@ -62,13 +83,26 @@ export function BibleGameCard() {
 
     return (
         <Card className="rounded-none sm:rounded-[2rem] border-y sm:border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden mb-6 group transition-all hover:border-primary/40 text-left">
-            <CardHeader className="p-6 sm:p-8 pb-4 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2 text-left">
-                    {getIcon()}
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">{getLabel()}</span>
+            <CardHeader className="p-6 sm:p-8 pb-4">
+                <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-2 text-left">
+                        {getIcon()}
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">{getLabel()}</span>
+                    </div>
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400"
+                        onClick={handleShare}
+                    >
+                        <Share2 className="h-4 w-4" />
+                        <span className="sr-only">Share Invitation</span>
+                    </Button>
                 </div>
                 <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-center">Interactive Kingdom Exercise</CardTitle>
-                <CardDescription className="text-zinc-400 text-sm font-medium text-center">The game can be shared to invite believers</CardDescription>
+                <CardDescription className="text-zinc-400 text-sm font-medium text-center mt-2 leading-relaxed">
+                    Sharpen your spirit with interactive biblical challenges. Share the Word and invite others to join the Kingdom Arena.
+                </CardDescription>
             </CardHeader>
             <CardContent className="p-6 sm:p-10 pt-0 space-y-8 text-left">
                 <div className="bg-zinc-900 rounded-[1.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[160px] flex items-center justify-center">
@@ -94,7 +128,7 @@ export function BibleGameCard() {
                             key={opt}
                             variant="outline"
                             className={cn(
-                                "h-12 sm:h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs transition-all border-2 text-center",
+                                "h-12 sm:h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs transition-all border-2 text-center whitespace-normal",
                                 gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_20px_rgba(22,163,74,0.4)]" : 
                                 gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : 
                                 "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/20"
@@ -116,10 +150,10 @@ export function BibleGameCard() {
                             className="space-y-6 text-left"
                         >
                             <div className={cn(
-                                "p-6 rounded-2xl flex flex-col items-center text-center gap-3 border-2 border-dashed text-center",
+                                "p-6 rounded-2xl flex flex-col items-center text-center gap-3 border-2 border-dashed",
                                 gameState === 'correct' ? "bg-green-500/5 border-green-500/20 text-green-500" : "bg-red-500/5 border-red-500/20 text-red-500"
                             )}>
-                                <div className="flex items-center gap-2 text-left">
+                                <div className="flex items-center gap-2">
                                     {gameState === 'correct' ? <Trophy className="h-5 w-5 animate-bounce" /> : <ShieldAlert className="h-5 w-5" />}
                                     <span className="font-black uppercase tracking-[0.2em] text-xs">
                                         {gameState === 'correct' ? `WELL DONE, ${firstName.toUpperCase()}!` : "STAY IN THE WORD"}
@@ -145,7 +179,7 @@ export function BibleGameCard() {
                     )}
                 </AnimatePresence>
             </CardContent>
-            <CardFooter className="p-3 bg-black/40 text-center justify-center text-left">
+            <CardFooter className="p-3 bg-black/40 text-center justify-center">
                  <p className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">Faith • Power • Truth</p>
             </CardFooter>
         </Card>

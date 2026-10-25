@@ -7,6 +7,12 @@
       "imageHint": "testify flame logo"
     },
     {
+      "id": "hero-bg",
+      "description": "Atmospheric spiritual background",
+      "imageUrl": "https://picsum.photos/seed/heaven/1920/1080",
+      "imageHint": "spiritual atmosphere"
+    },
+    {
       "id": "auth-background",
       "description": "Person thanking God with raised hands",
       "imageUrl": "https://picsum.photos/seed/praise/1080/1920",

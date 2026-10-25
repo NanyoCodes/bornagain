@@ -29,9 +29,9 @@ import {
     HandHeart,
     HelpCircle,
     MessagesSquare,
-    Loader2
+    Loader2,
+    Skeleton
 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn, safeToDate } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser, useFirestore, useUserProfile, useDoc, useCollection } from '@/firebase';
@@ -611,7 +611,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
                 <div className="space-y-3 text-left">
                     {historyLoading ? (
-                        <div className="space-y-3 text-left">
+                        <div className="space-y-3 text-left text-left">
                             {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl text-left" />)}
                         </div>
                     ) : filteredHistory.length > 0 ? filteredHistory.map(session => {
