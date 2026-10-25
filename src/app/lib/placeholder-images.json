@@ -9,55 +9,55 @@
     {
       "id": "hero-bg",
       "description": "Powerful atmosphere of worship and prayer",
-      "imageUrl": "https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=1080&auto=format&fit=crop",
+      "imageUrl": "https://picsum.photos/seed/pray/1920/1080",
       "imageHint": "worship atmosphere"
     },
     {
       "id": "feature-glory",
       "description": "Joyful believer sharing a story of God's goodness",
-      "imageUrl": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1080&auto=format&fit=crop",
+      "imageUrl": "https://picsum.photos/seed/joy/1080/800",
       "imageHint": "joyful person"
     },
     {
       "id": "feature-mission",
       "description": "Team on the field for an evangelism campaign",
-      "imageUrl": "https://i.ibb.co/jvF1tjxC/daniel-gutko-Bt-J09u2-R-CM-unsplash.jpg",
+      "imageUrl": "https://picsum.photos/seed/mission/1080/800",
       "imageHint": "evangelism mission"
     },
     {
       "id": "feature-victory",
       "description": "Person celebrating spiritual victory and freedom",
-      "imageUrl": "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=1080&auto=format&fit=crop",
+      "imageUrl": "https://picsum.photos/seed/victory/1080/800",
       "imageHint": "spiritual victory"
     },
     {
       "id": "feature-provision",
       "description": "Community members sharing a meal in fellowship",
-      "imageUrl": "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1080&auto=format&fit=crop",
+      "imageUrl": "https://picsum.photos/seed/meal/1080/800",
       "imageHint": "shared meal"
     },
     {
       "id": "feature-kindness",
       "description": "A gift or token of kindness being shared",
-      "imageUrl": "https://images.unsplash.com/photo-1469571486070-21f01fe73b80?q=80&w=1080&auto=format&fit=crop",
+      "imageUrl": "https://picsum.photos/seed/kindness/1080/800",
       "imageHint": "kindness gift"
     },
     {
       "id": "feature-disciplines",
       "description": "Believer reading the Bible in a quiet place",
-      "imageUrl": "https://images.unsplash.com/photo-1507434965515-61970f2bd7c6?q=80&w=1080&auto=format&fit=crop",
+      "imageUrl": "https://picsum.photos/seed/bible/1080/800",
       "imageHint": "bible reading"
     },
     {
       "id": "feature-fellowship",
       "description": "Group of believers in a warm fellowship environment",
-      "imageUrl": "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=1080&auto=format&fit=crop",
+      "imageUrl": "https://picsum.photos/seed/group/1080/800",
       "imageHint": "church fellowship"
     },
     {
       "id": "feature-intercession",
       "description": "Hands joined in unified intercessory prayer",
-      "imageUrl": "https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=1080&auto=format&fit=crop",
+      "imageUrl": "https://picsum.photos/seed/unity/1080/800",
       "imageHint": "intercessory prayer"
     }
   ]

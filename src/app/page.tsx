@@ -276,11 +276,11 @@ export default function LandingPage() {
                                     <div className={cn("absolute top-4 left-4 h-10 w-10 rounded-2xl flex items-center justify-center shadow-xl backdrop-blur-md border border-white/20", feature.bgColor.replace('10', '40'))}>
                                         <feature.icon className={cn("h-5 w-5", feature.color.replace('500', '200').replace('600', '200'))} />
                                     </div>
-                                    <div className="absolute bottom-4 left-6 right-6">
+                                    <div className="absolute bottom-4 left-6 right-6 text-left">
                                         <h3 className="text-xl font-black text-white uppercase tracking-tight leading-tight">{feature.title}</h3>
                                     </div>
                                 </div>
-                                <CardContent className="p-6 sm:p-8 flex-grow">
+                                <CardContent className="p-6 sm:p-8 flex-grow text-left">
                                     <p className="text-muted-foreground text-sm leading-relaxed font-medium">
                                         {feature.description}
                                     </p>
@@ -355,10 +355,10 @@ export default function LandingPage() {
                             "{t.content}"
                           </p>
                           <div className="flex items-center gap-3">
-                            <Avatar className="h-10 w-10 border shrink-0">
+                            <Avatar className="h-10 w-10 border shrink-0 text-left">
                               <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-black uppercase">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0">
+                            <div className="min-w-0 text-left">
                               <p className="text-xs font-black uppercase tracking-tight truncate">{t.authorFirstName} {t.authorLastName}</p>
                               <p className="text-[9px] font-bold text-primary uppercase tracking-widest truncate">{t.category}</p>
                             </div>
@@ -409,13 +409,13 @@ export default function LandingPage() {
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
                 {logo && (
-                  <Avatar className="h-12 w-12">
+                  <Avatar className="h-12 w-12 text-left">
                     <AvatarImage src={logo.imageUrl} alt="Logo" className="object-cover" />
                     <AvatarFallback>T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty text-left">
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty text-left">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
               <div className="flex gap-4">

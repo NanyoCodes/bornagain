@@ -66,82 +66,6 @@ import Image from 'next/image';
 
 const timerOptions = [30, 60, 90, 120];
 
-function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 1.821 0 0 0-3.48-8.413Z"/>
-    </svg>
-  );
-}
-
-function ChallengePartnerDialog({ partnerName, onChallenge, isProcessing, isOpen, onOpenChange }: { partnerName: string, onChallenge: () => void, isProcessing: boolean, isOpen: boolean, onOpenChange: (open: boolean) => void }) {
-    const isMobile = useIsMobile();
-    const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center gap-2 mb-2 text-left">
-                <Gamepad2 className="h-5 w-5 text-primary text-left" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Arena</span>
-            </div>
-            <DialogHeader className="text-left p-0">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Issue Challenge</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left">Sharpen your knowledge of the Word with {partnerName}.</DialogDescription>
-            </DialogHeader>
-        </div>
-    );
-
-    const content = (
-        <div className="p-8 space-y-8 text-left">
-            <div className="bg-primary/5 rounded-[2rem] p-6 border-2 border-dashed border-primary/20 relative overflow-hidden text-left">
-                <Quote className="absolute top-4 right-6 h-12 w-12 opacity-5 rotate-12 text-left" />
-                <p className="text-base font-serif italic leading-relaxed relative z-10 text-left">
-                    "Iron sharpens iron, and one man sharpens another."
-                </p>
-                <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right text-left">— Proverbs 27:17</p>
-            </div>
-
-            <div className="space-y-4 text-left">
-                <div className="flex items-start gap-3 text-left">
-                    <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left">
-                        <span className="text-[10px] font-black text-primary text-left">1</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground font-medium text-left">Challenge your partner to a timed Bible passage session.</p>
-                </div>
-                <div className="flex items-start gap-3 text-left">
-                    <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left">
-                        <span className="text-[10px] font-black text-primary text-left">2</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground font-medium text-left">Earn Kingdom Points for every correct completion.</p>
-                </div>
-            </div>
-
-            <Button onClick={onChallenge} disabled={isProcessing} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">
-                {isProcessing ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left" /> : <Send className="h-5 w-5 mr-2 text-left" />}
-                SEND CHALLENGE
-            </Button>
-        </div>
-    );
-
-    if (isMobile) {
-        return (
-            <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                    {header}
-                    <ScrollArea className="flex-grow text-left">{content}</ScrollArea>
-                </DrawerContent>
-            </Drawer>
-        );
-    }
-
-    return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                {header}
-                {content}
-            </DialogContent>
-        </Dialog>
-    );
-}
-
 export function WordChallengeGame({ partnerId, partnerName }: { partnerId: string, partnerName: string }) {
     const { user } = useUser();
     const { userProfile } = useUserProfile();
@@ -457,7 +381,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
             <Card className="rounded-[2rem] sm:rounded-[3rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden group transition-all hover:border-primary/40 text-left">
                 <CardHeader className="p-6 sm:p-10 pb-4 text-center">
-                    <div className="flex items-center justify-center gap-2 mb-2 text-left">
+                    <div className="flex items-center justify-center gap-2 mb-2 text-left text-left">
                         <Gamepad2 className="h-5 w-5 text-primary text-left" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-center">Arena of Truth</span>
                     </div>
@@ -565,29 +489,29 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     {isGameActive && (
                         <div className="space-y-6 sm:space-y-10 animate-in fade-in zoom-in duration-500 text-left text-left text-left">
                             <div className="flex items-center justify-between px-2 text-left text-left text-left">
-                                <div className="flex items-center gap-3 text-left text-left text-left">
+                                <div className="flex items-center gap-3 text-left text-left text-left text-left">
                                     <div className={cn(
-                                        "h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2 text-left",
+                                        "h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2 text-left text-left",
                                         timeLeft <= 10 ? "bg-red-500 border-red-400 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary"
                                     )}>
-                                        <Timer className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
+                                        <Timer className="h-5 w-5 sm:h-6 sm:w-6 text-left text-left" />
                                     </div>
-                                    <div className="text-left text-left text-left">
-                                        <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Left</p>
-                                        <p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>
+                                    <div className="text-left text-left text-left text-left">
+                                        <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left text-left">Time Left</p>
+                                        <p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>
                                             {timeLeft}s
                                         </p>
                                     </div>
                                 </div>
-                                <div className="text-right text-left text-left">
-                                    <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right text-left">Session Gain</p>
-                                    <p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right text-left">+{correctCount * 10}</p>
+                                <div className="text-right text-left text-left text-left text-left">
+                                    <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right text-left text-left">Session Gain</p>
+                                    <p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right text-left text-left">+{correctCount * 10}</p>
                                 </div>
                             </div>
 
-                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[180px] flex items-center justify-center text-left text-left">
-                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left text-left text-left">
-                                    <BookOpen className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12 text-left text-left text-left" />
+                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[180px] flex items-center justify-center text-left text-left text-left">
+                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left text-left text-left text-left">
+                                    <BookOpen className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12 text-left text-left text-left text-left" />
                                 </div>
                                 <AnimatePresence mode="wait">
                                     <motion.p 
@@ -595,20 +519,20 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 1.05 }}
-                                        className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center text-left"
+                                        className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center text-left text-left"
                                     >
                                         &ldquo;{quiz.text}&rdquo;
                                     </motion.p>
                                 </AnimatePresence>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left text-left text-left">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left text-left text-left text-left">
                                 {quiz.options.map(opt => (
                                     <Button
                                         key={opt}
                                         variant="outline"
                                         className={cn(
-                                            "h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal text-left",
+                                            "h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal text-left text-left",
                                             gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_25px_rgba(22,163,74,0.4)]" : 
                                             gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : 
                                             "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/20"
@@ -624,116 +548,120 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
 
                     {gameState === 'finished' && (
-                        <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center text-left">
-                            <div className="text-center space-y-4 text-left">
-                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-center text-left">
-                                    <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-center text-left" />
+                        <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center text-left text-left">
+                            <div className="text-center space-y-4 text-left text-left">
+                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-center text-left text-left">
+                                    <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-center text-left text-left" />
                                 </div>
-                                <div className="space-y-1 text-center text-left">
-                                    <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center text-left">Session Complete!</h3>
-                                    <p className="text-zinc-400 font-medium text-sm sm:text-base text-center text-left">Excellent labor in the Word.</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-3 sm:gap-6 text-center text-left text-left">
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left">
-                                    <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center text-left text-left">Points</p>
-                                    <p className="text-xl sm:text-4xl font-black text-white text-center text-left text-left">{correctCount * 10}</p>
-                                </div>
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-center text-left text-left text-left text-left text-left">
-                                    <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center text-left text-left text-left text-left text-left">Correct</p>
-                                    <p className="text-xl sm:text-4xl font-black text-white text-center text-left text-left text-left text-left">{correctCount}</p>
-                                </div>
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-center text-left text-left text-left text-left text-left">
-                                    <p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center text-left text-left text-left text-left text-left text-left">Errors</p>
-                                    <p className="text-xl sm:text-4xl font-black text-white text-center text-left text-left text-left text-left text-left">{wrongCount}</p>
+                                <div className="space-y-1 text-center text-left text-left">
+                                    <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center text-left text-left">Session Complete!</h3>
+                                    <p className="text-zinc-400 font-medium text-sm sm:text-base text-center text-left text-left">Excellent labor in the Word.</p>
                                 </div>
                             </div>
 
-                            <Button 
-                                onClick={() => setGameState('playing')}
-                                className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center text-left"
-                            >
-                                <RefreshCw className="h-5 w-5 text-left" />
-                                NEW SESSION
-                            </Button>
+                            <div className="grid grid-cols-3 gap-3 sm:gap-6 text-center text-left text-left text-left">
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left text-left">
+                                    <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center text-left text-left text-left">Points</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white text-center text-left text-left text-left">{correctCount * 10}</p>
+                                </div>
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-center text-left text-left text-left text-left text-left text-left">
+                                    <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center text-left text-left text-left text-left text-left text-left">Correct</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white text-center text-left text-left text-left text-left text-left">{correctCount}</p>
+                                </div>
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-center text-left text-left text-left text-left text-left text-left text-left">
+                                    <p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center text-left text-left text-left text-left text-left text-left text-left">Errors</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white text-center text-left text-left text-left text-left text-left text-left">{wrongCount}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col gap-4">
+                                <Button 
+                                    onClick={handleOpenPrivateChat}
+                                    size="lg"
+                                    className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-primary text-white hover:bg-primary/90 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center text-left"
+                                >
+                                    <MessagesSquare className="h-5 w-5 text-left" />
+                                    OPEN KINGDOM CHAT
+                                </Button>
+                                <Button 
+                                    onClick={() => setGameState('playing')}
+                                    variant="outline"
+                                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-transparent border-white/10 text-zinc-400 hover:bg-white/5 shadow-md flex items-center justify-center gap-4 transition-all active:scale-95 text-center text-left"
+                                >
+                                    <RefreshCw className="h-5 w-5 text-left" />
+                                    NEW SESSION
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5 text-center text-left text-left">
-                     <p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center text-left text-left">Iron Sharpens Iron • Growth • Victory</p>
+                <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5 text-center text-left text-left text-left">
+                     <p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center text-left text-left text-left">Iron Sharpens Iron • Growth • Victory</p>
                 </CardFooter>
             </Card>
 
-            <div className="space-y-6 text-left text-left text-left">
-                <div className="flex items-center justify-between px-1 text-left text-left text-left">
-                    <div className="flex items-center gap-2 text-left text-left text-left">
-                        <History className="h-4 w-4 text-primary text-left text-left text-left" />
-                        <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground text-left text-left text-left">Arena History</h4>
+            <div className="space-y-6 text-left text-left text-left text-left">
+                <div className="flex items-center justify-between px-1 text-left text-left text-left text-left">
+                    <div className="flex items-center gap-2 text-left text-left text-left text-left">
+                        <History className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                        <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Arena History</h4>
                     </div>
-                    <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60 text-left text-left text-left">Past Sessions</Badge>
+                    <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60 text-left text-left text-left text-left">Past Sessions</Badge>
                 </div>
 
-                <div className="space-y-3 text-left text-left text-left">
+                <div className="space-y-3 text-left text-left text-left text-left">
                     {historyLoading ? (
-                        <div className="space-y-3 text-left text-left text-left">
-                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl text-left text-left" />)}
+                        <div className="space-y-3 text-left text-left text-left text-left">
+                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl text-left text-left text-left" />)}
                         </div>
                     ) : filteredHistory.length > 0 ? filteredHistory.map(session => {
                         const date = safeToDate(session.createdAt);
                         const isMyScore = session.userId === user?.uid;
                         return (
-                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all text-left text-left text-left">
-                                <div className="flex items-center justify-between gap-4 text-left text-left text-left">
-                                    <div className="flex items-center gap-4 flex-1 min-w-0 text-left text-left text-left">
+                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all text-left text-left text-left text-left">
+                                <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left">
+                                    <div className="flex items-center gap-4 flex-1 min-w-0 text-left text-left text-left text-left text-left">
                                         <div className={cn(
-                                            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner text-left text-left",
+                                            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner text-left text-left text-left",
                                             isMyScore ? "bg-primary/10 text-primary border-primary/20" : "bg-muted/40 text-muted-foreground"
                                         )}>
-                                            {isMyScore ? <Star className="h-5 w-5 text-left text-left text-left" /> : <Award className="h-5 w-5 text-left text-left text-left" />}
+                                            {isMyScore ? <Star className="h-5 w-5 text-left text-left text-left text-left" /> : <Award className="h-5 w-5 text-left text-left text-left text-left" />}
                                         </div>
-                                        <div className="min-w-0 flex-1 text-left text-left text-left">
-                                            <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left text-left text-left">
+                                        <div className="min-w-0 flex-1 text-left text-left text-left text-left">
+                                            <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left text-left text-left text-left">
                                                 {isMyScore ? 'My Victory' : `${partnerName.split(' ')[0]}'s Result`}
                                             </p>
-                                            <div className="flex items-center gap-2 mt-1 text-left text-left text-left">
-                                                <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left text-left text-left">{session.gameType || 'Word'}</Badge>
-                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left">
+                                            <div className="flex items-center gap-2 mt-1 text-left text-left text-left text-left">
+                                                <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left text-left text-left text-left">{session.gameType || 'Word'}</Badge>
+                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left">
                                                     {date ? format(date, 'MMM d, p') : 'Recently'}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-right text-left text-left text-left">
-                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none text-right text-left text-left">{session.score}</p>
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right text-left text-left">POINTS</p>
+                                    <div className="text-right text-left text-left text-left text-left">
+                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none text-right text-left text-left text-left">{session.score}</p>
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right text-left text-left text-left">POINTS</p>
                                     </div>
                                 </div>
                             </Card>
                         );
                     }) : (
-                        <div className="py-16 text-center bg-muted/20 rounded-[2.5rem] border-2 border-dashed text-center text-left text-left text-left">
-                            <History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-center text-left text-left" />
-                            <p className="text-xs text-muted-foreground italic px-12 text-balance text-center text-left text-left text-left">No recorded sessions between you and {partnerName}. Start sharpening each other to see results!</p>
+                        <div className="py-16 text-center bg-muted/20 rounded-[2.5rem] border-2 border-dashed text-center text-left text-left text-left text-left">
+                            <History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-center text-left text-left text-left" />
+                            <p className="text-xs text-muted-foreground italic px-12 text-balance text-center text-left text-left text-left text-left">No recorded sessions between you and {partnerName}. Start sharpening each other to see results!</p>
                         </div>
                     )}
                 </div>
             </div>
-
-            <div className="p-8 bg-muted/20 rounded-[2.5rem] border border-dashed flex flex-col sm:flex-row items-center sm:items-start gap-6 shadow-inner text-left text-left text-left">
-                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 shadow-sm text-left text-left text-left">
-                    <MessagesSquare className="h-6 w-6 text-primary text-left text-left text-left" />
-                </div>
-                <div className="space-y-3 flex-1 text-center sm:text-left text-left text-left text-left">
-                    <div className="space-y-1 text-left sm:text-left text-left text-left">
-                        <h4 className="font-black text-sm uppercase tracking-tight text-foreground text-center sm:text-left text-left text-left">Post-Session Fellowship</h4>
-                        <p className="text-xs text-muted-foreground leading-relaxed font-medium text-balance text-center sm:text-left text-left text-left">The arena is for sharpening, but the hub is for building. Continue the conversation with your partner after each session.</p>
-                    </div>
-                    <Button variant="outline" size="sm" className="rounded-xl h-9 px-6 font-bold border-primary/20 text-primary hover:bg-primary/5 text-center sm:text-left" onClick={handleOpenPrivateChat}>
-                        OPEN KINGDOM CHAT
-                    </Button>
-                </div>
-            </div>
         </div>
     );
+}
+
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 1.821 0 0 0-3.48-8.413Z"/>
+    </svg>
+  );
 }
