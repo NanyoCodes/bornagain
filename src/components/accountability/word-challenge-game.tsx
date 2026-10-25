@@ -413,7 +413,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </div>
                             ) : invitation.hostId === user?.uid ? (
                                 <div className="space-y-6 w-full text-center">
-                                    <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mx-auto border-2 border-dashed border-primary/20">
+                                    <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mx-auto border-2 border-dashed border-primary/20 text-center">
                                         <Loader2 className="h-10 w-10 text-primary animate-spin" />
                                     </div>
                                     <div className="space-y-2">
@@ -615,8 +615,8 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                         <h4 className="font-black text-sm uppercase tracking-tight text-foreground text-center sm:text-left">Post-Session Fellowship</h4>
                         <p className="text-xs text-muted-foreground leading-relaxed font-medium text-balance text-center sm:text-left">The arena is for sharpening, but the hub is for building. Continue the conversation with your partner after each session.</p>
                     </div>
-                    <Button variant="outline" size="sm" className="rounded-xl h-9 px-6 font-bold border-primary/20 text-primary hover:bg-primary/5 text-center sm:text-left" onClick={() => router.push('/chats')}>
-                        Open private chat
+                    <Button variant="outline" size="sm" className="rounded-xl h-auto py-2 px-6 font-bold border-primary/20 text-primary hover:bg-primary/5 text-center sm:text-left leading-relaxed text-balance" onClick={() => router.push('/chats')}>
+                        This opens a conversation with your partner with chatbox here and messages too
                     </Button>
                 </div>
             </div>

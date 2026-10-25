@@ -89,7 +89,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
                         <div className="font-black text-xs sm:text-sm md:text-base capitalize tracking-tight text-left">
                             {soul.firstName} {soul.lastName}
                         </div>
-                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left"><Church className="h-3 w-3 shrink-0 text-left" />{soul.church}</div>}
+                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium opacity-70 text-left"><Church className="h-3 w-3 shrink-0 text-left" />{soul.church}</div>}
                     </div>
                 </div>
             </TableCell>

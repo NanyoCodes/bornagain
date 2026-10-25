@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -30,7 +29,8 @@ import {
   MessagesSquare,
   TrendingUp,
   Heart,
-  ChevronRight
+  ChevronRight,
+  Gamepad2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -43,6 +43,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import NextImage from 'next/image';
+import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 
 const features = [
   {
@@ -215,11 +216,18 @@ export default function LandingPage() {
           </div>
 
           <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center">
-            <div className="flex gap-2">
-                {[...Array(24)].map((_, i) => (
-                    <div key={i} className="h-1.5 w-1.5 rounded-full bg-white/20" />
-                ))}
-            </div>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 1 }}
+              className="flex flex-col items-center gap-2 px-6"
+            >
+                <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.4em] text-white/40 text-center text-balance max-w-lg">
+                    "Go into all the world and preach the gospel to all creation."
+                </p>
+                <div className="h-px w-12 bg-primary/40" />
+                <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest">Mark 16:15</p>
+            </motion.div>
           </div>
         </section>
 
@@ -293,8 +301,24 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Interactive Game Section */}
+        <section className="py-24 bg-background">
+          <div className="max-w-4xl mx-auto px-6">
+            <div className="text-center mb-16 space-y-4">
+              <Badge variant="outline" className="px-4 py-1.5 rounded-full border-primary/20 text-primary font-black uppercase tracking-widest text-[10px]">
+                Interactive Spiritual Exercise
+              </Badge>
+              <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase">Sharpen Your Knowledge</h2>
+              <p className="text-muted-foreground text-base max-w-lg mx-auto font-medium italic">
+                Experience one of our Kingdom Arena exercises. Test your word knowledge and earn spiritual focus.
+              </p>
+            </div>
+            <BibleGameCard />
+          </div>
+        </section>
+
         {/* Glory Feed Section */}
-        <section className="py-24 relative overflow-hidden bg-background">
+        <section className="py-24 relative overflow-hidden bg-muted/10">
           <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary" />
           
           <div className="max-w-7xl mx-auto px-6">
@@ -325,7 +349,7 @@ export default function LandingPage() {
                     transition={{ delay: idx * 0.1 }}
                   >
                     <Card className="rounded-[2rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden">
-                      <CardContent className="p-6 flex gap-4">
+                      <CardContent className="p-6 flex gap-4 text-left">
                         <Quote className="h-8 w-8 text-primary opacity-20 shrink-0 mt-1" />
                         <div className="min-w-0">
                           <p className="text-sm sm:text-base italic text-muted-foreground line-clamp-2 leading-relaxed mb-4">
@@ -336,7 +360,7 @@ export default function LandingPage() {
                               <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-black uppercase">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
-                              <p className="text-xs font-black uppercase tracking-tight truncate">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
+                              <p className="text-xs font-black uppercase tracking-tight truncate">{t.authorFirstName} {t.authorLastName}</p>
                               <p className="text-[9px] font-bold text-primary uppercase tracking-widest truncate">{t.category}</p>
                             </div>
                           </div>
@@ -383,8 +407,8 @@ export default function LandingPage() {
       <footer className="bg-muted/50 border-t py-16">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12">
-            <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
                 {logo && (
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={logo.imageUrl} alt="Logo" className="object-cover" />
@@ -442,3 +466,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
