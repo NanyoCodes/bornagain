@@ -49,7 +49,7 @@ export function BibleGameCard() {
     const handleShare = async (e: React.MouseEvent) => {
         e.stopPropagation();
         const shareUrl = `${window.location.origin}/signup`;
-        const text = "Sharpen your knowledge of the Word in the Kingdom Arena! Join the movement at Testify.";
+        const text = "Sharpen your spirit with interactive biblical challenges. Share the Word and invite others to join the Kingdom Arena.";
         
         if (navigator.share) {
             try {

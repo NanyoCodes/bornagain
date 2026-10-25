@@ -134,7 +134,7 @@ function MatchmakingInner({ soulId }: { soulId?: string | null }) {
                 </div>
                 <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-destructive/80 text-center">Matchmaking Restricted</h2>
                 <p className="mt-4 text-sm text-muted-foreground max-w-sm leading-relaxed font-medium italic text-center">
-                    Younger than 20 years old are exempted from matchmaking protocol to prioritize spiritual focus and safety.
+                    Younger than 20 years old are exempted from matchmaking.
                 </p>
                 <Button variant="outline" className="mt-10 rounded-xl h-12 px-10 font-black uppercase tracking-widest text-[10px] mx-auto block" onClick={() => router.back()}>
                     <ArrowLeft className="mr-2 h-4 w-4" /> RETURN TO HARVEST
