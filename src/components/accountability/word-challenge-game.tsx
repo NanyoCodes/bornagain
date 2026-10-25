@@ -443,7 +443,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         onClick={handleSendChallenge} 
                                         disabled={isRequesting}
                                         size="lg" 
-                                        className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30"
+                                        className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-center"
                                     >
                                         {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         ISSUE CHALLENGE
