@@ -4,109 +4,61 @@
       "id": "logo",
       "description": "Testify logo",
       "imageUrl": "https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3",
-      "imageHint": "testify flame logo"
+      "imageHint": "flame logo"
     },
     {
-      "id": "auth-background",
-      "description": "Person thanking God with raised hands",
-      "imageUrl": "https://images.unsplash.com/photo-1656073629723-03fbcbc951ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRoYW5rJTIwR09EfGVufDB8fDB8fHww",
-      "imageHint": "thanking god"
-    },
-    {
-      "id": "gospel-collage",
-      "description": "Expression of spiritual gratitude and praise",
-      "imageUrl": "https://images.unsplash.com/photo-1656073629723-03fbcbc951ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRoYW5rJTIwR09EfGVufDB8fDB8fHww",
-      "imageHint": "thanking god"
-    },
-    {
-      "id": "white-gospel",
-      "description": "Bright, white-toned photography of a community space",
-      "imageUrl": "https://images.unsplash.com/photo-1510673398445-94f476ef2793?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "white space"
-    },
-    {
-      "id": "user-1",
-      "description": "User avatar 1",
-      "imageUrl": "https://images.unsplash.com/photo-1610655507808-a59293f4e332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fDB8fHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
-    },
-    {
-      "id": "user-2",
-      "description": "User avatar 2",
-      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzEyNjI5ODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "man portrait"
-    },
-    {
-      "id": "user-3",
-      "description": "User avatar 3",
-      "imageUrl": "https://images.unsplash.com/photo-1656338997878-279d71d48f6e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGVyc29uJTIwc21pbGluZ3xlbnwwfHx8fDE3NzEyNDMyNTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person smiling"
-    },
-    {
-      "id": "user-4",
-      "description": "User avatar 4",
-      "imageUrl": "https://images.unsplash.com/photo-1664813495783-a7b19be83624?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMG91dGRvb3JzfGVufDB8fHx8MTc3MTM0MTI2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman outdoors"
-    },
-    {
-      "id": "profile-cover-1",
-      "description": "Abstract gradient profile cover",
-      "imageUrl": "https://images.unsplash.com/photo-1707130869369-c00812966290?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3QlMjBncmFkaWVudHxlbnwwfHx8fDE3NzEzMzcxOTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "abstract gradient"
+      "id": "hero-bg",
+      "description": "Powerful atmosphere of worship and prayer",
+      "imageUrl": "https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=1080&auto=format&fit=crop",
+      "imageHint": "worship atmosphere"
     },
     {
       "id": "feature-glory",
-      "description": "Joyful believer sharing a testimony",
-      "imageUrl": "https://images.unsplash.com/photo-1650852706530-3192c48137c6?q=80&w=1080&auto=format&fit=crop",
-      "imageHint": "happy person"
+      "description": "Joyful believer sharing a story of God's goodness",
+      "imageUrl": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1080&auto=format&fit=crop",
+      "imageHint": "joyful person"
     },
     {
       "id": "feature-mission",
-      "description": "Joyful group in an outdoor community outreach mission",
+      "description": "Team on the field for an evangelism campaign",
       "imageUrl": "https://i.ibb.co/jvF1tjxC/daniel-gutko-Bt-J09u2-R-CM-unsplash.jpg",
-      "imageHint": "happy mission"
+      "imageHint": "evangelism mission"
     },
     {
       "id": "feature-victory",
-      "description": "A person with raised hands celebrating in a field",
-      "imageUrl": "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "happy freedom"
+      "description": "Person celebrating spiritual victory and freedom",
+      "imageUrl": "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=1080&auto=format&fit=crop",
+      "imageHint": "spiritual victory"
     },
     {
       "id": "feature-provision",
-      "description": "Diverse group of friends smiling around a dinner table",
-      "imageUrl": "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1974&auto=format&fit=crop",
-      "imageHint": "happy meal"
+      "description": "Community members sharing a meal in fellowship",
+      "imageUrl": "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1080&auto=format&fit=crop",
+      "imageHint": "shared meal"
     },
     {
       "id": "feature-kindness",
-      "description": "Happy people sharing joy and kindness",
-      "imageUrl": "https://images.unsplash.com/photo-1469571486070-21f01fe73b80?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "kindness smile"
+      "description": "A gift or token of kindness being shared",
+      "imageUrl": "https://images.unsplash.com/photo-1469571486070-21f01fe73b80?q=80&w=1080&auto=format&fit=crop",
+      "imageHint": "kindness gift"
     },
     {
       "id": "feature-disciplines",
-      "description": "A young woman smiling while reading a book in natural light",
-      "imageUrl": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop",
-      "imageHint": "happy reading"
+      "description": "Believer reading the Bible in a quiet place",
+      "imageUrl": "https://images.unsplash.com/photo-1507434965515-61970f2bd7c6?q=80&w=1080&auto=format&fit=crop",
+      "imageHint": "bible reading"
     },
     {
       "id": "feature-fellowship",
-      "description": "Friends sitting on a bench together laughing",
-      "imageUrl": "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "happy friends"
+      "description": "Group of believers in a warm fellowship environment",
+      "imageUrl": "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?q=80&w=1080&auto=format&fit=crop",
+      "imageHint": "church fellowship"
     },
     {
       "id": "feature-intercession",
-      "description": "Close up of diverse hands joined in unity and prayer",
-      "imageUrl": "https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=2071&auto=format&fit=crop",
-      "imageHint": "happy unity"
-    },
-    {
-      "id": "ad-placeholder-1",
-      "description": "Immersive Kingdom mission spotlight",
-      "imageUrl": "https://picsum.photos/seed/harvest_mission_spotlight/800/600",
-      "imageHint": "mission outreach"
+      "description": "Hands joined in unified intercessory prayer",
+      "imageUrl": "https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=1080&auto=format&fit=crop",
+      "imageHint": "intercessory prayer"
     }
   ]
 }

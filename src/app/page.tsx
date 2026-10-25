@@ -29,8 +29,7 @@ import {
   MessagesSquare,
   TrendingUp,
   Heart,
-  ChevronRight,
-  Gamepad2
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -125,7 +124,7 @@ export default function LandingPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-  const heroImage = PlaceHolderImages.find((img) => img.id === 'feature-glory');
+  const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-bg');
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -178,7 +177,7 @@ export default function LandingPage() {
              {heroImage && (
                 <NextImage 
                   src={heroImage.imageUrl} 
-                  alt="Testify Joy" 
+                  alt="Testify Atmosphere" 
                   fill 
                   className="object-cover opacity-40"
                   priority
@@ -310,7 +309,7 @@ export default function LandingPage() {
               </Badge>
               <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase">Sharpen Your Knowledge</h2>
               <p className="text-muted-foreground text-base max-w-lg mx-auto font-medium italic">
-                Experience one of our Kingdom Arena exercises. Test your word knowledge and earn spiritual focus.
+                Experience one of our Kingdom Arena exercises. Test your word knowledge and align your spirit with Truth.
               </p>
             </div>
             <BibleGameCard />
@@ -466,4 +465,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
