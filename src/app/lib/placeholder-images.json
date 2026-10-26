@@ -1,4 +1,3 @@
-
 {
   "placeholderImages": [
     {
@@ -10,67 +9,67 @@
     {
       "id": "hero-bg",
       "description": "Atmospheric spiritual background",
-      "imageUrl": "https://i.postimg.cc/V0rtRV5v/jon-tyson-Fq-BFd52c-SU-unsplash.jpg",
+      "imageUrl": "https://picsum.photos/seed/bible1/1920/1080",
       "imageHint": "majestic clouds"
     },
     {
       "id": "auth-background",
       "description": "Person thanking God with raised hands",
-      "imageUrl": "https://i.postimg.cc/vT4m1Z4q/feature-victory.jpg",
+      "imageUrl": "https://picsum.photos/seed/worship1/1080/1920",
       "imageHint": "worship praise"
     },
     {
       "id": "gospel-collage",
       "description": "Expression of spiritual gratitude and praise",
-      "imageUrl": "https://i.postimg.cc/V0rtRV5v/jon-tyson-Fq-BFd52c-SU-unsplash.jpg",
+      "imageUrl": "https://picsum.photos/seed/cross1/1080/1920",
       "imageHint": "bible scriptures"
     },
     {
       "id": "feature-glory",
       "description": "Joyful believer sharing a testimony",
-      "imageUrl": "https://i.postimg.cc/k4741vY9/feature-glory.jpg",
+      "imageUrl": "https://picsum.photos/seed/joy1/600/400",
       "imageHint": "joyful person"
     },
     {
       "id": "feature-mission",
       "description": "Joyful group in an outdoor community outreach mission",
-      "imageUrl": "https://i.postimg.cc/rptmwcy/feature-mission.jpg",
+      "imageUrl": "https://picsum.photos/seed/outreach1/600/400",
       "imageHint": "community outreach"
     },
     {
       "id": "feature-victory",
       "description": "A person with raised hands celebrating in a field",
-      "imageUrl": "https://i.postimg.cc/vT4m1Z4q/feature-victory.jpg",
+      "imageUrl": "https://picsum.photos/seed/victory1/600/400",
       "imageHint": "spiritual freedom"
     },
     {
       "id": "feature-provision",
       "description": "Diverse group of friends smiling around a dinner table",
-      "imageUrl": "https://i.postimg.cc/Nf0S8V4z/feature-provision.jpg",
+      "imageUrl": "https://picsum.photos/seed/food1/600/400",
       "imageHint": "sharing meal"
     },
     {
       "id": "feature-kindness",
       "description": "Happy people sharing joy and kindness",
-      "imageUrl": "https://i.postimg.cc/7Z9Y3q1L/feature-kindness.jpg",
+      "imageUrl": "https://picsum.photos/seed/gift1/600/400",
       "imageHint": "kindness gifts"
     },
     {
       "id": "feature-disciplines",
       "description": "A young woman smiling while reading a book in natural light",
-      "imageUrl": "https://i.postimg.cc/Bv5W6G8Y/feature-disciplines.jpg",
+      "imageUrl": "https://picsum.photos/seed/bible2/600/400",
       "imageHint": "reading bible"
     },
     {
       "id": "feature-fellowship",
       "description": "Friends sitting on a bench together laughing",
-      "imageUrl": "https://i.postimg.cc/0j1h1z5r/feature-fellowship.jpg",
+      "imageUrl": "https://picsum.photos/seed/group1/600/400",
       "imageHint": "church community"
     },
     {
       "id": "feature-intercession",
       "description": "Close up of diverse hands joined in unity and prayer",
-      "imageUrl": "https://i.postimg.cc/L5XqWnQ8/feature-intercession.jpg",
+      "imageUrl": "https://picsum.photos/seed/prayer1/600/400",
       "imageHint": "praying hands"
     }
   ]

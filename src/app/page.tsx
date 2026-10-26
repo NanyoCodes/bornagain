@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -400,13 +399,13 @@ export default function LandingPage() {
                 <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left text-left">
                   <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer">
                     <Instagram className="h-4 w-4 text-left" />
-                    <span className="sr-only text-left">Instagram</span>
+                    <span className="sr-only">Instagram</span>
                   </Link>
                 </Button>
               </div>
             </div>
 
-            <div className="space-y-4 text-left text-left">
+            <div className="space-y-4 text-left text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left">Platform</h4>
               <ul className="space-y-3 text-left">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Testimonies</Link></li>
@@ -416,7 +415,7 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div className="space-y-4 text-left text-left">
+            <div className="space-y-4 text-left text-left text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left text-left">Ministry</h4>
               <ul className="space-y-3 text-left text-left">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left text-left">Our Story</Link></li>
