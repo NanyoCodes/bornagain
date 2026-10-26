@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -53,18 +54,13 @@ import {
     ChevronRight,
     ChevronDown,
     Music,
-    Quote
+    Quote,
+    X,
+    TrendingUp
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { 
-    Carousel, 
-    CarouselContent, 
-    CarouselItem, 
-    CarouselNext, 
-    CarouselPrevious 
-} from '@/components/ui/carousel';
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn, safeToDate, haversineDistance } from '@/lib/utils';
@@ -72,6 +68,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
 import { CampaignCard } from '@/components/campaigns/campaign-card';
 import { EditProfileModal } from './edit-profile-modal';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 function getYouTubeEmbedUrl(url: string | undefined | null) {
   if (!url) return null;
@@ -242,15 +239,15 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   if (!userProfile) {
     return (
-      <div className="text-center py-24 px-4 space-y-6">
-        <div className="bg-muted/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-inner text-left">
-            <Globe className="h-10 w-10 text-muted-foreground/30 text-left" />
+      <div className="text-center py-24 px-4 space-y-6 text-left">
+        <div className="bg-muted/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+            <Globe className="h-10 w-10 text-muted-foreground/30" />
         </div>
-        <div className="space-y-2 text-left">
+        <div className="space-y-2">
             <h3 className="text-2xl font-bold font-headline text-center">Profile Not Found</h3>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto text-center">This profile might have been set to private or the believer has moved to a new station.</p>
         </div>
-        <Button variant="outline" onClick={() => router.back()} className="h-11 px-8 rounded-full mx-auto block">
+        <Button variant="outline" onClick={() => router.back()} className="h-11 px-8 rounded-full mx-auto block font-bold">
             <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
       </div>
@@ -272,6 +269,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
   const { city, state, country } = location || {};
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
+
+  const profileLink = isOwnProfile ? "/profile" : `/profile/${userId}`;
 
   return (
     <div className="space-y-6 sm:space-y-10 max-w-6xl mx-auto px-0 sm:px-4 pb-20 text-left">
@@ -433,38 +432,30 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     Witness the manifest power of God through these captured moments of miracle and glory.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="px-3 sm:px-12 pb-12 sm:pb-16 text-left">
-                <Carousel className="w-full max-w-5xl mx-auto">
-                    <CarouselContent>
-                        {videoTestimonies.map((video, idx) => (
-                            <CarouselItem key={idx} className="basis-[92%] sm:basis-1/2">
-                                <div className="space-y-4 p-1 sm:p-2">
-                                    <div className="relative w-full aspect-video rounded-2xl sm:rounded-[2.5rem] overflow-hidden bg-black shadow-2xl border-2 border-white/5 transition-transform duration-500 hover:scale-[1.02] group/vid">
-                                        <iframe
-                                            src={video.embedUrl!}
-                                            title={video.title || `Kingdom Testimony`}
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowFullScreen
-                                            className="absolute inset-0 w-full h-full border-0"
-                                        />
-                                        <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity">
-                                            <Badge className="bg-red-600 text-white font-black text-[10px] tracking-widest uppercase border-none">YOUTUBE</Badge>
-                                        </div>
-                                    </div>
-                                    {video.title && (
-                                        <h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-zinc-500 truncate ml-2 text-center md:text-left px-2">
-                                            {video.title}
-                                        </h4>
-                                    )}
+            <CardContent className="px-5 sm:px-12 pb-12 sm:pb-16 text-left">
+                <div className="flex flex-col gap-8 sm:gap-12">
+                    {videoTestimonies.map((video, idx) => (
+                        <div key={idx} className="space-y-4">
+                            <div className="relative w-full aspect-video rounded-2xl sm:rounded-[2.5rem] overflow-hidden bg-black shadow-2xl border-2 border-white/5 group/vid">
+                                <iframe
+                                    src={video.embedUrl!}
+                                    title={video.title || `Kingdom Testimony`}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    className="absolute inset-0 w-full h-full border-0"
+                                />
+                                <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity">
+                                    <Badge className="bg-red-600 text-white font-black text-[10px] tracking-widest uppercase border-none">YOUTUBE</Badge>
                                 </div>
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <div className="hidden sm:block">
-                        <CarouselPrevious className="absolute -left-14 top-1/2 -translate-y-1/2 h-12 w-12 border-white/10 bg-white/5 text-white hover:bg-white/20" />
-                        <CarouselNext className="absolute -right-14 top-1/2 -translate-y-1/2 h-12 w-12 border-white/10 bg-white/5 text-white hover:bg-white/20" />
-                    </div>
-                </Carousel>
+                            </div>
+                            {video.title && (
+                                <h4 className="text-xs sm:text-lg font-black uppercase tracking-widest text-zinc-500 ml-2">
+                                    {video.title}
+                                </h4>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </CardContent>
         </Card>
       )}
@@ -472,23 +463,23 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       <div className="space-y-12 text-left">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-0 text-left">
             <div className="flex items-center gap-3 text-left">
-                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 shrink-0 text-left">
-                    <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground text-left" />
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 shrink-0">
+                    <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                 </div>
                 <h2 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">Kingdom Activity</h2>
             </div>
-            <div className="h-px bg-muted flex-grow hidden sm:block mx-8 text-left" />
-            <Badge variant="outline" className="h-8 px-4 font-black uppercase tracking-[0.2em] border-primary/20 text-primary bg-primary/5 text-[10px] text-left">Mobilizer Dashboard</Badge>
+            <div className="h-px bg-muted flex-grow hidden sm:block mx-8" />
+            <Badge variant="outline" className="h-8 px-4 font-black uppercase tracking-[0.2em] border-primary/20 text-primary bg-primary/5 text-[10px]">Mobilizer Dashboard</Badge>
         </div>
         
         <div className="space-y-16 text-left">
             <div className="space-y-8 text-left">
                 <div className="flex items-center justify-between px-4 sm:px-0 text-left">
                     <div className="flex items-center gap-2 text-left">
-                        <Sparkles className="h-5 w-5 text-primary text-left" />
-                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">Shared Testimonies</h3>
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">Shared Testimonies</h3>
                     </div>
-                    <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs text-left">{testimonies.length}</Badge>
+                    <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs">{testimonies.length}</Badge>
                 </div>
                 
                 {testimonies.length > 0 ? (
@@ -539,7 +530,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     </div>
                 ) : (
                     <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left">
-                        <Target className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left" />
+                        <Target className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left text-left" />
                         <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left">No public mission campaigns have been organized by this believer.</p>
                     </div>
                 )}
@@ -547,12 +538,12 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </div>
 
         {testimonies.length === 0 && processedCampaigns.length === 0 && (
-            <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[3rem] sm:rounded-[4rem] bg-muted/5 mx-4 sm:mx-0 text-left">
+            <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[3rem] sm:rounded-[4rem] bg-muted/5 mx-4 sm:mx-0 text-left text-left">
                 <Globe className="h-20 w-20 text-muted-foreground/5 mx-auto mb-6 text-left" />
-                <p className="font-black text-2xl sm:text-3xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/20 text-center text-left">
+                <p className="font-black text-2xl sm:text-3xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/20 text-center">
                     Mission in Secret
                 </p>
-                <p className="text-sm sm:text-lg mt-4 px-12 opacity-50 font-medium max-w-lg mx-auto text-center text-left">
+                <p className="text-sm sm:text-lg mt-4 px-12 opacity-50 font-medium max-w-lg mx-auto text-center">
                     This believer is serving the Kingdom through prayer and local fellowship. Their impact is registered in the Book of Life.
                 </p>
             </div>
@@ -560,60 +551,26 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       </div>
 
       {isOwnProfile && userProfile && (
-          mounted && isMobile ? (
-              <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                  <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                      <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                          <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
-                              <div className="flex items-center gap-2 mb-2 text-left">
-                                  <Sparkles className="h-4 w-4 text-primary text-left" />
-                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Settings</span>
-                              </div>
-                              <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Refine Identity</SheetTitle>
-                              <SheetDescription className="text-sm font-medium mt-1 text-left">Update your global Kingdom profile credentials.</SheetDescription>
-                          </SheetHeader>
-                      </div>
-                      <ScrollArea className="flex-grow p-0">
-                          <div className="p-8 pb-32">
-                            <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+          <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+              <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                      <DialogHeader className="text-left p-0 text-left">
+                          <div className="flex items-center gap-2 mb-2 text-left">
+                              <Sparkles className="h-4 w-4 text-primary text-left" />
+                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity settings</span>
                           </div>
-                      </ScrollArea>
-                  </SheetContent>
-              </Sheet>
-          ) : (
-              <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                  <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                      <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                          <DialogHeader className="text-left p-0 text-left">
-                              <div className="flex items-center gap-2 mb-2 text-left">
-                                  <Sparkles className="h-4 w-4 text-primary text-left" />
-                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity settings</span>
-                              </div>
-                              <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Edit Kingdom Profile</DialogTitle>
-                              <DialogDescription className="text-sm font-medium text-left">Keep your identity current for the harvest workforce.</DialogDescription>
-                          </DialogHeader>
+                          <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Edit Kingdom Profile</DialogTitle>
+                          <DialogDescription className="text-sm font-medium text-left">Keep your identity current for the harvest workforce.</DialogDescription>
+                      </DialogHeader>
+                  </div>
+                  <ScrollArea className="flex-1 min-h-0 text-left">
+                      <div className="p-8 text-left">
+                        <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
                       </div>
-                      <ScrollArea className="flex-1 min-h-0 text-left">
-                          <div className="p-8 text-left">
-                            <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
-                          </div>
-                      </ScrollArea>
-                  </DialogContent>
-              </Dialog>
-          )
+                  </ScrollArea>
+              </DialogContent>
+          </Dialog>
       )}
     </div>
   );
-}
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const mql = window.matchMedia('(max-width: 767px)');
-    setIsMobile(mql.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, []);
-  return isMobile;
 }
