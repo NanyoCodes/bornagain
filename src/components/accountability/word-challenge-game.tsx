@@ -365,7 +365,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         <div className="max-w-4xl mx-auto space-y-6 pb-32 px-4 sm:px-6 text-left">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full self-start sm:self-auto border bg-background shadow-sm text-left">
-                    <ArrowLeft className="h-4 w-4 text-left text-left" />
+                    <ArrowLeft className="h-4 w-4 text-left" />
                 </Button>
                 <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto text-left">
                     <div className="flex-1 sm:flex-none flex items-center gap-3 bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 shadow-sm min-w-0 text-left">
