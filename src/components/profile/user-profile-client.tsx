@@ -26,7 +26,8 @@ import {
     Heart,
     ChevronRight,
     ChevronDown,
-    Music
+    Music,
+    Quote
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
@@ -390,7 +391,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     </div>
                 </div>
 
-                <div className="pt-4 lg:max-w-2xl">
+                <div className="pt-4 lg:max-w-2xl text-left">
                     <div className="relative pl-6 border-l-4 border-primary/20 text-left">
                         <Quote className="absolute -top-1 -left-2 h-6 w-6 text-primary/10" />
                         <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed italic font-medium text-balance break-words">
@@ -548,7 +549,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                           <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                               <div className="flex items-center gap-2 mb-2 text-left">
                                   <Sparkles className="h-4 w-4 text-primary text-left" />
-                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Settings</span>
+                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Settings</span>
                               </div>
                               <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Refine Identity</SheetTitle>
                               <SheetDescription className="text-sm font-medium mt-1 text-left">Update your global Kingdom profile credentials.</SheetDescription>
@@ -565,10 +566,10 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                   <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                       <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                          <DialogHeader className="text-left p-0 text-left">
+                          <DialogHeader className="text-left p-0 text-left text-left">
                               <div className="flex items-center gap-2 mb-2 text-left">
                                   <Sparkles className="h-4 w-4 text-primary text-left" />
-                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity settings</span>
+                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity settings</span>
                               </div>
                               <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Edit Kingdom Profile</DialogTitle>
                               <DialogDescription className="text-sm font-medium text-left">Keep your identity current for the harvest workforce.</DialogDescription>
