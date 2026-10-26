@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "UserProfile": {
@@ -21,7 +20,9 @@
         "name_tokens": {
           "type": "array",
           "description": "An array of lowercased words from the first and last name for searching.",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "email": {
           "type": "string",
@@ -52,24 +53,55 @@
           "items": {
             "type": "object",
             "properties": {
-              "url": { "type": "string", "format": "uri" },
-              "title": { "type": "string" }
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "title": {
+                "type": "string"
+              }
             },
-            "required": ["url"]
+            "required": [
+              "url"
+            ]
           }
         },
         "location": {
           "type": "object",
           "description": "The user's location. The city, state, and country are public, while latitude and longitude are private and used for geosensitive features.",
           "properties": {
-            "city": { "type": "string", "description": "The user's city." },
-            "state": { "type": "string", "description": "The user's state or province." },
-            "country": { "type": "string", "description": "The user's country." },
-            "city_lowercase": { "type": "string", "description": "Lowercase city for searching and aggregation." },
-            "state_lowercase": { "type": "string", "description": "Lowercase state for searching and aggregation." },
-            "country_lowercase": { "type": "string", "description": "Lowercase country for aggregation." },
-            "latitude": { "type": "number", "description": "The user's private latitude for proximity calculations." },
-            "longitude": { "type": "number", "description": "The user's private longitude for proximity calculations." }
+            "city": {
+              "type": "string",
+              "description": "The user's city."
+            },
+            "state": {
+              "type": "string",
+              "description": "The user's state or province."
+            },
+            "country": {
+              "type": "string",
+              "description": "The user's country."
+            },
+            "city_lowercase": {
+              "type": "string",
+              "description": "Lowercase city for searching and aggregation."
+            },
+            "state_lowercase": {
+              "type": "string",
+              "description": "Lowercase state for searching and aggregation."
+            },
+            "country_lowercase": {
+              "type": "string",
+              "description": "Lowercase country for aggregation."
+            },
+            "latitude": {
+              "type": "number",
+              "description": "The user's private latitude for proximity calculations."
+            },
+            "longitude": {
+              "type": "number",
+              "description": "The user's private longitude for proximity calculations."
+            }
           }
         },
         "phone": {
@@ -154,77 +186,119 @@
           }
         },
         "accountabilityPartners": {
-            "type": "array",
-            "description": "A list of the user's accountability partners.",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "userId": {
-                        "type": "string",
-                        "description": "The UID of the accountability partner."
-                    },
-                    "firstName": {
-                        "type": "string",
-                        "description": "The first name of the accountability partner."
-                    },
-                    "lastName": {
-                        "type": "string",
-                        "description": "The last name of the accountability partner."
-                    },
-                    "photoURL": {
-                        "type": "string",
-                        "format": "uri",
-                        "description": "The photo URL of the accountability partner."
-                    }
-                },
-                "required": ["userId", "firstName"]
-            }
+          "type": "array",
+          "description": "A list of the user's accountability partners.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "userId": {
+                "type": "string",
+                "description": "The UID of the accountability partner."
+              },
+              "firstName": {
+                "type": "string",
+                "description": "The first name of the accountability partner."
+              },
+              "lastName": {
+                "type": "string",
+                "description": "The last name of the accountability partner."
+              },
+              "photoURL": {
+                "type": "string",
+                "format": "uri",
+                "description": "The photo URL of the accountability partner."
+              }
+            },
+            "required": [
+              "userId",
+              "firstName"
+            ]
+          }
         },
         "partnerIds": {
-            "type": "array",
-            "description": "An array of partner UIDs for efficient security rule checks.",
-            "items": { "type": "string" }
+          "type": "array",
+          "description": "An array of partner UIDs for efficient security rule checks.",
+          "items": {
+            "type": "string"
+          }
         },
         "lastChurchAttended": {
           "type": "string",
           "description": "The name of the last church the user attended."
         },
         "churchInfo": {
-            "type": "object",
-            "description": "The user's primary church details.",
-            "properties": {
-                "name": { "type": "string", "description": "The name of the user's church." },
-                "branch": { "type": "string", "description": "The specific branch of the church, if applicable." },
-                "location": { "type": "string", "description": "The city or area of the church." },
-                "schedule": {
-                  "type": "array",
-                  "description": "The user's worship schedule, with each item containing a day and time.",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "day": { "type": "string" },
-                      "time": { "type": "string" },
-                      "url": { "type": "string", "format": "uri", "description": "The URL for the live stream of the service." }
-                    },
-                    "required": ["day", "time"]
-                  }
-                }
-            }
-        },
-        "attendanceHistory": {
-            "type": "array",
-            "description": "A log of the user's church attendance.",
-            "items": {
+          "type": "object",
+          "description": "The user's primary church details.",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the user's church."
+            },
+            "branch": {
+              "type": "string",
+              "description": "The specific branch of the church, if applicable."
+            },
+            "location": {
+              "type": "string",
+              "description": "The city or area of the church."
+            },
+            "schedule": {
+              "type": "array",
+              "description": "The user's worship schedule, with each item containing a day and time.",
+              "items": {
                 "type": "object",
                 "properties": {
-                    "churchName": { "type": "string", "description": "Name of the church attended." },
-                    "branch": { "type": "string", "description": "The specific branch of the church, if applicable." },
-                    "location": { "type": "string", "description": "The city or area of the church." },
-                    "attendedAt": { "type": "object" },
-                    "reason": { "type": "string", "description": "The reason or notes for attending the service." }
+                  "day": {
+                    "type": "string"
+                  },
+                  "time": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "The URL for the live stream of the service."
+                  }
                 },
-                "required": ["churchName", "attendedAt"]
+                "required": [
+                  "day",
+                  "time"
+                ]
+              }
             }
+          }
+        },
+        "attendanceHistory": {
+          "type": "array",
+          "description": "A log of the user's church attendance.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "churchName": {
+                "type": "string",
+                "description": "Name of the church attended."
+              },
+              "branch": {
+                "type": "string",
+                "description": "The specific branch of the church, if applicable."
+              },
+              "location": {
+                "type": "string",
+                "description": "The city or area of the church."
+              },
+              "attendedAt": {
+                "type": "object"
+              },
+              "reason": {
+                "type": "string",
+                "description": "The reason or notes for attending the service."
+              }
+            },
+            "required": [
+              "churchName",
+              "attendedAt"
+            ]
+          }
         },
         "monthlySoulsGoal": {
           "type": "number",
@@ -234,9 +308,21 @@
           "type": "object",
           "description": "Timestamp of the user's last activity."
         },
-        "isVendor": { "type": "boolean" },
-        "organizationId": { "type": "string", "description": "The ID of the organization this user belongs to." },
-        "kingdomPoints": { "type": "number", "description": "Total spiritual engagement points." }
+        "isVendor": {
+          "type": "boolean"
+        },
+        "organizationId": {
+          "type": "string",
+          "description": "The ID of the organization this user belongs to."
+        },
+        "kingdomPoints": {
+          "type": "number",
+          "description": "Total spiritual engagement points earned through arena activities."
+        },
+        "lastGameAt": {
+          "type": "object",
+          "description": "Timestamp of the user's last Kingdom Arena participation."
+        }
       },
       "required": [
         "firstName",
@@ -249,47 +335,151 @@
       "description": "A recorded session of a Kingdom challenge between partners.",
       "type": "object",
       "properties": {
-        "participantIds": { "type": "array", "items": { "type": "string" } },
-        "userId": { "type": "string" },
-        "partnerId": { "type": "string" },
-        "gameType": { "type": "string" },
-        "score": { "type": "number" },
-        "correctCount": { "type": "number" },
-        "wrongCount": { "type": "number" },
-        "createdAt": { "type": "object" }
+        "participantIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "userId": {
+          "type": "string"
+        },
+        "partnerId": {
+          "type": "string"
+        },
+        "gameType": {
+          "type": "string"
+        },
+        "score": {
+          "type": "number"
+        },
+        "correctCount": {
+          "type": "number"
+        },
+        "wrongCount": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "object"
+        }
       },
-      "required": ["participantIds", "userId", "score"]
+      "required": [
+        "participantIds",
+        "userId",
+        "score"
+      ]
     },
     "GameInvitation": {
       "title": "Game Invitation",
       "description": "A request for a live Word challenge.",
       "type": "object",
       "properties": {
-        "hostId": { "type": "string" },
-        "guestId": { "type": "string" },
-        "participantIds": { "type": "array", "items": { "type": "string" } },
-        "status": { "type": "string", "enum": ["pending", "accepted", "declined", "expired"] },
-        "gameType": { "type": "string" },
-        "timerDuration": { "type": "number", "description": "The duration of the challenge in seconds." },
-        "createdAt": { "type": "object" },
-        "acceptedAt": { "type": "object" }
+        "hostId": {
+          "type": "string"
+        },
+        "guestId": {
+          "type": "string"
+        },
+        "participantIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "accepted",
+            "declined",
+            "expired"
+          ]
+        },
+        "gameType": {
+          "type": "string"
+        },
+        "timerDuration": {
+          "type": "number",
+          "description": "The duration of the challenge in seconds."
+        },
+        "createdAt": {
+          "type": "object"
+        },
+        "acceptedAt": {
+          "type": "object"
+        }
       },
-      "required": ["hostId", "guestId", "participantIds", "status"]
+      "required": [
+        "hostId",
+        "guestId",
+        "participantIds",
+        "status"
+      ]
     },
     "CartItem": {
       "title": "Cart Item",
       "description": "Represents an item in the user's kindness or provision cart.",
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "price": { "type": "number" },
-        "quantity": { "type": "number" },
-        "vendorId": { "type": "string" },
-        "vendorName": { "type": "string" },
-        "currency": { "type": "string" },
-        "photoURL": { "type": "string", "format": "uri" },
-        "soulId": { "type": "string" },
-        "soulName": { "type": "string" }
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "quantity": {
+          "type": "number"
+        },
+        "vendorId": {
+          "type": "string"
+        },
+        "vendorName": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "photoURL": {
+          "type": "string",
+          "format": "uri"
+        },
+        "soulId": {
+          "type": "string"
+        },
+        "soulName": {
+          "type": "string"
+        }
+      }
+    },
+    "Ad": {
+      "title": "Advertisement",
+      "description": "Promotional content for Kingdom enterprises or missions.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "business",
+            "event"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "inactive"
+          ]
+        }
       }
     }
   },
@@ -308,16 +498,28 @@
       "description": "Stores public user profile data, keyed by user ID."
     },
     "/users/{userId}/cart/{itemId}": {
-      "schema": { "$ref": "#/entities/CartItem" },
+      "schema": {
+        "$ref": "#/entities/CartItem"
+      },
       "description": "User's shopping cart for Kingdom provisions."
     },
     "/gameSessions/{sessionId}": {
-      "schema": { "$ref": "#/entities/GameSession" },
+      "schema": {
+        "$ref": "#/entities/GameSession"
+      },
       "description": "History of Word challenges."
     },
     "/gameInvitations/{invitationId}": {
-        "schema": { "$ref": "#/entities/GameInvitation" },
-        "description": "Real-time handshakes for live challenges."
+      "schema": {
+        "$ref": "#/entities/GameInvitation"
+      },
+      "description": "Real-time handshakes for live challenges."
+    },
+    "/ads/{adId}": {
+      "schema": {
+        "$ref": "#/entities/Ad"
+      },
+      "description": "Global promotional spots."
     }
   }
 }
