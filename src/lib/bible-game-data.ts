@@ -21,7 +21,17 @@ export const BIBLE_GAME_DATA: Record<GameSessionType, any[]> = {
     { text: "If we confess our sins, he is faithful and ______ to forgive us our sins.", correct: "Just", options: ["True", "Kind", "Just", "Good"], ref: "1 John 1:9" },
     { text: "I have ______ the good fight, I have finished the race, I have kept the faith.", correct: "Fought", options: ["Won", "Fought", "Lost", "Run"], ref: "2 Timothy 4:7" },
     { text: "The Lord is near to the ______.", correct: "Brokenhearted", options: ["Righteous", "Strong", "Brokenhearted", "Humble"], ref: "Psalm 34:18" },
-    { text: "Give ______ to the Lord, for he is good.", correct: "Thanks", options: ["Glory", "Thanks", "Praise", "Honor"], ref: "Psalm 107:1" }
+    { text: "Give ______ to the Lord, for he is good.", correct: "Thanks", options: ["Glory", "Thanks", "Praise", "Honor"], ref: "Psalm 107:1" },
+    { text: "By ______ you have been saved, through faith—and this is not from yourselves.", correct: "Grace", options: ["Grace", "Prayer", "Effort", "History"], ref: "Ephesians 2:8" },
+    { text: "The grass withers and the flowers fall, but the ______ of our God endures forever.", correct: "Word", options: ["Spirit", "Grace", "Word", "Love"], ref: "Isaiah 40:8" },
+    { text: "Rejoice always, pray ______.", correct: "Continually", options: ["Daily", "Continually", "Loudly", "Often"], ref: "1 Thess 5:16" },
+    { text: "In all your ways ______ him, and he will make your paths straight.", correct: "Acknowledge", options: ["Follow", "Seek", "Acknowledge", "Trust"], ref: "Proverbs 3:6" },
+    { text: "The name of the Lord is a fortified ______, the righteous run to it and are safe.", correct: "Tower", options: ["City", "Tower", "Shield", "Wall"], ref: "Proverbs 18:10" },
+    { text: "Whatever you do, work at it with all your ______, as working for the Lord.", correct: "Heart", options: ["Might", "Strength", "Heart", "Skill"], ref: "Colossians 3:23" },
+    { text: "Be still, and know that I am ______.", correct: "God", options: ["Lord", "King", "God", "Here"], ref: "Psalm 46:10" },
+    { text: "Greater is He that is in you than he that is in the ______.", correct: "World", options: ["Flesh", "Earth", "World", "Dark"], ref: "1 John 4:4" },
+    { text: "Taste and see that the Lord is ______.", correct: "Good", options: ["Great", "Holy", "Good", "Near"], ref: "Psalm 34:8" },
+    { text: "Ask and it will be given to you; ______ and you will find.", correct: "Seek", options: ["Seek", "Knock", "Pray", "Wait"], ref: "Matthew 7:7" }
   ],
   prayer: [
     { text: "I am feeling overwhelmed and anxious today. Which word should I stand on?", correct: "1 Peter 5:7", options: ["1 Peter 5:7", "Luke 12:15", "James 4:6", "Exodus 14:14"], ref: "Cast all your anxiety on him." },
@@ -85,6 +95,11 @@ export const BIBLE_GAME_DATA: Record<GameSessionType, any[]> = {
     { text: "What did God use to lead the Israelites by night in the wilderness?", correct: "Pillar of fire", options: ["Cloud", "Star", "Pillar of fire", "Angel"], ref: "Exodus 13." },
     { text: "Who interpreted the dreams of Pharaoh?", correct: "Joseph", options: ["Jacob", "Moses", "Joseph", "Daniel"], ref: "Genesis 41." },
     { text: "What was the occupation of Peter before he followed Jesus?", correct: "Fisherman", options: ["Tax collector", "Fisherman", "Carpenter", "Shepherd"], ref: "Matthew 4." },
-    { text: "Who was the first martyr of the early church?", correct: "Stephen", options: ["James", "Paul", "Stephen", "Peter"], ref: "Acts 7." }
+    { text: "Who was the first martyr of the early church?", correct: "Stephen", options: ["James", "Paul", "Stephen", "Peter"], ref: "Acts 7." },
+    { text: "Which book follows the four Gospels in the New Testament?", correct: "Acts", options: ["Romans", "Acts", "Hebrews", "Ephesians"], ref: "Account of the early church." },
+    { text: "Which giant did David defeat with a sling and a stone?", correct: "Goliath", options: ["Og", "Goliath", "Sihon", "Nimrod"], ref: "1 Samuel 17." },
+    { text: "Where was Jesus born?", correct: "Bethlehem", options: ["Nazareth", "Jerusalem", "Bethlehem", "Jericho"], ref: "City of David." },
+    { text: "Who was the man that denied Jesus three times?", correct: "Peter", options: ["Judas", "John", "Peter", "Thomas"], ref: "Luke 22." },
+    { text: "Which bird brought Noah an olive leaf?", correct: "Dove", options: ["Raven", "Dove", "Eagle", "Sparrow"], ref: "Genesis 8." }
   ]
 };

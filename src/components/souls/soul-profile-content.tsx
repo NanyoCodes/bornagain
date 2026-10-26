@@ -314,7 +314,7 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
     </div>
   );
 
-  const dialogContentBody = (
+  const contentBody = (
     <div className="p-4 sm:p-10 text-left">
         {view === 'hub' && (
             <div className="space-y-8 text-left">
@@ -332,8 +332,8 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
 
   const footer = view === 'verses' && <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0 text-left"><Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold text-left">Clear</Button><Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-[2] font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center text-left">SHARE SELECTED ({selectedVerses.length})</Button></div>;
 
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow">{dialogContentBody}</ScrollArea>{footer}</SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">{header}<ScrollArea className="flex-1 min-h-0 text-left">{dialogContentBody}</ScrollArea>{footer}</DialogContent></Dialog>;
+  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow">{contentBody}</ScrollArea>{footer}</SheetContent></Sheet>;
+  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">{header}<ScrollArea className="flex-1 min-h-0 text-left">{contentBody}</ScrollArea>{footer}</DialogContent></Dialog>;
 }
 
 export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, onAssess, onOpenAssignDialog, onExportSingle, onDelete }: { soul: Soul; onFollowUp: (s: Soul) => void; onViewHistory: (s: Soul) => void; onEdit: (s: Soul) => void; onAssess: (s: Soul) => void; onOpenAssignDialog: (s: Soul) => void; onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void; onDelete: (s: Soul) => void; }) {
