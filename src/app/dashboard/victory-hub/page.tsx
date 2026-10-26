@@ -52,6 +52,8 @@ import { cn } from '@/lib/utils';
 import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { collection, getCountFromServer } from 'firebase/firestore';
+import { BibleGameCard } from '@/components/testimonies/bible-game-card';
+import { KingdomAdSpot } from '@/components/testimonies/kingdom-ad-spot';
 
 const strongholdCategories = [
     { 
@@ -398,6 +400,20 @@ export default function VictoryHubPage() {
         );
     }, [searchTerm]);
 
+    const interleavedCategories = useMemo(() => {
+        const list: (any & { isAd?: boolean; isGame?: boolean; adType?: 'business' | 'event' })[] = [];
+        filteredCategories.forEach((c, i) => {
+            list.push(c);
+            if ((i + 1) % 5 === 0) {
+                list.push({ id: `game-${i}`, isGame: true } as any);
+            }
+            if ((i + 1) % 4 === 0 && (i + 1) % 5 !== 0) {
+                list.push({ id: `ad-${i}`, isAd: true, adType: (i / 4) % 2 === 0 ? 'business' : 'event' } as any);
+            }
+        });
+        return list;
+    }, [filteredCategories]);
+
     return (
         <div className="space-y-10 max-w-6xl mx-auto pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
@@ -438,9 +454,19 @@ export default function VictoryHubPage() {
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
-                {filteredCategories.length > 0 ? (
-                    filteredCategories.map(cat => (
-                        <CategoryCard key={cat.name} category={cat} />
+                {interleavedCategories.length > 0 ? (
+                    interleavedCategories.map((item, idx) => (
+                        item.isGame ? (
+                            <div key={`game-${idx}`} className="col-span-1 md:col-span-2 lg:col-span-3">
+                                <BibleGameCard />
+                            </div>
+                        ) : item.isAd ? (
+                            <div key={`ad-${idx}`} className="col-span-1 md:col-span-2 lg:col-span-3">
+                                <KingdomAdSpot type={item.adType!} />
+                            </div>
+                        ) : (
+                            <CategoryCard key={item.name} category={item} />
+                        )
                     ))
                 ) : (
                     <div className="col-span-full py-32 text-center flex flex-col items-center text-left">

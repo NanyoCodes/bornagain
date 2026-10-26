@@ -53,6 +53,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Country, State } from 'country-state-city';
 import { Skeleton } from "@/components/ui/skeleton";
 import { FeedSidebar } from '@/components/layout/feed-sidebar';
+import { BibleGameCard } from '@/components/testimonies/bible-game-card';
+import { KingdomAdSpot } from '@/components/testimonies/kingdom-ad-spot';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -706,6 +708,20 @@ export default function FellowshipPage() {
         );
     }, [membershipFilterApplied, searchTerm]);
 
+    const interleavedFellowships = useMemo(() => {
+        const list: (Fellowship & { isAd?: boolean; isGame?: boolean; adType?: 'business' | 'event' })[] = [];
+        filteredFellowships.forEach((f, i) => {
+            list.push(f);
+            if ((i + 1) % 5 === 0) {
+                list.push({ id: `game-${i}`, isGame: true } as any);
+            }
+            if ((i + 1) % 4 === 0 && (i + 1) % 5 !== 0) {
+                list.push({ id: `ad-${i}`, isAd: true, adType: (i / 4) % 2 === 0 ? 'business' : 'event' } as any);
+            }
+        });
+        return list;
+    }, [filteredFellowships]);
+
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
     return (
@@ -778,15 +794,21 @@ export default function FellowshipPage() {
                             </div>
                         ) : (
                             <div className="flex flex-col gap-6 w-full">
-                                {filteredFellowships.map((f) => (
-                                    <FellowshipCard 
-                                    key={f.id} 
-                                    fellowship={f} 
-                                    userProfile={userProfile ?? null} 
-                                    onManage={() => setFellowshipToManage(f)} 
-                                    onDelete={() => setFellowshipToDelete(f)} 
-                                    onClick={() => handleCardClick(f.id)} 
-                                    />
+                                {interleavedFellowships.map((f: any) => (
+                                    f.isGame ? (
+                                        <BibleGameCard key={f.id} />
+                                    ) : f.isAd ? (
+                                        <KingdomAdSpot key={f.id} type={f.adType} />
+                                    ) : (
+                                        <FellowshipCard 
+                                            key={f.id} 
+                                            fellowship={f} 
+                                            userProfile={userProfile ?? null} 
+                                            onManage={() => setFellowshipToManage(f)} 
+                                            onDelete={() => setFellowshipToDelete(f)} 
+                                            onClick={() => handleCardClick(f.id)} 
+                                        />
+                                    )
                                 ))}
                                 {filteredFellowships.length === 0 && (
                                     <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">

@@ -52,6 +52,8 @@ import { safeToDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
+import { BibleGameCard } from "@/components/testimonies/bible-game-card";
+import { KingdomAdSpot } from "@/components/testimonies/kingdom-ad-spot";
 
 export default function EventPageClient() {
   const { user } = useUser();
@@ -131,6 +133,20 @@ export default function EventPageClient() {
     );
   }, [rawEvents, searchTerm]);
 
+  const interleavedEvents = useMemo(() => {
+    const list: (Event & { isAd?: boolean; isGame?: boolean; adType?: 'business' | 'event' })[] = [];
+    filteredEvents.forEach((e, i) => {
+      list.push(e);
+      if ((i + 1) % 5 === 0) {
+        list.push({ id: `game-${i}`, isGame: true } as any);
+      }
+      if ((i + 1) % 4 === 0 && (i + 1) % 5 !== 0) {
+        list.push({ id: `ad-${i}`, isAd: true, adType: (i / 4) % 2 === 0 ? 'event' : 'business' } as any);
+      }
+    });
+    return list;
+  }, [filteredEvents]);
+
   const handleCancelEvent = () => {
     if (!eventToDelete || !user || !firestore) return;
     
@@ -202,16 +218,22 @@ export default function EventPageClient() {
                         <CardContent className="h-full bg-muted/30 text-left" />
                     </Card>
                 ))
-            ) : filteredEvents.length > 0 ? (
-                filteredEvents.map(event => (
-                    <EventCard 
-                        key={event.id} 
-                        event={event} 
-                        isJoined={activeTab === 'mine' || activeTab === 'joined' || (user?.uid ? event.participantIds?.includes(user.uid) : false)} 
-                        userProfile={userProfile ?? null} 
-                        onEdit={() => setEventToEdit(event)}
-                        onDelete={() => setEventToDelete(event)}
-                    />
+            ) : interleavedEvents.length > 0 ? (
+                interleavedEvents.map((item: any) => (
+                    item.isGame ? (
+                        <BibleGameCard key={item.id} />
+                    ) : item.isAd ? (
+                        <KingdomAdSpot key={item.id} type={item.adType} />
+                    ) : (
+                        <EventCard 
+                            key={item.id} 
+                            event={item} 
+                            isJoined={activeTab === 'mine' || activeTab === 'joined' || (user?.uid ? item.participantIds?.includes(user.uid) : false)} 
+                            userProfile={userProfile ?? null} 
+                            onEdit={() => setEventToEdit(item)}
+                            onDelete={() => setEventToDelete(item)}
+                        />
+                    )
                 ))
             ) : (
                 <div className="col-span-full py-32 text-center flex flex-col items-center px-8 text-left">
@@ -231,7 +253,7 @@ export default function EventPageClient() {
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                             <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
                                 <SheetTitle className="text-2xl font-black font-headline text-left">Host for the Kingdom</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Organize a gathering to strengthen and equip the saints.</SheetDescription>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Organize a gathering to strengthen and equip the saints.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left">
