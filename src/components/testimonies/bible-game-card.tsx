@@ -13,13 +13,13 @@ import { useToast } from '@/hooks/use-toast';
 export function BibleGameCard() {
     const { userProfile } = useUserProfile();
     const { toast } = useToast();
-    const [gameType, setGameType] = useState<'word' | 'prayer' | 'trivia'>('word');
+    const [gameType, setGameType] = useState<'word' | 'prayer' | 'trivia' | 'wisdom'>('word');
     const [quizIndex, setQuizIndex] = useState(0);
     const [gameState, setGameState] = useState<'playing' | 'correct' | 'wrong'>('playing');
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
     useEffect(() => {
-        const types = ['word', 'prayer', 'trivia'] as const;
+        const types = ['word', 'prayer', 'trivia', 'wisdom'] as const;
         const randomType = types[Math.floor(Math.random() * types.length)];
         setGameType(randomType);
         setQuizIndex(Math.floor(Math.random() * BIBLE_GAME_DATA[randomType].length));
@@ -38,7 +38,7 @@ export function BibleGameCard() {
     };
 
     const nextChallenge = () => {
-        const types = ['word', 'prayer', 'trivia'] as const;
+        const types = ['word', 'prayer', 'trivia', 'wisdom'] as const;
         const nextType = types[Math.floor(Math.random() * types.length)];
         setGameType(nextType);
         setQuizIndex(Math.floor(Math.random() * BIBLE_GAME_DATA[nextType].length));
@@ -70,6 +70,7 @@ export function BibleGameCard() {
             case 'word': return <BookOpen className="h-5 w-5 text-primary" />;
             case 'prayer': return <HandHeart className="h-5 w-5 text-primary" />;
             case 'trivia': return <HelpCircle className="h-5 w-5 text-primary" />;
+            case 'wisdom': return <Sparkles className="h-5 w-5 text-primary" />;
         }
     };
 
@@ -78,6 +79,7 @@ export function BibleGameCard() {
             case 'word': return "Word Arena";
             case 'prayer': return "Prayer Altar";
             case 'trivia': return "Kingdom Trivia";
+            case 'wisdom': return "Wisdom Arena";
         }
     };
 
@@ -101,7 +103,7 @@ export function BibleGameCard() {
                 </div>
                 <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-center">Interactive Kingdom Exercise</CardTitle>
                 <CardDescription className="text-zinc-400 text-sm font-medium text-center mt-2 leading-relaxed">
-                    Sharpen your spirit with interactive biblical challenges. Share the Word and invite others to join the Kingdom Arena.
+                    {gameType === 'wisdom' ? 'Complete the wisdom from Psalms and Proverbs.' : 'Sharpen your spirit with interactive biblical challenges.'} Share the Word and invite others to join the Kingdom Arena.
                 </CardDescription>
             </CardHeader>
             <CardContent className="p-6 sm:p-10 pt-0 space-y-8 text-left">
@@ -160,7 +162,7 @@ export function BibleGameCard() {
                                     </span>
                                 </div>
                                 <p className="text-sm font-bold italic opacity-80 text-center">
-                                    {gameType === 'word' ? (
+                                    {gameType === 'word' || gameType === 'wisdom' ? (
                                         `The correct word is "${quiz.correct}". Ref: ${quiz.ref}`
                                     ) : (
                                         `The correct answer is "${quiz.correct}". ${quiz.ref}`

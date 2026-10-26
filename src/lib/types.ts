@@ -136,7 +136,7 @@ export type UserProfile = {
   lastGameAt?: Timestamp;
 };
 
-export type GameSessionType = 'word' | 'prayer' | 'trivia';
+export type GameSessionType = 'word' | 'prayer' | 'trivia' | 'wisdom';
 
 export type GameSession = {
   id: string;
