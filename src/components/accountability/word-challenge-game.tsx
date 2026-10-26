@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -240,7 +239,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     createdAt: serverTimestamp()
                 }).catch(() => {});
 
-                toast({ title: 'Challenge Issued', description: `Waiting for ${partnerName.split(' ')[0]} to accept.` });
+                toast({ title: 'Challenge Issued', description: `Waiting for ${partnerName} to accept.` });
             })
             .catch(async (serverError) => {
                 const permissionError = new FirestorePermissionError({
@@ -370,14 +369,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto text-left">
                     <div className="flex-1 sm:flex-none flex items-center gap-3 bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 shadow-sm min-w-0 text-left">
                         <Star className="h-4 w-4 text-primary fill-current shrink-0 text-left" />
-                        <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-primary truncate">
+                        <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-primary truncate text-left">
                             You: {(userProfile?.kingdomPoints || 0) + (isGameActive ? correctCount * 10 : 0)}
                         </span>
                     </div>
                     <div className="flex-1 sm:flex-none flex items-center gap-3 bg-muted/30 px-4 py-1.5 rounded-full border border-dashed min-w-0 relative text-left">
                         <Trophy className="h-4 w-4 text-muted-foreground opacity-60 shrink-0 text-left" />
-                        <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-muted-foreground truncate">
-                            {partnerName.split(' ')[0]}: {partnerProfile?.kingdomPoints || 0}
+                        <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-muted-foreground truncate text-left">
+                            {partnerName}: {partnerProfile?.kingdomPoints || 0}
                         </span>
                         {isPartnerOnline && (
                             <div className="absolute -top-1 -right-1 flex h-2.5 w-2.5 text-left">
@@ -466,7 +465,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     </div>
                                     <div className="space-y-2 text-center text-left">
                                         <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse text-center">
-                                            Waiting for {partnerName.split(' ')[0]}...
+                                            Waiting for {partnerName}...
                                         </Badge>
                                         <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">{invitation.gameType} Challenge • {invitation.timerDuration}s</p>
                                     </div>
@@ -480,7 +479,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         <Target className="h-10 w-10 text-primary animate-bounce text-center text-left" />
                                     </div>
                                     <div className="space-y-1 text-center text-left text-left">
-                                        <p className="text-lg font-black text-white uppercase tracking-widest text-center"> {partnerName.split(' ')[0].toUpperCase()} HAS CHALLENGED YOU!</p>
+                                        <p className="text-lg font-black text-white uppercase tracking-widest text-center"> {partnerName.toUpperCase()} HAS CHALLENGED YOU!</p>
                                         <p className="text-xs font-bold text-primary uppercase tracking-widest text-center">Mode: {invitation.gameType} • Duration: {invitation.timerDuration}s</p>
                                     </div>
                                     <div className="flex flex-col gap-3 w-full max-w-xs text-center mx-auto text-left">
@@ -639,7 +638,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         </div>
                                         <div className="min-w-0 flex-1 text-left">
                                             <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">
-                                                {isMyScore ? 'My Victory' : `${partnerName.split(' ')[0]}'s Result`}
+                                                {isMyScore ? 'My Victory' : `${partnerName}'s Result`}
                                             </p>
                                             <div className="flex items-center gap-2 mt-1 text-left">
                                                 <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left">{session.gameType || 'Word'}</Badge>
