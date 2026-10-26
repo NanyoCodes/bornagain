@@ -162,6 +162,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
         const sessionRef = doc(collection(firestore, 'gameSessions'));
         
+        // Use non-blocking write
         setDoc(sessionRef, sessionData)
             .then(() => {
                 const userRef = doc(firestore, 'users', user.uid);
@@ -485,7 +486,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         onClick={handleSendChallenge} 
                                         disabled={isRequesting}
                                         size="lg" 
-                                        className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30"
+                                        className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-center"
                                     >
                                         {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         ISSUE CHALLENGE
@@ -518,7 +519,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         <p className="text-xs font-bold text-primary uppercase tracking-widest">Mode: {invitation.gameType} • Duration: {invitation.timerDuration}s</p>
                                     </div>
                                     <div className="flex flex-col gap-3 w-full max-w-xs mx-auto">
-                                        <Button onClick={handleAcceptChallenge} size="lg" className="h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl">
+                                        <Button onClick={handleAcceptChallenge} size="lg" className="h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl text-center">
                                             <Check className="mr-2 h-5 w-5" /> ACCEPT CHALLENGE
                                         </Button>
                                         <Button variant="ghost" onClick={handleDeclineChallenge} className="text-destructive font-black uppercase tracking-widest text-xs">
@@ -622,7 +623,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 <Button 
                                     onClick={handleOpenPrivateChat}
                                     size="lg"
-                                    className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-primary text-white hover:bg-primary/90 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95"
+                                    className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-primary text-white hover:bg-primary/90 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
                                 >
                                     <MessagesSquare className="h-5 w-5" />
                                     OPEN PRIVATE CHAT
@@ -630,7 +631,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 <Button 
                                     onClick={() => handleStart(activeGameType)}
                                     variant="outline"
-                                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-transparent border-white/10 text-zinc-400 hover:bg-white/5 shadow-md flex items-center justify-center gap-4 transition-all active:scale-95"
+                                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-transparent border-white/10 text-zinc-400 hover:bg-white/5 shadow-md flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
                                 >
                                     <RefreshCw className="h-5 w-5" />
                                     NEW SESSION
@@ -664,34 +665,34 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                         return (
                             <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all">
                                 <div className="flex items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                                    <div className="flex items-center gap-4 flex-1 min-w-0 text-left">
                                         <div className={cn(
-                                            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner",
+                                            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner text-left",
                                             isMyScore ? "bg-primary/10 text-primary border-primary/20" : "bg-muted/40 text-muted-foreground"
                                         )}>
-                                            {isMyScore ? <Star className="h-5 w-5" /> : <Award className="h-5 w-5" />}
+                                            {isMyScore ? <Star className="h-5 w-5 text-left" /> : <Award className="h-5 w-5 text-left" />}
                                         </div>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="font-black text-sm uppercase tracking-tight truncate leading-tight">
+                                        <div className="min-w-0 flex-1 text-left">
+                                            <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">
                                                 {isMyScore ? 'My Victory' : `${partnerName}'s Result`}
                                             </p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50">{session.gameType || 'Word'}</Badge>
-                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                                            <div className="flex items-center gap-2 mt-1 text-left">
+                                                <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left">{session.gameType || 'Word'}</Badge>
+                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                                     {date ? format(date, 'MMM d, p') : 'Recently'}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter">{session.score}</p>
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1">POINTS</p>
+                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter text-right">{session.score}</p>
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right">POINTS</p>
                                     </div>
                                 </div>
                             </Card>
                         );
                     }) : (
-                        <div className="py-16 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed">
+                        <div className="py-16 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed text-center">
                             <History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3" />
                             <p className="text-xs text-muted-foreground italic px-12 text-balance text-center">The points against each other should be recorded. Start sharpening each other to see results!</p>
                         </div>
