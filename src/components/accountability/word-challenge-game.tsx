@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -167,7 +168,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 updateDoc(userRef, {
                     kingdomPoints: increment(totalPoints),
                     lastGameAt: serverTimestamp()
-                }).catch(async () => {
+                }).catch(async (err) => {
                      errorEmitter.emit('permission-error', new FirestorePermissionError({
                         path: userRef.path,
                         operation: 'update',
@@ -488,8 +489,8 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </div>
                             ) : invitation.hostId === user?.uid ? (
                                 <div className="space-y-6 w-full flex flex-col items-center justify-center text-center animate-in fade-in text-left">
-                                    <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mx-auto border-2 border-dashed border-primary/20 text-left text-left">
-                                        <Loader2 className="h-10 w-10 text-primary animate-spin text-left text-left" />
+                                    <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mx-auto border-2 border-dashed border-primary/20 text-left text-left text-left">
+                                        <Loader2 className="h-10 w-10 text-primary animate-spin text-left text-left text-left" />
                                     </div>
                                     <div className="space-y-2 text-center text-left">
                                         <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse text-center">
@@ -506,7 +507,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2 text-center text-left">
                                         <Target className="h-10 w-10 text-primary animate-bounce text-center text-left" />
                                     </div>
-                                    <div className="space-y-1 text-center text-left text-left">
+                                    <div className="space-y-1 text-center text-left text-left text-left">
                                         <p className="text-lg font-black text-white uppercase tracking-widest text-center"> {partnerName.toUpperCase()} HAS CHALLENGED YOU!</p>
                                         <p className="text-xs font-bold text-primary uppercase tracking-widest text-center">Mode: {invitation.gameType} • Duration: {invitation.timerDuration}s</p>
                                     </div>
@@ -569,7 +570,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         key={opt}
                                         variant="outline"
                                         className={cn(
-                                            "h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal text-left text-left",
+                                            "h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal text-left text-left text-left",
                                             gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_25px_rgba(22,163,74,0.4)]" : 
                                             gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : 
                                             "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/20"
@@ -586,38 +587,38 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
                     {gameState === 'finished' && (
                         <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center">
-                            <div className="text-center space-y-4 text-left">
-                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-center text-left">
-                                    <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-center text-left" />
+                            <div className="text-center space-y-4 text-left text-left">
+                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-center text-left text-left">
+                                    <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-center text-left text-left" />
                                 </div>
-                                <div className="space-y-1 text-center text-left text-left">
+                                <div className="space-y-1 text-center text-left text-left text-left">
                                     <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center">Session Complete!</h3>
                                     <p className="text-zinc-400 font-medium text-sm sm:text-base text-center">Excellent labor in the Word.</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-3 sm:gap-6 text-center text-left text-left">
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left">
+                            <div className="grid grid-cols-3 gap-3 sm:gap-6 text-center text-left text-left text-left">
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left text-left">
                                     <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center">Points</p>
                                     <p className="text-xl sm:text-4xl font-black text-white text-center">{correctCount * 10}</p>
                                 </div>
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left">
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left text-left">
                                     <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center">Correct</p>
                                     <p className="text-xl sm:text-4xl font-black text-white text-center">{correctCount}</p>
                                 </div>
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left">
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left text-left">
                                     <p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center">Errors</p>
                                     <p className="text-xl sm:text-4xl font-black text-white text-center">{wrongCount}</p>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-4 text-center text-left text-left">
+                            <div className="flex flex-col gap-4 text-center text-left text-left text-left">
                                 <Button 
                                     onClick={handleOpenPrivateChat}
                                     size="lg"
                                     className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-primary text-white hover:bg-primary/90 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
                                 >
-                                    <MessagesSquare className="h-5 w-5 text-left text-left text-left" />
+                                    <MessagesSquare className="h-5 w-5 text-left text-left text-left text-left" />
                                     OPEN PRIVATE CHAT
                                 </Button>
                                 <Button 
@@ -625,7 +626,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     variant="outline"
                                     className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-transparent border-white/10 text-zinc-400 hover:bg-white/5 shadow-md flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
                                 >
-                                    <RefreshCw className="h-5 w-5 text-left text-left text-left" />
+                                    <RefreshCw className="h-5 w-5 text-left text-left text-left text-left" />
                                     NEW SESSION
                                 </Button>
                             </div>
@@ -640,7 +641,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             <div className="space-y-6 text-left">
                 <div className="flex items-center justify-between px-1 text-left">
                     <div className="flex items-center gap-2 text-left">
-                        <History className="h-4 w-4 text-primary text-left text-left" />
+                        <History className="h-4 w-4 text-primary text-left text-left text-left" />
                         <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground text-left">Arena History</h4>
                     </div>
                     <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60 text-left">Past Sessions</Badge>
@@ -656,27 +657,27 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                         const isMyScore = session.userId === user?.uid;
                         return (
                             <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all text-left">
-                                <div className="flex items-center justify-between gap-4 text-left">
-                                    <div className="flex items-center gap-4 flex-1 min-w-0 text-left">
+                                <div className="flex items-center justify-between gap-4 text-left text-left">
+                                    <div className="flex items-center gap-4 flex-1 min-w-0 text-left text-left">
                                         <div className={cn(
                                             "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner text-left",
                                             isMyScore ? "bg-primary/10 text-primary border-primary/20" : "bg-muted/40 text-muted-foreground"
                                         )}>
-                                            {isMyScore ? <Star className="h-5 w-5 text-left text-left" /> : <Award className="h-5 w-5 text-left text-left" />}
+                                            {isMyScore ? <Star className="h-5 w-5 text-left text-left text-left" /> : <Award className="h-5 w-5 text-left text-left text-left" />}
                                         </div>
-                                        <div className="min-w-0 flex-1 text-left">
+                                        <div className="min-w-0 flex-1 text-left text-left">
                                             <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">
                                                 {isMyScore ? 'My Victory' : `${partnerName}'s Result`}
                                             </p>
-                                            <div className="flex items-center gap-2 mt-1 text-left">
-                                                <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left">{session.gameType || 'Word'}</Badge>
+                                            <div className="flex items-center gap-2 mt-1 text-left text-left">
+                                                <Badge variant="outline" className="h-3.5 px-1 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left text-left">{session.gameType || 'Word'}</Badge>
                                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                                     {date ? format(date, 'MMM d, p') : 'Recently'}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-right text-left text-left">
+                                    <div className="text-right text-left text-left text-left text-left">
                                         <p className="text-lg sm:text-xl font-black text-primary tracking-tighter text-right">{session.score}</p>
                                         <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right">POINTS</p>
                                     </div>

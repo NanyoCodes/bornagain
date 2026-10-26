@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -274,6 +275,22 @@
         "acceptedAt": { "type": "object" }
       },
       "required": ["hostId", "guestId", "participantIds", "status"]
+    },
+    "CartItem": {
+      "title": "Cart Item",
+      "description": "Represents an item in the user's kindness or provision cart.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "quantity": { "type": "number" },
+        "vendorId": { "type": "string" },
+        "vendorName": { "type": "string" },
+        "currency": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "soulId": { "type": "string" },
+        "soulName": { "type": "string" }
+      }
     }
   },
   "auth": {
@@ -289,6 +306,10 @@
         "$ref": "#/entities/UserProfile"
       },
       "description": "Stores public user profile data, keyed by user ID."
+    },
+    "/users/{userId}/cart/{itemId}": {
+      "schema": { "$ref": "#/entities/CartItem" },
+      "description": "User's shopping cart for Kingdom provisions."
     },
     "/gameSessions/{sessionId}": {
       "schema": { "$ref": "#/entities/GameSession" },
