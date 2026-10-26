@@ -384,7 +384,7 @@ export default function LandingPage() {
       <footer className="bg-muted/50 border-t py-16 text-left">
         <div className="max-w-7xl mx-auto px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
                 {logo && (
                   <Avatar className="h-12 w-12 text-left text-left">
