@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for user/fellowships sub-collection listing - 2025-03-05T19:00:00Z
+    // Deployment trigger: Critical fix for user/fellowships sub-collection listing - 2025-03-05T20:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;

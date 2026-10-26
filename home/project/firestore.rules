@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Consistently corrected management permissions - 2025-06-15T18:00:00Z
+    // Deployment trigger: Critical fix for user/fellowships sub-collection listing - 2025-03-05T20:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -70,7 +69,7 @@ service cloud.firestore {
 
       allow update: if isAuthenticated() && (
         isOwner(userId) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink']) && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink', 'kingdomPoints', 'lastGameAt']) && (
           isOwner(userId) ||
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
           (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
@@ -86,7 +85,13 @@ service cloud.firestore {
       }
 
       match /souls/{soulId} {
-        allow read, write: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
+        allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
+        allow create, delete: if isOwner(userId);
+        allow update: if isAuthenticated() && (
+          isOwner(userId) || 
+          isFellowshipMember(resource.data.get('fellowshipId', '')) || 
+          isFellowshipMember(resource.data.get('associationId', ''))
+        );
       }
       
       match /disciplineHistory/{logId} {
@@ -120,12 +125,31 @@ service cloud.firestore {
       }
     }
 
+    match /gameSessions/{sessionId} {
+      allow read, list: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+      allow create: if isAuthenticated() && (request.resource.data.userId == request.auth.uid || request.resource.data.partnerId == request.auth.uid);
+      allow update, delete: if false;
+    }
+
+    match /gameInvitations/{invitationId} {
+        allow read, list: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+        allow create: if isAuthenticated() && 
+                      request.resource.data.hostId == request.auth.uid &&
+                      request.auth.uid in request.resource.data.participantIds;
+        allow update, delete: if isAuthenticated() && (resource == null || request.auth.uid in resource.data.participantIds);
+    }
+
+    match /ads/{adId} {
+      allow read, list: if true;
+      allow write: if false;
+    }
+
     match /events/{eventId} {
       allow get, list: if (resource.data.get('visibility', 'public') == 'public') || (isAuthenticated() && (request.auth.uid == resource.data.organizerId || request.auth.uid in resource.data.get('participantIds', []) || exists(/databases/$(database)/documents/events/$(eventId)/participants/$(request.auth.uid))));
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
         request.auth.uid == resource.data.organizerId ||
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat', 'photoURL', 'participantIds'])
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat', 'photoURL', 'participantIds', 'participants'])
       );
       allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
 
@@ -189,7 +213,7 @@ service cloud.firestore {
     
     match /souls/{soulId} {
       allow get, list: if isAuthenticated();
-      allow create: if isAuthenticated() && request.resource.data.get('userId', '') == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && (
         (resource.data.get('userId', '') == request.auth.uid) || 
         (resource.data.userId == request.auth.uid) || 
@@ -201,10 +225,10 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || string(resource.data.authorId).split('/').pop() == request.auth.uid);
       allow update: if isAuthenticated() && ( 
         (resource.data.authorId == request.auth.uid) || 
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
       );
 
       match /comments/{commentId} {
@@ -221,9 +245,9 @@ service cloud.firestore {
     match /prayerRequests/{requestId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.auth.uid == request.resource.data.authorId;
-      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.authorId == request.auth.uid;
       allow update: if isAuthenticated() && ( 
-        (request.resource.data.authorId == request.auth.uid) ||
+        (request.resource.data.authorId == request.authorId) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.get('answeredTestimonyId', '') != '' && (
           request.resource.data.status == 'pending' || 
