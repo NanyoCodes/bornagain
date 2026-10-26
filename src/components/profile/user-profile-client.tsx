@@ -218,7 +218,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   const loading = profileLoading || testimoniesLoading || campaignsLoading || userLoading;
   
-  const videoTestimonies = useMemo(() => {
+  const videoTestimoniesList = useMemo(() => {
     const list = [...(userProfile?.videoTestimonies || [])];
     return list.map(v => ({ ...v, embedUrl: getYouTubeEmbedUrl(v.url) })).filter(v => !!v.embedUrl);
   }, [userProfile]);
@@ -269,8 +269,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
   const { city, state, country } = location || {};
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
-
-  const profileLink = isOwnProfile ? "/profile" : `/profile/${userId}`;
 
   return (
     <div className="space-y-6 sm:space-y-10 max-w-6xl mx-auto px-0 sm:px-4 pb-20 text-left">
@@ -421,7 +419,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </CardContent>
       </Card>
       
-      {videoTestimonies.length > 0 && (
+      {videoTestimoniesList.length > 0 && (
         <Card className="rounded-none sm:rounded-[3rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950 text-left">
             <CardHeader className="pb-6 pt-10 px-5 sm:px-12 text-center md:text-left">
                 <CardTitle className="flex items-center justify-center md:justify-start gap-3 sm:gap-4 text-2xl sm:text-4xl font-black font-headline text-white tracking-tight uppercase">
@@ -434,11 +432,11 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </CardHeader>
             <CardContent className="px-5 sm:px-12 pb-12 sm:pb-16 text-left">
                 <div className="flex flex-col gap-8 sm:gap-12">
-                    {videoTestimonies.map((video, idx) => (
+                    {videoTestimoniesList.map((video, idx) => (
                         <div key={idx} className="space-y-4">
                             <div className="relative w-full aspect-video rounded-2xl sm:rounded-[2.5rem] overflow-hidden bg-black shadow-2xl border-2 border-white/5 group/vid">
                                 <iframe
-                                    src={video.embedUrl!}
+                                    src={`${video.embedUrl!}?rel=0&modestbranding=1`}
                                     title={video.title || `Kingdom Testimony`}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen
