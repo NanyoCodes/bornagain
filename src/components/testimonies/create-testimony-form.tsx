@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Camera, X, FileUp, Sparkles } from "lucide-react";
+import { Loader2, Camera, X, FileUp, Sparkles, Newspaper, HandHeart, CheckCircle2 } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
@@ -279,6 +279,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     >
                         <X className="h-3.5 w-3.5" />
                     </Button>
+                    <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 flex items-center gap-1">
+                        <CheckCircle2 className="h-2.5 w-2.5 text-green-500" />
+                        <span className="text-[8px] font-black text-white uppercase tracking-tighter">Ready</span>
+                    </div>
                 </div>
             )}
             <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*" onChange={(e) => handleFileSelect(e, slot)} />
@@ -287,59 +291,97 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   };
 
   return (
-    <div className="space-y-6">
-      {prayerRequest && (
-        <Card className="bg-primary/5 border-primary/20 rounded-2xl">
-          <CardHeader className="p-4">
-            <div className="text-xs font-bold uppercase tracking-widest text-primary mb-1">Answering prayer:</div>
-            <CardDescription className="italic text-sm text-muted-foreground line-clamp-2 leading-relaxed">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
-          </CardHeader>
-        </Card>
-      )}
+    <div className="space-y-10 text-left">
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 px-1">
+            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
+                <Newspaper className="h-5 w-5 text-primary" />
+            </div>
+            <div className="min-w-0 flex-1">
+                <h3 className="text-xl font-black font-headline uppercase tracking-tight">Proclaim Victory</h3>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Sharing God's manifest power</p>
+            </div>
+        </div>
+
+        {prayerRequest && (
+            <Card className="bg-amber-500/5 border-2 border-dashed border-amber-500/20 rounded-[1.5rem] relative overflow-hidden">
+                <div className="absolute -top-4 -right-4 h-16 w-16 bg-amber-500/5 rounded-full blur-xl" />
+                <CardHeader className="p-5 pb-2 relative z-10">
+                    <div className="flex items-center gap-2 mb-1">
+                        <HandHeart className="h-3.5 w-3.5 text-amber-600" />
+                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest">Answering Prayer Altar</span>
+                    </div>
+                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
+                </CardHeader>
+            </Card>
+        )}
+      </div>
+
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
-          <FormField control={form.control} name="category" render={({ field }) => (
-              <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Category</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
+          <div className="space-y-6">
+            <FormField control={form.control} name="category" render={({ field }) => (
+                <FormItem className="text-left">
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Testimony Theme</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-base">
+                            <SelectValue placeholder="What is the nature of this miracle?" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-2xl border-none shadow-2xl">
+                        {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>))}
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+
+            <FormField control={form.control} name="content" render={({ field }) => (
+                <FormItem className="text-left">
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">The Full Story</FormLabel>
                     <FormControl>
-                      <SelectTrigger className="h-12 rounded-2xl border-2">
-                        <SelectValue placeholder="Share your testimony" />
-                      </SelectTrigger>
+                    <Textarea 
+                        placeholder="Detail the greatness of God in this situation..." 
+                        className="min-h-[160px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0" 
+                        {...field} 
+                    />
                     </FormControl>
-                    <SelectContent className="rounded-2xl">
-                      {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat}>{cat}</SelectItem>))}
-                    </SelectContent>
-                  </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
 
-          <FormField control={form.control} name="content" render={({ field }) => (
-              <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Your Story</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Share what the Lord has done..." 
-                    className="min-h-[120px] rounded-[1.25rem] p-4 text-base leading-relaxed bg-muted/10 border-2 border-dashed transition-all focus:border-primary/40 focus:bg-muted/20" 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="flex gap-4">
-             {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
-             {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
+            <div className="space-y-4">
+                <div className="flex gap-4">
+                    {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
+                    {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
+                </div>
+                <p className="text-[9px] text-muted-foreground font-medium italic text-center px-4">
+                    Providing proof (photos/videos) strengthens the community's faith and serves as an irrefutable weapon against the enemy.
+                </p>
+            </div>
           </div>
 
-          <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia !== null}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isSubmitting ? 'PUBLISHING...' : 'PUBLISH TESTIMONY'}
-          </Button>
+          <div className="pt-4">
+              <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95" disabled={isSubmitting || isUploadingMedia !== null}>
+                {isSubmitting ? (
+                    <div className="flex items-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span>PROCLAIMING...</span>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-3">
+                        <Sparkles className="h-6 w-6" />
+                        <span>PUBLISH TESTIMONY</span>
+                    </div>
+                )}
+              </Button>
+              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6">
+                TO THE GLORY OF JESUS CHRIST
+              </p>
+          </div>
         </form>
       </Form>
     </div>
