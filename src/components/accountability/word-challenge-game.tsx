@@ -48,7 +48,8 @@ import {
     deleteDoc,
     setDoc,
     getDocs,
-    getDoc
+    getDoc,
+    addDoc
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -351,7 +352,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             const chatsRef = collection(firestore, 'chats');
             const q = query(chatsRef, where('participantIds', '==', participantIds), where('isGroupChat', '==', false));
             const querySnapshot = await getDocs(q);
-            let existingChat = querySnapshot.docs.find(doc => doc.data().vendorId === order.vendorId);
+            let existingChat = querySnapshot.docs.find(doc => !doc.data().campaignId);
             
             let chatId: string;
 
@@ -485,7 +486,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         size="lg" 
                                         className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-center"
                                     >
-                                        {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                        {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Send className="mr-2 h-4 w-4" />}
                                         ISSUE CHALLENGE
                                     </Button>
                                 </div>
@@ -529,28 +530,28 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     {isGameActive && (
                         <div className="space-y-6 sm:space-y-10 animate-in fade-in zoom-in duration-500 text-left">
                             <div className="flex items-center justify-between px-2 text-left">
-                                <div className="flex items-center gap-3 text-left text-left">
+                                <div className="flex items-center gap-3 text-left">
                                     <div className={cn(
                                         "h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors border-2",
                                         timeLeft <= 10 ? "bg-red-500 border-red-400 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary"
                                     )}>
-                                        <Timer className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
+                                        <Timer className="h-5 w-5 sm:h-6 sm:w-6" />
                                     </div>
-                                    <div className="text-left text-left">
+                                    <div className="text-left">
                                         <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Left</p>
                                         <p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>
                                             {timeLeft}s
                                         </p>
                                     </div>
                                 </div>
-                                <div className="text-right text-left text-left">
+                                <div className="text-right">
                                     <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Session Gain</p>
                                     <p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10}</p>
                                 </div>
                             </div>
 
                             <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[180px] flex items-center justify-center text-left">
-                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left">
                                     <BookOpen className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12" />
                                 </div>
                                 <AnimatePresence mode="wait">
@@ -641,9 +642,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             </Card>
 
             <div className="space-y-6 text-left">
-                <div className="flex items-center justify-between px-1 text-left text-left text-left">
-                    <div className="flex items-center gap-2 text-left">
-                        <History className="h-4 w-4 text-primary text-left" />
+                <div className="flex items-center justify-between px-1">
+                    <div className="flex items-center gap-2">
+                        <History className="h-4 w-4 text-primary" />
                         <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground">Arena History</h4>
                     </div>
                     <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60">Past Sessions</Badge>
@@ -652,7 +653,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 <div className="space-y-3 text-left">
                     {historyLoading ? (
                         <div className="space-y-3 text-left">
-                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl text-left" />)}
+                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl" />)}
                         </div>
                     ) : filteredHistory.length > 0 ? filteredHistory.map(session => {
                         const date = safeToDate(session.createdAt);
@@ -665,7 +666,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border shadow-inner text-left",
                                             isMyScore ? "bg-primary/10 text-primary border-primary/20" : "bg-muted/40 text-muted-foreground"
                                         )}>
-                                            {isMyScore ? <Star className="h-5 w-5 text-left" /> : <Award className="h-5 w-5 text-left" />}
+                                            {isMyScore ? <Star className="h-5 w-5" /> : <Award className="h-5 w-5" />}
                                         </div>
                                         <div className="min-w-0 flex-1 text-left">
                                             <p className="font-black text-sm uppercase tracking-tight truncate leading-tight">
@@ -679,7 +680,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-right text-left text-left">
+                                    <div className="text-right">
                                         <p className="text-lg sm:text-xl font-black text-primary tracking-tighter text-right">{session.score}</p>
                                         <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right">POINTS</p>
                                     </div>
@@ -687,8 +688,8 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             </Card>
                         );
                     }) : (
-                        <div className="py-16 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed text-left">
-                            <History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-center" />
+                        <div className="py-16 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed text-left text-left">
+                            <History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3" />
                             <p className="text-xs text-muted-foreground italic px-12 text-balance text-center">The points against each other should be recorded. Start sharpening each other to see results!</p>
                         </div>
                     )}
