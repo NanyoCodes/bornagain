@@ -334,7 +334,7 @@ export default function LandingPage() {
                           </p>
                           <div className="flex items-center gap-3 text-left">
                             <Avatar className="h-10 w-10 border shrink-0 text-left">
-                              <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-black uppercase text-left">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
+                              <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary uppercase text-left">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 text-left">
                               <p className="text-xs font-black uppercase tracking-tight truncate text-left">{t.authorFirstName} {t.authorLastName}</p>

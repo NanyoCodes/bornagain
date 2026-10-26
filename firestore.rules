@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Fixed ads, cart, and arena history permissions - 2025-06-15T23:00:00Z
+    // Deployment trigger: Fixed ads, cart, and arena history permissions - 2025-06-16T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -162,7 +162,7 @@ service cloud.firestore {
       match /posts/{postId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isOwner(resource.data.authorId));
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isOwner(resource.data.authorId));
         allow update: if isAuthenticated() && (
           (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))

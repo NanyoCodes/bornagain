@@ -201,6 +201,28 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             });
     };
 
+    const handleCancelRequest = async () => {
+        if (!invitation || !firestore) return;
+        
+        setIsRequesting(true);
+        const invitationRef = doc(firestore, 'gameInvitations', invitation.id);
+        
+        deleteDoc(invitationRef)
+            .then(() => {
+                toast({ title: 'Request Cancelled' });
+                setGameState('playing');
+            })
+            .catch((err) => {
+                errorEmitter.emit('permission-error', new FirestorePermissionError({
+                    path: invitationRef.path,
+                    operation: 'delete'
+                }, user));
+            })
+            .finally(() => {
+                setIsRequesting(false);
+            });
+    };
+
     useEffect(() => {
         if (invitation?.status === 'accepted' && !isGameActive && gameState === 'playing') {
             const acceptedAt = safeToDate(invitation.acceptedAt);
@@ -299,6 +321,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         if (!invitation || !firestore) return;
         const invitationRef = doc(firestore, 'gameInvitations', invitation.id);
         updateDoc(invitationRef, { status: 'declined' })
+            .then(() => {
+                deleteDoc(invitationRef);
+            })
             .catch(() => {
                  errorEmitter.emit('permission-error', new FirestorePermissionError({
                     path: invitationRef.path,
@@ -506,10 +531,12 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         </p>
                                     </div>
                                     <Button 
-                                        variant="ghost" 
-                                        onClick={() => deleteDoc(doc(firestore!, 'gameInvitations', invitation.id))} 
-                                        className="text-muted-foreground uppercase text-[10px] font-bold text-center"
+                                        variant="outline" 
+                                        onClick={handleCancelRequest}
+                                        disabled={isRequesting}
+                                        className="w-full sm:w-auto h-12 rounded-xl font-black uppercase tracking-widest text-[10px] border-white/10 text-zinc-400 hover:bg-white/5 hover:text-white"
                                     >
+                                        {isRequesting ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <X className="mr-2 h-3.5 w-3.5" />}
                                         Cancel Request
                                     </Button>
                                 </div>
