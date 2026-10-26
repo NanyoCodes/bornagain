@@ -28,49 +28,49 @@
     {
       "id": "feature-glory",
       "description": "Joyful believer sharing a testimony",
-      "imageUrl": "https://picsum.photos/seed/260/600/400",
+      "imageUrl": "https://picsum.photos/seed/miracle-joy/600/400",
       "imageHint": "joyful person"
     },
     {
       "id": "feature-mission",
       "description": "Joyful group in an outdoor community outreach mission",
-      "imageUrl": "https://picsum.photos/seed/146/600/400",
+      "imageUrl": "https://picsum.photos/seed/mission-outreach/600/400",
       "imageHint": "community outreach"
     },
     {
       "id": "feature-victory",
       "description": "A person with raised hands celebrating in a field",
-      "imageUrl": "https://picsum.photos/seed/105/600/400",
+      "imageUrl": "https://picsum.photos/seed/freedom-spirit/600/400",
       "imageHint": "spiritual freedom"
     },
     {
       "id": "feature-provision",
       "description": "Diverse group of friends smiling around a dinner table",
-      "imageUrl": "https://picsum.photos/seed/318/600/400",
+      "imageUrl": "https://picsum.photos/seed/meal-sharing/600/400",
       "imageHint": "sharing meal"
     },
     {
       "id": "feature-kindness",
       "description": "Happy people sharing joy and kindness",
-      "imageUrl": "https://picsum.photos/seed/664/600/400",
+      "imageUrl": "https://picsum.photos/seed/kindness-gifts/600/400",
       "imageHint": "kindness gifts"
     },
     {
       "id": "feature-disciplines",
       "description": "A young woman smiling while reading a book in natural light",
-      "imageUrl": "https://picsum.photos/seed/110/600/400",
+      "imageUrl": "https://picsum.photos/seed/bible-meditation/600/400",
       "imageHint": "reading bible"
     },
     {
       "id": "feature-fellowship",
       "description": "Friends sitting on a bench together laughing",
-      "imageUrl": "https://picsum.photos/seed/319/600/400",
+      "imageUrl": "https://picsum.photos/seed/church-fellowship/600/400",
       "imageHint": "church community"
     },
     {
       "id": "feature-intercession",
       "description": "Close up of diverse hands joined in unity and prayer",
-      "imageUrl": "https://picsum.photos/seed/521/600/400",
+      "imageUrl": "https://picsum.photos/seed/praying-unity/600/400",
       "imageHint": "praying hands"
     }
   ]

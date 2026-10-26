@@ -103,7 +103,7 @@ import {
   setDoc
 } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
+import { getBibleChapter, type BibleChapterOutput } from "@/ai/flows/get-bible-chapter-flow";
 import { bibleData } from "@/lib/bible-data";
 import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-data";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -114,7 +114,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Image from 'next/image';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Soul, FollowUpStatus, UserProfile, DailyDevotional, TestimonyComment, BibleChapterOutput } from "@/lib/types";
+import type { Soul, FollowUpStatus, UserProfile, DailyDevotional, TestimonyComment } from "@/lib/types";
 
 export const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -142,7 +142,7 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
                 <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
                     <Avatar className="h-full w-full border shadow-sm">
                         <AvatarImage src={photoURL} className="object-cover" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full">{fallbackInitials || 'U'}</AvatarFallback>
+                        <AvatarFallback className="font-bold bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full">{fallbackInitials || 'U'}</AvatarFallback>
                     </Avatar>
                 </div>
             </DialogTrigger>
