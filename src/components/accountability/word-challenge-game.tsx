@@ -116,7 +116,6 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         
         let targetIdx: number;
         if (availableIndices.length === 0) {
-            // Reset if all used
             targetIdx = Math.floor(Math.random() * pool.length);
             setUsedIndices([targetIdx]);
         } else {
@@ -380,9 +379,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             {partnerName.split(' ')[0]}: {partnerProfile?.kingdomPoints || 0}
                         </span>
                         {isPartnerOnline && (
-                            <div className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 border-2 border-background"></span>
+                            <div className="absolute -top-1 -right-1 flex h-2.5 w-2.5 text-left">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left"></span>
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 border-2 border-background text-left"></span>
                             </div>
                         )}
                     </div>
@@ -391,7 +390,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
             <Card className="rounded-[2rem] sm:rounded-[3rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden group transition-all hover:border-primary/40 text-left">
                 <CardHeader className="p-6 sm:p-10 pb-4 text-center">
-                    <div className="flex items-center justify-center gap-2 mb-2 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-2 text-center text-left">
                         <Gamepad2 className="h-5 w-5 text-primary text-left" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Arena of Truth</span>
                     </div>
@@ -401,13 +400,13 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
                 </CardHeader>
                 
-                <CardContent className={cn("p-6 sm:p-12 pt-0 space-y-8", isGameActive ? "text-left" : "text-center flex flex-col items-center justify-center")}>
+                <CardContent className={cn("p-6 sm:p-12 pt-0 space-y-8 text-left", !isGameActive && "text-center flex flex-col items-center justify-center")}>
                     {!isGameActive && gameState !== 'finished' && (
                         <div className="py-4 sm:py-8 flex flex-col items-center gap-8 text-center w-full">
                             {!invitation ? (
                                 <div className="w-full space-y-8 text-left">
                                     <div className="space-y-4 text-left">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Choose Challenge Type</Label>
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1 text-left">Choose Challenge Type</Label>
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
                                             {[
                                                 { id: 'word', label: 'Word Arena', icon: BookOpen },
@@ -419,19 +418,19 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                                     variant="outline"
                                                     onClick={() => setActiveGameType(type.id as any)}
                                                     className={cn(
-                                                        "h-20 sm:h-28 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-4 sm:gap-2 px-6 sm:px-4 rounded-2xl border-2 transition-all text-left sm:text-center",
+                                                        "h-20 sm:h-28 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-4 sm:gap-2 px-6 sm:px-4 rounded-2xl border-2 transition-all text-left",
                                                         activeGameType === type.id ? "bg-primary/20 border-primary text-primary shadow-lg" : "bg-zinc-900/50 border-zinc-800 text-zinc-500 hover:border-primary/40"
                                                     )}
                                                 >
                                                     <type.icon className="h-6 w-6 shrink-0 text-left" />
-                                                    <span className="text-[11px] font-black uppercase tracking-widest">{type.label}</span>
+                                                    <span className="text-[11px] font-black uppercase tracking-widest text-left">{type.label}</span>
                                                 </Button>
                                             ))}
                                         </div>
                                     </div>
 
                                     <div className="space-y-4 text-left">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Select Session Duration</Label>
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1 text-left">Select Session Duration</Label>
                                         <div className="grid grid-cols-4 gap-2 text-left">
                                             {timerOptions.map(opt => (
                                                 <Button 
@@ -440,7 +439,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                                     size="sm"
                                                     onClick={() => setSelectedTimer(opt)}
                                                     className={cn(
-                                                        "h-10 rounded-xl font-black text-xs transition-all",
+                                                        "h-10 rounded-xl font-black text-xs transition-all text-left",
                                                         selectedTimer === opt ? "bg-primary text-white border-none shadow-lg" : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
                                                     )}
                                                 >
@@ -460,9 +459,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     </Button>
                                 </div>
                             ) : invitation.hostId === user?.uid ? (
-                                <div className="space-y-6 w-full flex flex-col items-center justify-center text-center">
-                                    <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mx-auto border-2 border-dashed border-primary/20 text-center">
-                                        <Loader2 className="h-10 w-10 text-primary animate-spin text-center" />
+                                <div className="space-y-6 w-full flex flex-col items-center justify-center text-center animate-in fade-in">
+                                    <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mx-auto border-2 border-dashed border-primary/20 text-left">
+                                        <Loader2 className="h-10 w-10 text-primary animate-spin text-left" />
                                     </div>
                                     <div className="space-y-2 text-center">
                                         <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse text-center">
@@ -507,7 +506,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         <Timer className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Left</p>
+                                        <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left text-left">Time Left</p>
                                         <p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>
                                             {timeLeft}s
                                         </p>
@@ -519,7 +518,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </div>
                             </div>
 
-                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[180px] flex items-center justify-center text-center">
+                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[180px] flex items-center justify-center">
                                 <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left">
                                     <BookOpen className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12 text-left" />
                                 </div>
@@ -565,22 +564,22 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </div>
                                 <div className="space-y-1 text-center">
                                     <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center">Session Complete!</h3>
-                                    <p className="text-zinc-400 font-medium text-sm sm:text-base text-center">Excellent labor in the Word.</p>
+                                    <p className="text-zinc-400 font-medium text-sm sm:text-base text-center text-left">Excellent labor in the Word.</p>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-3 gap-3 sm:gap-6 text-center">
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner">
-                                    <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center">Points</p>
-                                    <p className="text-xl sm:text-4xl font-black text-white text-center">{correctCount * 10}</p>
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left">
+                                    <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center text-left">Points</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white text-center text-left">{correctCount * 10}</p>
                                 </div>
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner">
-                                    <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center">Correct</p>
-                                    <p className="text-xl sm:text-4xl font-black text-white text-center">{correctCount}</p>
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left">
+                                    <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center text-left">Correct</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white text-center text-left">{correctCount}</p>
                                 </div>
-                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner">
-                                    <p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center">Errors</p>
-                                    <p className="text-xl sm:text-4xl font-black text-white text-center">{wrongCount}</p>
+                                <div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left">
+                                    <p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center text-left">Errors</p>
+                                    <p className="text-xl sm:text-4xl font-black text-white text-center text-left">{wrongCount}</p>
                                 </div>
                             </div>
 
@@ -588,17 +587,17 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 <Button 
                                     onClick={handleOpenPrivateChat}
                                     size="lg"
-                                    className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-primary text-white hover:bg-primary/90 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
+                                    className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-primary text-white hover:bg-primary/90 shadow-xl flex items-center justify-center gap-4 transition-all active:scale-95 text-center text-left"
                                 >
-                                    <MessagesSquare className="h-5 w-5 text-left" />
-                                    OPEN PRIVATE CHAT
+                                    <MessagesSquare className="h-5 w-5 text-left text-left" />
+                                    OPEN KINGDOM CHAT
                                 </Button>
                                 <Button 
                                     onClick={() => handleStart(activeGameType)}
                                     variant="outline"
-                                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-transparent border-white/10 text-zinc-400 hover:bg-white/5 shadow-md flex items-center justify-center gap-4 transition-all active:scale-95 text-center"
+                                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-transparent border-white/10 text-zinc-400 hover:bg-white/5 shadow-md flex items-center justify-center gap-4 transition-all active:scale-95 text-center text-left"
                                 >
-                                    <RefreshCw className="h-5 w-5 text-left" />
+                                    <RefreshCw className="h-5 w-5 text-left text-left" />
                                     NEW SESSION
                                 </Button>
                             </div>
@@ -606,7 +605,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
                 </CardContent>
                 <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5 text-center">
-                     <p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">Iron Sharpens Iron • Growth • Victory</p>
+                     <p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center text-left">Iron Sharpens Iron • Growth • Victory</p>
                 </CardFooter>
             </Card>
 
@@ -614,21 +613,21 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 <div className="flex items-center justify-between px-1 text-left">
                     <div className="flex items-center gap-2 text-left">
                         <History className="h-4 w-4 text-primary text-left" />
-                        <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground text-left">Arena History</h4>
+                        <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground text-left text-left">Arena History</h4>
                     </div>
-                    <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60">Past Sessions</Badge>
+                    <Badge variant="secondary" className="h-5 px-2 text-[9px] uppercase font-bold opacity-60 text-left">Past Sessions</Badge>
                 </div>
 
                 <div className="space-y-3 text-left">
                     {historyLoading ? (
                         <div className="space-y-3 text-left">
-                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl text-left" />)}
+                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl text-left text-left" />)}
                         </div>
                     ) : filteredHistory.length > 0 ? filteredHistory.map(session => {
                         const date = safeToDate(session.createdAt);
                         const isMyScore = session.userId === user?.uid;
                         return (
-                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all text-left">
+                            <Card key={session.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm p-4 hover:shadow-md transition-all text-left text-left">
                                 <div className="flex items-center justify-between gap-4 text-left">
                                     <div className="flex items-center gap-4 flex-1 min-w-0 text-left">
                                         <div className={cn(
@@ -649,9 +648,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-right text-left">
-                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none text-right">{session.score}</p>
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right">POINTS</p>
+                                    <div className="text-right text-left text-left">
+                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none text-right text-left">{session.score}</p>
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right text-left">POINTS</p>
                                     </div>
                                 </div>
                             </Card>

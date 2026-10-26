@@ -102,7 +102,7 @@ import {
   setDoc
 } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { getBibleChapter, type BibleChapterOutput } from "@/ai/flows/get-bible-chapter-flow";
+import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { bibleData } from "@/lib/bible-data";
 import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-data";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -113,7 +113,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Image from 'next/image';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
+import type { Soul, FollowUpStatus, UserProfile, DailyDevotional, TestimonyComment, BibleChapterOutput } from "@/lib/types";
 
 export const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -206,7 +206,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Message</Label>
             <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" />
         </div>
-        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">SEND</Button>
+        <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">SEND</Button>
     </div>
   );
 
@@ -233,8 +233,8 @@ export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }
   );
   const contentBody = (
     <div className="flex flex-col gap-3 p-8 text-left">
-        <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg text-center text-left"><WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External</Button>
-        <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary text-center text-left"><MessageSquare className="h-5 w-5 text-left" /> Standard SMS</Button>
+        <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg text-center"><WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External</Button>
+        <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary text-center"><MessageSquare className="h-5 w-5 text-left" /> Standard SMS</Button>
     </div>
   );
   function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
