@@ -588,8 +588,13 @@ export default function FellowshipPage() {
             toast({ title: `${values.groupType} Created!` });
             setActiveTab(values.groupType);
             closeAllDialogs();
-        } catch (e) {
-            const permissionError = new FirestorePermissionError({ path: 'fellowships', operation: 'create' }, user);
+        } catch (error: any) {
+            console.error("Fellowship Creation Error:", error);
+            const permissionError = new FirestorePermissionError({
+              path: `fellowships/${newFellowshipRef.id}`,
+              operation: 'create',
+              requestResourceData: newFellowshipData
+            }, user);
             errorEmitter.emit('permission-error', permissionError);
         } finally {
             setIsSubmitting(false);

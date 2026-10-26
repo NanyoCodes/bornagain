@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for user/fellowships sub-collection listing - 2025-03-05T21:00:00Z
+    // Deployment trigger: Hardened fellowship creation and membership rules - 2025-03-05T22:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
