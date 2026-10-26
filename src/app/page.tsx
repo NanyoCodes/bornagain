@@ -384,12 +384,12 @@ export default function LandingPage() {
       <footer className="bg-muted/50 border-t py-16 text-left">
         <div className="max-w-7xl mx-auto px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left text-left">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left text-left">
                 {logo && (
-                  <Avatar className="h-12 w-12 text-left text-left">
-                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left" />
-                    <AvatarFallback className="text-left text-left">T</AvatarFallback>
+                  <Avatar className="h-12 w-12 text-left text-left text-left">
+                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left text-left" />
+                    <AvatarFallback className="text-left text-left text-left">T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
@@ -398,16 +398,16 @@ export default function LandingPage() {
               </p>
               <div className="flex gap-4 text-left">
                 <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left text-left">
-                  <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left">
-                    <Instagram className="h-4 w-4 text-left" />
-                    <span className="sr-only text-left">Instagram</span>
+                  <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left text-left">
+                    <Instagram className="h-4 w-4 text-left text-left" />
+                    <span className="sr-only text-left text-left">Instagram</span>
                   </Link>
                 </Button>
               </div>
             </div>
 
-            <div className="space-y-4 text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Platform</h4>
+            <div className="space-y-4 text-left text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Platform</h4>
               <ul className="space-y-3 text-left">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Testimonies</Link></li>
                 <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Mission Hub</Link></li>
@@ -417,7 +417,7 @@ export default function LandingPage() {
             </div>
 
             <div className="space-y-4 text-left text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Ministry</h4>
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Ministry</h4>
               <ul className="space-y-3 text-left">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Our Story</Link></li>
                 <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Partner With Us</Link></li>
@@ -429,7 +429,7 @@ export default function LandingPage() {
             </div>
           </div>
           
-          <div className="h-px w-full bg-muted opacity-50 mb-8 text-left" />
+          <div className="h-px w-full bg-muted opacity-50 mb-8 text-left text-left" />
           
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left">
             <p className="text-center md:text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>

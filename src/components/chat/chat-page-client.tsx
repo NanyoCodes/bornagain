@@ -273,7 +273,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     <div className="flex items-center gap-3 text-left">
                         <Avatar className="border-2 border-primary/20 shadow-sm text-left"><AvatarFallback className="font-black bg-primary/10 text-primary text-left text-left">{chat.participantIds.length}</AvatarFallback></Avatar>
                         <div className="min-w-0 text-left">
-                            <h2 className="font-black text-sm sm:text-base leading-tight uppercase tracking-tight truncate text-left text-left"> {chat.campaignTitle}</h2>
+                            <h2 className="font-black text-sm sm:text-base leading-tight uppercase tracking-tight text-left text-left"> {chat.campaignTitle}</h2>
                             <ChatParticipantsDialog chat={chat}>
                                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left text-left">{chat.participantIds.length} members</p>
                             </ChatParticipantsDialog>
@@ -283,7 +283,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                    <div className="flex items-center gap-3 flex-grow text-left">
                         <LiveChatAvatar userId={otherParticipantId} fallbackUrl={otherParticipantInfo.photoURL} fallbackInitials={otherParticipantInfo.firstName?.charAt(0) || 'U'} className="h-11 w-11 sm:h-12 sm:w-12 border shadow-sm text-left" />
                         <div className="flex-grow min-w-0 text-left">
-                            <h2 className="font-black text-sm sm:text-base uppercase tracking-tight text-left leading-tight truncate"> {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</h2>
+                            <h2 className="font-black text-sm sm:text-base uppercase tracking-tight text-left leading-tight"> {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</h2>
                             <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest truncate text-left text-left">{chat.campaignTitle ? `RE: "${chat.campaignTitle}"` : "Accountability Partner"}</p>
                         </div>
                     </div>
