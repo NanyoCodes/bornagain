@@ -194,7 +194,7 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[10px] text-left text-left">
                   SHARING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left">
+                <h1 className="text-4xl sm:text-6xl md:text-5xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left">
                   Testify of The Greatness of GOD.<br className="hidden sm:block" />
                   Organize the Harvest.<br className="hidden sm:block" />
                   <span className="text-primary text-left text-left"> Glorify the King.</span>
