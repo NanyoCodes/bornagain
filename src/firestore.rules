@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Synchronized ads and game permissions - 2025-03-05T20:00:00Z
+    // Deployment trigger: Fixed ads and game session permissions - 2025-03-05T21:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
