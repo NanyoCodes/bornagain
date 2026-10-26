@@ -140,7 +140,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         setSelectedOption(null);
     };
 
-    const handleGameEnd = async () => {
+    const handleGameEnd = () => {
         setIsGameActive(false);
         setGameState('finished');
         
@@ -162,21 +162,37 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         const sessionRef = doc(collection(firestore, 'gameSessions'));
         
         setDoc(sessionRef, sessionData)
-            .then(async () => {
+            .then(() => {
                 const userRef = doc(firestore, 'users', user.uid);
-                await updateDoc(userRef, {
+                updateDoc(userRef, {
                     kingdomPoints: increment(totalPoints),
                     lastGameAt: serverTimestamp()
+                }).catch(async () => {
+                     errorEmitter.emit('permission-error', new FirestorePermissionError({
+                        path: userRef.path,
+                        operation: 'update',
+                        requestResourceData: { kingdomPoints: totalPoints }
+                    }, user));
                 });
 
                 if (invitation) {
-                    await deleteDoc(doc(firestore, 'gameInvitations', invitation.id));
+                    deleteDoc(doc(firestore, 'gameInvitations', invitation.id)).catch(async () => {
+                        errorEmitter.emit('permission-error', new FirestorePermissionError({
+                            path: `gameInvitations/${invitation.id}`,
+                            operation: 'delete'
+                        }, user));
+                    });
                 }
 
                 toast({ title: 'Victory Recorded!', description: `Session saved with ${totalPoints} Kingdom Points.` });
             })
-            .catch(async (error) => {
-                console.error("Session result save failed", error);
+            .catch(async () => {
+                const permissionError = new FirestorePermissionError({
+                    path: sessionRef.path,
+                    operation: 'create',
+                    requestResourceData: sessionData
+                } satisfies SecurityRuleContext, user);
+                errorEmitter.emit('permission-error', permissionError);
             })
             .finally(() => {
                 setIsSavingSession(false);
@@ -269,13 +285,25 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             setTimeLeft(duration);
             handleStart(type);
         }).catch(() => {
-            toast({ variant: 'destructive', title: 'Acceptance Failed' });
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: invitationRef.path,
+                operation: 'update',
+                requestResourceData: { status: 'accepted' }
+            }, user));
         });
     };
 
     const handleDeclineChallenge = async () => {
         if (!invitation || !firestore) return;
-        updateDoc(doc(firestore, 'gameInvitations', invitation.id), { status: 'declined' });
+        const invitationRef = doc(firestore, 'gameInvitations', invitation.id);
+        updateDoc(invitationRef, { status: 'declined' })
+            .catch(() => {
+                 errorEmitter.emit('permission-error', new FirestorePermissionError({
+                    path: invitationRef.path,
+                    operation: 'update',
+                    requestResourceData: { status: 'declined' }
+                }, user));
+            });
         setGameState('playing');
     };
 
@@ -512,7 +540,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         </p>
                                     </div>
                                 </div>
-                                <div className="text-right text-left text-left">
+                                <div className="text-right text-left text-left text-left">
                                     <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Session Gain</p>
                                     <p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right">+{correctCount * 10}</p>
                                 </div>
@@ -648,7 +676,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-right text-left">
+                                    <div className="text-right text-left text-left">
                                         <p className="text-lg sm:text-xl font-black text-primary tracking-tighter text-right">{session.score}</p>
                                         <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right">POINTS</p>
                                     </div>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -223,6 +222,11 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         } catch (error) {
             errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `chats/${chatId}/messages`, operation: 'create' }, user));
         } finally { setIsSending(false); }
+    };
+
+    const handleFormSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        sendMessage();
     };
 
     const handleUpdateMessage = async () => {
