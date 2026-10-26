@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Fixed gameInvitations delete permissions - 2025-06-16T14:30:00Z
+    // Deployment trigger: Restored users/fellowships sub-collection permissions - 2025-06-16T16:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -119,6 +119,10 @@ service cloud.firestore {
       match /joinedEvents/{eventId} {
         allow get, list, write: if isOwner(userId);
       }
+
+      match /fellowships/{fellowshipId} {
+        allow get, list, write: if isOwner(userId);
+      }
     }
 
     match /gameSessions/{sessionId} {
@@ -224,7 +228,7 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || string(resource.data.authorId).split('/').pop() == request.auth.uid);
       allow update: if isAuthenticated() && ( 
         (resource.data.authorId == request.auth.uid) || 
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
       );
 
       match /comments/{commentId} {
@@ -243,7 +247,7 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.auth.uid == request.resource.data.authorId;
       allow delete: if isAuthenticated() && resource.authorId == request.auth.uid;
       allow update: if isAuthenticated() && ( 
-        (request.resource.data.authorId == request.auth.uid) ||
+        (request.resource.data.authorId == request.authorId) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.get('answeredTestimonyId', '') != '' && (
           request.resource.data.status == 'pending' || 
