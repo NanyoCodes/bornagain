@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -414,7 +413,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
           else {
               const otherDoc = await getDoc(doc(firestore, 'users', partner.userId));
               const otherProfile = otherDoc.data() as UserProfile;
-              const newChat = { participantIds, participantInfo: { [user.uid]: { firstName: currentUserProfile.firstName, lastName: currentUserProfile.lastName, photoURL: userProfile.photoURL || '' }, [partner.userId]: { firstName: partner.firstName, lastName: partner.lastName, photoURL: partner.photoURL || '' } }, lastUpdatedAt: serverTimestamp(), isGroupChat: false, hasMessages: true };
+              const newChat = { participantIds, participantInfo: { [user.uid]: { firstName: currentUserProfile.firstName, lastName: currentUserProfile.lastName, photoURL: currentUserProfile.photoURL || '' }, [partner.userId]: { firstName: partner.firstName, lastName: partner.lastName, photoURL: partner.photoURL || '' } }, lastUpdatedAt: serverTimestamp(), isGroupChat: false, hasMessages: true };
               const ref = await addDoc(chatsRef, newChat);
               chatId = ref.id;
           }
