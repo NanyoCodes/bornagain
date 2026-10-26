@@ -500,7 +500,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse">
                                             Waiting for {partnerName}...
                                         </Badge>
-                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{invitation.gameType} Challenge • {invitation.timerDuration}s</p>
+                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+                                            {invitation.gameType.charAt(0).toUpperCase() + invitation.gameType.slice(1)} Challenge • {invitation.timerDuration}s
+                                        </p>
                                     </div>
                                     <Button variant="ghost" onClick={() => deleteDoc(doc(firestore!, 'gameInvitations', invitation.id))} className="text-muted-foreground uppercase text-[10px] font-bold">
                                         Cancel Request

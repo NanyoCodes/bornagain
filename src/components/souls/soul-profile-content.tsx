@@ -366,8 +366,8 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
     const globalSoulRef = doc(firestore, 'souls', s.id);
     const memberName = `${currentUserProfile?.firstName || ''} ${currentUserProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = { date: new Date(), note: `Logged via Identity Hub: ${action?.label}${noteAddendum ? ` - ${noteAddendum}` : ''}`, actions: [aId], memberId: user.uid, memberName: memberName };
-    batch.update(soulRef, { followUpLog: arrayUnion(logEntry), lastUpdatedAt: serverTimestamp() });
-    batch.update(globalSoulRef, { followUpLog: arrayUnion(logEntry), lastUpdatedAt: serverTimestamp() });
+    batch.update(soulRef, { followUpLog: arrayUnion(newLogEntry), lastUpdatedAt: serverTimestamp() });
+    batch.update(globalSoulRef, { followUpLog: arrayUnion(newLogEntry), lastUpdatedAt: serverTimestamp() });
     try { await batch.commit(); toast({ title: 'Kingdom Impact Logged' }); } catch (err) { errorEmitter.emit('permission-error', new FirestorePermissionError({ path: soulRef.path, operation: 'update' }, user)); }
     finally { setIsActionSubmitting(false); setClickedActionId(null); }
   };
