@@ -4,7 +4,32 @@ import { useMemo, useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/lib/types';
-import { doc, collection, query, where, serverTimestamp, setDoc, addDoc, updateDoc } from 'firebase/firestore';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+} from "@/components/ui/drawer";
+import { doc, updateDoc, serverTimestamp, collection, query, where, orderBy, setDoc, addDoc } from 'firebase/firestore';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { 
     Loader2, 
     ArrowLeft, 
@@ -30,9 +55,8 @@ import {
     Quote
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from '@/components/ui/button';
-import { TestimonyCard } from '@/components/testimonies/testimony-card';
-import { CampaignCard } from '@/components/campaigns/campaign-card';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 import { 
     Carousel, 
     CarouselContent, 
@@ -42,18 +66,11 @@ import {
 } from '@/components/ui/carousel';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { cn, safeToDate, haversineDistance } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { FirestorePermissionError } from '@/firebase/errors';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { EditProfileModal } from './edit-profile-modal';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { ScrollArea } from '../ui/scroll-area';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { TestimonyCard } from '@/components/testimonies/testimony-card';
+import { CampaignCard } from '@/components/campaigns/campaign-card';
+import { EditProfileModal } from './edit-profile-modal';
 
 function getYouTubeEmbedUrl(url: string | undefined | null) {
   if (!url) return null;
@@ -210,21 +227,21 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   if (loading || !mounted) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center py-20 text-center text-left">
-        <div className="relative mb-8 mx-auto text-left">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
-            <div className="absolute inset-0 flex items-center justify-center text-left">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
+      <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center">
+        <div className="relative mb-8 mx-auto">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             </div>
         </div>
-        <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-8">Connecting...</p>
+        <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-8">Connecting Identity...</p>
       </div>
     );
   }
 
   if (!userProfile) {
     return (
-      <div className="text-center py-24 px-4 space-y-6 text-left">
+      <div className="text-center py-24 px-4 space-y-6">
         <div className="bg-muted/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-inner text-left">
             <Globe className="h-10 w-10 text-muted-foreground/30 text-left" />
         </div>
@@ -276,7 +293,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </div>
       
       <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-none shadow-2xl bg-gradient-to-br from-background via-background to-primary/5 text-left">
-        <CardContent className="p-6 sm:p-12 lg:p-16 relative z-20">
+        <CardContent className="p-6 sm:p-12 lg:p-16 relative z-20 text-left">
           <div className="flex flex-col lg:flex-row items-center lg:items-start text-center lg:text-left gap-8 lg:gap-16">
             <div className="relative shrink-0">
               <Dialog>
@@ -371,7 +388,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     {personalMessage && (
                         <div className="bg-primary/10 p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] border-2 border-dashed border-primary/20 inline-flex items-start lg:items-center gap-4 text-left group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 w-full">
                             <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0 mt-1 lg:mt-0 transition-transform group-hover:scale-110" />
-                            <p className="text-lg sm:text-xl lg:text-2xl font-black text-foreground leading-tight italic tracking-tight text-balance break-words">
+                            <p className="text-lg sm:text-xl lg:text-2xl font-black text-foreground leading-tight italic tracking-tight text-balance break-words text-left">
                                 &ldquo;{personalMessage}&rdquo;
                             </p>
                         </div>
@@ -394,7 +411,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 <div className="pt-4 lg:max-w-2xl text-left">
                     <div className="relative pl-6 border-l-4 border-primary/20 text-left">
                         <Quote className="absolute -top-1 -left-2 h-6 w-6 text-primary/10" />
-                        <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed italic font-medium text-balance break-words">
+                        <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed italic font-medium text-balance break-words text-left">
                             {bio ? bio : "This believer is a dedicated member of the global Kingdom workforce, committed to sharing the goodness of Jesus Christ with the nations."}
                         </p>
                     </div>
@@ -406,21 +423,21 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       
       {videoTestimonies.length > 0 && (
         <Card className="rounded-none sm:rounded-[3rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950 text-left">
-            <CardHeader className="pb-8 pt-12 px-6 sm:px-12 text-center md:text-left">
-                <CardTitle className="flex items-center justify-center md:justify-start gap-4 text-2xl sm:text-4xl font-black font-headline text-white tracking-tight uppercase">
-                    <Youtube className="h-10 w-10 text-red-600" />
+            <CardHeader className="pb-6 pt-10 px-5 sm:px-12 text-center md:text-left">
+                <CardTitle className="flex items-center justify-center md:justify-start gap-3 sm:gap-4 text-2xl sm:text-4xl font-black font-headline text-white tracking-tight uppercase">
+                    <Youtube className="h-8 w-8 sm:h-10 sm:w-10 text-red-600" />
                     Living Testimonies
                 </CardTitle>
-                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl">
+                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl mx-auto md:mx-0">
                     Witness the manifest power of God through these captured moments of miracle and glory.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="px-6 sm:px-12 pb-16">
+            <CardContent className="px-3 sm:px-12 pb-12 sm:pb-16 text-left">
                 <Carousel className="w-full max-w-5xl mx-auto">
                     <CarouselContent>
                         {videoTestimonies.map((video, idx) => (
-                            <CarouselItem key={idx} className="md:basis-1/2 lg:basis-1/2">
-                                <div className="space-y-4 p-2">
+                            <CarouselItem key={idx} className="basis-[92%] sm:basis-1/2">
+                                <div className="space-y-4 p-1 sm:p-2">
                                     <div className="relative w-full aspect-video rounded-2xl sm:rounded-[2.5rem] overflow-hidden bg-black shadow-2xl border-2 border-white/5 transition-transform duration-500 hover:scale-[1.02] group/vid">
                                         <iframe
                                             src={video.embedUrl!}
@@ -451,7 +468,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </Card>
       )}
 
-      <div className="space-y-12">
+      <div className="space-y-12 text-left">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-0 text-left">
             <div className="flex items-center gap-3 text-left">
                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 shrink-0 text-left">
@@ -545,11 +562,11 @@ export default function UserProfileClient({ userId }: { userId: string }) {
           mounted && isMobile ? (
               <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                   <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                      <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                          <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left">
+                      <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                          <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
                               <div className="flex items-center gap-2 mb-2 text-left">
                                   <Sparkles className="h-4 w-4 text-primary text-left" />
-                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Settings</span>
+                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Settings</span>
                               </div>
                               <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Refine Identity</SheetTitle>
                               <SheetDescription className="text-sm font-medium mt-1 text-left">Update your global Kingdom profile credentials.</SheetDescription>
@@ -565,18 +582,18 @@ export default function UserProfileClient({ userId }: { userId: string }) {
           ) : (
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                   <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                      <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                          <DialogHeader className="text-left p-0 text-left text-left">
+                      <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                          <DialogHeader className="text-left p-0 text-left">
                               <div className="flex items-center gap-2 mb-2 text-left">
                                   <Sparkles className="h-4 w-4 text-primary text-left" />
-                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity settings</span>
+                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity settings</span>
                               </div>
                               <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Edit Kingdom Profile</DialogTitle>
                               <DialogDescription className="text-sm font-medium text-left">Keep your identity current for the harvest workforce.</DialogDescription>
                           </DialogHeader>
                       </div>
                       <ScrollArea className="flex-1 min-h-0 text-left">
-                          <div className="p-8 text-left text-left">
+                          <div className="p-8 text-left">
                             <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
                           </div>
                       </ScrollArea>
@@ -586,4 +603,16 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       )}
     </div>
   );
+}
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 767px)');
+    setIsMobile(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
 }
