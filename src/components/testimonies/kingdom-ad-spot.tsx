@@ -80,7 +80,7 @@ export function KingdomAdSpot({ type }: KingdomAdSpotProps) {
                         </div>
                         <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 transition-all active:scale-95 text-center w-full sm:w-auto">
                             <Link href={activeAd?.url || "/contact"} className="flex items-center justify-center gap-2">
-                                {isBusiness ? "BOOST NOW" : "JOIN MISSION"}
+                                {isBusiness ? "BOOST NOW" : "BOOST MISSION"}
                                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                             </Link>
                         </Button>
