@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -478,7 +479,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2 text-center text-left">
                                         <Target className="h-10 w-10 text-primary animate-bounce text-center text-left" />
                                     </div>
-                                    <div className="space-y-1 text-center text-left">
+                                    <div className="space-y-1 text-center text-left text-left">
                                         <p className="text-lg font-black text-white uppercase tracking-widest text-center"> {partnerName.split(' ')[0].toUpperCase()} HAS CHALLENGED YOU!</p>
                                         <p className="text-xs font-bold text-primary uppercase tracking-widest text-center">Mode: {invitation.gameType} • Duration: {invitation.timerDuration}s</p>
                                     </div>
@@ -649,7 +650,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         </div>
                                     </div>
                                     <div className="text-right text-left">
-                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter leading-none text-right">{session.score}</p>
+                                        <p className="text-lg sm:text-xl font-black text-primary tracking-tighter text-right">{session.score}</p>
                                         <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right">POINTS</p>
                                     </div>
                                 </div>
