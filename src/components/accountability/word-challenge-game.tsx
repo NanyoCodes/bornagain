@@ -30,7 +30,8 @@ import {
     HelpCircle,
     MessagesSquare,
     Loader2,
-    Users
+    Users,
+    Hourglass
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, safeToDate } from "@/lib/utils";
@@ -505,7 +506,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                         <Gamepad2 className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Arena of Truth</span>
                     </div>
-                    <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none">Sharpening the Word</CardTitle>
+                    <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none text-center">Sharpening the Word</CardTitle>
                     {!isGameActive && gameState !== 'finished' && (
                         <CardDescription className="text-zinc-400 text-sm font-medium mt-3">Select a challenge type and duration to begin.</CardDescription>
                     )}
@@ -775,8 +776,8 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             </div>
                                         ) : (
                                             <div className="flex flex-col items-center gap-1 opacity-20">
-                                                <XCircle className="h-6 w-6" />
-                                                <p className="text-[8px] font-black uppercase">No Entry</p>
+                                                <Hourglass className="h-6 w-6 animate-pulse" />
+                                                <p className="text-[8px] font-black uppercase">Waiting...</p>
                                             </div>
                                         )}
                                     </div>
