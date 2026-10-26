@@ -205,9 +205,24 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         correctCountRef.current = 0;
         wrongCountRef.current = 0;
         
+        // Reset timer
+        setTimeLeft(selectedTimer);
+        
         setGameState('playing');
         setIsGameActive(true);
         setSelectedOption(null);
+    };
+
+    const resetToSelection = () => {
+        setIsGameActive(false);
+        setGameState('playing');
+        setSelectedOption(null);
+        setUsedIndices([]);
+        setCorrectCount(0);
+        setWrongCount(0);
+        correctCountRef.current = 0;
+        wrongCountRef.current = 0;
+        setTimeLeft(selectedTimer);
     };
 
     const handleCancelRequest = async () => {
@@ -718,7 +733,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     OPEN PRIVATE CHAT
                                 </Button>
                                 <Button 
-                                    onClick={() => handleStart(activeGameType)}
+                                    onClick={resetToSelection}
                                     variant="outline"
                                     disabled={isSavingSession}
                                     className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-transparent border-white/10 text-zinc-400 hover:bg-white/5 shadow-md flex items-center justify-center gap-4 transition-all active:scale-95"
@@ -752,7 +767,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     ) : matchHistory.length > 0 ? (
                       matchHistory.map((match, mIdx) => (
                             <Card key={mIdx} className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm overflow-hidden border-l-4 border-l-primary/10">
-                                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b bg-muted/5">
+                                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b bg-muted/5 text-left">
                                     <div className="flex items-center gap-2">
                                         <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50 border-primary/20 text-primary">{match.gameType}</Badge>
                                         <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{format(match.date, 'MMM d, p')}</span>
