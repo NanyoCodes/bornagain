@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Newspaper, HandHeart, Loader2, Trash2, Edit, Camera, Flame, Sparkles, X, ChevronDown, Send, Globe, Hourglass, UserPlus, Gamepad2 } from 'lucide-react';
+import { Newspaper, HandHeart, Loader2, Trash2, Edit, Camera, Flame, Sparkles, X, ChevronDown, Send, Globe, Hourglass, UserPlus, Filter } from 'lucide-react';
 import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
 import { PrayerRequestCard } from '@/components/prayer/PrayerRequestCard';
@@ -56,6 +56,8 @@ import { EditPrayerRequestForm } from '@/components/prayer/EditPrayerRequestForm
 import { FeedSidebar } from '@/components/layout/feed-sidebar';
 import { AppShell } from '@/components/layout/app-shell';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function TestimoniesContent() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -66,6 +68,13 @@ function TestimoniesContent() {
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
   const [activeTab, setActiveTab] = useState('testimonies');
   const [highlightedTestimonyId, setHighlightedTestimonyId] = React.useState<string | null>(null);
+
+  // Filter States
+  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterCountry, setFilterCountry] = useState<string>('all');
+  const [filterState, setFilterState] = useState<string>('all');
+  const [filterMedia, setFilterMedia] = useState<'all' | 'with-photo' | 'text-only'>('all');
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   const firestore = useFirestore();
   const { user, loading: authLoading } = useUser();
@@ -128,9 +137,49 @@ function TestimoniesContent() {
     };
   }, [setIsSearchVisible, setSearchTerm, searchParams]);
 
+  // Derived filter options
+  const uniqueCategories = useMemo(() => {
+    if (!testimonies) return [];
+    return Array.from(new Set(testimonies.map(t => t.category))).sort();
+  }, [testimonies]);
+
+  const uniqueCountries = useMemo(() => {
+    if (!testimonies) return [];
+    return Array.from(new Set(testimonies.map(t => t.authorLocation?.country).filter(Boolean))).sort();
+  }, [testimonies]);
+
+  const uniqueStates = useMemo(() => {
+    if (!testimonies || filterCountry === 'all') return [];
+    return Array.from(new Set(
+        testimonies
+            .filter(t => t.authorLocation?.country === filterCountry)
+            .map(t => t.authorLocation?.state)
+            .filter(Boolean)
+    )).sort();
+  }, [testimonies, filterCountry]);
+
   const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
-    const withMetadata = testimonies.map((testimony) => {
+    
+    let filtered = testimonies;
+
+    // Apply Filters
+    if (filterCategory !== 'all') {
+        filtered = filtered.filter(t => t.category === filterCategory);
+    }
+    if (filterCountry !== 'all') {
+        filtered = filtered.filter(t => t.authorLocation?.country === filterCountry);
+    }
+    if (filterState !== 'all') {
+        filtered = filtered.filter(t => t.authorLocation?.state === filterState);
+    }
+    if (filterMedia === 'with-photo') {
+        filtered = filtered.filter(t => !!(t.mediaUrl || t.mediaUrl2));
+    } else if (filterMedia === 'text-only') {
+        filtered = filtered.filter(t => !(t.mediaUrl || t.mediaUrl2));
+    }
+
+    const withMetadata = filtered.map((testimony) => {
       const distance =
         userProfile?.location?.latitude &&
         userProfile.location?.longitude &&
@@ -144,6 +193,7 @@ function TestimoniesContent() {
       const isPartnerMember = partnerIds.has(testimony.authorId);
       return { ...testimony, _distance: distance, _isPartner: isPartnerMember };
     });
+
     const sorted = withMetadata.sort((a, b) => {
       if (a._isPartner && !b._isPartner) return -1;
       if (!a._isPartner && b._isPartner) return 1;
@@ -156,6 +206,7 @@ function TestimoniesContent() {
       const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
       return timeB - timeA;
     });
+
     if (activeTab !== 'testimonies' || !searchTerm) return sorted;
     const term = searchTerm.toLowerCase();
     return sorted.filter(
@@ -164,7 +215,7 @@ function TestimoniesContent() {
         `${t.authorFirstName} ${t.authorLastName}`.toLowerCase().includes(term) ||
         t.category.toLowerCase().includes(term)
     );
-  }, [testimonies, searchTerm, activeTab, userProfile, partnerIds]);
+  }, [testimonies, searchTerm, activeTab, userProfile, partnerIds, filterCategory, filterCountry, filterState, filterMedia]);
 
   const interleavedTestimonies = useMemo(() => {
     const list: (Testimony & { isAd?: boolean; isGame?: boolean; adType?: 'business' | 'event' | 'adsense' })[] = [];
@@ -365,6 +416,92 @@ function TestimoniesContent() {
               </TooltipProvider>
             </div>
           </div>
+
+          {activeTab === 'testimonies' && (
+            <div className="flex flex-col gap-4 px-4 sm:px-0">
+                <div className="flex items-center justify-between">
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setIsFilterVisible(!isFilterVisible)}
+                        className="text-[10px] font-black uppercase tracking-widest text-primary hover:bg-primary/5"
+                    >
+                        <Filter className="mr-2 h-3.5 w-3.5" />
+                        {isFilterVisible ? 'Hide Filters' : 'Show Filters'}
+                    </Button>
+                    {(filterCategory !== 'all' || filterCountry !== 'all' || filterState !== 'all' || filterMedia !== 'all') && (
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => {
+                                setFilterCategory('all');
+                                setFilterCountry('all');
+                                setFilterState('all');
+                                setFilterMedia('all');
+                            }}
+                            className="text-[10px] font-black uppercase tracking-widest text-muted-foreground"
+                        >
+                            Reset
+                        </Button>
+                    )}
+                </div>
+                
+                <AnimatePresence>
+                    {isFilterVisible && (
+                        <motion.div 
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                        >
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pb-4">
+                                <Select value={filterCategory} onValueChange={setFilterCategory}>
+                                    <SelectTrigger className="h-11 text-[10px] uppercase font-bold bg-muted/20 border-none rounded-xl">
+                                        <SelectValue placeholder="Category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Categories</SelectItem>
+                                        {uniqueCategories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                
+                                <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
+                                    <SelectTrigger className="h-11 text-[10px] uppercase font-bold bg-muted/20 border-none rounded-xl">
+                                        <SelectValue placeholder="Country" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Countries</SelectItem>
+                                        {uniqueCountries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+
+                                <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || uniqueStates.length === 0}>
+                                    <SelectTrigger className="h-11 text-[10px] uppercase font-bold bg-muted/20 border-none rounded-xl">
+                                        <SelectValue placeholder="State" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All States</SelectItem>
+                                        {uniqueStates.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+
+                                <Select value={filterMedia} onValueChange={(v: any) => setFilterMedia(v)}>
+                                    <SelectTrigger className="h-11 text-[10px] uppercase font-bold bg-muted/20 border-none rounded-xl">
+                                        <SelectValue placeholder="Media" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Any Media</SelectItem>
+                                        <SelectItem value="with-photo">With Proof</SelectItem>
+                                        <SelectItem value="text-only">Text Only</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+          )}
+
           <div className="px-4 sm:px-0 text-left">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
               <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 text-left">
@@ -407,7 +544,9 @@ function TestimoniesContent() {
                       <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
                       <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">Your Altar of Praise</h3>
                       <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
-                        Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
+                        {searchTerm || filterCategory !== 'all' || filterCountry !== 'all' || filterState !== 'all' || filterMedia !== 'all' 
+                          ? "No miracles match your current filters. Try resetting them to see more." 
+                          : "Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!"}
                       </p>
                     </div>
                   )}
@@ -523,9 +662,7 @@ function TestimoniesContent() {
                         </DrawerDescription>
                     </DrawerHeader>
                   </div>
-                  <ScrollArea className="flex-grow text-left text-left text-left text-left">
-                    <div className="p-8 text-left text-left text-left text-left">{testimonyFormContent}</div>
-                  </ScrollArea>
+                  <ScrollArea className="flex-grow text-left text-left text-left text-left">{testimonyFormContent}</ScrollArea>
                 </DrawerContent>
               </Drawer>
               <Drawer open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
@@ -537,9 +674,7 @@ function TestimoniesContent() {
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Share your need with the global community.</DrawerDescription>
                     </DrawerHeader>
                   </div>
-                  <ScrollArea className="flex-grow text-left text-left text-left text-left">
-                    <div className="p-8 text-left text-left text-left text-left">{prayerFormContent}</div>
-                  </ScrollArea>
+                  <ScrollArea className="flex-grow text-left text-left text-left text-left">{prayerFormContent}</ScrollArea>
                 </DrawerContent>
               </Drawer>
             </>
@@ -553,7 +688,7 @@ function TestimoniesContent() {
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left text-left">
+                  <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left text-left text-left text-left">
                     <div className="p-8 text-left text-left text-left text-left text-left">{testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}</div>
                   </ScrollArea>
                 </DialogContent>
@@ -563,7 +698,7 @@ function TestimoniesContent() {
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">Edit Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Update the details of your request.</DialogDescription>
+                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left text-left text-left">{prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}</div></ScrollArea>
@@ -587,10 +722,10 @@ function TestimoniesContent() {
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Share your request with the Body of Christ.</DialogDescription>
+                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Share your need with the global community.</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left text-left text-left">{prayerFormContent}</div></ScrollArea>
+                  <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left text-left text-left text-left">{prayerFormContent}</div></ScrollArea>
                 </DialogContent>
               </Dialog>
             </>
@@ -604,7 +739,7 @@ function TestimoniesContent() {
 export default function TestimoniesPage() {
     return (
         <AppShell>
-            <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left text-left text-left text-left" /></div>}>
+            <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left text-left" /></div>}>
                 <TestimoniesContent />
             </Suspense>
         </AppShell>

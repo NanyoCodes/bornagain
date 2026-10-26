@@ -227,6 +227,7 @@ export type Testimony = {
   campaignTitle?: string;
   authorLocation?: {
     city?: string;
+    state?: string;
     country?: string;
     latitude?: number;
     longitude?: number;

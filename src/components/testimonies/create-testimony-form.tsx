@@ -182,6 +182,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           authorAvatarUrl: userProfile.photoURL || null,
           authorLocation: userProfile.location ? {
             city: userProfile.location.city || null,
+            state: userProfile.location.state || null,
             country: userProfile.location.country || null,
             latitude: userProfile.location.latitude ?? null,
             longitude: userProfile.location.longitude ?? null,
