@@ -125,6 +125,20 @@ export function getYouTubeEmbedUrl(url: string | undefined | null) {
   return null;
 }
 
+const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+    'matchmaking': HeartHandshake,
+};
+
 /**
  * Ensures the profile photo displayed in the card is always the most recent version.
  */
