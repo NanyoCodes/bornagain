@@ -474,11 +474,11 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 <CardHeader className="p-6 sm:p-10 pb-4 text-center">
                     <div className="flex items-center justify-center gap-2 mb-2 text-center">
                         <Gamepad2 className="h-5 w-5 text-primary text-center" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-center text-left">Arena of Truth</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-center">Arena of Truth</span>
                     </div>
-                    <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none text-center text-left">Sharpening the Word</CardTitle>
+                    <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none text-center">Sharpening the Word</CardTitle>
                     {!isGameActive && gameState !== 'finished' && (
-                        <CardDescription className="text-zinc-400 text-sm font-medium mt-3 text-center text-left">Select a challenge type and duration to begin.</CardDescription>
+                        <CardDescription className="text-zinc-400 text-sm font-medium mt-3 text-center">Select a challenge type and duration to begin.</CardDescription>
                     )}
                 </CardHeader>
                 
@@ -604,7 +604,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         </p>
                                     </div>
                                 </div>
-                                <div className="text-right text-left text-left">
+                                <div className="text-right text-left text-left text-left">
                                     <p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right text-left">Session Gain</p>
                                     <p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right">{correctCount * 10}</p>
                                 </div>
@@ -745,7 +745,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-right text-left text-left text-left">
+                                    <div className="text-right text-left text-left text-left text-left">
                                         <p className="text-lg sm:text-xl font-black text-primary tracking-tighter text-right">{session.score}</p>
                                         <p className="text-[8px] font-bold text-muted-foreground uppercase mt-1 text-right text-left">POINTS</p>
                                     </div>
