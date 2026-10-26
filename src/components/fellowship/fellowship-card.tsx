@@ -185,17 +185,17 @@ function FullDevotionalDialog({
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
                             </SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <ScrollArea className="flex-grow">
-                        <div className="p-8 pb-32 text-left">
+                    <ScrollArea className="flex-grow text-left">
+                        <div className="p-8 pb-32">
                             {content}
                         </div>
                     </ScrollArea>
@@ -215,8 +215,8 @@ function FullDevotionalDialog({
                         <Target className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
+                    <DialogHeader className="text-left p-0 text-left">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
                             <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                             {devotional.title}
                         </DialogTitle>
@@ -225,13 +225,13 @@ function FullDevotionalDialog({
                 </div>
                 <div className="flex-1 min-h-0">
                   <ScrollArea className="h-full">
-                      <div className="p-8 text-left">
+                      <div className="p-8">
                           {content}
                       </div>
                   </ScrollArea>
                 </div>
                 <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0">
-                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold text-left">Close Word</Button>
+                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold">Close Word</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -326,10 +326,10 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     const handleShare = async (e: React.MouseEvent) => {
         e.stopPropagation();
         const shareUrl = `${window.location.origin}/fellowship/${fellowship.id}`;
-        let shareText = `Join the '${fellowship.name}' fellowship on Testify!`;
+        let shareText = `Join the '${fellowship.name}' community on Testify!`;
         
         if (todayDevotional) {
-            shareText = `Read today's word: '${todayDevotional.title}' in the '${fellowship.name}' fellowship on Testify!`;
+            shareText = `Read today's word: '${todayDevotional.title}' in the '${fellowship.name}' group on Testify!`;
         }
 
         const shareData = {
@@ -348,7 +348,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             if (err.name === 'AbortError') return;
             try {
                 await navigator.clipboard.writeText(shareUrl);
-                toast({ title: 'Link Copied!', description: 'Fellowship link copied to clipboard.' });
+                toast({ title: 'Link Copied!', description: 'Community link copied to clipboard.' });
             } catch (clipErr) {
                 console.error("Clipboard fallback failed", clipErr);
             }
@@ -367,7 +367,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         try {
             await runTransaction(firestore, async (transaction) => {
                 const fellowshipDoc = await transaction.get(fellowshipRef);
-                if (!fellowshipDoc.exists()) throw new Error("Fellowship no longer exists.");
+                if (!fellowshipDoc.exists()) throw new Error("Group no longer exists.");
 
                 transaction.update(fellowshipRef, {
                     memberIds: arrayUnion(user.uid),
@@ -413,7 +413,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 transaction.delete(fellowshipMemberRef);
             });
             toast({ title: "Left Group", description: `You have left ${fellowship.name}.` });
-        } catch (e: any) {
+        } catch (e) {
             toast({ variant: 'destructive', title: 'Action Failed', description: 'Could not leave group.' });
         } finally {
             setIsLeaving(false);
@@ -426,7 +426,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
 
     return (
         <Card onClick={onClick} className="cursor-pointer rounded-2xl border transition-all duration-300 shadow-md sm:shadow-lg border-t-2 border-t-primary/10 border-b-8 border-b-primary/10 sm:border-b-8 bg-card/50 backdrop-blur-sm text-left">
-            <CardHeader className="p-4 sm:p-6 pb-2 text-left">
+            <CardHeader className="p-4 sm:p-6 pb-2">
                 <div className="flex justify-between items-start gap-4">
                     <div className="min-w-0 flex-1">
                         <CardTitle className="text-lg sm:text-xl font-black leading-tight mb-2 uppercase tracking-tight break-words [overflow-wrap:anywhere]">
@@ -521,11 +521,11 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             </CardHeader>
             
             <CardContent className="px-4 sm:px-6 pb-4 space-y-4 pt-4">
-                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium break-words [overflow-wrap:anywhere] text-left">{fellowship.description}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium break-words [overflow-wrap:anywhere]">{fellowship.description}</p>
                 
                 {todayDevotional && (
-                    <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 relative group/devo overflow-hidden shadow-inner text-left">
-                        <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover/devo:opacity-[0.06] transition-opacity text-left">
+                    <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 relative group/devo overflow-hidden shadow-inner">
+                        <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover/devo:opacity-[0.06] transition-opacity">
                             <BookOpen className="h-12 w-12 text-primary rotate-12" />
                         </div>
                         <div className="flex items-center gap-2 mb-2">
@@ -538,14 +538,14 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                         <div className="space-y-1">
                             <p 
                                 ref={devotionalTextRef}
-                                className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium leading-relaxed break-words [overflow-wrap:anywhere] text-left"
+                                className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium leading-relaxed break-words [overflow-wrap:anywhere]"
                             >
                                 &ldquo;{todayDevotional.text}&rdquo;
                             </p>
                             {todayDevotional.prayer && (
-                                <div className="mt-2 pl-3 border-l-2 border-primary/20 text-left">
+                                <div className="mt-2 pl-3 border-l-2 border-primary/20">
                                     <p className="text-[9px] font-black uppercase text-primary/60 mb-0.5">Prayer focus</p>
-                                    <p className="text-[10px] text-muted-foreground italic line-clamp-1 leading-tight break-words [overflow-wrap:anywhere] text-left">
+                                    <p className="text-[10px] text-muted-foreground italic line-clamp-1 leading-tight break-words [overflow-wrap:anywhere]">
                                         &ldquo;{todayDevotional.prayer}&rdquo;
                                     </p>
                                 </div>
@@ -555,7 +555,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                 {totalReactions > 0 || commentCount > 0 ? (
                                     <div className="flex items-center gap-3">
                                         {totalReactions > 0 && (
-                                            <div className="flex items-center gap-1 bg-background/50 px-1.5 py-0.5 rounded-full border border-primary/10 shadow-sm text-left">
+                                            <div className="flex items-center gap-1 bg-background/50 px-1.5 py-0.5 rounded-full border border-primary/10 shadow-sm">
                                                 <div className="flex items-center -space-x-1">
                                                     {supporters.length > 0 && <HandHeart className="h-3 w-3 text-primary fill-current" />}
                                                     {inspiredBy.length > 0 && <Sparkles className="h-3 w-3 text-chart-3 fill-current" />}
@@ -598,12 +598,12 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 <div className="text-[11px] sm:text-xs space-y-2 p-4 bg-muted/30 rounded-2xl border border-dashed">
                     <div className="flex items-start gap-2.5">
                         <span className="font-black text-[9px] sm:text-[10px] text-muted-foreground shrink-0 uppercase tracking-widest pt-0.5">Schedule</span>
-                        <span className="text-foreground font-bold leading-tight break-words [overflow-wrap:anywhere] text-left">{fellowship.schedule}</span>
+                        <span className="text-foreground font-bold leading-tight break-words [overflow-wrap:anywhere]">{fellowship.schedule}</span>
                     </div>
                     {fellowship.location && (
                         <div className="flex items-start gap-2.5 pt-1 border-t border-muted-foreground/10 mt-1">
                             <span className="font-black text-[9px] sm:text-[10px] text-muted-foreground shrink-0 uppercase tracking-widest pt-0.5">Area</span>
-                            <span className="text-foreground font-bold line-clamp-1 leading-tight flex items-center gap-1.5 break-words [overflow-wrap:anywhere] text-left"><MapPin className="h-3 text-primary" /> {fellowship.location}</span>
+                            <span className="text-foreground font-bold line-clamp-1 leading-tight flex items-center gap-1.5 break-words [overflow-wrap:anywhere]"><MapPin className="h-3 text-primary" /> {fellowship.location}</span>
                         </div>
                     )}
                 </div>

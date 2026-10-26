@@ -119,7 +119,7 @@ function FellowshipForm({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6 text-left">
                 <FormField
                     control={form.control}
                     name="groupType"
@@ -674,7 +674,7 @@ export default function FellowshipPage() {
     };
 
     const handleCardClick = (fellowshipId: string) => {
-        router.push(`/dashboard/fellowship/${fellowshipId}`);
+        router.push(`/fellowship/${fellowshipId}`);
     };
 
     const activeFellowships = useMemo(() => {
@@ -725,7 +725,7 @@ export default function FellowshipPage() {
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
     return (
-        <div className="w-full max-w-7xl mx-auto">
+        <div className="w-full max-w-7xl mx-auto text-left">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-8 space-y-8 pb-32">
                     <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden">
@@ -829,9 +829,9 @@ export default function FellowshipPage() {
 
             {mounted && isMobile ? (
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
+                            <SheetHeader className="text-left p-0">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Create a space for community and growth.</SheetDescription>
                             </SheetHeader>
@@ -852,12 +852,12 @@ export default function FellowshipPage() {
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">New Community Group</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left">Create a space for community and growth.</DialogDescription>
+                            <DialogHeader className="text-left p-0">
+                                <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">New Community Group</DialogTitle>
+                                <DialogDescription className="text-sm font-medium">Create a space for community and growth.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-1 min-h-0 text-left">
+                        <ScrollArea className="flex-1 min-h-0">
                             <div className="p-8">
                                 <FellowshipForm 
                                     userProfile={userProfile ?? null} 
@@ -874,9 +874,9 @@ export default function FellowshipPage() {
             {fellowshipToManage && (
                 mounted && isMobile ? (
                     <Sheet open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                <SheetHeader className="text-left">
+                                <SheetHeader className="text-left p-0">
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</SheetTitle>
                                     <SheetDescription className="text-sm font-medium mt-1">Update your group's details.</SheetDescription>
                                 </SheetHeader>
@@ -897,12 +897,12 @@ export default function FellowshipPage() {
                     <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Group</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium text-left">Update your group's details.</DialogDescription>
+                                <DialogHeader className="text-left p-0">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium">Update your group's details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 text-left">
+                            <ScrollArea className="flex-1 min-h-0">
                                 <div className="p-8">
                                      <ManageFellowshipForm 
                                         fellowship={fellowshipToManage} 
@@ -919,7 +919,7 @@ export default function FellowshipPage() {
 
             {fellowshipToDelete && (
                 <AlertDialog open={!!fellowshipToDelete} onOpenChange={(open) => !open && closeAllDialogs()}>
-                    <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
+                    <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
                         <AlertDialogHeader>
                             <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">Delete Group?</AlertDialogTitle>
                             <AlertDialogDescription className="text-sm font-medium leading-relaxed">
@@ -927,7 +927,7 @@ export default function FellowshipPage() {
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter className="gap-3 mt-6">
-                            <AlertDialogCancel className="rounded-2xl h-12">Cancel</AlertDialogCancel>
+                            <AlertDialogCancel className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
                             <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                                 {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Confirm Delete
