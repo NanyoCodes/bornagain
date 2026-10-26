@@ -1,10 +1,10 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/lib/types';
-import { doc, collection, query, where, serverTimestamp, setDoc, addDoc } from 'firebase/firestore';
+import { doc, collection, query, where, serverTimestamp, setDoc, addDoc, updateDoc } from 'firebase/firestore';
 import { 
     Loader2, 
     ArrowLeft, 
@@ -25,9 +25,9 @@ import {
     Briefcase,
     Heart,
     ChevronRight,
-    ChevronDown
+    ChevronDown,
+    Music
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
@@ -52,8 +52,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ScrollArea } from '../ui/scroll-area';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
-function getYouTubeEmbedUrl(url: string | undefined) {
+function getYouTubeEmbedUrl(url: string | undefined | null) {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
@@ -199,18 +200,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     }
   };
 
-  // Back button handling
-  useEffect(() => {
-    const handlePopState = () => {
-      if (isEditModalOpen) setIsEditModalOpen(false);
-    };
-    if (isEditModalOpen) {
-      window.history.pushState({ profilePopup: userId }, '');
-      window.addEventListener('popstate', handlePopState);
-    }
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [isEditModalOpen, userId]);
-
   const loading = profileLoading || testimoniesLoading || campaignsLoading || userLoading;
   
   const videoTestimonies = useMemo(() => {
@@ -221,10 +210,10 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   if (loading || !mounted) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center py-20 text-center text-left">
-        <div className="relative mb-8 mx-auto">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+        <div className="relative mb-8 mx-auto text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
             </div>
         </div>
         <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-8">Connecting...</p>
@@ -235,14 +224,14 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   if (!userProfile) {
     return (
       <div className="text-center py-24 px-4 space-y-6 text-left">
-        <div className="bg-muted/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
-            <Globe className="h-10 w-10 text-muted-foreground/30" />
+        <div className="bg-muted/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-inner text-left">
+            <Globe className="h-10 w-10 text-muted-foreground/30 text-left" />
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 text-left">
             <h3 className="text-2xl font-bold font-headline text-center">Profile Not Found</h3>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto text-center">This profile might have been set to private or the believer has moved to a new station.</p>
         </div>
-        <Button variant="outline" onClick={() => router.back()} className="h-11 px-8 rounded-full">
+        <Button variant="outline" onClick={() => router.back()} className="h-11 px-8 rounded-full mx-auto block">
             <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
       </div>
@@ -266,9 +255,9 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto px-0 sm:px-4 pb-20 text-left">
+    <div className="space-y-6 sm:space-y-10 max-w-6xl mx-auto px-0 sm:px-4 pb-20 text-left">
         <div className="flex items-center justify-between px-4 sm:px-0">
-            <Button variant="ghost" size="sm" onClick={() => router.back()} className="h-9 pr-4 text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="sm" onClick={() => router.back()} className="h-9 px-0 text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="mr-2 h-4 w-4"/>
                 Back
             </Button>
@@ -280,24 +269,24 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     onClick={() => setIsEditModalOpen(true)}
                 >
                     <Edit className="mr-2 h-3.5 w-3.5" />
-                    Edit Profile
+                    Edit Identity
                 </Button>
             )}
         </div>
       
-      <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-gradient-to-br from-background via-background to-primary/5 text-left">
-        <CardContent className="p-6 sm:p-10 lg:p-12 relative z-20">
-          <div className="flex flex-col items-center text-center gap-6">
-            <div className="relative">
+      <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-none shadow-2xl bg-gradient-to-br from-background via-background to-primary/5 text-left">
+        <CardContent className="p-6 sm:p-12 lg:p-16 relative z-20">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start text-center lg:text-left gap-8 lg:gap-16">
+            <div className="relative shrink-0">
               <Dialog>
                 <DialogTrigger asChild disabled={!photoURL}>
                   <div className="relative group shrink-0">
                       <Avatar className={cn(
-                          "h-36 w-36 sm:h-48 sm:w-48 lg:h-64 lg:w-64 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-500", 
+                          "h-32 w-32 sm:h-48 sm:w-48 lg:h-64 lg:w-64 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-500", 
                           photoURL && "cursor-pointer hover:scale-105 active:scale-95 ring-2 ring-primary/10"
                       )}>
-                      <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} className="object-cover" />
-                      <AvatarFallback className="text-4xl lg:text-5xl font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">
+                      <AvatarImage src={photoURL ?? undefined} alt={displayName || 'believer'} className="object-cover" />
+                      <AvatarFallback className="text-4xl lg:text-6xl font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full">
                           {initials || userProfile.email?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                       </Avatar>
@@ -305,7 +294,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </DialogTrigger>
                 {photoURL && (
                   <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                      <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
+                      <DialogHeader className="sr-only text-center"><DialogTitle>Identity Preview</DialogTitle></DialogHeader>
                       <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
                           <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                               <Image 
@@ -322,158 +311,169 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               </Dialog>
             </div>
             
-            <div className="flex-grow min-w-0 space-y-4 pb-2 w-full text-center">
-                <div className="flex flex-col justify-between items-center gap-4">
-                    <div className="min-w-0 w-full text-center">
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize text-center w-full break-words [overflow-wrap:anywhere]">{displayName}</h1>
-                        <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
-                            {(city || state || country) && (
-                                <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider">
-                                    <MapPin className="h-4 w-4" /> 
-                                    {[city, state].filter(Boolean).join(', ') || country}
-                                </div>
-                            )}
-                            {maritalStatus && (
-                                <div className="flex items-center gap-1.5">
-                                    <Heart className="h-3.5 w-3.5 text-primary" />
-                                    {maritalStatus}
-                                </div>
-                            )}
-                            {workStatus && (
-                                <div className="flex items-center gap-1.5">
-                                    <Briefcase className="h-3.5 w-3.5 text-primary" />
-                                    <span>
-                                        {roleInOrganization && `${roleInOrganization}${organizationName ? ' @ ' : ''}`}
-                                        {organizationName || workStatus}
-                                    </span>
-                                </div>
-                            )}
+            <div className="flex-1 min-w-0 space-y-6 w-full text-center lg:text-left">
+                <div className="space-y-4">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                        <div className="min-w-0 space-y-2">
+                            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-headline tracking-tight leading-tight uppercase text-balance break-words">{displayName}</h1>
+                            <div className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
+                                {(city || state || country) && (
+                                    <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider">
+                                        <MapPin className="h-4 w-4" /> 
+                                        {[city, state].filter(Boolean).join(', ') || country}
+                                    </div>
+                                )}
+                                {maritalStatus && (
+                                    <div className="flex items-center gap-1.5">
+                                        <Heart className="h-3.5 w-3.5 text-primary" />
+                                        {maritalStatus}
+                                    </div>
+                                )}
+                                {workStatus && (
+                                    <div className="flex items-center gap-1.5">
+                                        <Briefcase className="h-3.5 w-3.5 text-primary" />
+                                        <span className="truncate max-w-[200px] sm:max-w-none">
+                                            {roleInOrganization && `${roleInOrganization}${organizationName ? ' @ ' : ''}`}
+                                            {organizationName || workStatus}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
+
+                        {!isOwnProfile && currentUserProfile && (
+                            <div className="shrink-0 flex justify-center lg:justify-end gap-2 w-full lg:w-auto">
+                                {isPartner ? (
+                                    <Badge variant="secondary" className="h-11 px-8 rounded-full font-black tracking-widest bg-primary/10 text-primary border-primary/20 flex items-center gap-2 text-[10px]">
+                                        <HeartHandshake className="h-4 w-4" />
+                                        ALLIANCE ACTIVE
+                                    </Badge>
+                                ) : hasPendingRequest ? (
+                                    <Button variant="outline" className="h-11 px-8 rounded-full font-black tracking-widest opacity-70 text-[10px]" disabled>
+                                        <Hourglass className="mr-2 h-4 w-4 animate-pulse" />
+                                        PENDING
+                                    </Button>
+                                ) : (
+                                    <Button 
+                                        className="h-11 px-8 rounded-full font-black shadow-xl shadow-primary/20 uppercase tracking-widest text-[10px]"
+                                        onClick={handleSendPartnerRequest}
+                                        disabled={isRequestingPartner}
+                                    >
+                                        {isRequestingPartner ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                                        CONNECT PARTNER
+                                    </Button>
+                                )}
+                            </div>
+                        )}
                     </div>
 
-                    {!isOwnProfile && currentUserProfile && (
-                        <div className="shrink-0 flex gap-2">
-                            {isPartner ? (
-                                <Badge variant="secondary" className="h-10 px-6 rounded-full font-bold bg-primary/10 text-primary border-primary/20 flex items-center gap-2">
-                                    <HeartHandshake className="h-4 w-4" />
-                                    PARTNER
-                                </Badge>
-                            ) : hasPendingRequest ? (
-                                <Button variant="outline" className="h-10 px-6 rounded-full font-bold opacity-70" disabled>
-                                    <Hourglass className="mr-2 h-4 w-4" />
-                                    PENDING
-                                </Button>
-                            ) : (
-                                <Button 
-                                    className="h-10 px-6 rounded-full font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
-                                    onClick={handleSendPartnerRequest}
-                                    disabled={isRequestingPartner}
-                                >
-                                    {isRequestingPartner ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
-                                    ADD PARTNER
-                                </Button>
-                            )}
+                    {personalMessage && (
+                        <div className="bg-primary/10 p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] border-2 border-dashed border-primary/20 inline-flex items-start lg:items-center gap-4 text-left group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 w-full">
+                            <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0 mt-1 lg:mt-0 transition-transform group-hover:scale-110" />
+                            <p className="text-lg sm:text-xl lg:text-2xl font-black text-foreground leading-tight italic tracking-tight text-balance break-words">
+                                &ldquo;{personalMessage}&rdquo;
+                            </p>
                         </div>
                     )}
                 </div>
 
-                {personalMessage && (
-                    <div className="bg-primary/10 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-primary/20 inline-flex items-center gap-3 sm:gap-4 text-center max-w-2xl group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 mx-auto">
-                        <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-primary shrink-0 transition-transform group-hover:scale-110" />
-                        <p className="text-base sm:text-lg lg:text-xl font-black text-foreground leading-tight italic tracking-tight text-balance break-words [overflow-wrap:anywhere]">
-                            &ldquo;{personalMessage}&rdquo;
-                        </p>
+                <div className="flex flex-wrap justify-center lg:justify-start gap-3">
+                     <div className="flex items-center gap-2.5 bg-muted/40 px-4 py-2 rounded-2xl border shadow-inner">
+                        <Newspaper className="h-4 w-4 text-primary" />
+                        <span className="text-lg font-black">{testimonies.length}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Testimonies</span>
                     </div>
-                )}
-
-                <div className="flex flex-wrap justify-center gap-3">
-                     <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-xl border">
-                        <Newspaper className="h-3.5 w-3.5 text-primary" />
-                        <span className="text-base font-black">{testimonies.length}</span>
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Testimonies</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-xl border">
-                        <Target className="h-3.5 w-3.5 text-primary" />
-                        <span className="text-base font-black">{processedCampaigns.length}</span>
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Campaigns</span>
+                    <div className="flex items-center gap-2.5 bg-muted/40 px-4 py-2 rounded-2xl border shadow-inner">
+                        <Target className="h-4 w-4 text-primary" />
+                        <span className="text-lg font-black">{processedCampaigns.length}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Missions</span>
                     </div>
                 </div>
-            </div>
-          </div>
 
-          <div className="mt-8 sm:mt-10 max-w-3xl mx-auto">
-            <div className="relative pl-5 sm:pl-6 border-l-4 border-primary/20 text-center md:text-left">
-                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic font-medium text-balance text-left">
-                    {bio ? `"${bio}"` : "This believer is a member of the global harvest workforce, dedicated to sharing the goodness of Jesus Christ with the world."}
-                </p>
+                <div className="pt-4 lg:max-w-2xl">
+                    <div className="relative pl-6 border-l-4 border-primary/20 text-left">
+                        <Quote className="absolute -top-1 -left-2 h-6 w-6 text-primary/10" />
+                        <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed italic font-medium text-balance break-words">
+                            {bio ? bio : "This believer is a dedicated member of the global Kingdom workforce, committed to sharing the goodness of Jesus Christ with the nations."}
+                        </p>
+                    </div>
+                </div>
             </div>
           </div>
         </CardContent>
       </Card>
       
       {videoTestimonies.length > 0 && (
-        <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950 text-left">
-            <CardHeader className="pb-6 pt-10 px-6 sm:px-12 text-center md:text-left">
-                <CardTitle className="flex items-center justify-center md:justify-start gap-3 text-2xl sm:text-3xl font-black font-headline text-white tracking-tight">
-                    <Youtube className="h-8 w-8 text-red-600" />
+        <Card className="rounded-none sm:rounded-[3rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950 text-left">
+            <CardHeader className="pb-8 pt-12 px-6 sm:px-12 text-center md:text-left">
+                <CardTitle className="flex items-center justify-center md:justify-start gap-4 text-2xl sm:text-4xl font-black font-headline text-white tracking-tight uppercase">
+                    <Youtube className="h-10 w-10 text-red-600" />
                     Living Testimonies
                 </CardTitle>
-                <CardDescription className="text-zinc-400 text-sm sm:text-base font-medium text-center md:text-left">
-                    Experience the power of God through these captured moments of glory.
+                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl">
+                    Witness the manifest power of God through these captured moments of miracle and glory.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="px-6 sm:px-12 pb-12">
-                <Carousel className="w-full max-w-4xl mx-auto">
+            <CardContent className="px-6 sm:px-12 pb-16">
+                <Carousel className="w-full max-w-5xl mx-auto">
                     <CarouselContent>
                         {videoTestimonies.map((video, idx) => (
                             <CarouselItem key={idx} className="md:basis-1/2 lg:basis-1/2">
-                                <div className="space-y-3 p-1">
-                                    {video.title && (
-                                        <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 truncate ml-2 text-center md:text-left">
-                                            {video.title}
-                                        </h4>
-                                    )}
-                                    <div className="relative w-full aspect-video rounded-xl sm:rounded-[1.5rem] overflow-hidden bg-black shadow-2xl border border-white/5 transition-transform duration-300 hover:scale-[1.02]">
+                                <div className="space-y-4 p-2">
+                                    <div className="relative w-full aspect-video rounded-2xl sm:rounded-[2.5rem] overflow-hidden bg-black shadow-2xl border-2 border-white/5 transition-transform duration-500 hover:scale-[1.02] group/vid">
                                         <iframe
                                             src={video.embedUrl!}
-                                            title={video.title || `Video Testimony from ${displayName}`}
+                                            title={video.title || `Kingdom Testimony`}
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowFullScreen
                                             className="absolute inset-0 w-full h-full border-0"
                                         />
+                                        <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity">
+                                            <Badge className="bg-red-600 text-white font-black text-[10px] tracking-widest uppercase border-none">YOUTUBE</Badge>
+                                        </div>
                                     </div>
+                                    {video.title && (
+                                        <h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-zinc-500 truncate ml-2 text-center md:text-left px-2">
+                                            {video.title}
+                                        </h4>
+                                    )}
                                 </div>
                             </CarouselItem>
                         ))}
                     </CarouselContent>
                     <div className="hidden sm:block">
-                        <CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2 h-10 w-10 border-white/10 bg-white/5 text-white hover:bg-white/20" />
-                        <CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2 h-10 w-10 border-white/10 bg-white/5 text-white hover:bg-white/20" />
+                        <CarouselPrevious className="absolute -left-14 top-1/2 -translate-y-1/2 h-12 w-12 border-white/10 bg-white/5 text-white hover:bg-white/20" />
+                        <CarouselNext className="absolute -right-14 top-1/2 -translate-y-1/2 h-12 w-12 border-white/10 bg-white/5 text-white hover:bg-white/20" />
                     </div>
                 </Carousel>
             </CardContent>
         </Card>
       )}
 
-      <div className="space-y-10">
-        <div className="flex items-center justify-center md:justify-start gap-3 px-4 sm:px-0">
-            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20">
-                <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
+      <div className="space-y-12">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-0 text-left">
+            <div className="flex items-center gap-3 text-left">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 shrink-0 text-left">
+                    <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground text-left" />
+                </div>
+                <h2 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">Kingdom Activity</h2>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">Kingdom Activity</h2>
+            <div className="h-px bg-muted flex-grow hidden sm:block mx-8 text-left" />
+            <Badge variant="outline" className="h-8 px-4 font-black uppercase tracking-[0.2em] border-primary/20 text-primary bg-primary/5 text-[10px] text-left">Mobilizer Dashboard</Badge>
         </div>
         
-        <div className="space-y-12">
-            <div className="space-y-6">
-                <div className="flex items-center justify-between px-4 sm:px-0">
-                    <div className="flex items-center gap-2">
-                        <Sparkles className="h-4 w-4 text-primary" />
-                        <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight">Shared Testimonies ({testimonies.length})</h3>
+        <div className="space-y-16 text-left">
+            <div className="space-y-8 text-left">
+                <div className="flex items-center justify-between px-4 sm:px-0 text-left">
+                    <div className="flex items-center gap-2 text-left">
+                        <Sparkles className="h-5 w-5 text-primary text-left" />
+                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">Shared Testimonies</h3>
                     </div>
+                    <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs text-left">{testimonies.length}</Badge>
                 </div>
                 
                 {testimonies.length > 0 ? (
-                    <div className="flex flex-col gap-0 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
+                    <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto text-left">
                         {testimonies.map(testimony => (
                             <TestimonyCard 
                                 key={testimony.id} 
@@ -487,20 +487,23 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16 bg-muted/20 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0">
-                        <Newspaper className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
-                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium text-balance px-8 text-center">No shared testimonies found in this folder.</p>
+                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left">
+                        <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left" />
+                        <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left">This folder is currently empty. No shared testimonies recorded.</p>
                     </div>
                 )}
             </div>
 
-            <div className="space-y-6">
-                <div className="flex items-center gap-2 px-4 sm:px-0">
-                    <CalendarDays className="h-4 w-4 text-primary" />
-                    <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight">Organized Campaigns ({processedCampaigns.length})</h3>
+            <div className="space-y-8 text-left">
+                <div className="flex items-center justify-between px-4 sm:px-0 text-left">
+                    <div className="flex items-center gap-2 text-left">
+                        <CalendarDays className="h-5 w-5 text-primary text-left" />
+                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">Organized Campaigns</h3>
+                    </div>
+                    <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs text-left">{processedCampaigns.length}</Badge>
                 </div>
                 {processedCampaigns.length > 0 ? (
-                    <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
+                    <div className="flex flex-col gap-8 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto text-left">
                         {processedCampaigns.map(campaign => (
                             <CampaignCard 
                                 key={campaign.id} 
@@ -516,22 +519,22 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16 bg-muted/20 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0">
-                        <Target className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
-                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium text-balance px-8 text-center">No public mission campaigns organized.</p>
+                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left">
+                        <Target className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left" />
+                        <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left">No public mission campaigns have been organized by this believer.</p>
                     </div>
                 )}
             </div>
         </div>
 
         {testimonies.length === 0 && processedCampaigns.length === 0 && (
-            <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[2rem] sm:rounded-[3.5rem] bg-muted/5 mx-4 sm:mx-0">
-                <Globe className="h-16 w-16 text-muted-foreground/5 mx-auto mb-6" />
-                <p className="font-black text-xl sm:text-2xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/30 text-center">
-                    Faith in the Secret Place
+            <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[3rem] sm:rounded-[4rem] bg-muted/5 mx-4 sm:mx-0 text-left">
+                <Globe className="h-20 w-20 text-muted-foreground/5 mx-auto mb-6 text-left" />
+                <p className="font-black text-2xl sm:text-3xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/20 text-center text-left">
+                    Mission in Secret
                 </p>
-                <p className="text-xs sm:text-sm mt-3 px-12 opacity-50 font-medium max-w-md mx-auto text-center">
-                    This believer is actively serving the Kingdom through prayer and local fellowship.
+                <p className="text-sm sm:text-lg mt-4 px-12 opacity-50 font-medium max-w-lg mx-auto text-center text-left">
+                    This believer is serving the Kingdom through prayer and local fellowship. Their impact is registered in the Book of Life.
                 </p>
             </div>
         )}
@@ -542,27 +545,39 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                   <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                       <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                          <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
-                              <SheetTitle className="text-2xl font-black font-headline text-left text-left text-left">Refine Your Identity</SheetTitle>
-                              <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update your global Kingdom profile.</SheetDescription>
+                          <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left">
+                              <div className="flex items-center gap-2 mb-2 text-left">
+                                  <Sparkles className="h-4 w-4 text-primary text-left" />
+                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Settings</span>
+                              </div>
+                              <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Refine Identity</SheetTitle>
+                              <SheetDescription className="text-sm font-medium mt-1 text-left">Update your global Kingdom profile credentials.</SheetDescription>
                           </SheetHeader>
                       </div>
-                      <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left">
-                          <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+                      <ScrollArea className="flex-grow p-0">
+                          <div className="p-8 pb-32">
+                            <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+                          </div>
                       </ScrollArea>
                   </SheetContent>
               </Sheet>
           ) : (
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                  <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left">
-                      <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                          <DialogHeader className="text-left text-left text-left text-left text-left">
-                              <DialogTitle className="text-2xl font-bold font-headline text-left text-left text-left text-left text-left">Edit Kingdom Profile</DialogTitle>
-                              <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left">Keep your identity current for the harvest workforce.</DialogDescription>
+                  <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                      <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                          <DialogHeader className="text-left p-0 text-left">
+                              <div className="flex items-center gap-2 mb-2 text-left">
+                                  <Sparkles className="h-4 w-4 text-primary text-left" />
+                                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity settings</span>
+                              </div>
+                              <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Edit Kingdom Profile</DialogTitle>
+                              <DialogDescription className="text-sm font-medium text-left">Keep your identity current for the harvest workforce.</DialogDescription>
                           </DialogHeader>
                       </div>
-                      <ScrollArea className="flex-1 min-h-0 p-8 text-left text-left text-left text-left text-left text-left">
-                          <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+                      <ScrollArea className="flex-1 min-h-0 text-left">
+                          <div className="p-8 text-left text-left">
+                            <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+                          </div>
                       </ScrollArea>
                   </DialogContent>
               </Dialog>
