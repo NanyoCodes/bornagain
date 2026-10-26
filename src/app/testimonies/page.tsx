@@ -409,12 +409,12 @@ function TestimoniesContent() {
       />
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-        <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left">
+        <div className="lg:col-span-8 space-y-6 md:space-y-10">
           <div
             className="bg-card border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98]"
             onClick={() => setIsTestimonyDialogOpen(true)}
           >
-            <Avatar className="h-9 w-9 border shadow-sm shrink-0 text-left">
+            <Avatar className="h-9 w-9 border shadow-sm shrink-0">
               <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
               <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px]">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
@@ -557,14 +557,16 @@ function TestimoniesContent() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="testimonies" className="outline-none">
-                <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left">
+                <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
                   {loading ? (
                     [...Array(3)].map((_, i) => (
                       <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
                     ))
                   ) : (
                     interleavedTestimonies.map((item) => (
-                      item.isAd ? (
+                      item.isGame ? (
+                        <BibleGameCard key={item.id} />
+                      ) : item.isAd ? (
                         item.adType === 'adsense' 
                             ? <AdsenseAd key={item.id} adSlot="5186166468" />
                             : <KingdomAdSpot key={item.id} type={item.adType as any} />
@@ -595,14 +597,16 @@ function TestimoniesContent() {
                 </div>
               </TabsContent>
               <TabsContent value="prayers" className="outline-none">
-                <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left">
+                <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
                   {loading ? (
                     [...Array(3)].map((_, i) => (
                       <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
                     ))
                   ) : (
                     interleavedPrayers.map((item) => (
-                      item.isAd ? (
+                      item.isGame ? (
+                        <BibleGameCard key={item.id} />
+                      ) : item.isAd ? (
                         item.adType === 'adsense' 
                             ? <AdsenseAd key={item.id} adSlot="5186166468" />
                             : <KingdomAdSpot key={item.id} type={item.adType as any} />
@@ -656,7 +660,7 @@ function TestimoniesContent() {
           {isMobile ? (
             <>
               <Drawer open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
-                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <DrawerHeader className="text-left flex-shrink-0">
                       <div className="flex items-center gap-2 mb-4">
@@ -673,7 +677,7 @@ function TestimoniesContent() {
                 </DrawerContent>
               </Drawer>
               <Drawer open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
-                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <DrawerHeader className="text-left flex-shrink-0">
                       <div className="flex items-center gap-2 mb-4">
@@ -690,7 +694,7 @@ function TestimoniesContent() {
                 </DrawerContent>
               </Drawer>
               <Drawer open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0">
                     <DrawerHeader className="text-left flex-shrink-0">
                         <div className="flex items-center gap-2 mb-4"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
@@ -708,7 +712,7 @@ function TestimoniesContent() {
                 </DrawerContent>
               </Drawer>
               <Drawer open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0">
                     <DrawerHeader className="text-left flex-shrink-0">
                         <div className="flex items-center gap-2 mb-4"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span></div>
@@ -726,7 +730,7 @@ function TestimoniesContent() {
             <>
               <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
                 <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border shadow-2xl text-left">
-                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                  <div className="p-8 border-b shrink-0 bg-muted/10">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Testimony</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Make changes to your testimony here.</DialogDescription>
@@ -785,7 +789,7 @@ function TestimoniesContent() {
 export default function TestimoniesPage() {
     return (
         <AppShell>
-            <Suspense fallback={<div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+            <Suspense fallback={<div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>}>
                 <TestimoniesContent />
             </Suspense>
         </AppShell>
