@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Restored users/fellowships sub-collection permissions - 2025-06-16T16:00:00Z
+    // Deployment trigger: Final consistency sync for user sub-collections - 2025-03-05T18:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
