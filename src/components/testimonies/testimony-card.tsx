@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Testimony, UserProfile } from "@/lib/types";
+import { Testimony, UserProfile, FollowUpStatus } from "@/lib/types";
 import { format } from "date-fns";
 import { 
   Share2, 
