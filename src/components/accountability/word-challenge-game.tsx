@@ -470,7 +470,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 )}
                             </div>
                             <div className="text-center text-left">
-                                <p className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 truncate max-w-[100px] text-center">
+                                <p className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-center">
                                     {partnerName.toUpperCase()} {partnerProfile?.gender ? `(${partnerProfile.gender})` : ''}
                                 </p>
                                 <p className="text-2xl sm:text-4xl font-black tracking-tighter leading-none text-muted-foreground text-center">
@@ -522,7 +522,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             ))}
                                         </div>
                                     </div>
-                                    <Button onClick={handleSendChallenge} disabled={isRequesting} size="lg" className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-center">
+                                    <Button onClick={handleSendChallenge} disabled={isRequesting} size="lg" className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-center text-left">
                                         {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Send className="mr-2 h-4 w-4 text-left" />}
                                         ISSUE CHALLENGE
                                     </Button>
@@ -530,8 +530,8 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             ) : invitation.hostId === user?.uid ? (
                                 <div className="space-y-8 w-full flex flex-col items-center justify-center animate-in fade-in text-center">
                                     <div className="relative text-left">
-                                        <div className="flex -space-x-8 sm:-space-x-12 items-center justify-center text-left text-left">
-                                            <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-primary/20 transition-all duration-500 text-left text-left">
+                                        <div className="flex -space-x-8 sm:-space-x-12 items-center justify-center text-left">
+                                            <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-primary/20 transition-all duration-500 text-left">
                                                 <AvatarImage src={user?.photoURL || undefined} className="object-cover text-left" />
                                                 <AvatarFallback className="font-black text-xl bg-primary/10 text-primary uppercase text-left">Y</AvatarFallback>
                                             </Avatar>
@@ -593,7 +593,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             <div className="flex items-center justify-between px-2 text-left">
                                 <div className="flex items-center gap-3 text-left">
                                     <div className={cn("h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center border-2 shadow-lg text-left", timeLeft <= 10 ? "bg-red-500 border-red-400 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary")}><Timer className="h-5 w-5 sm:h-6 sm:w-6 text-left" /></div>
-                                    <div className="text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Left</p><p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
+                                    <div className="text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left text-left">Time Left</p><p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
                                 </div>
                                 <div className="text-right text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Gain</p><p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right">{correctCount * 10}</p></div>
                             </div>
@@ -606,9 +606,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
                     {gameState === 'finished' && (
                         <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center text-left">
-                            <div className="space-y-4 text-center"><div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-left"><Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-left" /></div><div className="space-y-1 text-center"><h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center">Session Complete!</h3><p className="text-zinc-400 font-medium text-center">{isSavingSession ? "Archiving victory..." : "Excellent labor in the Word."}</p></div></div>
-                            <div className="grid grid-cols-3 gap-3 sm:gap-6 text-left"><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center text-left">Points</p><p className="text-xl sm:text-4xl font-black text-white text-center text-left">{correctCount * 10}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center text-left">Correct</p><p className="text-xl sm:text-4xl font-black text-white text-center text-left">{correctCount}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center text-left">Errors</p><p className="text-xl sm:text-4xl font-black text-white text-center text-left">{wrongCount}</p></div></div>
-                            <div className="flex flex-col gap-4 text-left"><Button onClick={resetToSelection} disabled={isSavingSession} size="lg" className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl text-center text-left">NEW SESSION</Button></div>
+                            <div className="space-y-4 text-center"><div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-left"><Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-left" /></div><div className="space-y-1 text-center text-left"><h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center">Session Complete!</h3><p className="text-zinc-400 font-medium text-center">{isSavingSession ? "Archiving victory..." : "Excellent labor in the Word."}</p></div></div>
+                            <div className="grid grid-cols-3 gap-3 sm:gap-6 text-left text-left"><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center text-left">Points</p><p className="text-xl sm:text-4xl font-black text-white text-center text-left">{correctCount * 10}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center text-left">Correct</p><p className="text-xl sm:text-4xl font-black text-white text-center text-left">{correctCount}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center text-left">Errors</p><p className="text-xl sm:text-4xl font-black text-white text-center text-left">{wrongCount}</p></div></div>
+                            <div className="flex flex-col gap-4 text-left"><Button onClick={resetToSelection} disabled={isSavingSession} size="lg" className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl text-center">NEW SESSION</Button></div>
                         </div>
                     )}
                 </CardContent>
@@ -616,14 +616,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             </Card>
 
             <div className="space-y-6 text-left">
-                <div className="flex items-center gap-2 px-1 text-left"><History className="h-4 w-4 text-primary text-left" /><h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground text-left">Arena History</h4></div>
-                <div className="space-y-4 text-left">
+                <div className="flex items-center gap-2 px-1 text-left text-left"><History className="h-4 w-4 text-primary text-left text-left" /><h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground text-left">Arena History</h4></div>
+                <div className="space-y-4 text-left text-left">
                     {historyLoading ? (<div className="space-y-3 text-left">
                         {[...Array(2)].map((_, i) => <Skeleton key={`history-skel-${i}`} className="h-28 w-full rounded-2xl text-left" />)}
                     </div>) : matchHistory.length > 0 ? (
                       matchHistory.map((match) => (
                             <Card key={match.id} className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm overflow-hidden border-l-4 border-l-primary/10 text-left">
-                                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b bg-muted/5 text-left">
+                                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b bg-muted/5 text-left text-left">
                                     <div className="flex items-center gap-2 text-left">
                                         <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase bg-background/50 border-primary/20 text-primary text-left">{match.gameType}</Badge>
                                         <span className="text-[9px] font-bold text-muted-foreground uppercase text-left">{format(match.date, 'MMM d, p')}</span>
@@ -632,32 +632,32 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         <Share2 className="h-3.5 w-3.5 text-left" />
                                     </Button>
                                 </CardHeader>
-                                <CardContent className="p-4 sm:p-6 grid grid-cols-7 items-center gap-2 text-center text-left">
+                                <CardContent className="p-4 sm:p-6 grid grid-cols-7 items-center gap-2 text-center text-left text-left">
                                     <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left">
                                         <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest text-center text-left">YOU</p>
                                         {match.mySession ? (
                                             <div className="space-y-1 text-left">
                                                 <p className="text-2xl sm:text-3xl font-black text-primary tracking-tighter text-center text-left">{match.mySession.score}</p>
-                                                <div className="flex items-center justify-center gap-1 text-[8px] font-bold text-green-500 uppercase text-center text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.mySession.correctCount} Correct</div>
+                                                <div className="flex items-center justify-center gap-1 text-[8px] font-bold text-green-500 uppercase text-center text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left text-left" />{match.mySession.correctCount} Correct</div>
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col items-center gap-1 opacity-20 text-left">
-                                                <Hourglass className="h-6 w-6 animate-pulse text-left" />
+                                            <div className="flex flex-col items-center gap-1 opacity-20 text-left text-left">
+                                                <Hourglass className="h-6 w-6 animate-pulse text-left text-left" />
                                                 <p className="text-[8px] font-black uppercase text-left">Wait</p>
                                             </div>
                                         )}
                                     </div>
                                     <div className="col-span-1 flex flex-col items-center justify-center text-left"><span className="text-[10px] font-black text-primary/40 italic text-center">VS</span></div>
-                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left">
+                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left text-left">
                                         <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest truncate max-w-full text-center text-left">{partnerName.toUpperCase()}</p>
                                         {match.partnerSession ? (
-                                            <div className="space-y-1 text-left">
+                                            <div className="space-y-1 text-left text-left">
                                                 <p className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter text-center text-left">{match.partnerSession.score}</p>
-                                                <div className="flex items-center justify-center gap-1 text-[8px] font-bold text-muted-foreground uppercase text-center text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.partnerSession.correctCount} Correct</div>
+                                                <div className="flex items-center justify-center gap-1 text-[8px] font-bold text-muted-foreground uppercase text-center text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left text-left" />{match.partnerSession.correctCount} Correct</div>
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col items-center gap-1 opacity-20 text-left">
-                                                <Hourglass className="h-6 w-6 animate-pulse text-left" />
+                                            <div className="flex flex-col items-center gap-1 opacity-20 text-left text-left">
+                                                <Hourglass className="h-6 w-6 animate-pulse text-left text-left" />
                                                 <p className="text-[8px] font-black uppercase text-left">Wait</p>
                                             </div>
                                         )}
