@@ -184,8 +184,8 @@ export function RelationshipTrackerCard() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [completedToday, setCompletedToday] = useState<string[]>([]);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
-  const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = setTogglingId = useState<string | null>(null);
+  const [selectedActionId, setSelectedActionId] = setSelectedActionId = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
@@ -310,7 +310,7 @@ export function RelationshipTrackerCard() {
   return (
     <>
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left">
-        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity">
+        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity text-left">
           <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
@@ -342,7 +342,7 @@ export function RelationshipTrackerCard() {
                             disabled={togglingId !== null}
                         >
                             {togglingId ? <Loader2 className="h-5 w-5 animate-spin" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110" />}
-                            LOG KINGDOM CONNECTION
+                            RECORD KINGDOM IMPACT
                             <ChevronDown className="h-4 w-4 ml-auto opacity-40" />
                         </Button>
                     </DropdownMenuTrigger>
@@ -396,7 +396,7 @@ export function RelationshipTrackerCard() {
         </CardContent>
         <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
               <Button asChild variant="ghost" className="w-full font-black h-12 rounded-2xl border-2 border-dashed border-primary/20 text-primary hover:bg-primary/5 tracking-widest uppercase text-xs sm:text-sm">
-                  <Link href="/dashboard/souls-won">
+                  <Link href="/souls-won">
                       <UserPlus className="mr-2 h-4 w-4" />
                       MANAGE SOULS WON
                   </Link>

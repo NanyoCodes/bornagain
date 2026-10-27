@@ -648,7 +648,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         )}
                                     </div>
                                     <div className="col-span-1 flex flex-col items-center justify-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><span className="text-[10px] font-black text-primary/40 italic text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">VS</span></div>
-                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                         <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest truncate max-w-full text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{partnerName.toUpperCase()}</p>
                                         {match.partnerSession ? (
                                             <div className="space-y-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
@@ -664,7 +664,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </CardContent>
                             </Card>
                         ))
-                    ) : (<div className="py-16 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed flex flex-col items-center text-left text-left text-left text-left text-left text-left text-left"><History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-left text-left text-left text-left text-left text-left text-left" /><p className="text-xs text-muted-foreground italic px-12 text-center text-left text-left text-left text-left text-left text-left text-left text-left">No matches recorded between you and {partnerName}.</p></div>)}
+                    ) : (<div className="py-16 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed flex flex-col items-center text-left text-left text-left text-left text-left text-left text-left"><History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-left text-left text-left text-left text-left text-left text-left" /><p className="text-xs text-muted-foreground italic px-12 text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left">No matches recorded between you and {partnerName}.</p></div>)}
                 </div>
             </div>
         </div>
