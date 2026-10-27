@@ -123,7 +123,7 @@ export function StrongholdTracker() {
     const [category, setCategory] = useState('Other');
     const [title, setTitle] = useState('');
     
-    const [testimonyStronghold, setTestimonyStronghold] = useState<Stronghold | null>(null);
+    const [testimonyStronghold, setTestimonyStronghold] = setTestimonyStronghold = useState<Stronghold | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -243,7 +243,7 @@ export function StrongholdTracker() {
                 disabled={isSubmitting || !title.trim()} 
                 className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
             >
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                 BEGIN TRACKING
             </Button>
         </div>
@@ -266,7 +266,7 @@ export function StrongholdTracker() {
                     </div>
                     <Button onClick={() => setIsAddOpen(true)} className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
                         <Plus className="mr-2 h-4 w-4" />
-                        DEFEAT A STRONGHOLD
+                        INITIALIZE VICTORY TRACKER
                     </Button>
                 </div>
             </CardHeader>

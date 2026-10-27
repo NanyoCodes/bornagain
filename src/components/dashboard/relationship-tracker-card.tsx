@@ -294,13 +294,13 @@ export function RelationshipTrackerCard() {
 
   if (userLoading || profileLoading || soulsLoading) {
     return (
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
-        <CardHeader className="p-4 sm:p-6 text-left">
-          <Skeleton className="h-5 w-32 mb-2" />
-          <Skeleton className="h-3 w-48" />
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left">
+        <CardHeader className="p-4 sm:p-6 text-left text-left">
+          <Skeleton className="h-5 w-32 mb-2 text-left" />
+          <Skeleton className="h-3 w-48 text-left" />
         </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-6 text-left">
-            <Skeleton className="h-14 w-full rounded-2xl" />
+        <CardContent className="px-4 sm:px-6 pb-6 text-left text-left">
+            <Skeleton className="h-14 w-full rounded-2xl text-left" />
         </CardContent>
       </Card>
     );
@@ -308,23 +308,23 @@ export function RelationshipTrackerCard() {
 
   return (
     <>
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left text-left">
         <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity text-left">
-          <Users className="h-32 w-32 text-primary rotate-12" />
+          <Users className="h-32 w-32 text-primary rotate-12 text-left" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
-              <div className="space-y-1 text-left">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
-                      <Sparkles className="h-5 w-5 text-primary" />
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left text-left text-left">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left text-left">
+              <div className="space-y-1 text-left text-left">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left">
+                      <Sparkles className="h-5 w-5 text-primary text-left text-left" />
                       Kingdom Connections
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left text-left">Daily Relational Efforts</CardDescription>
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end text-left">
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end text-left text-left">
                 {currentDate && (
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left">
                     {format(currentDate, 'PPPP')}
                   </div>
                 )}
@@ -332,22 +332,22 @@ export function RelationshipTrackerCard() {
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 sm:px-6 pb-6 relative z-10 text-left">
-            <div className="space-y-4 text-left">
+        <CardContent className="px-4 sm:px-6 pb-6 relative z-10 text-left text-left">
+            <div className="space-y-4 text-left text-left">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
                             className="w-full h-14 rounded-2xl font-black uppercase tracking-widest sm:tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left px-4"
                             disabled={togglingId !== null}
                         >
-                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110" />}
+                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110 text-left" />}
                             RECORD KINGDOM CONNECTION
-                            <ChevronDown className="h-4 w-4 ml-auto opacity-40" />
+                            <ChevronDown className="h-4 w-4 ml-auto opacity-40 text-left" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-[400px] rounded-[2rem] p-2 shadow-2xl border-none text-left" align="center" sideOffset={8}>
-                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3">Select Action</DropdownMenuLabel>
-                        <DropdownMenuSeparator className="opacity-50" />
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3 text-left">Select Action</DropdownMenuLabel>
+                        <DropdownMenuSeparator className="opacity-50 text-left" />
                         <ScrollArea className="h-80 text-left">
                             <div className="p-1.5 space-y-1 text-left">
                                 {actionItems.map(action => {
@@ -358,20 +358,20 @@ export function RelationshipTrackerCard() {
                                             key={action.id} 
                                             onSelect={() => handleActionClick(action.id)}
                                             className={cn(
-                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4",
+                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4 text-left",
                                                 isCompleted ? "bg-primary/5 text-primary" : "hover:bg-muted/50"
                                             )}
                                         >
                                             <div className={cn(
-                                                "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border",
+                                                "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border text-left",
                                                 isCompleted ? "bg-primary/10 border-primary/20" : "bg-muted/50 border-transparent"
                                             )}>
-                                                <Icon className={cn("h-4 w-4", isCompleted ? "text-primary" : "text-muted-foreground")} />
+                                                <Icon className={cn("h-4 w-4 text-left", isCompleted ? "text-primary" : "text-muted-foreground")} />
                                             </div>
-                                            <span className={cn("text-xs font-black uppercase tracking-tight", isCompleted ? "text-primary" : "text-foreground")}>
+                                            <span className={cn("text-xs font-black uppercase tracking-tight text-left", isCompleted ? "text-primary" : "text-foreground")}>
                                                 {action.label}
                                             </span>
-                                            {isCompleted && <CheckCircle2 className="h-4 w-4 ml-auto text-primary fill-current" />}
+                                            {isCompleted && <CheckCircle2 className="h-4 w-4 ml-auto text-primary fill-current text-left" />}
                                         </DropdownMenuItem>
                                     )
                                 })}
@@ -393,14 +393,14 @@ export function RelationshipTrackerCard() {
                 </div>
             </div>
         </CardContent>
-        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
-              <Button asChild variant="ghost" className="w-full font-black h-12 rounded-2xl border-2 border-dashed border-primary/20 text-primary hover:bg-primary/5 tracking-widest uppercase text-xs sm:text-sm text-center">
-                  <Link href="/souls-won" className="text-center">
-                      <UserPlus className="mr-2 h-4 w-4" />
+        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left text-left">
+              <Button asChild variant="ghost" className="w-full font-black h-12 rounded-2xl border-2 border-dashed border-primary/20 text-primary hover:bg-primary/5 tracking-widest uppercase text-xs sm:text-sm text-center text-left">
+                  <Link href="/souls-won" className="text-center text-left">
+                      <UserPlus className="mr-2 h-4 w-4 text-left" />
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 w-full text-center">
+              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 w-full text-center text-left">
                   Unity • Growth • Love
               </p>
         </CardFooter>
@@ -417,4 +417,3 @@ export function RelationshipTrackerCard() {
     </>
   );
 }
-
