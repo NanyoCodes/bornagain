@@ -355,7 +355,7 @@ export function RelationshipTrackerCard() {
                                             key={action.id} 
                                             onSelect={() => handleActionClick(action.id)}
                                             className={cn(
-                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4 text-left text-left text-left text-left text-left text-left text-left text-left",
+                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4 text-left text-left text-left text-left text-left",
                                                 isCompleted ? "bg-primary/5 text-primary" : "hover:bg-muted/50"
                                             )}
                                         >

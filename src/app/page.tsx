@@ -123,6 +123,7 @@ export default function LandingPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
+  const heroImage = PlaceHolderImages.find((img) => img.id === 'feature-glory');
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -169,11 +170,21 @@ export default function LandingPage() {
       </nav>
 
       <main className="flex-grow pt-16">
-        {/* Hero Section - High Fidelity Gradient Background */}
+        {/* Hero Section */}
         <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950">
           <div className="absolute inset-0 z-0">
-             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/40 via-zinc-950 to-zinc-950" />
-             <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-indigo-900/30 via-transparent to-transparent" />
+             {heroImage && (
+                <NextImage 
+                  src={heroImage.imageUrl} 
+                  alt="Testify Joy" 
+                  fill 
+                  className="object-cover opacity-40"
+                  priority
+                  unoptimized
+                  data-ai-hint={heroImage.imageHint}
+                />
+             )}
+             <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-zinc-950/80 to-zinc-950" />
           </div>
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
             <div className="max-w-4xl space-y-8 text-center sm:text-left">
@@ -207,13 +218,13 @@ export default function LandingPage() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ delay: 1, duration: 1 }}
-              className="flex flex-col items-center gap-1 px-6"
+              className="flex flex-col items-center gap-2 px-6"
             >
-                <p className="text-[7px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-white/40 text-center text-balance max-w-lg">
+                <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.4em] text-white/40 text-center text-balance max-w-lg">
                     "Go into all the world and preach the gospel to all creation."
                 </p>
-                <div className="h-px w-8 bg-primary/40" />
-                <p className="text-[6px] sm:text-[8px] font-bold text-primary/60 uppercase tracking-widest">Mark 16:15</p>
+                <div className="h-px w-12 bg-primary/40" />
+                <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest">Mark 16:15</p>
             </motion.div>
           </div>
         </section>
