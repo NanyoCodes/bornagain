@@ -97,12 +97,12 @@ function SoulSelectionDialog({
     const header = (
         <div className="p-8 border-b bg-muted/10 text-left">
             <DialogHeader className="text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Recipient</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1">Who did you {actionLabel.toLowerCase()}?</DialogDescription>
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Recipient</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-left">Who did you {actionLabel.toLowerCase()}?</DialogDescription>
                 {isMobile && (
-                    <div className="flex items-center gap-2 mt-4 opacity-40">
+                    <div className="flex items-center gap-2 mt-4 opacity-40 text-left">
                         <ChevronDown className="h-3 w-3 animate-bounce" />
-                        <span className="text-[8px] font-bold uppercase tracking-widest">Swipe down to close</span>
+                        <span className="text-[8px] font-bold uppercase tracking-widest text-left">Swipe down to close</span>
                     </div>
                 )}
             </DialogHeader>
@@ -111,7 +111,7 @@ function SoulSelectionDialog({
 
     const body = (
         <div className="p-6 space-y-6 text-left">
-            <div className="relative">
+            <div className="relative text-left">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                 <Input 
                     placeholder="Search by name..." 
@@ -120,19 +120,19 @@ function SoulSelectionDialog({
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
-            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
-                <div className="p-2 space-y-1.5">
+            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left">
+                <div className="p-2 space-y-1.5 text-left">
                     {filteredSouls.length > 0 ? (
                         filteredSouls.map(soul => (
                             <Button 
                                 key={soul.id} 
                                 variant="ghost" 
-                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex items-center border border-transparent"
+                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex items-center border border-transparent text-left"
                                 onClick={() => onSelect(soul)}
                                 disabled={isLoading}
                             >
-                                <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
-                                    <AvatarFallback className="font-bold bg-primary/5 text-primary text-xs flex items-center justify-center h-full w-full">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left">
+                                    <AvatarFallback className="font-bold bg-primary/5 text-primary text-xs flex items-center justify-center h-full w-full"> {soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="text-left min-w-0 flex-1">
                                     <p className="font-black text-sm truncate uppercase tracking-tight leading-tight">{soul.firstName} {soul.lastName}</p>
@@ -144,11 +144,11 @@ function SoulSelectionDialog({
                             </Button>
                         ))
                     ) : (
-                        <div className="text-center py-16 px-8 space-y-3">
-                            <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
+                        <div className="text-center py-16 px-8 space-y-3 text-left">
+                            <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left">
                                 <Users className="h-6 w-6 text-muted-foreground opacity-20" />
                             </div>
-                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60">
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center">
                                 {search ? "No matches found" : "Log your first soul to begin tracking"}
                             </p>
                         </div>
@@ -163,7 +163,7 @@ function SoulSelectionDialog({
             <Drawer open={isOpen} onOpenChange={onOpenChange}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     {header}
-                    <div className="flex-grow overflow-hidden">{body}</div>
+                    <div className="flex-grow overflow-hidden text-left">{body}</div>
                 </DrawerContent>
             </Drawer>
         );
@@ -232,8 +232,7 @@ export function RelationshipTrackerCard() {
 
     // 1. Update user's daily discipline (habit tracking)
     const wasCompleted = completedToday.includes(selectedActionId);
-    const newCompleted = [...completedToday];
-    if (!wasCompleted) newCompleted.push(selectedActionId);
+    const newCompleted = wasCompleted ? completedToday : [...completedToday, selectedActionId];
 
     const userRef = doc(firestore, 'users', user.uid);
     batch.update(userRef, {
@@ -295,12 +294,12 @@ export function RelationshipTrackerCard() {
 
   if (userLoading || profileLoading || soulsLoading) {
     return (
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
         <CardHeader className="p-4 sm:p-6 text-left">
           <Skeleton className="h-5 w-32 mb-2" />
           <Skeleton className="h-3 w-48" />
         </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-6">
+        <CardContent className="px-4 sm:px-6 pb-6 text-left">
             <Skeleton className="h-14 w-full rounded-2xl" />
         </CardContent>
       </Card>
@@ -315,15 +314,15 @@ export function RelationshipTrackerCard() {
         </div>
 
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
-              <div className="space-y-1">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
+              <div className="space-y-1 text-left">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
                       <Sparkles className="h-5 w-5 text-primary" />
                       Kingdom Connections
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end text-left">
                 {currentDate && (
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
                     {format(currentDate, 'PPPP')}
@@ -334,11 +333,11 @@ export function RelationshipTrackerCard() {
         </CardHeader>
 
         <CardContent className="px-4 sm:px-6 pb-6 relative z-10 text-left">
-            <div className="space-y-4">
+            <div className="space-y-4 text-left">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
-                            className="w-full h-14 rounded-2xl font-black uppercase tracking-widest sm:tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left"
+                            className="w-full h-14 rounded-2xl font-black uppercase tracking-widest sm:tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left px-4"
                             disabled={togglingId !== null}
                         >
                             {togglingId ? <Loader2 className="h-5 w-5 animate-spin" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110" />}
@@ -349,8 +348,8 @@ export function RelationshipTrackerCard() {
                     <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-[400px] rounded-[2rem] p-2 shadow-2xl border-none text-left" align="center" sideOffset={8}>
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3">Select Action</DropdownMenuLabel>
                         <DropdownMenuSeparator className="opacity-50" />
-                        <ScrollArea className="h-80">
-                            <div className="p-1.5 space-y-1">
+                        <ScrollArea className="h-80 text-left">
+                            <div className="p-1.5 space-y-1 text-left">
                                 {actionItems.map(action => {
                                     const Icon = iconMap[action.id] || Heart;
                                     const isCompleted = completedToday.includes(action.id);
@@ -384,24 +383,24 @@ export function RelationshipTrackerCard() {
                 <div className="flex flex-wrap gap-2 text-left">
                     {actionItems.filter(a => completedToday.includes(a.id)).map(action => (
                          <Badge key={action.id} variant="secondary" className="h-7 rounded-lg bg-primary/10 text-primary border-primary/20 gap-1.5 font-bold uppercase text-[9px] tracking-tight text-left">
-                            <CheckCircle2 className="h-3 w-3 fill-current" />
+                            <CheckCircle2 className="h-3 w-3 fill-current text-left" />
                             {action.label}
                          </Badge>
                     ))}
                     {completedToday.length === 0 && (
-                        <p className="text-[10px] text-muted-foreground italic font-medium px-1">No connections recorded yet today.</p>
+                        <p className="text-[10px] text-muted-foreground italic font-medium px-1 text-left">No connections recorded yet today.</p>
                     )}
                 </div>
             </div>
         </CardContent>
         <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
-              <Button asChild variant="ghost" className="w-full font-black h-12 rounded-2xl border-2 border-dashed border-primary/20 text-primary hover:bg-primary/5 tracking-widest uppercase text-xs sm:text-sm">
-                  <Link href="/souls-won">
+              <Button asChild variant="ghost" className="w-full font-black h-12 rounded-2xl border-2 border-dashed border-primary/20 text-primary hover:bg-primary/5 tracking-widest uppercase text-xs sm:text-sm text-center">
+                  <Link href="/souls-won" className="text-center">
                       <UserPlus className="mr-2 h-4 w-4" />
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 w-full">
+              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 w-full text-center">
                   Unity • Growth • Love
               </p>
         </CardFooter>
@@ -418,3 +417,4 @@ export function RelationshipTrackerCard() {
     </>
   );
 }
+
