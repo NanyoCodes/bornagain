@@ -123,7 +123,7 @@ function FullDevotionalDialog({
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap justify-center w-full sm:w-auto text-left">
-                    <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                    <div className="flex items-center gap-1.5 flex-wrap justify-center text-left">
                         <Button 
                             onClick={(e) => onReaction('amen', e)} 
                             disabled={isProcessingReaction !== null || !user} 
@@ -170,8 +170,8 @@ function FullDevotionalDialog({
 
             <div ref={commentsRef} className="border-t border-dashed pt-8 text-left">
                 <div className="flex items-center gap-3 mb-6 px-1 text-left">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                        <MessageSquare className="h-4 w-4 text-primary" />
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-left">
+                        <MessageSquare className="h-4 w-4 text-primary text-left" />
                     </div>
                     <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">GATHERED RESPONSES</span>
                 </div>
@@ -187,7 +187,7 @@ function FullDevotionalDialog({
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                         <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0 text-left" />
                                 {devotional.title}
                             </SheetTitle>
@@ -210,17 +210,17 @@ function FullDevotionalDialog({
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                    <div className="flex items-center gap-3 mb-2 text-left text-left">
-                        <Target className="h-5 w-5 text-primary text-left text-left" />
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left">Mission Overview</span>
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="flex items-center gap-3 mb-2 text-left">
+                        <Target className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Mission Overview</span>
                     </div>
-                    <DialogHeader className="text-left p-0 text-left text-left">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left text-left">
-                            <MessageSquare className="h-6 w-6 text-primary shrink-0 text-left text-left" />
+                    <DialogHeader className="text-left p-0 text-left">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight break-words flex items-center gap-3 text-balance text-left">
+                            <MessageSquare className="h-6 w-6 text-primary shrink-0 text-left" />
                             {devotional.title}
                         </DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
                 <div className="flex-1 min-h-0 text-left">
@@ -230,7 +230,7 @@ function FullDevotionalDialog({
                       </div>
                   </ScrollArea>
                 </div>
-                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left text-left">
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left">
                     <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold text-left">Close Word</Button>
                 </div>
             </DialogContent>
@@ -271,7 +271,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         if (!firestore || !fellowship.id) return null;
         return query(collection(firestore, 'fellowships', fellowship.id, 'devotionals', todayStr, 'comments'));
     }, [firestore, fellowship.id, todayStr]);
-    const { data: comments } = useCollection<TestimonyComment>(commentsQuery);
+    const { data: comments } = useCollection<{id: string}>(commentsQuery);
     const commentCount = comments?.length || 0;
 
     const supporters = todayDevotional?.supporters || [];
@@ -565,9 +565,9 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                             </div>
                                         )}
                                         {commentCount > 0 && (
-                                            <div className="flex items-center gap-1 text-muted-foreground text-left text-left text-left">
-                                                <MessageSquare className="h-2.5 w-2.5 text-left text-left text-left" />
-                                                <span className="text-[8px] font-black text-left text-left text-left">{commentCount}</span>
+                                            <div className="flex items-center gap-1 text-muted-foreground text-left text-left text-left text-left">
+                                                <MessageSquare className="h-2.5 w-2.5 text-left text-left text-left text-left" />
+                                                <span className="text-[8px] font-black text-left text-left text-left text-left">{commentCount}</span>
                                             </div>
                                         )}
                                     </div>
