@@ -116,7 +116,6 @@ export default function LandingPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-  const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-bg');
   const [currentYear, setCurrentYear] = useState<number | null>(null);
 
   useEffect(() => {
@@ -165,21 +164,11 @@ export default function LandingPage() {
       </nav>
 
       <main className="flex-grow pt-16 text-left">
-        {/* Hero Section */}
+        {/* Hero Section - Optimized with Gradient */}
         <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950 text-left">
           <div className="absolute inset-0 z-0 text-left">
-             {heroImage && (
-                <NextImage 
-                  src={heroImage.imageUrl} 
-                  alt="Testify Atmosphere" 
-                  fill 
-                  className="object-cover opacity-40 text-left"
-                  priority
-                  unoptimized
-                  data-ai-hint={heroImage.imageHint}
-                />
-             )}
-             <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-zinc-950/80 to-zinc-950 text-left" />
+             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/30 via-zinc-950 to-zinc-950" />
+             <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent" />
           </div>
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-left">
             <div className="max-w-4xl space-y-8 text-center sm:text-left text-left">
@@ -199,10 +188,10 @@ export default function LandingPage() {
 
               <div className="flex flex-col sm:flex-row gap-4 text-left">
                 <Button asChild size="lg" className="h-14 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest text-left text-left">
-                  <Link href="/signup" className="text-left text-left">GET STARTED <ArrowRight className="ml-2 h-5 w-5 text-left text-left" /></Link>
+                  <Link href="/signup" className="text-left text-left text-left">GET STARTED <ArrowRight className="ml-2 h-5 w-5 text-left text-left text-left" /></Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 text-left text-left">
-                  <Link href="/about" className="text-left text-left">OUR MISSION</Link>
+                  <Link href="/about" className="text-left text-left text-left">OUR MISSION</Link>
                 </Button>
               </div>
             </div>
@@ -215,10 +204,10 @@ export default function LandingPage() {
               transition={{ delay: 1, duration: 1 }}
               className="flex flex-col items-center gap-1 px-6 text-left"
             >
-                <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-white/40 text-center text-balance max-w-lg">
+                <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-white/40 text-center text-balance max-w-lg">
                     "Go into all the world and preach the gospel to all creation."
                 </p>
-                <div className="h-px w-8 bg-primary/40" />
+                <div className="h-px w-6 bg-primary/40" />
                 <p className="text-[7px] font-bold text-primary/60 uppercase tracking-widest">Mark 16:15</p>
             </motion.div>
           </div>
@@ -235,7 +224,7 @@ export default function LandingPage() {
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4 text-left"
               >
                 <Sparkles className="h-4 w-4 text-primary text-left" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Mission Critical Tools</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left">Mission Critical Tools</span>
               </motion.div>
               <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center text-left">Kingdom Ready Workforce</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium text-center text-left">
@@ -258,7 +247,7 @@ export default function LandingPage() {
                                 <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform mb-6 text-left text-left", feature.bgColor)}>
                                     <feature.icon className={cn("h-7 w-7 text-left text-left", feature.color)} />
                                 </div>
-                                <CardTitle className="text-xl font-black text-foreground uppercase tracking-tight leading-tight text-left text-left">{feature.title}</CardTitle>
+                                <CardTitle className="text-xl font-black text-foreground uppercase tracking-tight leading-tight text-left text-left text-left">{feature.title}</CardTitle>
                             </CardHeader>
                             <CardContent className="px-8 pb-6 flex-grow text-left text-left">
                                 <p className="text-muted-foreground text-sm leading-relaxed font-medium text-left text-left">
@@ -374,7 +363,7 @@ export default function LandingPage() {
               </p>
               <div className="flex justify-center pt-4 text-left text-left">
                 <Button asChild size="lg" className="h-14 px-10 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left text-left">
-                  <Link href="/signup" className="text-left text-left">START TESTIFYING <ArrowRight className="ml-3 h-6 w-6 text-left text-left" /></Link>
+                  <Link href="/signup" className="text-left text-left text-left">START TESTIFYING <ArrowRight className="ml-3 h-6 w-6 text-left text-left text-left" /></Link>
                 </Button>
               </div>
             </div>
@@ -384,60 +373,60 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="bg-muted/50 border-t py-16 text-left text-left">
-        <div className="max-w-7xl mx-auto px-8 text-left text-left">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left text-left text-left">
+        <div className="max-w-7xl mx-auto px-8 text-left text-left text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left text-left text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left text-left text-left text-left text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left text-left text-left text-left">
                 {logo && (
-                  <Avatar className="h-12 w-12 text-left text-left text-left text-left text-left">
-                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left text-left text-left text-left" />
-                    <AvatarFallback className="text-left text-left text-left text-left text-left">T</AvatarFallback>
+                  <Avatar className="h-12 w-12 text-left text-left text-left text-left text-left text-left">
+                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left text-left text-left text-left text-left" />
+                    <AvatarFallback className="text-left text-left text-left text-left text-left text-left">T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty text-left">
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty text-left text-left">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
-              <div className="flex gap-4 text-left text-left">
-                <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left text-left text-left text-left">
-                  <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left text-left text-left">
-                    <Instagram className="h-4 w-4 text-left text-left text-left text-left" />
-                    <span className="sr-only text-left text-left text-left text-left">Instagram</span>
+              <div className="flex gap-4 text-left text-left text-left">
+                <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left text-left text-left text-left text-left">
+                  <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left text-left text-left text-left">
+                    <Instagram className="h-4 w-4 text-left text-left text-left text-left text-left" />
+                    <span className="sr-only text-left text-left text-left text-left text-left">Instagram</span>
                   </Link>
                 </Button>
               </div>
             </div>
 
-            <div className="space-y-4 text-left text-left text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left">Platform</h4>
-              <ul className="space-y-3 text-left">
-                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Testimonies</Link></li>
-                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Mission Hub</Link></li>
-                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Harvest Progress</Link></li>
-                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Directory</Link></li>
+            <div className="space-y-4 text-left text-left text-left text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left text-left">Platform</h4>
+              <ul className="space-y-3 text-left text-left">
+                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Testimonies</Link></li>
+                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Mission Hub</Link></li>
+                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Harvest Progress</Link></li>
+                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Directory</Link></li>
               </ul>
             </div>
 
-            <div className="space-y-4 text-left text-left text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left">Ministry</h4>
-              <ul className="space-y-3 text-left">
-                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Our Story</Link></li>
-                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Partner With Us</Link></li>
-                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">App Guide</Link></li>
-                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Resources</Link></li>
-                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Terms</Link></li>
-                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Privacy</Link></li>
+            <div className="space-y-4 text-left text-left text-left text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left text-left">Ministry</h4>
+              <ul className="space-y-3 text-left text-left">
+                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Our Story</Link></li>
+                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Partner With Us</Link></li>
+                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">App Guide</Link></li>
+                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Resources</Link></li>
+                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Terms</Link></li>
+                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Privacy</Link></li>
               </ul>
             </div>
           </div>
           
-          <div className="h-px w-full bg-muted opacity-50 mb-8 text-left text-left text-left text-left" />
+          <div className="h-px w-full bg-muted opacity-50 mb-8 text-left text-left text-left text-left text-left" />
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left text-left text-left">
-            <p className="text-center md:text-left text-left text-left text-left text-left">© {currentYear || '...'} TESTIFY GLOBAL. Built for the Great Commission.</p>
-            <div className="flex gap-6 text-left">
-              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left">Terms</Link>
-              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left">Privacy</Link>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left text-left text-left text-left">
+            <p className="text-center md:text-left text-left text-left text-left text-left text-left">© {currentYear || '...'} TESTIFY GLOBAL. Built for the Great Commission.</p>
+            <div className="flex gap-6 text-left text-left">
+              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left text-left">Terms</Link>
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left text-left">Privacy</Link>
             </div>
           </div>
         </div>
