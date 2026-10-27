@@ -20,11 +20,17 @@ export function useFcmToken() {
 
     const retrieveToken = async () => {
       try {
-        // Request permission and get token
+        // REQUEST: Replace the string below with your actual VAPID public key from the Firebase Console.
+        // Location: Project Settings > Cloud Messaging > Web Push certificates
+        const VAPID_PUBLIC_KEY = 'PASTE_YOUR_VAPID_PUBLIC_KEY_HERE';
+
+        if (VAPID_PUBLIC_KEY === 'PASTE_YOUR_VAPID_PUBLIC_KEY_HERE') {
+            console.warn('FCM: VAPID Public Key not set. Push notifications will not work in production until you paste your key in src/hooks/use-fcm-token.ts');
+            return;
+        }
+
         const currentToken = await getToken(messaging, {
-          // Public VAPID key from Firebase Console (Cloud Messaging settings)
-          // Default for Firebase JS SDK if using standard configuration
-          vapidKey: 'BCS5xZ8B4vE5G_6Q9_Y5kXqK_9fX_6V_6E_6D_6C_6B_6A_6A_6A_6A_6A_6A_6A_6A_6A_6A' 
+          vapidKey: VAPID_PUBLIC_KEY 
         });
 
         if (currentToken) {
