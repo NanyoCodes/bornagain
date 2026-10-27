@@ -286,25 +286,25 @@ export default function GamesPageClient() {
                             <Sword className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                             <h3 className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">Received Challenges</h3>
                         </div>
-                        <div className="grid gap-3">
+                        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
                             {challenges.map(notif => (
                                 <Card key={notif.id} className="rounded-2xl border-2 border-primary/20 bg-primary/5 overflow-hidden animate-in zoom-in">
-                                    <CardContent className="p-3 sm:p-4 flex items-center justify-between gap-3 sm:gap-4">
+                                    <CardContent className="p-3 sm:p-4 flex flex-col gap-3">
                                         <div className="flex items-center gap-3 min-w-0">
                                             <LiveSelectionAvatar 
                                                 userId={notif.targetId || ''} 
                                                 fallbackInitials="P" 
-                                                className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm" 
+                                                className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm shrink-0" 
                                             />
-                                            <div className="min-w-0">
-                                                <p className="text-[13px] sm:text-sm font-black uppercase tracking-tight truncate">{notif.title}</p>
-                                                <p className="text-[10px] text-muted-foreground font-medium truncate">{notif.message}</p>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-[11px] sm:text-xs font-black uppercase tracking-tight truncate text-primary">{notif.title}</p>
+                                                <p className="text-[10px] text-muted-foreground font-medium line-clamp-2 leading-tight">{notif.message}</p>
                                             </div>
                                         </div>
                                         <Button 
                                             onClick={() => handleAcceptChallenge(notif.id, notif.link || '/games')}
                                             size="sm" 
-                                            className="rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg"
+                                            className="w-full rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg"
                                         >
                                             ENTER ARENA
                                         </Button>
@@ -404,4 +404,3 @@ export default function GamesPageClient() {
         </div>
     );
 }
-

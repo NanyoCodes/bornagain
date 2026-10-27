@@ -328,14 +328,14 @@ export function DailyDisciplineCard() {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
-                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left"
+                            className="w-full h-14 rounded-2xl font-black uppercase tracking-widest sm:tracking-[0.2em] shadow-xl shadow-primary/20 gap-2 sm:gap-3 group/btn text-left px-4"
                             disabled={togglingId !== null}
                         >
                             {togglingId ? <Loader2 className="h-5 w-5 animate-spin" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110" />}
-                            DECLARE DAILY DISCIPLINE
-                            <div className="ml-auto flex items-center gap-2">
-                                <span className="text-[10px] opacity-60">{completedToday.length}/4 COMPLETED</span>
-                                <ChevronDown className="h-4 w-4 opacity-40" />
+                            <span className="text-[11px] sm:text-sm truncate">DECLARE DAILY DISCIPLINE</span>
+                            <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+                                <span className="text-[9px] sm:text-[10px] opacity-60 whitespace-nowrap">{completedToday.length}/4 COMPLETED</span>
+                                <ChevronDown className="h-3.5 w-3.5 sm:h-4 sm:w-4 opacity-40 shrink-0" />
                             </div>
                         </Button>
                     </DropdownMenuTrigger>
