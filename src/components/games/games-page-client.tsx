@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { useUser, useDoc, useUserProfile, useCollection, useFirestore } from '@/firebase';
-import { collection, query, where, orderBy, limit, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile, Fellowship, GameSession, Notification } from '@/lib/types';
 import { 
     Gamepad2, 
@@ -136,6 +136,7 @@ export default function GamesPageClient() {
     const firestore = useFirestore();
     const { user } = useUser();
     const { userProfile, loading: profileLoading } = useUserProfile();
+    const { toast } = useToast();
     
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('individual');
@@ -222,6 +223,18 @@ export default function GamesPageClient() {
         return fellowships.filter(f => f.name.toLowerCase().includes(term));
     }, [fellowships, searchTerm]);
 
+    const handleAcceptChallenge = async (notifId: string, link: string) => {
+        if (!user?.uid || !firestore) return;
+        const notifRef = doc(firestore, `users/${user.uid}/notifications`, notifId);
+        try {
+            await updateDoc(notifRef, { isRead: true });
+            router.push(link);
+        } catch (e) {
+            console.error("Failed to mark notification as read:", e);
+            router.push(link); 
+        }
+    };
+
     if (profileLoading || fellowshipsLoading || !now) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center">
@@ -288,8 +301,12 @@ export default function GamesPageClient() {
                                                 <p className="text-[10px] text-muted-foreground font-medium truncate">{notif.message}</p>
                                             </div>
                                         </div>
-                                        <Button asChild size="sm" className="rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg">
-                                            <Link href={notif.link || '/games'}>ENTER ARENA</Link>
+                                        <Button 
+                                            onClick={() => handleAcceptChallenge(notif.id, notif.link || '/games')}
+                                            size="sm" 
+                                            className="rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg"
+                                        >
+                                            ENTER ARENA
                                         </Button>
                                     </CardContent>
                                 </Card>
@@ -368,7 +385,7 @@ export default function GamesPageClient() {
                                             <Users className="h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-10" />
                                         </div>
                                         <h3 className="text-lg sm:text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center">No Groups Found</h3>
-                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance text-center">
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center">
                                             Join or start a Fellowship/Association to mobilize your community in the arena.
                                         </p>
                                     </div>
@@ -387,3 +404,4 @@ export default function GamesPageClient() {
         </div>
     );
 }
+
