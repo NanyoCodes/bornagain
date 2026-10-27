@@ -22,16 +22,16 @@ export const BIBLE_GAME_DATA: Record<GameSessionType, any[]> = {
     { text: "I have ______ the good fight, I have finished the race, I have kept the faith.", correct: "Fought", options: ["Won", "Fought", "Lost", "Run"], ref: "2 Timothy 4:7" },
     { text: "The Lord is near to the ______.", correct: "Brokenhearted", options: ["Righteous", "Strong", "Brokenhearted", "Humble"], ref: "Psalm 34:18" },
     { text: "Give ______ to the Lord, for he is good.", correct: "Thanks", options: ["Glory", "Thanks", "Praise", "Honor"], ref: "Psalm 107:1" },
-    { text: "By ______ you have been saved, through faith—and this is not from yourselves.", correct: "Grace", options: ["Grace", "Prayer", "Effort", "History"], ref: "Ephesians 2:8" },
-    { text: "The grass withers and the flowers fall, but the ______ of our God endures forever.", correct: "Word", options: ["Spirit", "Grace", "Word", "Love"], ref: "Isaiah 40:8" },
-    { text: "Rejoice always, pray ______.", correct: "Continually", options: ["Daily", "Continually", "Loudly", "Often"], ref: "1 Thess 5:16" },
-    { text: "In all your ways ______ him, and he will make your paths straight.", correct: "Acknowledge", options: ["Follow", "Seek", "Acknowledge", "Trust"], ref: "Proverbs 3:6" },
-    { text: "The name of the Lord is a fortified ______, the righteous run to it and are safe.", correct: "Tower", options: ["City", "Tower", "Shield", "Wall"], ref: "Proverbs 18:10" },
-    { text: "Whatever you do, work at it with all your ______, as working for the Lord.", correct: "Heart", options: ["Might", "Strength", "Heart", "Skill"], ref: "Colossians 3:23" },
-    { text: "Be still, and know that I am ______.", correct: "God", options: ["Lord", "King", "God", "Here"], ref: "Psalm 46:10" },
-    { text: "Greater is He that is in you than he that is in the ______.", correct: "World", options: ["Flesh", "Earth", "World", "Dark"], ref: "1 John 4:4" },
-    { text: "Taste and see that the Lord is ______.", correct: "Good", options: ["Great", "Holy", "Good", "Near"], ref: "Psalm 34:8" },
-    { text: "Ask and it will be given to you; ______ and you will find.", correct: "Seek", options: ["Seek", "Knock", "Pray", "Wait"], ref: "Matthew 7:7" }
+    { text: "For God did not give us a spirit of ______ but of power and love.", correct: "Fear", options: ["Doubt", "Fear", "Pride", "Weakness"], ref: "2 Timothy 1:7" },
+    { text: "He who began a good ______ in you will carry it on to completion.", correct: "Work", options: ["Goal", "Work", "Faith", "Walk"], ref: "Philippians 1:6" },
+    { text: "Therefore, if anyone is in Christ, the new ______ has come.", correct: "Creation", options: ["Spirit", "Life", "Creation", "Person"], ref: "2 Corinthians 5:17" },
+    { text: "The Lord will ______ for you; you need only to be still.", correct: "Fight", options: ["Wait", "Look", "Fight", "Pray"], ref: "Exodus 14:14" },
+    { text: "Ask and it will be given to you; seek and you will ______.", correct: "Find", options: ["Find", "Know", "Wait", "See"], ref: "Matthew 7:7" },
+    { text: "But the fruit of the Spirit is love, joy, peace, ______, kindness, goodness, faithfulness.", correct: "Patience", options: ["Patience", "Power", "Wealth", "Truth"], ref: "Galatians 5:22" },
+    { text: "For the wages of sin is death, but the gift of God is ______ life.", correct: "Eternal", options: ["Better", "Holy", "Eternal", "Peaceful"], ref: "Romans 6:23" },
+    { text: "No weapon ______ against you will prevail.", correct: "Forged", options: ["Created", "Forged", "Sent", "Aimed"], ref: "Isaiah 54:17" },
+    { text: "The name of the Lord is a fortified ______.", correct: "Tower", options: ["City", "Wall", "Tower", "Shield"], ref: "Proverbs 18:10" },
+    { text: "Commit to the Lord whatever you do, and he will establish your ______.", correct: "Plans", options: ["Steps", "Plans", "Path", "Goals"], ref: "Proverbs 16:3" }
   ],
   prayer: [
     { text: "I am feeling overwhelmed and anxious today. Which word should I stand on?", correct: "1 Peter 5:7", options: ["1 Peter 5:7", "Luke 12:15", "James 4:6", "Exodus 14:14"], ref: "Cast all your anxiety on him." },
@@ -43,7 +43,17 @@ export const BIBLE_GAME_DATA: Record<GameSessionType, any[]> = {
     { text: "I feel lonely and forgotten. What does God say?", correct: "Matthew 28:20", options: ["Matthew 28:20", "Genesis 1:1", "Esther 4:14", "Ruth 1:16"], ref: "I am with you always." },
     { text: "I am seeking forgiveness for my past. Where is my hope?", correct: "1 John 1:9", options: ["1 John 1:9", "Numbers 23:19", "Malachi 3:10", "Haggai 2:9"], ref: "He is faithful to forgive." },
     { text: "I want to be bold in my witnessing. What should I pray?", correct: "Acts 4:29", options: ["Acts 4:29", "Colossians 4:6", "Romans 1:16", "2 Peter 3:18"], ref: "Enable your servants to speak with boldness." },
-    { text: "I am being persecuted for my faith. How do I respond?", correct: "Matthew 5:44", options: ["Matthew 5:44", "Leviticus 19:18", "Psalm 37:4", "Proverbs 16:3"], ref: "Love your enemies and pray for those who persecute you." }
+    { text: "I am being persecuted for my faith. How do I respond?", correct: "Matthew 5:44", options: ["Matthew 5:44", "Leviticus 19:18", "Psalm 37:4", "Proverbs 16:3"], ref: "Love your enemies and pray for those who persecute you." },
+    { text: "My heart is heavy and I need rest. What is the Master's call?", correct: "Matthew 11:28", options: ["Matthew 11:28", "John 10:10", "Acts 2:1", "Luke 1:37"], ref: "Come to me, all who are weary." },
+    { text: "I am facing an impossible situation. What is my battle cry?", correct: "Luke 1:37", options: ["Luke 1:37", "Psalm 91", "Joshua 1:9", "1 Peter 2:9"], ref: "For nothing is impossible with God." },
+    { text: "I need protection for my family. Which shadow should I abide in?", correct: "Psalm 91", options: ["Psalm 91", "Psalm 23", "Psalm 1", "Psalm 100"], ref: "He who dwells in the shelter of the Most High." },
+    { text: "I am looking for direction in my career. Which lamp should guide me?", correct: "Psalm 119:105", options: ["Psalm 119:105", "Proverbs 3:5", "Isaiah 30:21", "Micah 6:8"], ref: "Your word is a lamp to my feet." },
+    { text: "I feel spiritually dry and need refreshing. What should I drink?", correct: "John 7:38", options: ["John 7:38", "Psalm 42:1", "Joel 2:28", "Acts 3:19"], ref: "Rivers of living water." },
+    { text: "I need to overcome a sinful habit. How do I walk?", correct: "Galatians 5:16", options: ["Galatians 5:16", "Romans 8:1", "1 John 1:9", "Colossians 3:5"], ref: "Walk by the Spirit." },
+    { text: "I am praying for my city. What should I ask for?", correct: "Jeremiah 29:7", options: ["Jeremiah 29:7", "Psalm 122:6", "Matthew 5:14", "Acts 1:8"], ref: "Seek the peace and prosperity of the city." },
+    { text: "I need a fresh touch of God's fire. What should I anticipate?", correct: "Acts 2:3", options: ["Acts 2:3", "Matthew 3:11", "Hebrews 12:29", "Isaiah 6:6"], ref: "Tongues of fire." },
+    { text: "I am struggling to forgive someone. What is the standard?", correct: "Ephesians 4:32", options: ["Ephesians 4:32", "Matthew 18:22", "Colossians 3:13", "Luke 6:37"], ref: "Forgiving one another as God in Christ forgave you." },
+    { text: "I want to see God's glory. What was Moses' request?", correct: "Exodus 33:18", options: ["Exodus 33:18", "Numbers 6:24", "Isaiah 6:1", "Revelation 4:1"], ref: "Now show me Your glory." }
   ],
   trivia: [
     { text: "Who was the first person to see the resurrected Jesus?", correct: "Mary Magdalene", options: ["Peter", "John", "Mary Magdalene", "Thomas"], ref: "John 20:14" },
@@ -60,7 +70,17 @@ export const BIBLE_GAME_DATA: Record<GameSessionType, any[]> = {
     { text: "What is the longest book in the Bible?", correct: "Psalms", options: ["Isaiah", "Genesis", "Psalms", "Jeremiah"], ref: "The book with 150 chapters." },
     { text: "Who wrote the most books in the New Testament?", correct: "Paul", options: ["Peter", "John", "Luke", "Paul"], ref: "The author of the Epistles." },
     { text: "What was the name of the giant that David defeated?", correct: "Goliath", options: ["Og", "Goliath", "Enak", "Nimrod"], ref: "1 Samuel 17" },
-    { text: "Which queen went to visit Solomon to test his wisdom?", correct: "Queen of Sheba", options: ["Esther", "Jezebel", "Queen of Sheba", "Vashti"], ref: "1 Kings 10:1" }
+    { text: "Which queen went to visit Solomon to test his wisdom?", correct: "Queen of Sheba", options: ["Esther", "Jezebel", "Queen of Sheba", "Vashti"], ref: "1 Kings 10:1" },
+    { text: "Which prophet was taken to heaven in a whirlwind?", correct: "Elijah", options: ["Elijah", "Elisha", "Isaiah", "Daniel"], ref: "2 Kings 2:11" },
+    { text: "Who was the person who took over the leadership of the Israelites after Moses died?", correct: "Joshua", options: ["Aaron", "Caleb", "Joshua", "Gideon"], ref: "Joshua 1:1" },
+    { text: "What was the occupation of the tax collector who became a disciple of Jesus?", correct: "Matthew", options: ["Luke", "Mark", "Matthew", "John"], ref: "Matthew 9:9" },
+    { text: "How many people were fed with five loaves and two fish?", correct: "5000", options: ["3000", "4000", "5000", "12000"], ref: "Matthew 14:21" },
+    { text: "Who wrote the book of Revelation?", correct: "John", options: ["Paul", "Peter", "John", "James"], ref: "Revelation 1:1" },
+    { text: "In what language was the majority of the New Testament originally written?", correct: "Greek", options: ["Hebrew", "Latin", "Aramaic", "Greek"], ref: "Biblical Languages." },
+    { text: "Who was the mother of Samuel?", correct: "Hannah", options: ["Hannah", "Rachel", "Leah", "Elizabeth"], ref: "1 Samuel 1" },
+    { text: "How many plagues did God send upon Egypt?", correct: "10", options: ["7", "10", "12", "40"], ref: "Exodus 7-12" },
+    { text: "Who was the first martyr of the early church?", correct: "Stephen", options: ["James", "Stephen", "Peter", "Paul"], ref: "Acts 7:59" },
+    { text: "What was the name of the town where Jesus grew up?", correct: "Nazareth", options: ["Nazareth", "Bethlehem", "Capernaum", "Cana"], ref: "Luke 2:39" }
   ],
   wisdom: [
     { text: "Psalm 23: The Lord is my shepherd, I lack nothing. He makes me lie down in green pastures, he leads me beside ______ waters.", correct: "Quiet", options: ["Quiet", "Still", "Living", "Deep"], ref: "Psalm 23:1-2" },
@@ -77,6 +97,11 @@ export const BIBLE_GAME_DATA: Record<GameSessionType, any[]> = {
     { text: "Proverbs 22: A good ______ is more desirable than great riches; to be esteemed is better than silver or gold.", correct: "Name", options: ["Name", "Heart", "Work", "Life"], ref: "Proverbs 22:1" },
     { text: "Psalm 46: God is our ______ and strength, an ever-present help in trouble.", correct: "Refuge", options: ["Rock", "Refuge", "Shield", "Provider"], ref: "Psalm 46:1" },
     { text: "Proverbs 17: A cheerful ______ is good medicine, but a crushed spirit dries up the bones.", correct: "Heart", options: ["Mind", "Soul", "Heart", "Spirit"], ref: "Proverbs 17:22" },
-    { text: "Psalm 121: I lift up my eyes to the ______—where does my help come from? My help comes from the Lord.", correct: "Mountains", options: ["Hills", "Mountains", "Heavens", "Clouds"], ref: "Psalm 121:1-2" }
+    { text: "Psalm 121: I lift up my eyes to the ______—where does my help come from? My help comes from the Lord.", correct: "Mountains", options: ["Hills", "Mountains", "Heavens", "Clouds"], ref: "Psalm 121:1-2" },
+    { text: "Proverbs 10: A wise son brings joy to his father, but a foolish son brings ______ to his mother.", correct: "Grief", options: ["Sadness", "Shame", "Grief", "Doubt"], ref: "Proverbs 10:1" },
+    { text: "Psalm 19: The heavens declare the ______ of God; the skies proclaim the work of his hands.", correct: "Glory", options: ["Power", "Glory", "Name", "Hand"], ref: "Psalm 19:1" },
+    { text: "Proverbs 15: A gentle ______ turns away wrath, but a harsh word stirs up anger.", correct: "Answer", options: ["Spirit", "Answer", "Heart", "Speech"], ref: "Proverbs 15:1" },
+    { text: "Psalm 27: The Lord is my light and my ______, whom shall I fear?", correct: "Salvation", options: ["Strength", "Shield", "Salvation", "Fortress"], ref: "Psalm 27:1" },
+    { text: "Proverbs 11: Where there is no guidance, a people falls, but in an abundance of ______ there is safety.", correct: "Counselors", options: ["Leaders", "Prayers", "Counselors", "Laws"], ref: "Proverbs 11:14" }
   ]
 };
