@@ -27,7 +27,8 @@ import {
     Loader2,
     Sword,
     Share2,
-    Hourglass
+    Hourglass,
+    Clock
 } from "lucide-react";
 import { cn, safeToDate } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -58,6 +59,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const timerOptions = [30, 60, 90, 120];
 
@@ -424,7 +426,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     </div>
                 </div>
 
-                <div className="w-full max-w-2xl bg-muted/20 p-4 sm:p-8 rounded-[2.5rem] border-2 border-dashed border-primary/20 shadow-inner flex flex-col items-center gap-6 relative overflow-hidden text-left">
+                <div className="w-full max-w-2xl bg-muted/20 p-4 sm:p-8 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner flex flex-col items-center gap-6 relative overflow-hidden text-left">
                     <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center overflow-hidden text-left">
                         <Target className="h-64 w-64 text-primary rotate-12 text-left" />
                     </div>

@@ -31,6 +31,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { format, differenceInMinutes } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
 
 function LiveSelectionAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
@@ -139,6 +140,11 @@ export default function GamesPageClient() {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('individual');
     const isMobile = useIsMobile();
+    const [now, setNow] = useState<Date | null>(null);
+
+    useEffect(() => {
+        setNow(new Date());
+    }, []);
 
     const notificationsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
@@ -216,7 +222,7 @@ export default function GamesPageClient() {
         return fellowships.filter(f => f.name.toLowerCase().includes(term));
     }, [fellowships, searchTerm]);
 
-    if (profileLoading || fellowshipsLoading) {
+    if (profileLoading || fellowshipsLoading || !now) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -234,8 +240,8 @@ export default function GamesPageClient() {
                             <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Arena</span>
                         </div>
-                        <h1 className="text-2xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left">Battle Lobby</h1>
-                        <p className="text-xs sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed italic text-balance text-left">
+                        <h1 className="text-2xl sm:text-5xl font-black font-headline tracking-tight uppercase">Battle Lobby</h1>
+                        <p className="text-xs sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed italic text-balance">
                             Sharpen your spirit through interactive biblical challenges. Duel your partners or lead your community into a shared Word crusade.
                         </p>
                     </div>
@@ -282,7 +288,7 @@ export default function GamesPageClient() {
                                                 <p className="text-[10px] text-muted-foreground font-medium truncate">{notif.message}</p>
                                             </div>
                                         </div>
-                                        <Button asChild size="sm" className="rounded-xl h-8 sm:h-9 px-3 sm:px-4 font-black uppercase tracking-widest text-[8px] sm:text-[9px] shadow-lg text-left">
+                                        <Button asChild size="sm" className="rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg text-left">
                                             <Link href={notif.link || '/games'} className="text-left">ENTER ARENA</Link>
                                         </Button>
                                     </CardContent>
@@ -305,11 +311,11 @@ export default function GamesPageClient() {
 
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
                         <TabsList className="grid w-full grid-cols-2 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl text-left">
-                            <TabsTrigger value="individual" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center text-left">
+                            <TabsTrigger value="individual" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center">
                                 <User className="h-3.5 w-3.5 text-left" />
                                 <span className="truncate">Individual Duel</span>
                             </TabsTrigger>
-                            <TabsTrigger value="group" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center text-left">
+                            <TabsTrigger value="group" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center">
                                 <Users className="h-3.5 w-3.5 text-left" />
                                 <span className="truncate">Group Crusade</span>
                             </TabsTrigger>
