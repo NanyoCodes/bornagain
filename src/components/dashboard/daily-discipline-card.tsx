@@ -7,7 +7,17 @@ import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Zap, BookOpen, Loader2, Church, CheckCircle2, Edit, HeartHandshake } from 'lucide-react';
+import { 
+    Zap, 
+    BookOpen, 
+    Loader2, 
+    Church, 
+    CheckCircle2, 
+    Edit, 
+    HeartHandshake, 
+    PlusCircle, 
+    ChevronDown 
+} from 'lucide-react';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
 import { useRouter } from 'next/navigation';
@@ -21,12 +31,22 @@ import { NotesDialog } from './notes-dialog';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const disciplines = [
-  { id: 'pray', label: 'Pray', Icon: Zap, color: 'text-chart-5' },
-  { id: 'read_bible', label: 'Read Bible', Icon: BookOpen, color: 'text-chart-2' },
-  { id: 'attend_church', label: 'Attend Church', Icon: Church, color: 'text-chart-4' },
-  { id: 'take_notes', label: 'Journal', Icon: Edit, color: 'text-chart-1' },
+  { id: 'pray', label: 'Pray', Icon: Zap, color: 'text-amber-500' },
+  { id: 'read_bible', label: 'Read Bible', Icon: BookOpen, color: 'text-blue-500' },
+  { id: 'attend_church', label: 'Attend Church', Icon: Church, color: 'text-emerald-500' },
+  { id: 'take_notes', label: 'Journal', Icon: Edit, color: 'text-primary' },
 ];
 
 function PartnerCompactStatus({ partner, date }: { partner: UserProfile['accountabilityPartners'][0]; date: Date }) {
@@ -50,7 +70,7 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
             <Link href={`/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity text-left">
                 <Avatar className="h-8 w-8 border shadow-sm shrink-0 text-left">
                     <AvatarImage src={livePhotoURL} className="object-cover text-left" />
-                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold text-center flex items-center justify-center h-full w-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 text-left">
                     <p className="text-xs font-bold truncate leading-tight group-hover:text-primary transition-colors text-left">{partner.firstName}</p>
@@ -121,20 +141,6 @@ export function DailyDisciplineCard() {
     }
   }, [userProfile]);
 
-  useEffect(() => {
-    const handlePopState = () => {
-      if (isPrayerDialogOpen) setIsPrayerDialogOpen(false);
-      if (isNotesDialogOpen) setIsNotesDialogOpen(false);
-      if (isAttendChurchDialogOpen) setIsAttendChurchDialogOpen(false);
-    };
-
-    if (isPrayerDialogOpen || isNotesDialogOpen || isAttendChurchDialogOpen) {
-      window.history.pushState({ disciplinePopup: true }, '');
-      window.addEventListener('popstate', handlePopState);
-    }
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [isPrayerDialogOpen, isNotesDialogOpen, isAttendChurchDialogOpen]);
-  
   const updateDisciplineState = async (disciplineId: string) => {
     if (!user || !firestore) {
         throw new Error("User not authenticated or Firestore not available.");
@@ -290,14 +296,12 @@ export function DailyDisciplineCard() {
   if (loading) {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
-        <CardHeader className="text-left">
-          <CardTitle className="text-xl font-semibold tracking-tight text-left">Daily Discipline</CardTitle>
-          <CardDescription className="text-sm font-medium text-left">Your spiritual checklist for today.</CardDescription>
+        <CardHeader className="p-4 sm:p-6 text-left">
+          <Skeleton className="h-5 w-32 mb-2" />
+          <Skeleton className="h-3 w-48" />
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-28 w-full rounded-2xl text-left" />
-          ))}
+        <CardContent className="px-4 sm:px-6 pb-6">
+            <Skeleton className="h-14 w-full rounded-2xl" />
         </CardContent>
       </Card>
     );
@@ -320,37 +324,63 @@ export function DailyDisciplineCard() {
           </div>
         </CardHeader>
         <CardContent className="space-y-8 text-left">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-left text-left">
-            {disciplines.map(discipline => {
-                const isCompleted = completedToday.includes(discipline.id);
-                const { Icon, color } = discipline;
-                return (
-                    <Button
-                        key={discipline.id}
-                        variant="outline"
-                        className={cn(
-                            "relative flex flex-col items-center justify-center gap-3 p-4 h-28 text-center transition-all duration-300 rounded-3xl border-2 text-left text-left text-left",
-                            isCompleted ? "bg-primary/5 border-primary/40 shadow-inner" : "hover:bg-muted/50 hover:border-primary/20 hover:-translate-y-1"
-                        )}
-                        onClick={() => handleDisciplineClick(discipline.id)}
-                        disabled={togglingId === discipline.id}
-                    >
-                    {isCompleted && togglingId !== discipline.id && (
-                        <div className="absolute top-3 right-3 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in text-left text-left">
-                            <CheckCircle2 className="h-4 w-4 text-primary-foreground fill-current text-left text-left text-left" />
-                        </div>
-                    )}
-                        {togglingId === discipline.id ? (
-                            <Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left" />
-                        ) : (
-                            <>
-                                <Icon className={cn("h-8 w-8 transition-transform duration-300 group-hover:scale-110 text-left text-left", isCompleted ? "text-primary fill-current opacity-40" : color)} />
-                                <span className={cn("xs:text-xs text-[10px] font-semibold text-left text-left", isCompleted ? "text-primary" : "text-foreground")}>{discipline.label}</span>
-                            </>
-                        )}
-                    </Button>
-                )
-            })}
+            <div className="space-y-4">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button 
+                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn"
+                            disabled={togglingId !== null}
+                        >
+                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110" />}
+                            LOG KINGDOM DISCIPLINE
+                            <div className="ml-auto flex items-center gap-2">
+                                <span className="text-[10px] opacity-60">{completedToday.length}/4 DONE</span>
+                                <ChevronDown className="h-4 w-4 opacity-40" />
+                            </div>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-[400px] rounded-[2rem] p-2 shadow-2xl border-none" align="center" sideOffset={8}>
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3">Select Discipline</DropdownMenuLabel>
+                        <DropdownMenuSeparator className="opacity-50" />
+                        <ScrollArea className="h-80">
+                            <div className="p-1.5 space-y-1">
+                                {disciplines.map(discipline => {
+                                    const isCompleted = completedToday.includes(discipline.id);
+                                    const { Icon, color } = discipline;
+                                    return (
+                                        <DropdownMenuItem 
+                                            key={discipline.id} 
+                                            onSelect={() => handleDisciplineClick(discipline.id)}
+                                            className={cn(
+                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4",
+                                                isCompleted ? "bg-primary/5 text-primary" : "hover:bg-muted/50"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border",
+                                                isCompleted ? "bg-primary/10 border-primary/20" : "bg-muted/50 border-transparent"
+                                            )}>
+                                                <Icon className={cn("h-4 w-4", isCompleted ? "text-primary" : "text-muted-foreground")} />
+                                            </div>
+                                            <span className={cn("text-xs font-black uppercase tracking-tight", isCompleted ? "text-primary" : "text-foreground")}>
+                                                {discipline.label}
+                                            </span>
+                                            {isCompleted && <CheckCircle2 className="h-4 w-4 ml-auto text-primary fill-current" />}
+                                        </DropdownMenuItem>
+                                    )
+                                })}
+                            </div>
+                        </ScrollArea>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <div className="px-1 space-y-1">
+                    <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-muted-foreground/60">
+                        <span>Today's Dedication</span>
+                        <span>{Math.round((completedToday.length / 4) * 100)}%</span>
+                    </div>
+                    <Progress value={(completedToday.length / 4) * 100} className="h-1" />
+                </div>
             </div>
 
             {uniquePartners.length > 0 && currentDate && (

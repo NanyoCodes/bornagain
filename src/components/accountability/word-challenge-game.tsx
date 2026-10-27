@@ -469,9 +469,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     </div>
                                 )}
                             </div>
-                            <div className="text-center">
-                                <p className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-center">
-                                    {partnerName.toUpperCase()} {partnerProfile?.gender ? `(${partnerProfile.gender.toUpperCase()})` : ''}
+                            <div className="text-center min-w-0 w-full px-2">
+                                <p className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 truncate w-full text-center">
+                                    {partnerName} {partnerProfile?.gender ? `(${partnerProfile.gender.toUpperCase()})` : ''}
                                 </p>
                                 <p className="text-2xl sm:text-4xl font-black tracking-tighter leading-none text-muted-foreground text-center">
                                     {headToHeadStats.them}
@@ -565,7 +565,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-primary/20">
                                                 <AvatarImage src={user?.photoURL || undefined} className="object-cover" />
                                                 <AvatarFallback className="font-black text-xl bg-primary/10 text-primary uppercase">Y</AvatarFallback>
-                                            </Avatar>
+                                            </div>
                                         </div>
                                         <div className="absolute -top-2 -right-2 h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-background animate-bounce">
                                             <Target className="h-5 w-5 text-white" />
@@ -597,7 +597,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </div>
                                 <div className="text-right"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Gain</p><p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right">{correctCount * 10}</p></div>
                             </div>
-                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[180px] text-center relative overflow-hidden"><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
+                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[160px] text-center relative overflow-hidden"><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                                 {quiz?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal", gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_25px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary")} disabled={gameState !== 'playing'} onClick={(e) => { e.stopPropagation(); handleCheck(opt); }}>{opt}</Button>))}
                             </div>
