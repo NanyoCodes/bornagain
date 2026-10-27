@@ -213,13 +213,13 @@ export default function LandingPage() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ delay: 1, duration: 1 }}
-              className="flex flex-col items-center gap-2 px-6 text-left text-left"
+              className="flex flex-col items-center gap-1 px-6 text-left"
             >
-                <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.4em] text-white/40 text-center text-balance max-w-lg text-left text-left">
+                <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-white/40 text-center text-balance max-w-lg">
                     "Go into all the world and preach the gospel to all creation."
                 </p>
-                <div className="h-px w-12 bg-primary/40 text-left text-left" />
-                <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest text-left text-left">Mark 16:15</p>
+                <div className="h-px w-8 bg-primary/40" />
+                <p className="text-[7px] font-bold text-primary/60 uppercase tracking-widest">Mark 16:15</p>
             </motion.div>
           </div>
         </section>
@@ -387,11 +387,11 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-8 text-left text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left text-left">
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left text-left text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left text-left text-left">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left text-left text-left text-left">
                 {logo && (
-                  <Avatar className="h-12 w-12 text-left text-left text-left text-left">
-                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left text-left text-left" />
-                    <AvatarFallback className="text-left text-left text-left text-left">T</AvatarFallback>
+                  <Avatar className="h-12 w-12 text-left text-left text-left text-left text-left">
+                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left text-left text-left text-left" />
+                    <AvatarFallback className="text-left text-left text-left text-left text-left">T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
@@ -399,10 +399,10 @@ export default function LandingPage() {
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
               <div className="flex gap-4 text-left text-left">
-                <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left text-left text-left">
+                <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left text-left text-left text-left">
                   <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left text-left text-left">
-                    <Instagram className="h-4 w-4 text-left text-left text-left" />
-                    <span className="sr-only text-left text-left text-left">Instagram</span>
+                    <Instagram className="h-4 w-4 text-left text-left text-left text-left" />
+                    <span className="sr-only text-left text-left text-left text-left">Instagram</span>
                   </Link>
                 </Button>
               </div>
@@ -431,10 +431,10 @@ export default function LandingPage() {
             </div>
           </div>
           
-          <div className="h-px w-full bg-muted opacity-50 mb-8 text-left text-left text-left" />
+          <div className="h-px w-full bg-muted opacity-50 mb-8 text-left text-left text-left text-left" />
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left text-left">
-            <p className="text-center md:text-left text-left text-left text-left">© {currentYear || '...'} TESTIFY GLOBAL. Built for the Great Commission.</p>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left text-left text-left">
+            <p className="text-center md:text-left text-left text-left text-left text-left">© {currentYear || '...'} TESTIFY GLOBAL. Built for the Great Commission.</p>
             <div className="flex gap-6 text-left">
               <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left">Terms</Link>
               <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left">Privacy</Link>

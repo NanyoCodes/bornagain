@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useUser, useAuth, useDoc, useCollection, useFirestore } from '@/firebase';
+import { useUser, useAuth, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Fellowship, UserProfile, DailyDevotional, TestimonyComment } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { doc, runTransaction, arrayUnion, arrayRemove, increment, serverTimestamp, collection, query, updateDoc } from 'firebase/firestore';
@@ -224,8 +224,8 @@ function FullDevotionalDialog({
                     </DialogHeader>
                 </div>
                 <div className="flex-1 min-h-0 text-left">
-                  <ScrollArea className="h-full text-left">
-                      <div className="p-8 text-left">
+                  <ScrollArea className="h-full">
+                      <div className="p-8">
                           {content}
                       </div>
                   </ScrollArea>
@@ -423,6 +423,8 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
     const stopPropagation = (e: React.MouseEvent) => {
         e.stopPropagation();
     };
+
+    const groupLabel = fellowship.groupType?.toUpperCase() || 'GROUP';
 
     return (
         <Card onClick={onClick} className="cursor-pointer rounded-2xl border transition-all duration-300 shadow-md sm:shadow-lg border-t-2 border-t-primary/10 border-b-8 border-b-primary/10 sm:border-b-8 bg-card/50 backdrop-blur-sm text-left text-left">
@@ -632,7 +634,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                     {!isOrganizer && (
                         <Button onClick={handleJoin} disabled={isMember || isJoining} size="sm" className="h-9 px-6 text-xs font-black uppercase tracking-widest rounded-xl shadow-lg text-center text-left text-left">
                             {isJoining ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : null}
-                            {isMember ? 'JOINED' : `JOIN ${fellowship.groupType?.toUpperCase() || 'GROUP'}`}
+                            {isMember ? 'JOINED' : `JOIN ${groupLabel}`}
                         </Button>
                     )}
                 </div>

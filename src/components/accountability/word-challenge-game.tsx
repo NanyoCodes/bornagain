@@ -672,3 +672,4 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         </div>
     );
 }
+

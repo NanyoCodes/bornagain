@@ -300,7 +300,7 @@ export function DailyDisciplineCard() {
           <Skeleton className="h-5 w-32 mb-2 text-left" />
           <Skeleton className="h-3 w-48 text-left" />
         </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-6 text-left text-left text-left">
+        <CardContent className="px-4 sm:px-6 pb-6 text-left text-left text-left text-left text-left">
             <Skeleton className="h-14 w-full rounded-2xl text-left text-left text-left" />
         </CardContent>
       </Card>
@@ -312,38 +312,38 @@ export function DailyDisciplineCard() {
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left">
         <CardHeader className="text-left text-left">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left text-left">
-            <div className="space-y-1 text-left text-left">
-              <CardTitle className="text-xl font-semibold tracking-tight text-left text-left">Daily Discipline</CardTitle>
-              <CardDescription className="text-sm font-medium text-left text-left">Your spiritual checklist for today.</CardDescription>
+            <div className="space-y-1 text-left text-left text-left text-left">
+              <CardTitle className="text-xl font-semibold tracking-tight text-left text-left text-left text-left">Daily Discipline</CardTitle>
+              <CardDescription className="text-sm font-medium text-left text-left text-left text-left">Your spiritual checklist for today.</CardDescription>
             </div>
             {currentDate && (
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left text-left text-left">
                 {format(currentDate, 'PPPP')}
               </div>
             )}
           </div>
         </CardHeader>
-        <CardContent className="space-y-8 text-left text-left">
-            <div className="space-y-4 text-left text-left">
+        <CardContent className="space-y-8 text-left text-left text-left text-left">
+            <div className="space-y-4 text-left text-left text-left text-left">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
-                            className="w-full h-14 rounded-2xl font-black uppercase tracking-widest sm:tracking-[0.2em] shadow-xl shadow-primary/20 gap-2 sm:gap-3 group/btn text-left px-4 text-left"
+                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left px-4 text-left"
                             disabled={togglingId !== null}
                         >
-                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110 text-left" />}
+                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin text-left text-left" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110 text-left text-left" />}
                             <span className="text-[10px] sm:text-sm font-black uppercase tracking-tight text-left">DECLARE DAILY DISCIPLINE</span>
-                            <div className="ml-auto flex items-center gap-1.5 sm:gap-2 text-left">
+                            <div className="ml-auto flex items-center gap-2 text-left">
                                 <span className="text-[9px] sm:text-[10px] opacity-60 whitespace-nowrap text-left">{completedToday.length}/4 COMPLETED</span>
-                                <ChevronDown className="h-3.5 w-3.5 sm:h-4 w-4 opacity-40 shrink-0 text-left" />
+                                <ChevronDown className="h-4 w-4 opacity-40 shrink-0 text-left" />
                             </div>
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-[400px] rounded-[2rem] p-2 shadow-2xl border-none text-left text-left" align="center" sideOffset={8}>
-                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3 text-left">Select Discipline</DropdownMenuLabel>
-                        <DropdownMenuSeparator className="opacity-50 text-left" />
-                        <ScrollArea className="h-80 text-left">
-                            <div className="p-1.5 space-y-1 text-left">
+                    <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-[400px] rounded-[2rem] p-2 shadow-2xl border-none text-left text-left text-left text-left" align="center" sideOffset={8}>
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3 text-left text-left text-left">Select Discipline</DropdownMenuLabel>
+                        <DropdownMenuSeparator className="opacity-50 text-left text-left text-left" />
+                        <ScrollArea className="h-80 text-left text-left text-left">
+                            <div className="p-1.5 space-y-1 text-left text-left text-left">
                                 {disciplines.map(discipline => {
                                     const isCompleted = completedToday.includes(discipline.id);
                                     const { Icon } = discipline;
@@ -352,20 +352,20 @@ export function DailyDisciplineCard() {
                                             key={discipline.id} 
                                             onSelect={() => handleDisciplineClick(discipline.id)}
                                             className={cn(
-                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4 text-left",
+                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4 text-left text-left",
                                                 isCompleted ? "bg-primary/5 text-primary" : "hover:bg-muted/50"
                                             )}
                                         >
                                             <div className={cn(
-                                                "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border text-left",
+                                                "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border text-left text-left",
                                                 isCompleted ? "bg-primary/10 border-primary/20" : "bg-muted/50 border-transparent"
                                             )}>
-                                                <Icon className={cn("h-4 w-4 text-left", isCompleted ? "text-primary" : "text-muted-foreground")} />
+                                                <Icon className={cn("h-4 w-4 text-left text-left", isCompleted ? "text-primary" : "text-muted-foreground")} />
                                             </div>
-                                            <span className={cn("text-xs font-black uppercase tracking-tight text-left", isCompleted ? "text-primary" : "text-foreground")}>
+                                            <span className={cn("text-xs font-black uppercase tracking-tight text-left text-left", isCompleted ? "text-primary" : "text-foreground")}>
                                                 {discipline.label}
                                             </span>
-                                            {isCompleted && <CheckCircle2 className="h-4 w-4 ml-auto text-primary fill-current text-left" />}
+                                            {isCompleted && <CheckCircle2 className="h-4 w-4 ml-auto text-primary fill-current text-left text-left" />}
                                         </DropdownMenuItem>
                                     )
                                 })}
@@ -384,19 +384,19 @@ export function DailyDisciplineCard() {
             </div>
 
             {uniquePartners.length > 0 && currentDate && (
-                <div className="space-y-4 text-left text-left">
-                    <Separator className="opacity-50 text-left" />
-                    <div className="flex items-center justify-between px-1 text-left text-left">
-                        <div className="flex items-center gap-2 text-left">
-                            <HeartHandshake className="h-4 w-4 text-primary text-left text-left" />
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left">Partner Activity</h4>
+                <div className="space-y-4 text-left text-left text-left text-left">
+                    <Separator className="opacity-50 text-left text-left text-left text-left" />
+                    <div className="flex items-center justify-between px-1 text-left text-left text-left text-left">
+                        <div className="flex items-center gap-2 text-left text-left text-left text-left">
+                            <HeartHandshake className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left text-left text-left text-left">Partner Activity</h4>
                         </div>
-                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left text-left">
-                            <Link href="/accountability" className="text-left">Full View</Link>
+                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left text-left text-left text-left">
+                            <Link href="/accountability" className="text-left text-left text-left text-left text-left">Full View</Link>
                         </Button>
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-left text-left text-left">
                         {uniquePartners.slice(0, 4).map(partner => (
                             <PartnerCompactStatus key={partner.userId} partner={partner} date={currentDate} />
                         ))}

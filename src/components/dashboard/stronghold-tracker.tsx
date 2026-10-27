@@ -258,15 +258,15 @@ export function StrongholdTracker() {
 
             <CardHeader className="p-4 sm:p-6 pb-4 text-left text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left text-left text-left">
-                    <div className="space-y-1 text-left text-left text-left text-left">
-                        <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left">
-                            <Flame className="h-5 w-5 text-primary text-left text-left" />
+                    <div className="space-y-1 text-left text-left text-left text-left text-left">
+                        <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left text-left text-left text-left">
+                            <Flame className="h-5 w-5 text-primary text-left text-left text-left text-left text-left" />
                             Victory Tracker
                         </CardTitle>
-                        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left text-left text-left">Overcoming strongholds in Christ</p>
+                        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left text-left text-left text-left text-left">Overcoming strongholds in Christ</p>
                     </div>
                     <Button onClick={() => setIsAddOpen(true)} className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20 text-left text-left text-left">
-                        <Plus className="mr-2 h-4 w-4 text-left text-left" />
+                        <Plus className="mr-2 h-4 w-4 text-left text-left text-left" />
                         INITIALIZE VICTORY TRACKER
                     </Button>
                 </div>
@@ -379,7 +379,7 @@ export function StrongholdTracker() {
                             <div className="text-left flex-shrink-0 text-left text-left">
                                 <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
                                     <ShieldCheck className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Warfare Protocol</span>
+                                    <span className="text-[10px] font-black uppercase text-primary text-left text-left text-left text-left text-left">Warfare Protocol</span>
                                 </div>
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Enter the Warfare</DrawerTitle>
                                 <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Naming a struggle is the first step toward the Light.</DrawerDescription>
@@ -397,7 +397,7 @@ export function StrongholdTracker() {
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
-                            <DialogHeader className="text-left text-left text-left text-left">
+                            <DialogHeader className="text-left text-left text-left text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Enter the Warfare</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
                             </DialogHeader>
