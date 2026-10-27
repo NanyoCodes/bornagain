@@ -8,18 +8,14 @@ import {
     Gamepad2, 
     Users, 
     ArrowRight, 
-    Sparkles, 
     Star, 
     Trophy,
     Search,
     Loader2,
-    HeartHandshake,
     Sword,
     Target,
     ShieldCheck,
     ArrowLeft,
-    X,
-    ChevronRight,
     User
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -30,7 +26,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
-import { cn, safeToDate } from '@/lib/utils';
+import { safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { format, differenceInMinutes } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -64,7 +60,7 @@ function PartnerGameCard({
 }) {
     const firestore = useFirestore();
     const partnerRef = useMemo(() => partner.userId ? doc(firestore, 'users', partner.userId) : null, [firestore, partner.userId]);
-    const { data: profile } = useDoc<UserProfile>(partnerRef);
+    const { data: partnerProfile } = useDoc<UserProfile>(partnerRef);
     const [now, setNow] = useState<Date | null>(null);
 
     useEffect(() => {
@@ -73,10 +69,10 @@ function PartnerGameCard({
 
     const isOnline = useMemo(() => {
         if (!now) return false;
-        const lastActive = safeToDate(profile?.lastActive);
+        const lastActive = safeToDate(partnerProfile?.lastActive);
         if (!lastActive) return false;
         return differenceInMinutes(now, lastActive) < 5;
-    }, [profile?.lastActive, now]);
+    }, [partnerProfile?.lastActive, now]);
 
     return (
         <Card className="rounded-[1.5rem] sm:rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-4 sm:border-l-8 border-l-primary/10 text-left">
@@ -91,7 +87,7 @@ function PartnerGameCard({
                         />
                         {isOnline && (
                             <div className="absolute -top-0.5 -right-0.5 flex h-3 w-3 sm:h-3.5 sm:w-3.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left text-left"></span>
                                 <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-green-500 border-2 border-background"></span>
                             </div>
                         )}
@@ -102,6 +98,11 @@ function PartnerGameCard({
                         </h3>
                         <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-left">
                             <Badge variant="secondary" className="h-5 sm:h-6 px-2 sm:px-3 text-[8px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20 text-left">Partner</Badge>
+                            {partnerProfile?.gender && (
+                                <Badge variant="outline" className="h-5 sm:h-6 px-2 sm:px-3 text-[8px] sm:text-[10px] font-black uppercase tracking-widest border-muted-foreground/30 text-muted-foreground text-left">
+                                    {partnerProfile.gender}
+                                </Badge>
+                            )}
                             <div className="flex items-center gap-2 sm:gap-3 bg-muted/30 px-3 sm:px-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl border shadow-inner text-left">
                                 <div className="flex items-center gap-1 sm:gap-1.5 text-left">
                                     <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary fill-current text-left" />
@@ -240,7 +241,7 @@ export default function GamesPageClient() {
                     </div>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 shadow-inner relative overflow-hidden text-left">
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[2rem] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 shadow-inner relative overflow-hidden text-left">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-left">
                         <Sparkles className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12" />
                     </div>
@@ -293,7 +294,7 @@ export default function GamesPageClient() {
 
                 <div className="space-y-4 text-left">
                     <div className="relative text-left">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground opacity-40 text-left" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 w-5 text-muted-foreground opacity-40 text-left" />
                         <Input 
                             placeholder={activeTab === 'individual' ? "Search partners..." : "Search groups..."}
                             value={searchTerm}
