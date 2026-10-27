@@ -29,9 +29,10 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
     const [goalDialogOpen, setGoalDialogOpen] = useState(false);
     const [newGoal, setNewGoal] = useState(userProfile.monthlySoulsGoal ?? 10);
     const [isSavingGoal, setIsSavingGoal] = useState(false);
-    const [currentDate, setCurrentDate] = useState(new Date());
+    const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
     useEffect(() => {
+      setCurrentDate(new Date());
       const timer = setInterval(() => setCurrentDate(new Date()), 60000);
       return () => clearInterval(timer);
     }, []);
@@ -49,13 +50,16 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
     
     // Testimony Streak
     const testimonyStreak = useMemo(() => {
-        if (!testimonies || testimonies.length === 0) return 0;
+        if (!testimonies || testimonies.length === 0 || !currentDate) return 0;
         const sharedDates = new Set(
-            testimonies.map(t => format(safeToDate(t.createdAt)!, 'yyyy-MM-dd'))
+            testimonies.map(t => {
+                const d = safeToDate(t.createdAt);
+                return d ? format(d, 'yyyy-MM-dd') : null;
+            }).filter(Boolean)
         );
 
         let streak = 0;
-        let checkDate = new Date();
+        let checkDate = new Date(currentDate);
         if (!sharedDates.has(format(checkDate, 'yyyy-MM-dd'))) {
             checkDate.setDate(checkDate.getDate() - 1);
         }
@@ -66,7 +70,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
         }
 
         return streak;
-  }, [testimonies]);
+  }, [testimonies, currentDate]);
 
     // Discipline Streak
     const disciplineHistoryQuery = useMemo(() => {
@@ -80,10 +84,10 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
     const { data: disciplineHistory, loading: loadingDiscipline } = useCollection<{ date: any, completed: string[] }>(disciplineHistoryQuery);
 
     const disciplineStreak = useMemo(() => {
-        if (!disciplineHistory || disciplineHistory.length === 0) return 0;
+        if (!disciplineHistory || disciplineHistory.length === 0 || !currentDate) return 0;
         
         let streak = 0;
-        let checkDate = new Date();
+        let checkDate = new Date(currentDate);
         
         const historyMap = new Map<string, string[]>();
         disciplineHistory.forEach(log => {
@@ -111,7 +115,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
             }
         }
         return streak;
-    }, [disciplineHistory]);
+    }, [disciplineHistory, currentDate]);
 
 
     // Goal Dialog Logic
@@ -124,7 +128,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
             });
             return;
         }
-        if (!user || !firestore) return;
+        if (!user || !firestore || !currentDate) return;
 
         setIsSavingGoal(true);
         const userRef = doc(firestore, 'users', user.uid);
@@ -156,9 +160,9 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
 
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-            <CardHeader>
-                <div className="flex items-center justify-between">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-left">
+            <CardHeader className="text-left">
+                <div className="flex items-center justify-between text-left">
                     <div className="flex items-center gap-2 text-left">
                         <CardTitle className="text-lg text-left">Your Growth</CardTitle>
                         <div className="relative flex h-3 w-3">
@@ -176,20 +180,20 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                     }}
                     >
                     <DialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/20">
-                            <Edit className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/20 text-left">
+                            <Edit className="h-4 w-4 text-left" />
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent className="sm:max-w-[425px] text-left">
                         <DialogHeader className="text-left">
-                            <DialogTitle className="text-left">Set Goal for {format(currentDate, 'MMMM')}</DialogTitle>
+                            <DialogTitle className="text-left">{currentDate ? `Set Goal for ${format(currentDate, 'MMMM')}` : 'Set Goal'}</DialogTitle>
                             <DialogDescription className="text-left">
                                 Set your personal goal for souls won for the current month.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4 text-left">
                           <div className="grid grid-cols-4 items-center gap-4 text-left">
-                            <Label htmlFor="goal" className="text-right">
+                            <Label htmlFor="goal" className="text-right text-left">
                               Souls
                             </Label>
                             <Input
@@ -197,28 +201,30 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                               type="number"
                               value={newGoal}
                               onChange={(e) => setNewGoal(Number(e.target.value))}
-                              className="col-span-3 text-foreground"
+                              className="col-span-3 text-foreground text-left"
                               disabled={isSavingGoal}
                             />
                           </div>
                         </div>
                         <DialogFooter className="text-left">
-                            <Button onClick={handleSaveGoal} disabled={isSavingGoal}>
-                                {isSavingGoal && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            <Button onClick={handleSaveGoal} disabled={isSavingGoal} className="text-left">
+                                {isSavingGoal && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                                 Save Goal
                             </Button>
                         </DialogFooter>
                     </DialogContent>
                     </Dialog>
                 </div>
-                <CardDescription className="text-primary-foreground/80 font-medium text-left">
-                  Your mission goal for {format(currentDate, 'MMMM yyyy')}
-                </CardDescription>
+                {currentDate && (
+                  <CardDescription className="text-primary-foreground/80 font-medium text-left">
+                    Your mission goal for {format(currentDate, 'MMMM yyyy')}
+                  </CardDescription>
+                )}
             </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="space-y-2">
+            <CardContent className="space-y-6 text-left">
+                <div className="space-y-2 text-left">
                   <div className="flex justify-between items-baseline text-left">
-                    <div className="text-2xl font-bold">{totalSouls}</div>
+                    <div className="text-2xl font-bold text-left">{totalSouls}</div>
                     <div className="text-sm text-primary-foreground/80 font-black uppercase tracking-widest text-left">
                       /{monthlyGoal} SOULS
                     </div>
@@ -242,7 +248,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                     <div className="h-16 w-px bg-primary-foreground/30 text-left"></div>
                      <div className="flex flex-col items-center gap-1 text-left">
                         <div className="text-4xl font-bold flex items-center justify-center gap-2 text-left">
-                           {loadingDiscipline ? <div className="animate-pulse rounded-md h-8 w-10 bg-white/20" /> : disciplineStreak} <Zap className="h-8 w-8 text-left" />
+                           {loadingDiscipline ? <div className="animate-pulse rounded-md h-8 w-10 bg-white/20 text-left" /> : disciplineStreak} <Zap className="h-8 w-8 text-left" />
                         </div>
                         <p className="text-sm opacity-80 uppercase tracking-tight text-center text-left">Discipline Streak</p>
                     </div>

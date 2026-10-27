@@ -33,7 +33,6 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
     const firestore = useFirestore();
     const dateStr = useMemo(() => format(date, 'yyyy-MM-dd'), [date]);
     
-    // Live profile lookup for reactive photo updates
     const partnerProfileRef = useMemo(() => partner.userId ? doc(firestore, 'users', partner.userId) : null, [firestore, partner.userId]);
     const { data: partnerProfile } = useDoc<UserProfile>(partnerProfileRef);
     const livePhotoURL = partnerProfile?.photoURL || partner.photoURL;
@@ -51,7 +50,7 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
             <Link href={`/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity text-left">
                 <Avatar className="h-8 w-8 border shadow-sm shrink-0 text-left">
                     <AvatarImage src={livePhotoURL} className="object-cover text-left" />
-                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold text-center flex items-center justify-center w-full h-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold text-center flex items-center justify-center h-full w-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 text-left">
                     <p className="text-xs font-bold truncate leading-tight group-hover:text-primary transition-colors text-left">{partner.firstName}</p>
@@ -96,8 +95,13 @@ export function DailyDisciplineCard() {
   const [isAttendChurchDialogOpen, setIsAttendChurchDialogOpen] = useState(false);
   const [attendChurchDialogView, setAttendChurchDialogView] = useState<'confirm' | 'form'>('form');
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const router = useRouter();
   
+  useEffect(() => {
+    setCurrentDate(new Date());
+  }, []);
+
   const userDocRef = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return doc(firestore, 'users', user.uid);
@@ -117,7 +121,6 @@ export function DailyDisciplineCard() {
     }
   }, [userProfile]);
 
-  // Back button handling
   useEffect(() => {
     const handlePopState = () => {
       if (isPrayerDialogOpen) setIsPrayerDialogOpen(false);
@@ -309,9 +312,11 @@ export function DailyDisciplineCard() {
               <CardTitle className="text-xl font-semibold tracking-tight text-left">Daily Discipline</CardTitle>
               <CardDescription className="text-sm font-medium text-left">Your spiritual checklist for today.</CardDescription>
             </div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left">
-              {format(new Date(), 'PPPP')}
-            </div>
+            {currentDate && (
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left">
+                {format(currentDate, 'PPPP')}
+              </div>
+            )}
           </div>
         </CardHeader>
         <CardContent className="space-y-8 text-left">
@@ -348,7 +353,7 @@ export function DailyDisciplineCard() {
             })}
             </div>
 
-            {uniquePartners.length > 0 && (
+            {uniquePartners.length > 0 && currentDate && (
                 <div className="space-y-4 text-left">
                     <Separator className="opacity-50 text-left" />
                     <div className="flex items-center justify-between px-1 text-left">
@@ -363,7 +368,7 @@ export function DailyDisciplineCard() {
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
                         {uniquePartners.slice(0, 4).map(partner => (
-                            <PartnerCompactStatus key={partner.userId} partner={partner} date={new Date()} />
+                            <PartnerCompactStatus key={partner.userId} partner={partner} date={currentDate} />
                         ))}
                     </div>
                 </div>
@@ -401,4 +406,3 @@ export function DailyDisciplineCard() {
     </>
   );
 }
-
