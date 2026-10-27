@@ -123,7 +123,6 @@ export default function LandingPage() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-  const heroImage = PlaceHolderImages.find((img) => img.id === 'feature-glory');
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -173,58 +172,48 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950">
           <div className="absolute inset-0 z-0">
-             {heroImage && (
-                <NextImage 
-                  src={heroImage.imageUrl} 
-                  alt="Testify Joy" 
-                  fill 
-                  className="object-cover opacity-40"
-                  priority
-                  unoptimized
-                  data-ai-hint={heroImage.imageHint}
-                />
-             )}
-             <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-zinc-950/80 to-zinc-950" />
+             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-zinc-950 to-zinc-950" />
+             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.4),transparent_50%)]" />
           </div>
-          <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
-            <div className="max-w-4xl space-y-8 text-center sm:text-left">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-                <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[10px]">
+          <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-left">
+            <div className="max-w-4xl space-y-8 text-center sm:text-left text-left">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-left text-left text-left">
+                <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[10px] text-left text-left">
                   SHARING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
+                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left">
                   Testify of The Greatness of GOD.<br className="hidden sm:block" />
                   Organize the Harvest.<br className="hidden sm:block" />
                   <span className="text-primary"> Glorify the King.</span>
                 </h1>
-                <p className="mt-6 text-lg sm:text-xl text-white/80 font-medium max-w-2xl italic leading-relaxed text-pretty">
+                <p className="mt-6 text-lg sm:text-xl text-white/80 font-medium max-w-2xl italic leading-relaxed text-pretty text-left text-left">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="h-14 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest">
-                  <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <div className="flex flex-col sm:flex-row gap-4 text-left text-left">
+                <Button asChild size="lg" className="h-14 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest text-left text-left">
+                  <Link href="/signup" className="text-left text-left">GET STARTED <ArrowRight className="ml-2 h-5 w-5 text-left text-left" /></Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10">
-                  <Link href="/about">OUR MISSION</Link>
+                <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 text-left text-left">
+                  <Link href="/about" className="text-left text-left">OUR MISSION</Link>
                 </Button>
               </div>
             </div>
           </div>
 
-          <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center">
+          <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center text-left text-left text-left">
             <motion.div 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ delay: 1, duration: 1 }}
-              className="flex flex-col items-center gap-2 px-6"
+              className="flex flex-col items-center gap-2 px-6 text-left text-left text-left"
             >
-                <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.4em] text-white/40 text-center text-balance max-w-lg">
+                <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-white/40 text-center text-balance max-w-lg text-left text-left">
                     "Go into all the world and preach the gospel to all creation."
                 </p>
-                <div className="h-px w-12 bg-primary/40" />
-                <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest">Mark 16:15</p>
+                <div className="h-px w-12 bg-primary/40 text-left text-left text-left" />
+                <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest text-left text-left text-left">Mark 16:15</p>
             </motion.div>
           </div>
         </section>

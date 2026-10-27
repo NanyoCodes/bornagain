@@ -314,7 +314,7 @@ export function RelationshipTrackerCard() {
 
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-            <div className="space-y-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+            <div className="space-y-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
               <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                   <Sparkles className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                   Kingdom Connections
@@ -330,7 +330,7 @@ export function RelationshipTrackerCard() {
         </CardHeader>
 
         <CardContent className="px-4 sm:px-6 pb-6 relative z-10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-            <div className="space-y-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+            <div className="space-y-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
