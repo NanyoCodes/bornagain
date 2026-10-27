@@ -50,7 +50,17 @@ export const BIBLE_GAME_DATA: Record<GameSessionType, any[]> = {
     { text: "How many days and nights did Jonah spend in the belly of the big fish?", correct: "3", options: ["1", "3", "7", "40"], ref: "Jonah 1:17" },
     { text: "What was the first miracle Jesus performed?", correct: "Water into wine", options: ["Healing the blind", "Water into wine", "Walking on water", "Feeding 5000"], ref: "John 2:1-11" },
     { text: "Who was the oldest man mentioned in the Bible?", correct: "Methuselah", options: ["Adam", "Noah", "Methuselah", "Abraham"], ref: "Genesis 5:27" },
-    { text: "How many books are there in the New Testament?", correct: "27", options: ["21", "27", "39", "66"], ref: "The New Testament canon." }
+    { text: "How many books are there in the New Testament?", correct: "27", options: ["21", "27", "39", "66"], ref: "The New Testament canon." },
+    { text: "In what city was Jesus born?", correct: "Bethlehem", options: ["Nazareth", "Jerusalem", "Bethlehem", "Jericho"], ref: "Matthew 2:1" },
+    { text: "Who was the first king of Israel?", correct: "Saul", options: ["David", "Saul", "Solomon", "Samuel"], ref: "1 Samuel 9:17" },
+    { text: "What was the name of the garden where Jesus prayed before his arrest?", correct: "Gethsemane", options: ["Eden", "Gethsemane", "Sinai", "Olives"], ref: "Matthew 26:36" },
+    { text: "How many apostles did Jesus choose?", correct: "12", options: ["7", "10", "12", "13"], ref: "Matthew 10:1" },
+    { text: "Who denied Jesus three times?", correct: "Peter", options: ["Judas", "John", "Thomas", "Peter"], ref: "Luke 22:61" },
+    { text: "Which sea did Moses part to help the Israelites escape?", correct: "Red Sea", options: ["Dead Sea", "Red Sea", "Galilee", "Mediterranean"], ref: "Exodus 14:21" },
+    { text: "What is the longest book in the Bible?", correct: "Psalms", options: ["Isaiah", "Genesis", "Psalms", "Jeremiah"], ref: "The book with 150 chapters." },
+    { text: "Who wrote the most books in the New Testament?", correct: "Paul", options: ["Peter", "John", "Luke", "Paul"], ref: "The author of the Epistles." },
+    { text: "What was the name of the giant that David defeated?", correct: "Goliath", options: ["Og", "Goliath", "Enak", "Nimrod"], ref: "1 Samuel 17" },
+    { text: "Which queen went to visit Solomon to test his wisdom?", correct: "Queen of Sheba", options: ["Esther", "Jezebel", "Queen of Sheba", "Vashti"], ref: "1 Kings 10:1" }
   ],
   wisdom: [
     { text: "Psalm 23: The Lord is my shepherd, I lack nothing. He makes me lie down in green pastures, he leads me beside ______ waters.", correct: "Quiet", options: ["Quiet", "Still", "Living", "Deep"], ref: "Psalm 23:1-2" },
@@ -62,6 +72,11 @@ export const BIBLE_GAME_DATA: Record<GameSessionType, any[]> = {
     { text: "Psalm 34: I will extol the Lord at all times; his ______ will always be on my lips.", correct: "Praise", options: ["Word", "Praise", "Name", "Song"], ref: "Psalm 34:1" },
     { text: "Proverbs 4: Above all else, guard your ______, for everything you do flows from it.", correct: "Heart", options: ["Mind", "Soul", "Heart", "Life"], ref: "Proverbs 4:23" },
     { text: "Psalm 119: Your word is a ______ for my feet, a light on my path.", correct: "Lamp", options: ["Lamp", "Guide", "Light", "Fire"], ref: "Psalm 119:105" },
-    { text: "Proverbs 16: Commit to the Lord whatever you do, and he will establish your ______.", correct: "Plans", options: ["Ways", "Plans", "Steps", "Life"], ref: "Proverbs 16:3" }
+    { text: "Proverbs 16: Commit to the Lord whatever you do, and he will establish your ______.", correct: "Plans", options: ["Ways", "Plans", "Steps", "Life"], ref: "Proverbs 16:3" },
+    { text: "Psalm 103: Praise the Lord, my soul; all my inmost being, praise his ______ name.", correct: "Holy", options: ["Great", "Holy", "Mighty", "Glorious"], ref: "Psalm 103:1" },
+    { text: "Proverbs 22: A good ______ is more desirable than great riches; to be esteemed is better than silver or gold.", correct: "Name", options: ["Name", "Heart", "Work", "Life"], ref: "Proverbs 22:1" },
+    { text: "Psalm 46: God is our ______ and strength, an ever-present help in trouble.", correct: "Refuge", options: ["Rock", "Refuge", "Shield", "Provider"], ref: "Psalm 46:1" },
+    { text: "Proverbs 17: A cheerful ______ is good medicine, but a crushed spirit dries up the bones.", correct: "Heart", options: ["Mind", "Soul", "Heart", "Spirit"], ref: "Proverbs 17:22" },
+    { text: "Psalm 121: I lift up my eyes to the ______—where does my help come from? My help comes from the Lord.", correct: "Mountains", options: ["Hills", "Mountains", "Heavens", "Clouds"], ref: "Psalm 121:1-2" }
   ]
 };
