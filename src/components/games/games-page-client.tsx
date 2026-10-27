@@ -76,10 +76,10 @@ function PartnerGameCard({
     }, [partnerProfile?.lastActive, now]);
 
     return (
-        <Card className="rounded-[1.5rem] sm:rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-4 sm:border-l-8 border-l-primary/10 text-left">
+        <Card className="rounded-[1.5rem] sm:rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-4 sm:border-l-8 border-l-primary/10">
             <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-left">
-                <div className="flex items-start gap-3 sm:gap-5 min-w-0 flex-1 w-full text-left">
-                    <div className="relative shrink-0 text-left">
+                <div className="flex items-start gap-3 sm:gap-5 min-w-0 flex-1 w-full">
+                    <div className="relative shrink-0">
                         <LiveSelectionAvatar 
                             userId={partner.userId} 
                             fallbackUrl={partner.photoURL} 
@@ -87,32 +87,32 @@ function PartnerGameCard({
                             className="h-12 w-12 sm:h-20 border-2 sm:border-4 border-background shadow-xl ring-2 ring-primary/5 transition-transform group-hover:scale-105"
                         />
                         {isOnline && (
-                            <div className="absolute -top-0.5 -right-0.5 flex h-3 w-3 sm:h-3.5 sm:w-3.5 text-left">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-green-500 border-2 border-background text-left"></span>
+                            <div className="absolute -top-0.5 -right-0.5 flex h-3 w-3 sm:h-3.5 sm:w-3.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-green-500 border-2 border-background"></span>
                             </div>
                         )}
                     </div>
-                    <div className="min-w-0 flex-1 text-left">
+                    <div className="min-w-0 flex-1">
                         <h3 className="text-base sm:text-2xl font-black uppercase tracking-tight truncate leading-tight mb-1 sm:mb-2 text-left">
                             {partner.firstName} {partner.lastName}
                         </h3>
                         <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-left">
-                            <Badge variant="secondary" className="h-5 sm:h-6 px-2 sm:px-3 text-[8px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20 text-left">Partner</Badge>
+                            <Badge variant="secondary" className="h-5 sm:h-6 px-2 sm:px-3 text-[8px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20">Partner</Badge>
                             {partnerProfile?.gender && (
-                                <Badge variant="outline" className="h-5 sm:h-6 px-2 sm:px-3 text-[8px] sm:text-[10px] font-black uppercase tracking-widest border-muted-foreground/30 text-muted-foreground text-left text-left">
+                                <Badge variant="outline" className="h-5 sm:h-6 px-2 sm:px-3 text-[8px] sm:text-[10px] font-black uppercase tracking-widest border-muted-foreground/30 text-muted-foreground">
                                     {partnerProfile.gender}
                                 </Badge>
                             )}
-                            <div className="flex items-center gap-2 sm:gap-3 bg-muted/30 px-3 sm:px-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl border shadow-inner text-left text-left">
-                                <div className="flex items-center gap-1 sm:gap-1.5 text-left text-left">
-                                    <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary fill-current text-left text-left" />
-                                    <span className="text-[8px] sm:text-[10px] font-black uppercase text-primary tracking-widest text-left text-left">You: {myPoints}</span>
+                            <div className="flex items-center gap-2 sm:gap-3 bg-muted/30 px-3 sm:px-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl border shadow-inner">
+                                <div className="flex items-center gap-1 sm:gap-1.5">
+                                    <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary fill-current" />
+                                    <span className="text-[8px] sm:text-[10px] font-black uppercase text-primary tracking-widest">You: {myPoints}</span>
                                 </div>
-                                <Separator orientation="vertical" className="h-3 sm:h-4 bg-primary/20 text-left" />
-                                <div className="flex items-center gap-1 sm:gap-1.5 text-left text-left text-left">
-                                    <Trophy className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-500 text-left text-left" />
-                                    <span className="text-[8px] sm:text-[10px] font-black uppercase text-zinc-500 tracking-widest text-left text-left">Partner: {partnerPoints}</span>
+                                <Separator orientation="vertical" className="h-3 sm:h-4 bg-primary/20" />
+                                <div className="flex items-center gap-1 sm:gap-1.5">
+                                    <Trophy className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-500" />
+                                    <span className="text-[8px] sm:text-[10px] font-black uppercase text-zinc-500 tracking-widest">Partner: {partnerPoints}</span>
                                 </div>
                             </div>
                         </div>
@@ -121,9 +121,9 @@ function PartnerGameCard({
 
                 <Button 
                     onClick={onDuel}
-                    className="w-full sm:w-auto h-11 sm:h-14 px-8 sm:px-10 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest sm:tracking-[0.2em] shadow-lg shadow-primary/20 transition-all active:scale-95 text-xs sm:text-sm text-center"
+                    className="w-full sm:w-auto h-11 sm:h-14 px-8 sm:px-10 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest sm:tracking-[0.2em] shadow-lg shadow-primary/20 transition-all active:scale-95 text-xs sm:text-sm"
                 >
-                    <Sword className="mr-2 h-4 w-4 sm:h-5 w-5 text-left text-left" />
+                    <Sword className="mr-2 h-4 w-4 sm:h-5 w-5" />
                     DUEL
                 </Button>
             </CardContent>
@@ -234,62 +234,62 @@ export default function GamesPageClient() {
     return (
         <div className="max-w-4xl mx-auto space-y-6 sm:space-y-10 pb-32 px-4 sm:px-6 text-left">
             <header className="space-y-4 sm:space-y-6 pt-4 text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 text-left">
-                    <div className="space-y-1.5 text-left">
-                        <div className="flex items-center gap-2 mb-1 text-left">
-                            <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Kingdom Arena</span>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+                    <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 mb-1">
+                            <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Arena</span>
                         </div>
-                        <h1 className="text-2xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left">Battle Lobby</h1>
-                        <p className="text-xs sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed italic text-balance text-left text-left">
+                        <h1 className="text-2xl sm:text-5xl font-black font-headline tracking-tight uppercase">Battle Lobby</h1>
+                        <p className="text-xs sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed italic text-balance">
                             Sharpen your spirit through interactive biblical challenges. Duel your partners or lead your community into a shared Word crusade.
                         </p>
                     </div>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[2rem] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 shadow-inner relative overflow-hidden text-left">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-left">
-                        <Sparkles className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12 text-left" />
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[2rem] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 shadow-inner relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                        <Sparkles className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12" />
                     </div>
-                    <div className="flex items-center gap-4 relative z-10 text-left">
-                        <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 text-left">
-                            <Star className="h-6 w-6 sm:h-7 sm:w-7 text-white animate-pulse text-left" />
+                    <div className="flex items-center gap-4 relative z-10">
+                        <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0">
+                            <Star className="h-6 w-6 sm:h-7 sm:w-7 text-white animate-pulse" />
                         </div>
-                        <div className="text-left text-left text-left">
-                            <p className="text-base sm:text-lg font-black uppercase tracking-tight leading-tight text-left">Your Kingdom XP</p>
-                            <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter text-left">{userProfile?.kingdomPoints || 0} POINTS</p>
+                        <div>
+                            <p className="text-base sm:text-lg font-black uppercase tracking-tight leading-tight">Your Kingdom XP</p>
+                            <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter">{userProfile?.kingdomPoints || 0} POINTS</p>
                         </div>
                     </div>
                     <div className="h-px w-full bg-primary/10 sm:hidden" />
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground relative z-10 text-left text-left text-left">
-                        <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 text-left" />
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground relative z-10">
+                        <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
                         Top Ranked Laborer
                     </div>
                 </div>
 
                 {challenges && challenges.length > 0 && (
-                    <div className="space-y-4 text-left text-left text-left">
-                        <div className="flex items-center gap-2 px-1 text-left text-left">
-                            <Sword className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary text-left text-left" />
-                            <h3 className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Received Challenges</h3>
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2 px-1">
+                            <Sword className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+                            <h3 className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">Received Challenges</h3>
                         </div>
-                        <div className="grid gap-3 text-left">
+                        <div className="grid gap-3">
                             {challenges.map(notif => (
-                                <Card key={notif.id} className="rounded-2xl border-2 border-primary/20 bg-primary/5 overflow-hidden animate-in zoom-in text-left">
-                                    <CardContent className="p-3 sm:p-4 flex items-center justify-between gap-3 sm:gap-4 text-left">
-                                        <div className="flex items-center gap-3 min-w-0 text-left">
+                                <Card key={notif.id} className="rounded-2xl border-2 border-primary/20 bg-primary/5 overflow-hidden animate-in zoom-in">
+                                    <CardContent className="p-3 sm:p-4 flex items-center justify-between gap-3 sm:gap-4">
+                                        <div className="flex items-center gap-3 min-w-0">
                                             <LiveSelectionAvatar 
                                                 userId={notif.targetId || ''} 
                                                 fallbackInitials="P" 
-                                                className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm text-left" 
+                                                className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm" 
                                             />
-                                            <div className="min-w-0 text-left">
-                                                <p className="text-[13px] sm:text-sm font-black uppercase tracking-tight truncate text-left">{notif.title}</p>
-                                                <p className="text-[10px] text-muted-foreground font-medium truncate text-left">{notif.message}</p>
+                                            <div className="min-w-0">
+                                                <p className="text-[13px] sm:text-sm font-black uppercase tracking-tight truncate">{notif.title}</p>
+                                                <p className="text-[10px] text-muted-foreground font-medium truncate">{notif.message}</p>
                                             </div>
                                         </div>
-                                        <Button asChild size="sm" className="rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg text-left">
-                                            <Link href={notif.link || '/games'} className="text-left">ENTER ARENA</Link>
+                                        <Button asChild size="sm" className="rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg">
+                                            <Link href={notif.link || '/games'}>ENTER ARENA</Link>
                                         </Button>
                                     </CardContent>
                                 </Card>
@@ -298,31 +298,31 @@ export default function GamesPageClient() {
                     </div>
                 )}
 
-                <div className="space-y-4 text-left text-left">
-                    <div className="relative text-left text-left text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left" />
+                <div className="space-y-4">
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
                         <Input 
                             placeholder={activeTab === 'individual' ? "Search partners..." : "Search groups..."}
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            className="h-12 sm:h-14 pl-12 rounded-[1.25rem] sm:rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-sm sm:text-lg font-bold w-full text-left text-left text-left"
+                            className="h-12 sm:h-14 pl-12 rounded-[1.25rem] sm:rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-sm sm:text-lg font-bold w-full"
                         />
                     </div>
 
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left text-left">
-                        <TabsList className="grid w-full grid-cols-2 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl text-left text-left">
-                            <TabsTrigger value="individual" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center text-left text-left">
-                                <User className="h-3.5 w-3.5 text-left text-left" />
-                                <span className="truncate text-left">Individual Duel</span>
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl">
+                            <TabsTrigger value="individual" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center">
+                                <User className="h-3.5 w-3.5" />
+                                <span className="truncate">Individual Duel</span>
                             </TabsTrigger>
-                            <TabsTrigger value="group" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center text-left text-left">
-                                <Users className="h-3.5 w-3.5 text-left text-left" />
-                                <span className="truncate text-left">Group Crusade</span>
+                            <TabsTrigger value="group" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center">
+                                <Users className="h-3.5 w-3.5" />
+                                <span className="truncate">Group Crusade</span>
                             </TabsTrigger>
                         </TabsList>
                         
-                        <div className="mt-6 sm:mt-8 text-left text-left">
-                            <TabsContent value="individual" className="space-y-4 outline-none animate-in fade-in slide-in-from-left-4 duration-500 text-left text-left">
+                        <div className="mt-6 sm:mt-8">
+                            <TabsContent value="individual" className="space-y-4 outline-none animate-in fade-in slide-in-from-left-4 duration-500">
                                 {filteredPartners.length > 0 ? (
                                     filteredPartners.map(partner => (
                                         <PartnerGameCard 
@@ -334,41 +334,41 @@ export default function GamesPageClient() {
                                         />
                                     ))
                                 ) : (
-                                    <div className="py-16 sm:py-20 text-center px-8 border-2 border-dashed rounded-[2.5rem] sm:rounded-[3rem] bg-muted/5 flex flex-col items-center text-left text-left text-left">
-                                        <div className="h-16 w-16 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left">
-                                            <Users className="h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-10 text-left text-left text-left" />
+                                    <div className="py-16 sm:py-20 text-center px-8 border-2 border-dashed rounded-[2.5rem] sm:rounded-[3rem] bg-muted/5 flex flex-col items-center">
+                                        <div className="h-16 w-16 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                                            <Users className="h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-10" />
                                         </div>
-                                        <h3 className="text-lg sm:text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left text-left">No Partners found</h3>
-                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center text-left text-left">
+                                        <h3 className="text-lg sm:text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center">No Partners found</h3>
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center">
                                             {searchTerm ? "Try a different search term." : "Connect with partners in Settings to challenge them here."}
                                         </p>
                                     </div>
                                 )}
                             </TabsContent>
 
-                            <TabsContent value="group" className="space-y-4 outline-none animate-in fade-in slide-in-from-right-4 duration-500 text-left text-left">
+                            <TabsContent value="group" className="space-y-4 outline-none animate-in fade-in slide-in-from-right-4 duration-500">
                                 {filteredFellowships.length > 0 ? (
                                     filteredFellowships.map(f => (
-                                        <Card key={f.id} className="rounded-2xl sm:rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left">
-                                            <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-left text-left text-left">
-                                                <div className="flex items-center gap-4 text-left w-full sm:w-auto text-left text-left">
-                                                    <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 text-left text-left text-left"><Users className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600 text-left text-left text-left" /></div>
-                                                    <div className="min-w-0 text-left text-left text-left">
-                                                        <h3 className="font-black text-base sm:text-lg uppercase truncate text-left text-left text-left">{f.name}</h3>
-                                                        <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left">{f.memberCount} Members</p>
+                                        <Card key={f.id} className="rounded-2xl sm:rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden text-left">
+                                            <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                                <div className="flex items-center gap-4 text-left w-full sm:w-auto">
+                                                    <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20"><Users className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600" /></div>
+                                                    <div className="min-w-0">
+                                                        <h3 className="font-black text-base sm:text-lg uppercase truncate">{f.name}</h3>
+                                                        <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{f.memberCount} Members</p>
                                                     </div>
                                                 </div>
-                                                <Button className="w-full sm:w-auto h-11 px-8 rounded-xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] text-center text-left">START CRUSADE</Button>
+                                                <Button className="w-full sm:w-auto h-11 px-8 rounded-xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] text-center">START CRUSADE</Button>
                                             </CardContent>
                                         </Card>
                                     ))
                                 ) : (
-                                    <div className="py-16 sm:py-20 text-center px-8 border-2 border-dashed rounded-[2.5rem] sm:rounded-[3rem] bg-muted/5 flex flex-col items-center text-left text-left text-left">
-                                        <div className="h-16 w-16 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left text-left">
-                                            <Users className="h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-10 text-left text-left text-left text-left" />
+                                    <div className="py-16 sm:py-20 text-center px-8 border-2 border-dashed rounded-[2.5rem] sm:rounded-[3rem] bg-muted/5 flex flex-col items-center">
+                                        <div className="h-16 w-16 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                                            <Users className="h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-10" />
                                         </div>
-                                        <h3 className="text-lg sm:text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left text-left">No Groups Found</h3>
-                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance text-center text-left text-left">
+                                        <h3 className="text-lg sm:text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center">No Groups Found</h3>
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance text-center">
                                             Join or start a Fellowship/Association to mobilize your community in the arena.
                                         </p>
                                     </div>
@@ -379,12 +379,11 @@ export default function GamesPageClient() {
                 </div>
             </header>
 
-            <footer className="px-6 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left text-left">
-                <p className="text-[9px] sm:text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center text-left text-left">
+            <footer className="px-6 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
+                <p className="text-[9px] sm:text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center">
                     "Iron sharpens iron, and one man sharpens another." — Proverbs 27:17
                 </p>
             </footer>
         </div>
     );
 }
-
