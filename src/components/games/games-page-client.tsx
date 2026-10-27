@@ -16,7 +16,8 @@ import {
     Target,
     ShieldCheck,
     ArrowLeft,
-    User
+    User,
+    Sparkles
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,7 +43,7 @@ function LiveSelectionAvatar({ userId, fallbackUrl, fallbackInitials, className 
     return (
         <Avatar className={className}>
             <AvatarImage src={currentPhotoUrl} className="object-cover" />
-            <AvatarFallback className="font-black bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
+            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
         </Avatar>
     );
 }
@@ -87,8 +88,8 @@ function PartnerGameCard({
                         />
                         {isOnline && (
                             <div className="absolute -top-0.5 -right-0.5 flex h-3 w-3 sm:h-3.5 sm:w-3.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left text-left"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-green-500 border-2 border-background"></span>
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-green-500 border-2 border-background text-left"></span>
                             </div>
                         )}
                     </div>
@@ -294,7 +295,7 @@ export default function GamesPageClient() {
 
                 <div className="space-y-4 text-left">
                     <div className="relative text-left">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 w-5 text-muted-foreground opacity-40 text-left" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                         <Input 
                             placeholder={activeTab === 'individual' ? "Search partners..." : "Search groups..."}
                             value={searchTerm}
