@@ -67,6 +67,7 @@ import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-f
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
+import { Checkbox } from '../ui/checkbox';
 
 const strongholdCategories = [
     'Pride', 
@@ -228,9 +229,9 @@ export function StrongholdTracker() {
                     </SelectContent>
                 </Select>
             </div>
-            <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3 text-left">
-                <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">This record is <span className="font-black text-foreground">strictly private</span>. It exists only for your personal accountability before God.</p>
+            <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3 text-left text-left">
+                <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
+                <p className="text-[10px] text-muted-foreground leading-relaxed font-medium text-left">This record is <span className="font-black text-foreground text-left">strictly private</span>. It exists only for your personal accountability before God.</p>
             </div>
         </div>
     );
@@ -243,39 +244,39 @@ export function StrongholdTracker() {
                 disabled={isSubmitting || !title.trim()} 
                 className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left"
             >
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                 BEGIN TRACKING
             </Button>
         </div>
     );
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory text-left">
-            <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/victory:opacity-[0.05] transition-opacity text-left">
-                <ShieldCheck className="h-32 w-32 text-primary rotate-12" />
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory text-left text-left text-left">
+            <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/victory:opacity-[0.05] transition-opacity text-left text-left">
+                <ShieldCheck className="h-32 w-32 text-primary rotate-12 text-left" />
             </div>
 
-            <CardHeader className="p-4 sm:p-6 pb-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                        <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
-                            <Flame className="h-5 w-5 text-primary" />
+            <CardHeader className="p-4 sm:p-6 pb-4 text-left text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left text-left text-left">
+                    <div className="space-y-1 text-left text-left text-left text-left">
+                        <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left">
+                            <Flame className="h-5 w-5 text-primary text-left text-left" />
                             Victory Tracker
                         </CardTitle>
-                        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Overcoming strongholds in Christ</p>
+                        <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left text-left text-left">Overcoming strongholds in Christ</p>
                     </div>
-                    <Button onClick={() => setIsAddOpen(true)} className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
-                        <Plus className="mr-2 h-4 w-4" />
+                    <Button onClick={() => setIsAddOpen(true)} className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20 text-left text-left text-left">
+                        <Plus className="mr-2 h-4 w-4 text-left text-left" />
                         INITIALIZE VICTORY TRACKER
                     </Button>
                 </div>
             </CardHeader>
 
-            <CardContent className="px-4 sm:px-6 pb-6 space-y-4 text-left">
+            <CardContent className="px-4 sm:px-6 pb-6 space-y-4 text-left text-left text-left text-left">
                 {loading ? (
-                    <div className="flex justify-center py-10 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div>
+                    <div className="flex justify-center py-10 text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div>
                 ) : strongholds && strongholds.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left text-left">
                         {strongholds.map((s) => {
                             const isVictorious = s.status === 'victorious';
                             const circleLink = `/strongholds/${(s.category || 'Other').toLowerCase().replace(/ /g, '-')}`;
@@ -373,38 +374,38 @@ export function StrongholdTracker() {
 
             {mounted && isMobile ? (
                 <Drawer open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DrawerContent className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                            <div className="text-left flex-shrink-0 text-left">
-                                <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                    <ShieldCheck className="h-4 w-4 text-primary text-left text-left text-left" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Warfare Protocol</span>
+                    <DrawerContent className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                            <div className="text-left flex-shrink-0 text-left text-left">
+                                <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                                    <ShieldCheck className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Warfare Protocol</span>
                                 </div>
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Enter the Warfare</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Naming a struggle is the first step toward the Light.</DrawerDescription>
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Enter the Warfare</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Naming a struggle is the first step toward the Light.</DrawerDescription>
                             </div>
                         </div>
-                        <ScrollArea className="flex-grow p-8 text-left text-left text-left">
+                        <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left">
                             {formFields}
                         </ScrollArea>
-                        <div className="p-8 border-t bg-background/80 backdrop-blur-sm text-left text-left text-left">
+                        <div className="p-8 border-t bg-background/80 backdrop-blur-sm text-left text-left text-left text-left">
                             {formFooter}
                         </div>
                     </DrawerContent>
                 </Drawer>
             ) : (
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
-                            <DialogHeader className="text-left text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Enter the Warfare</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
+                            <DialogHeader className="text-left text-left text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Enter the Warfare</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <div className="p-8 text-left text-left text-left text-left">
                             {formFields}
                         </div>
-                        <div className="p-8 bg-muted/5 border-t text-left text-left text-left text-left">
+                        <div className="p-8 bg-muted/5 border-t text-left text-left text-left text-left text-left">
                             {formFooter}
                         </div>
                     </DialogContent>
@@ -412,17 +413,17 @@ export function StrongholdTracker() {
             )}
 
             <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
-                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
-                        <DialogHeader className="text-left text-left text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Share Your Victory</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">
+                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
+                        <DialogHeader className="text-left text-left text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Share Your Victory</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">
                                 Encourage the body of Christ by sharing how God gave you victory over "{testimonyStronghold?.title}".
                             </DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
-                        <div className="p-8 text-left text-left text-left">
+                    <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left">
+                        <div className="p-8 text-left text-left text-left text-left">
                             {userProfile && testimonyStronghold && (
                                 <CreateTestimonyForm 
                                     userProfile={userProfile} 

@@ -531,29 +531,29 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     </Button>
                                 </div>
                             ) : invitation.hostId === user?.uid ? (
-                                <div className="space-y-8 w-full flex flex-col items-center justify-center animate-in fade-in text-center text-left text-left text-left">
+                                <div className="space-y-8 w-full flex flex-col items-center justify-center animate-in fade-in text-center text-left text-left text-left text-left">
                                     <div className="relative text-left text-left text-left">
-                                        <div className="flex -space-x-8 sm:-space-x-12 items-center justify-center text-left text-left text-left">
+                                        <div className="flex -space-x-8 sm:-space-x-12 items-center justify-center text-left text-left text-left text-left">
                                             <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-primary/20 transition-all duration-500 text-left text-left text-left text-left text-left">
-                                                <AvatarImage src={user?.photoURL || undefined} className="object-cover text-left text-left text-left" />
-                                                <AvatarFallback className="font-black text-xl bg-primary/10 text-primary uppercase text-left text-left text-left text-left">Y</AvatarFallback>
+                                                <AvatarImage src={user?.photoURL || undefined} className="object-cover text-left text-left text-left text-left" />
+                                                <AvatarFallback className="font-black text-xl bg-primary/10 text-primary uppercase text-left text-left text-left text-left text-left">Y</AvatarFallback>
                                             </Avatar>
                                             <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-zinc-800 transition-all duration-500 text-left text-left text-left text-left text-left">
-                                                <AvatarImage src={partnerProfile?.photoURL || undefined} className="object-cover text-left text-left text-left" />
-                                                <AvatarFallback className="font-black text-xl bg-muted text-muted-foreground uppercase text-left text-left text-left text-left">{partnerName.charAt(0)}</AvatarFallback>
+                                                <AvatarImage src={partnerProfile?.photoURL || undefined} className="object-cover text-left text-left text-left text-left" />
+                                                <AvatarFallback className="font-black text-xl bg-muted text-muted-foreground uppercase text-left text-left text-left text-left text-left">{partnerName.charAt(0)}</AvatarFallback>
                                             </Avatar>
                                         </div>
-                                        <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-spin duration-[15s] opacity-20 pointer-events-none text-left text-left text-left" />
+                                        <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-spin duration-[15s] opacity-20 pointer-events-none text-left text-left text-left text-left" />
                                     </div>
                                     
-                                    <div className="space-y-2 text-center text-left text-left text-left">
-                                        <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse text-left text-left text-left">
+                                    <div className="space-y-2 text-center text-left text-left text-left text-left text-left">
+                                        <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse text-left text-left text-left text-left">
                                             Waiting for {partnerName}...
                                         </Badge>
-                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] opacity-60 text-center text-left text-left text-left">Awaiting acceptance from the alliance member</p>
+                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] opacity-60 text-center text-left text-left text-left text-left">Awaiting acceptance from the alliance member</p>
                                     </div>
 
-                                    <Button variant="outline" onClick={handleCancelRequest} disabled={isRequesting} className="h-12 rounded-xl font-black uppercase tracking-widest text-[10px] border-white/10 text-zinc-400 hover:bg-white/5 hover:text-white transition-all active:scale-95 text-center text-left text-left text-left">
+                                    <Button variant="outline" onClick={handleCancelRequest} disabled={isRequesting} className="h-12 rounded-xl font-black uppercase tracking-widest text-[10px] border-white/10 text-zinc-400 hover:bg-white/5 hover:text-white transition-all active:scale-95 text-center text-left text-left text-left text-left">
                                         Cancel Request
                                     </Button>
                                 </div>
@@ -562,11 +562,11 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     <div className="relative text-left text-left text-left text-left text-left">
                                         <div className="flex -space-x-8 sm:-space-x-12 items-center justify-center text-left text-left text-left text-left text-left text-left">
                                             <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-zinc-800 text-left text-left text-left text-left text-left text-left">
-                                                <AvatarImage src={partnerProfile?.photoURL || undefined} className="object-cover text-left text-left text-left" />
+                                                <AvatarImage src={partnerProfile?.photoURL || undefined} className="object-cover text-left text-left text-left text-left" />
                                                 <AvatarFallback className="font-black text-xl bg-muted text-muted-foreground uppercase text-left text-left text-left text-left">{partnerName.charAt(0)}</AvatarFallback>
                                             </Avatar>
                                             <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-primary/20 text-left text-left text-left text-left text-left text-left text-left">
-                                                <AvatarImage src={user?.photoURL || undefined} className="object-cover text-left text-left text-left" />
+                                                <AvatarImage src={user?.photoURL || undefined} className="object-cover text-left text-left text-left text-left" />
                                                 <AvatarFallback className="font-black text-xl bg-primary/10 text-primary uppercase text-left text-left text-left text-left">Y</AvatarFallback>
                                             </Avatar>
                                         </div>
@@ -649,7 +649,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             </div>
                                         )}
                                     </div>
-                                    <div className="col-span-1 flex flex-col items-center justify-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><span className="text-[10px] font-black text-primary/40 italic text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">VS</span></div>
+                                    <div className="col-span-1 flex flex-col items-center justify-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><span className="text-[10px] font-black text-primary/40 italic text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">VS</span></div>
                                     <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                         <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest truncate max-w-full text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{partnerName.toUpperCase()}</p>
                                         {match.partnerSession ? (
