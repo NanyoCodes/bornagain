@@ -29,30 +29,26 @@ import {
     Share2,
     Hourglass
 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn, safeToDate } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from '@/firebase';
 import { 
-    doc, 
+    collection, 
     updateDoc, 
     increment, 
     serverTimestamp, 
-    collection, 
     query, 
     where, 
     orderBy, 
     limit,
     deleteDoc,
     setDoc,
-    getDocs,
-    getDoc,
     addDoc
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import type { UserProfile, GameSession, GameInvitation, GameSessionType } from '@/lib/types';
-import { format, differenceInMinutes } from 'date-fns';
+import { differenceInMinutes } from 'date-fns';
 import { Label } from '../ui/label';
 import { BIBLE_GAME_DATA } from '@/lib/bible-game-data';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -118,6 +114,31 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     const invitation = useMemo(() => {
         return activeInvitations?.find(i => i.participantIds.includes(partnerId)) || null;
     }, [activeInvitations, partnerId]);
+
+    const historyQuery = useMemo(() => {
+        if (!firestore || !user?.uid || !partnerId) return null;
+        return query(
+            collection(firestore, 'gameSessions'),
+            where('participantIds', 'array-contains', user.uid),
+            limit(100)
+        );
+    }, [firestore, user?.uid, partnerId]);
+    const { data: allHistory, loading: historyLoading } = useCollection<GameSession>(historyQuery);
+
+    const headToHeadStats = useMemo(() => {
+        let me = 0;
+        let them = 0;
+        if (!allHistory || !user?.uid || !partnerId) return { me, them };
+        
+        allHistory.filter(s => s.participantIds.includes(partnerId)).forEach(session => {
+            if (session.userId === user.uid) {
+                me += session.score;
+            } else {
+                them += session.score;
+            }
+        });
+        return { me, them };
+    }, [allHistory, partnerId, user?.uid]);
 
     const nextChallenge = useCallback(() => {
         const pool = BIBLE_GAME_DATA[activeGameType];
@@ -354,16 +375,6 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
     const quiz = BIBLE_GAME_DATA[activeGameType][quizIndex];
 
-    const historyQuery = useMemo(() => {
-        if (!firestore || !user?.uid || !partnerId) return null;
-        return query(
-            collection(firestore, 'gameSessions'),
-            where('participantIds', 'array-contains', user.uid),
-            limit(50)
-        );
-    }, [firestore, user?.uid, partnerId]);
-    const { data: allHistory, loading: historyLoading } = useCollection<GameSession>(historyQuery);
-
     const matchHistory = useMemo(() => {
         if (!allHistory) return [];
         const groups: { date: Date; mySession?: GameSession; partnerSession?: GameSession; gameType: string }[] = [];
@@ -425,7 +436,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             <div className="text-center text-left">
                                 <p className="text-[10px] font-black uppercase text-primary/60 tracking-widest mb-1 text-center">YOU</p>
                                 <p className="text-2xl sm:text-4xl font-black tracking-tighter leading-none text-center">
-                                    {(userProfile?.kingdomPoints || 0) + (isGameActive ? correctCount * 10 : 0)}
+                                    {headToHeadStats.me + (isGameActive ? correctCount * 10 : 0)}
                                 </p>
                             </div>
                         </div>
@@ -454,14 +465,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     {partnerName.toUpperCase()} {partnerProfile?.gender ? `(${partnerProfile.gender})` : ''}
                                 </p>
                                 <p className="text-2xl sm:text-4xl font-black tracking-tighter leading-none text-muted-foreground text-center">
-                                    {partnerProfile?.kingdomPoints || 0}
+                                    {headToHeadStats.them}
                                 </p>
                             </div>
                         </div>
                     </div>
                     
                     <div className="pt-2 px-6 pb-2 bg-background/50 rounded-full border border-primary/10 shadow-sm relative z-10 text-left">
-                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary text-left">Live Match Tracking Active</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary text-left">Duel Points Scoreboard</p>
                     </div>
                 </div>
             </div>
@@ -510,23 +521,24 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             ) : invitation.hostId === user?.uid ? (
                                 <div className="space-y-8 w-full flex flex-col items-center justify-center animate-in fade-in text-center">
                                     <div className="relative text-left">
-                                        <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shadow-2xl ring-2 ring-primary/20 transition-all duration-500 hover:scale-105 text-left">
-                                            <AvatarImage src={partnerProfile?.photoURL} className="object-cover text-left" />
-                                            <AvatarFallback className="font-black text-2xl bg-primary/10 text-primary uppercase text-left">
-                                                {partnerName.charAt(0)}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-spin duration-[10s] opacity-30 text-left" />
-                                        <div className="absolute -bottom-2 -right-2 h-10 w-10 rounded-full bg-background border flex items-center justify-center shadow-lg ring-2 ring-primary/5 text-left">
-                                            <Loader2 className="h-5 w-5 text-primary animate-spin text-left" />
+                                        <div className="flex -space-x-8 sm:-space-x-12 items-center justify-center text-left">
+                                            <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-primary/20 transition-all duration-500 text-left">
+                                                <AvatarImage src={user?.photoURL} className="object-cover text-left" />
+                                                <AvatarFallback className="font-black text-xl bg-primary/10 text-primary uppercase text-left">Y</AvatarFallback>
+                                            </Avatar>
+                                            <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-zinc-800 transition-all duration-500 text-left">
+                                                <AvatarImage src={partnerProfile?.photoURL} className="object-cover text-left" />
+                                                <AvatarFallback className="font-black text-xl bg-muted text-muted-foreground uppercase text-left">{partnerName.charAt(0)}</AvatarFallback>
+                                            </Avatar>
                                         </div>
+                                        <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-spin duration-[15s] opacity-20 pointer-events-none text-left" />
                                     </div>
                                     
                                     <div className="space-y-2 text-center">
                                         <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse text-left">
                                             Waiting for {partnerName}...
                                         </Badge>
-                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] opacity-60 text-center">the alliance members should receive notifications</p>
+                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] opacity-60 text-center">Awaiting acceptance from the alliance member</p>
                                     </div>
 
                                     <Button variant="outline" onClick={handleCancelRequest} disabled={isRequesting} className="h-12 rounded-xl font-black uppercase tracking-widest text-[10px] border-white/10 text-zinc-400 hover:bg-white/5 hover:text-white transition-all active:scale-95 text-left">
@@ -536,12 +548,16 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             ) : (
                                 <div className="space-y-8 w-full flex flex-col items-center justify-center animate-in slide-in-from-bottom-4 text-center">
                                     <div className="relative text-left">
-                                        <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shadow-2xl ring-2 ring-primary/20 text-left">
-                                            <AvatarImage src={partnerProfile?.photoURL} className="object-cover text-left" />
-                                            <AvatarFallback className="font-black text-2xl bg-primary/10 text-primary uppercase text-left">
-                                                {partnerName.charAt(0)}
-                                            </AvatarFallback>
-                                        </Avatar>
+                                        <div className="flex -space-x-8 sm:-space-x-12 items-center justify-center text-left">
+                                            <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-zinc-800 text-left">
+                                                <AvatarImage src={partnerProfile?.photoURL} className="object-cover text-left" />
+                                                <AvatarFallback className="font-black text-xl bg-muted text-muted-foreground uppercase text-left">{partnerName.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-primary/20 text-left">
+                                                <AvatarImage src={user?.photoURL} className="object-cover text-left" />
+                                                <AvatarFallback className="font-black text-xl bg-primary/10 text-primary uppercase text-left">Y</AvatarFallback>
+                                            </Avatar>
+                                        </div>
                                         <div className="absolute -top-2 -right-2 h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-background animate-bounce text-left">
                                             <Target className="h-5 w-5 text-white text-left" />
                                         </div>
@@ -595,7 +611,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 <div className="space-y-4 text-left">
                     {historyLoading ? (
                         <div className="space-y-3 text-left">
-                            {[...Array(2)].map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-2xl text-left" />)}
+                            {[...Array(2)].map((_, i) => <Skeleton key={`skel-${i}`} className="h-28 w-full rounded-2xl text-left" />)}
                         </div>
                     ) : matchHistory.length > 0 ? (
                       matchHistory.map((match) => (
