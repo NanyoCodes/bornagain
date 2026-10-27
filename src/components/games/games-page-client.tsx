@@ -19,7 +19,6 @@ import {
     User,
     Sparkles
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -123,7 +122,7 @@ function PartnerGameCard({
                     onClick={onDuel}
                     className="w-full sm:w-auto h-11 sm:h-14 px-8 sm:px-10 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest sm:tracking-[0.2em] shadow-lg shadow-primary/20 transition-all active:scale-95 text-xs sm:text-sm text-center"
                 >
-                    <Sword className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    <Sword className="mr-2 h-4 w-4 sm:h-5 w-5" />
                     DUEL
                 </Button>
             </CardContent>

@@ -106,7 +106,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
   return (
     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
         <CardHeader className="text-left">
-            <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left"><ImageIcon className="h-5 w-5 text-primary" /> Kingdom Atmosphere</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left"><ImageIcon className="h-5 w-5 text-primary text-left" /> Kingdom Atmosphere</CardTitle>
             <CardDescription className="text-left">Personalize your environment and app readability.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-8 text-left">
@@ -114,8 +114,8 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left">
                     <div className="space-y-0.5 text-left">
-                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-                             <Palette className="h-4 w-4 text-primary" />
+                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left">
+                             <Palette className="h-4 w-4 text-primary text-left" />
                              Theme
                         </label>
                         <p className="text-[10px] text-muted-foreground uppercase font-medium">Dark mode is default</p>
@@ -125,8 +125,8 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
 
                 <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3 text-left">
                     <div className="space-y-0.5 pr-2 text-left">
-                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-                            <Type className="h-4 w-4 text-primary" />
+                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-left">
+                            <Type className="h-4 w-4 text-primary text-left" />
                             Text Size
                         </label>
                         <p className="text-[10px] text-muted-foreground uppercase font-medium">Adjust readability</p>
@@ -171,7 +171,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
                                 </div>
                                 {selectedUrl === preset.url && (
                                     <div className="absolute top-1 right-1 bg-primary rounded-full p-0.5 z-10 shadow-lg text-left">
-                                        <Sparkles className="h-3 w-3 text-white" />
+                                        <Sparkles className="h-3 w-3 text-white text-left" />
                                     </div>
                                 )}
                             </button>
@@ -200,8 +200,8 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
                     </div>
                 </div>
 
-                <Button onClick={handleSave} disabled={isSubmitting} className="w-full min-h-[3.5rem] h-auto rounded-[1.5rem] font-black shadow-xl shadow-primary/20 tracking-widest uppercase py-4">
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button onClick={handleSave} disabled={isSubmitting} className="w-full min-h-[3.5rem] h-auto rounded-[1.5rem] font-black shadow-xl shadow-primary/20 tracking-widest uppercase py-4 text-center">
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                     Save Environment
                 </Button>
             </div>
@@ -243,7 +243,7 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left"><Bell className="h-5 w-5 text-primary" /> Notifications</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left"><Bell className="h-5 w-5 text-primary text-left" /> Notifications</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -251,13 +251,13 @@ function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserPr
             <FormField control={form.control} name="newCampaignsInArea" render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-2xl border p-5 bg-muted/20 gap-4 text-left">
                   <div className="space-y-0.5 text-left">
-                    <FormLabel className="text-sm font-black uppercase tracking-wider">New Campaigns</FormLabel>
+                    <FormLabel className="text-sm font-black uppercase tracking-wider text-left">New Campaigns</FormLabel>
                     <FormDescription className="text-[10px] font-medium leading-tight">Notify me of missions in my area.</FormDescription>
                   </div>
                   <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                 </FormItem>
               )} />
-            <Button type="submit" className="w-full sm:w-auto h-12 rounded-2xl font-black uppercase tracking-widest" disabled={isSubmitting || !form.formState.isDirty}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Save Preferences</Button>
+            <Button type="submit" className="w-full sm:w-auto h-12 rounded-2xl font-black uppercase tracking-widest" disabled={isSubmitting || !form.formState.isDirty}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Save Preferences</Button>
           </form>
         </Form>
       </CardContent>
@@ -269,25 +269,25 @@ function ContactCard() {
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
       <CardHeader className="text-left">
-        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left"><MessageSquare className="h-5 w-5 text-primary" /> Ministry Support</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight text-left"><MessageSquare className="h-5 w-5 text-primary text-left" /> Ministry Support</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
         <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <Mail className="h-5 w-5 text-primary" />
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left">
+                <Mail className="h-5 w-5 text-primary text-left" />
             </div>
             <div className="min-w-0 text-left">
-                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5">Email Support</p>
-                <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-bold hover:underline truncate block text-foreground">testifyglobal360@gmail.com</a>
+                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left">Email Support</p>
+                <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-bold hover:underline truncate block text-foreground text-left">testifyglobal360@gmail.com</a>
             </div>
         </div>
         <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <Phone className="h-5 w-5 text-primary" />
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left">
+                <Phone className="h-5 w-5 text-primary text-left" />
             </div>
             <div className="min-w-0 text-left">
-                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left">Call / WhatsApp</p>
-                <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground">+234 814 853 8502</a>
+                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5 text-left text-left">Call / WhatsApp</p>
+                <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground text-left text-left">+234 814 853 8502</a>
             </div>
         </div>
       </CardContent>
@@ -304,15 +304,15 @@ function AccountDeletionRequest({ userId }: { userId: string }) {
 
     return (
         <div className="pt-12 pb-8 flex flex-col items-center gap-4 text-center px-6 text-left">
-            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] opacity-40 text-center">Account Lifecycle</p>
+            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] opacity-40 text-center text-left">Account Lifecycle</p>
             <Button 
                 variant="ghost" 
                 onClick={handleEmailRequest}
-                className="text-destructive hover:text-destructive hover:bg-destructive/10 font-black uppercase tracking-[0.2em] text-[10px] h-10 px-8 rounded-full border border-destructive/20 transition-all active:scale-95 text-center"
+                className="text-destructive hover:text-destructive hover:bg-destructive/10 font-black uppercase tracking-[0.2em] text-[10px] h-10 px-8 rounded-full border border-destructive/20 transition-all active:scale-95 text-center text-left"
             >
                 Request Account Deletion
             </Button>
-            <p className="text-[9px] text-muted-foreground italic max-w-xs leading-relaxed text-center">
+            <p className="text-[9px] text-muted-foreground italic max-w-xs leading-relaxed text-center text-left">
                 Send a request to our ministry team for secure identity removal.
             </p>
         </div>
@@ -324,6 +324,11 @@ export default function SettingsPage() {
   const firestore = useFirestore();
   const userDocRef = useMemo(() => (user?.uid ? doc(firestore, 'users', user.uid) : null), [user?.uid, firestore]);
   const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
+  const [now, setNow] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setNow(new Date());
+  }, []);
 
   return (
     <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32 text-left">
@@ -332,11 +337,11 @@ export default function SettingsPage() {
         <p className="text-xs sm:text-sm text-muted-foreground text-left">Manage your identity and Kingdom preferences.</p>
       </div>
       
-       {loading || !userProfile || !user ? (
+       {loading || !userProfile || !user || !now ? (
         <div className="space-y-6 px-4 sm:px-0 text-left">
-            <Skeleton className="h-40 w-full rounded-2xl" />
-            <Skeleton className="h-60 w-full rounded-2xl" />
-            <Skeleton className="h-40 w-full rounded-2xl" />
+            <Skeleton className="h-40 w-full rounded-2xl text-left" />
+            <Skeleton className="h-60 w-full rounded-2xl text-left" />
+            <Skeleton className="h-40 w-full rounded-2xl text-left" />
         </div>
        ) : (
         <div className="space-y-6 md:space-y-8 text-left">

@@ -43,7 +43,8 @@ import {
     limit,
     deleteDoc,
     setDoc,
-    addDoc
+    addDoc,
+    doc
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -377,7 +378,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
     const matchHistory = useMemo(() => {
         if (!allHistory) return [];
-        const groups: { date: Date; mySession?: GameSession; partnerSession?: GameSession; gameType: string }[] = [];
+        const groups: { id: string; date: Date; mySession?: GameSession; partnerSession?: GameSession; gameType: string }[] = [];
         const filtered = allHistory.filter(s => s.participantIds.includes(partnerId)).sort((a,b) => (safeToDate(b.createdAt)?.getTime() ?? 0) - (safeToDate(a.createdAt)?.getTime() ?? 0));
         
         filtered.forEach(session => {
@@ -388,7 +389,13 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 if (session.userId === user?.uid) group.mySession = session;
                 else group.partnerSession = session;
             } else {
-                groups.push({ date, gameType: session.gameType, mySession: session.userId === user?.uid ? session : undefined, partnerSession: session.userId !== user?.uid ? session : undefined });
+                groups.push({ 
+                    id: session.id,
+                    date, 
+                    gameType: session.gameType, 
+                    mySession: session.userId === user?.uid ? session : undefined, 
+                    partnerSession: session.userId !== user?.uid ? session : undefined 
+                });
             }
         });
         return groups.slice(0, 10);
@@ -479,7 +486,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
             <Card className="rounded-[2rem] sm:rounded-[3rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden group transition-all hover:border-primary/40 text-left">
                 <CardHeader className="p-6 sm:p-10 pb-4 text-center">
-                    <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="flex items-center justify-center gap-2 mb-2 text-left">
                         <Gamepad2 className="h-5 w-5 text-primary text-left" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Arena of Truth</span>
                     </div>
@@ -609,18 +616,50 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             <div className="space-y-6 text-left">
                 <div className="flex items-center gap-2 px-1 text-left"><History className="h-4 w-4 text-primary text-left" /><h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground text-left">Arena History</h4></div>
                 <div className="space-y-4 text-left">
-                    {historyLoading ? (
-                        <div className="space-y-3 text-left">
-                            {[...Array(2)].map((_, i) => <Skeleton key={`skel-${i}`} className="h-28 w-full rounded-2xl text-left" />)}
-                        </div>
-                    ) : matchHistory.length > 0 ? (
+                    {historyLoading ? (<div className="space-y-3 text-left">
+                        {[...Array(2)].map((_, i) => <Skeleton key={`history-skel-${i}`} className="h-28 w-full rounded-2xl text-left" />)}
+                    </div>) : matchHistory.length > 0 ? (
                       matchHistory.map((match) => (
-                            <Card key={match.date.getTime()} className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm overflow-hidden border-l-4 border-l-primary/10 text-left">
-                                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b bg-muted/5 text-left"><div className="flex items-center gap-2 text-left"><Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase bg-background/50 border-primary/20 text-primary text-left">{match.gameType}</Badge><span className="text-[9px] font-bold text-muted-foreground uppercase text-left">{format(match.date, 'MMM d, p')}</span></div><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => handleShareMatch(match)}><Share2 className="h-3.5 w-3.5 text-left" /></Button></CardHeader>
+                            <Card key={match.id} className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm overflow-hidden border-l-4 border-l-primary/10 text-left">
+                                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b bg-muted/5 text-left">
+                                    <div className="flex items-center gap-2 text-left">
+                                        <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase bg-background/50 border-primary/20 text-primary text-left">{match.gameType}</Badge>
+                                        <span className="text-[9px] font-bold text-muted-foreground uppercase text-left">{format(match.date, 'MMM d, p')}</span>
+                                    </div>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => handleShareMatch(match)}>
+                                        <Share2 className="h-3.5 w-3.5 text-left" />
+                                    </Button>
+                                </CardHeader>
                                 <CardContent className="p-4 sm:p-6 grid grid-cols-7 items-center gap-2 text-center text-left">
-                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest text-center">YOU</p>{match.mySession ? (<div className="space-y-1 text-left"><p className="text-2xl sm:text-3xl font-black text-primary tracking-tighter text-center">{match.mySession.score}</p><div className="flex items-center justify-center gap-1 text-[8px] font-bold text-green-500 uppercase text-center"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.mySession.correctCount} Correct</div></div>) : (<div className="flex flex-col items-center gap-1 opacity-20 text-left"><Hourglass className="h-6 w-6 animate-pulse text-left" /><p className="text-[8px] font-black uppercase text-center">Wait</p></div>)}</div>
+                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left">
+                                        <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest text-center">YOU</p>
+                                        {match.mySession ? (
+                                            <div className="space-y-1 text-left">
+                                                <p className="text-2xl sm:text-3xl font-black text-primary tracking-tighter text-center">{match.mySession.score}</p>
+                                                <div className="flex items-center justify-center gap-1 text-[8px] font-bold text-green-500 uppercase text-center"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.mySession.correctCount} Correct</div>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-1 opacity-20 text-left">
+                                                <Hourglass className="h-6 w-6 animate-pulse text-left" />
+                                                <p className="text-[8px] font-black uppercase text-center">Wait</p>
+                                            </div>
+                                        )}
+                                    </div>
                                     <div className="col-span-1 flex flex-col items-center justify-center text-left"><span className="text-[10px] font-black text-primary/40 italic text-center">VS</span></div>
-                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest truncate max-w-full text-center">{partnerName.toUpperCase()}</p>{match.partnerSession ? (<div className="space-y-1 text-left"><p className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter text-center">{match.partnerSession.score}</p><div className="flex items-center justify-center gap-1 text-[8px] font-bold text-muted-foreground uppercase text-center"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.partnerSession.correctCount} Correct</div></div>) : (<div className="flex flex-col items-center gap-1 opacity-20 text-left"><Hourglass className="h-6 w-6 animate-pulse text-left" /><p className="text-[8px] font-black uppercase text-center">Wait</p></div>)}</div>
+                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left">
+                                        <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest truncate max-w-full text-center">{partnerName.toUpperCase()}</p>
+                                        {match.partnerSession ? (
+                                            <div className="space-y-1 text-left">
+                                                <p className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter text-center">{match.partnerSession.score}</p>
+                                                <div className="flex items-center justify-center gap-1 text-[8px] font-bold text-muted-foreground uppercase text-center"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.partnerSession.correctCount} Correct</div>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-1 opacity-20 text-left">
+                                                <Hourglass className="h-6 w-6 animate-pulse text-left" />
+                                                <p className="text-[8px] font-black uppercase text-center">Wait</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </CardContent>
                             </Card>
                         ))
