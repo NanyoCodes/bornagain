@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getToken } from 'firebase/messaging';
 import { useMessaging, useUser, useFirestore } from '@/firebase';
-import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
 
 /**
  * Hook to retrieve and synchronize the FCM push notification token.
@@ -29,39 +29,36 @@ export function useFcmToken() {
             return;
         }
 
-        // Register the service worker explicitly to ensure it is ready
-        if ('serviceWorker' in navigator) {
-            const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-            
+        if ('Notification' in window && Notification.permission === 'granted') {
             const currentToken = await getToken(messaging, {
-              vapidKey: VAPID_PUBLIC_KEY,
-              serviceWorkerRegistration: registration
+              vapidKey: VAPID_PUBLIC_KEY
             });
 
             if (currentToken) {
               setToken(currentToken);
+              console.log('FCM Token Generated:', currentToken);
               
               // Sync token to Firestore to enable push notifications for this device
               const userRef = doc(firestore, 'users', user.uid);
               await updateDoc(userRef, {
                 fcmTokens: arrayUnion(currentToken),
                 lastTokenSync: serverTimestamp()
-              }).catch(() => {
-                  // Silently fail if rules prevent update; token is still available locally
+              }).catch((err) => {
+                  console.error("Failed to sync FCM token to Firestore:", err);
               });
+            } else {
+              console.warn('FCM: No registration token available. Request permission to generate one.');
             }
         }
       } catch (err) {
-        console.warn('Failed to retrieve FCM token:', err);
+        console.error('Failed to retrieve FCM token:', err);
       }
     };
 
     // Small delay to allow firebase initialization to stabilize
-    const timer = setTimeout(retrieveToken, 2000);
+    const timer = setTimeout(retrieveToken, 3000);
     return () => clearTimeout(timer);
   }, [messaging, user, firestore]);
 
   return token;
 }
-
-import { serverTimestamp } from 'firebase/firestore';

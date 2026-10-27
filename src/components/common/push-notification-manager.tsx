@@ -5,7 +5,7 @@ import { onMessage } from 'firebase/messaging';
 import { useMessaging, useUser, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useFcmToken } from '@/hooks/use-fcm-token';
-import { Bell, Sparkles, X, ShieldCheck } from 'lucide-react';
+import { Bell, Sparkles, X, ShieldCheck, Info } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import { cn } from '@/lib/utils';
@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 export function PushNotificationManager() {
   const messaging = useMessaging();
   const { toast } = useToast();
-  const token = useFcmToken();
+  const token = useFcmToken(); // This hook handles background token sync
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [showPrompt, setShowPrompt] = useState(false);
 
@@ -59,7 +59,8 @@ export function PushNotificationManager() {
       
       if (result === 'granted') {
         toast({ title: 'Notifications Enabled!', description: 'You will now receive Kingdom alerts on this device.' });
-        // The useFcmToken hook will handle the token sync now that permission is granted
+        // The page will need to reload or wait for useFcmToken to pick up the change
+        window.location.reload();
       } else {
         toast({ variant: 'destructive', title: 'Permission Denied', description: 'Alerts are disabled for this device.' });
       }
@@ -90,7 +91,7 @@ export function PushNotificationManager() {
                     </div>
                 </div>
                 <div className="flex gap-2 text-left">
-                    <Button variant="ghost" size="sm" onClick={() => setShowPrompt(false)} className="flex-1 rounded-xl h-10 font-bold text-left">Later</Button>
+                    <Button variant="ghost" size="sm" onClick={() => setShowPrompt(false)} className="flex-1 rounded-xl h-10 font-bold text-left text-left">Later</Button>
                     <Button onClick={requestPermission} size="sm" className="flex-1 rounded-xl h-10 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 text-center text-left">
                         <Sparkles className="mr-1.5 h-3 w-3 text-left" />
                         ENABLE ALERTS
