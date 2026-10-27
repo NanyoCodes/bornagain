@@ -90,6 +90,8 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
     useEffect(() => {
         setNow(new Date());
+        const timer = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(timer);
     }, []);
 
     const partnerDocRef = useMemo(() => (firestore && partnerId) ? doc(firestore, 'users', partnerId) : null, [firestore, partnerId]);
@@ -435,7 +437,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             <div className="relative text-left">
                                 <Avatar className="h-16 w-16 sm:h-24 sm:w-24 border-4 border-background shadow-2xl ring-2 ring-primary/10 text-left">
                                     <AvatarImage src={user?.photoURL || undefined} className="object-cover text-left" />
-                                    <AvatarFallback className="font-black bg-primary/10 text-primary text-left">Y</AvatarFallback>
+                                    <AvatarFallback className="font-black text-xl bg-primary/10 text-primary uppercase text-left">Y</AvatarFallback>
                                 </Avatar>
                                 <div className="absolute -bottom-1 -right-1 bg-primary rounded-full p-1.5 shadow-lg border-2 border-background text-left">
                                     <Star className="h-3 w-3 text-white fill-current text-left" />
@@ -456,7 +458,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                         </div>
 
                         <div className="flex flex-col items-center gap-3 flex-1 min-w-0 text-left">
-                            <div className="relative text-left text-left">
+                            <div className="relative text-left">
                                 <Avatar className="h-16 w-16 sm:h-24 sm:w-24 border-4 border-background shadow-2xl ring-2 ring-muted-foreground/10 text-left">
                                     <AvatarImage src={partnerProfile?.photoURL || undefined} className="object-cover text-left" />
                                     <AvatarFallback className="font-black bg-muted text-muted-foreground text-left">{partnerName.charAt(0)}</AvatarFallback>
@@ -487,9 +489,9 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
             <Card className="rounded-[2rem] sm:rounded-[3rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden group transition-all hover:border-primary/40 text-left">
                 <CardHeader className="p-6 sm:p-10 pb-4 text-center text-left">
-                    <div className="flex items-center justify-center gap-2 mb-2 text-left text-left text-left">
-                        <Gamepad2 className="h-5 w-5 text-primary text-left text-left text-left" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Arena of Truth</span>
+                    <div className="flex items-center justify-center gap-2 mb-2 text-left">
+                        <Gamepad2 className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Arena of Truth</span>
                     </div>
                     <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight text-white leading-none text-center text-left">Sharpening the Word</CardTitle>
                     {!isGameActive && gameState !== 'finished' && (
@@ -632,7 +634,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     </Button>
                                 </CardHeader>
                                 <CardContent className="p-4 sm:p-6 grid grid-cols-7 items-center gap-2 text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                         <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">YOU</p>
                                         {match.mySession ? (
                                             <div className="space-y-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
@@ -645,7 +647,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             </div>
                                         )}
                                     </div>
-                                    <div className="col-span-1 flex flex-col items-center justify-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><span className="text-[10px] font-black text-primary/40 italic text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">VS</span></div>
+                                    <div className="col-span-1 flex flex-col items-center justify-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><span className="text-[10px] font-black text-primary/40 italic text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">VS</span></div>
                                     <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                         <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest truncate max-w-full text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{partnerName.toUpperCase()}</p>
                                         {match.partnerSession ? (

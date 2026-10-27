@@ -66,6 +66,8 @@ function PartnerGameCard({
 
     useEffect(() => {
         setNow(new Date());
+        const timer = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(timer);
     }, []);
 
     const isOnline = useMemo(() => {
@@ -105,12 +107,12 @@ function PartnerGameCard({
                                 </Badge>
                             )}
                             <div className="flex items-center gap-2 sm:gap-3 bg-muted/30 px-3 sm:px-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl border shadow-inner">
-                                <div className="flex items-center gap-1 sm:gap-1.5">
+                                <div className="flex items-center gap-1.5">
                                     <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary fill-current" />
                                     <span className="text-[8px] sm:text-[10px] font-black uppercase text-primary tracking-widest">You: {myPoints}</span>
                                 </div>
                                 <Separator orientation="vertical" className="h-3 sm:h-4 bg-primary/20" />
-                                <div className="flex items-center gap-1 sm:gap-1.5">
+                                <div className="flex items-center gap-1.5">
                                     <Trophy className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-500" />
                                     <span className="text-[8px] sm:text-[10px] font-black uppercase text-zinc-500 tracking-widest">Partner: {partnerPoints}</span>
                                 </div>
@@ -269,7 +271,7 @@ export default function GamesPageClient() {
                             <Star className="h-6 w-6 sm:h-7 sm:w-7 text-white animate-pulse" />
                         </div>
                         <div>
-                            <p className="text-base sm:text-lg font-black uppercase tracking-tight leading-tight">Your Kingdom XP</p>
+                            <p className="text-lg font-black uppercase tracking-tight leading-tight">Your Kingdom XP</p>
                             <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter">{userProfile?.kingdomPoints || 0} POINTS</p>
                         </div>
                     </div>
