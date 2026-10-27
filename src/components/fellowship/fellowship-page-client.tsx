@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useDoc, useFirestore, useUser, useAuth, useCollection, useUserProfile } from '@/firebase';
+import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment, Chat } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion, getDocs, addDoc, getDoc } from 'firebase/firestore';
 import { 
@@ -235,12 +235,12 @@ function FullDevotionalDialog({
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left flex-shrink-0 p-0">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
-                                <MessageSquare className="h-6 w-6 text-primary shrink-0" />
+                        <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
+                                <MessageSquare className="h-6 w-6 text-primary shrink-0 text-left" />
                                 {devotional.title}
                             </SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left">
@@ -259,27 +259,27 @@ function FullDevotionalDialog({
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
-                <div className="p-8 border-b bg-muted/10 shrink-0">
-                    <div className="flex items-center gap-3 mb-2">
-                        <Target className="h-5 w-5 text-primary" />
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="flex items-center gap-3 mb-2 text-left">
+                        <Target className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Mission Overview</span>
                     </div>
-                    <DialogHeader className="text-left p-0">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
-                            <MessageSquare className="h-6 w-6 text-primary shrink-0" />
+                    <DialogHeader className="text-left p-0 text-left">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
+                            <MessageSquare className="h-6 w-6 text-primary shrink-0 text-left" />
                             {devotional.title}
                         </DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1 text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="flex-1 min-h-0">
+                <div className="flex-1 min-h-0 text-left">
                   <ScrollArea className="h-full">
                       <div className="p-8">
                           {content}
                       </div>
                   </ScrollArea>
                 </div>
-                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0">
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left">
                     <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold">Close Word</Button>
                 </div>
             </DialogContent>
@@ -499,7 +499,7 @@ export default function FellowshipPageClient() {
             memberIds: arrayRemove(memberId),
             memberCount: increment(-1)
         });
-        batch.delete(doc(firestore, 'users', memberId, 'fellowships', fellowshipId));
+        batch.delete(doc(firestore, 'users', memberId, 'joinedFellowships', fellowshipId));
 
         try {
             await batch.commit();
@@ -904,7 +904,7 @@ export default function FellowshipPageClient() {
             {isLogSoulOpen && (
                 isMobile ? (
                     <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DrawerTitle>

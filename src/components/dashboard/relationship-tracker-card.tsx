@@ -116,7 +116,7 @@ function SoulSelectionDialog({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={e => setSearch(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
@@ -315,20 +315,18 @@ export function RelationshipTrackerCard() {
 
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left text-left text-left">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left text-left">
-              <div className="space-y-1 text-left text-left">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left">
-                      <Sparkles className="h-5 w-5 text-primary text-left text-left" />
-                      Kingdom Connections
-                  </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left text-left">Daily Relational Efforts</CardDescription>
+            <div className="space-y-1 text-left text-left">
+              <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left">
+                  <Sparkles className="h-5 w-5 text-primary text-left text-left" />
+                  Kingdom Connections
+              </CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left text-left">Daily Relational Efforts</CardDescription>
+            </div>
+            {currentDate && (
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left">
+                {format(currentDate, 'PPPP')}
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end text-left text-left text-left">
-                {currentDate && (
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left">
-                    {format(currentDate, 'PPPP')}
-                  </div>
-                )}
-              </div>
+            )}
           </div>
         </CardHeader>
 
@@ -393,14 +391,14 @@ export function RelationshipTrackerCard() {
                 </div>
             </div>
         </CardContent>
-        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left text-left text-left">
-              <Button asChild variant="ghost" className="w-full font-black h-12 rounded-2xl border-2 border-dashed border-primary/20 text-primary hover:bg-primary/5 tracking-widest uppercase text-xs sm:text-sm text-center text-left text-left text-left">
-                  <Link href="/souls-won" className="text-center text-left text-left">
-                      <UserPlus className="mr-2 h-4 w-4 text-left text-left text-left" />
+        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left text-left text-left text-left">
+              <Button asChild variant="ghost" className="w-full font-black h-12 rounded-2xl border-2 border-dashed border-primary/20 text-primary hover:bg-primary/5 tracking-widest uppercase text-xs sm:text-sm text-center text-left text-left text-left text-left">
+                  <Link href="/souls-won" className="text-center text-left text-left text-left">
+                      <UserPlus className="mr-2 h-4 w-4 text-left text-left text-left text-left" />
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 w-full text-center text-left text-left text-left text-left">
+              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 w-full text-center text-left text-left text-left text-left text-left">
                   Unity • Growth • Love
               </p>
         </CardFooter>

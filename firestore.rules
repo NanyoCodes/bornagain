@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for fellowship/campaign participation rules - 2025-03-05T23:00:00Z
+    // Deployment trigger: Critical fix for joinedFellowships subcollection permissions - 2025-03-06T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -120,7 +120,7 @@ service cloud.firestore {
         allow get, list, write: if isOwner(userId);
       }
 
-      match /fellowships/{fellowshipId} {
+      match /joinedFellowships/{fellowshipId} {
         allow get, list, write: if isOwner(userId);
       }
     }

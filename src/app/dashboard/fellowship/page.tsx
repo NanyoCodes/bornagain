@@ -536,7 +536,7 @@ export default function FellowshipPage() {
     
     const joinedGroupsRefsQuery = useMemo(() => {
       if (!user?.uid || !firestore) return null;
-      return query(collection(firestore, `users/${user.uid}/fellowships`));
+      return query(collection(firestore, `users/${user.uid}/joinedFellowships`));
     }, [user?.uid, firestore]);
     const { data: joinedFellowshipRefs } = useCollection<JoinedFellowship>(joinedGroupsRefsQuery);
 
@@ -545,7 +545,7 @@ export default function FellowshipPage() {
         setIsSubmitting(true);
 
         const newFellowshipRef = doc(collection(firestore, "fellowships"));
-        const userFellowshipRef = doc(firestore, 'users', user.uid, 'fellowships', newFellowshipRef.id);
+        const userFellowshipRef = doc(firestore, 'users', user.uid, 'joinedFellowships', newFellowshipRef.id);
         const fellowshipMemberRef = doc(firestore, 'fellowships', newFellowshipRef.id, 'members', user.uid);
 
         const location = [values.city, values.state, values.country].filter(Boolean).join(', ');
