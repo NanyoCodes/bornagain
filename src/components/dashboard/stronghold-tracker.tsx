@@ -123,7 +123,7 @@ export function StrongholdTracker() {
     const [category, setCategory] = useState('Other');
     const [title, setTitle] = useState('');
     
-    const [testimonyStronghold, setTestimonyStronghold] = setTestimonyStronghold = useState<Stronghold | null>(null);
+    const [testimonyStronghold, setTestimonyStronghold] = useState<Stronghold | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -241,9 +241,9 @@ export function StrongholdTracker() {
             <Button 
                 onClick={handleAddStronghold} 
                 disabled={isSubmitting || !title.trim()} 
-                className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+                className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left"
             >
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
                 BEGIN TRACKING
             </Button>
         </div>
@@ -365,7 +365,7 @@ export function StrongholdTracker() {
                 ) : (
                     <div className="text-center py-12 bg-muted/20 rounded-[2rem] border-2 border-dashed">
                         <div className="h-12 w-12 bg-muted/40 rounded-full flex items-center justify-center mx-auto mb-4 text-left"><Zap className="h-6 w-6 text-muted-foreground opacity-20" /></div>
-                        <p className="text-xs text-muted-foreground font-medium italic px-12 text-balance leading-relaxed">"For the weapons of our warfare are not carnal but mighty in God for pulling down strongholds." — 2 Cor 10:4</p>
+                        <p className="text-xs text-muted-foreground font-medium italic px-12 text-balance leading-relaxed text-center">"For the weapons of our warfare are not carnal but mighty in God for pulling down strongholds." — 2 Cor 10:4</p>
                         <Button variant="link" onClick={() => setIsAddOpen(true)} className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest w-full">Initialize a Tracker</Button>
                     </div>
                 )}
@@ -376,35 +376,35 @@ export function StrongholdTracker() {
                     <DrawerContent className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="text-left flex-shrink-0">
-                                <div className="flex items-center gap-2 mb-2 text-left">
-                                    <ShieldCheck className="h-4 w-4 text-primary" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Warfare Protocol</span>
+                                <div className="flex items-center gap-2 mb-2 text-left text-left">
+                                    <ShieldCheck className="h-4 w-4 text-primary text-left" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Warfare Protocol</span>
                                 </div>
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Enter the Warfare</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Naming a struggle is the first step toward the Light.</DrawerDescription>
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Enter the Warfare</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Naming a struggle is the first step toward the Light.</DrawerDescription>
                             </div>
                         </div>
-                        <ScrollArea className="flex-grow p-8 text-left">
+                        <ScrollArea className="flex-grow p-8 text-left text-left">
                             {formFields}
                         </ScrollArea>
-                        <div className="p-8 border-t bg-background/80 backdrop-blur-sm text-left">
+                        <div className="p-8 border-t bg-background/80 backdrop-blur-sm text-left text-left">
                             {formFooter}
                         </div>
                     </DrawerContent>
                 </Drawer>
             ) : (
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left">
-                            <DialogHeader className="text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Enter the Warfare</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left">
+                            <DialogHeader className="text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Enter the Warfare</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <div className="p-8 text-left">
+                        <div className="p-8 text-left text-left">
                             {formFields}
                         </div>
-                        <div className="p-8 bg-muted/5 border-t text-left">
+                        <div className="p-8 bg-muted/5 border-t text-left text-left">
                             {formFooter}
                         </div>
                     </DialogContent>
@@ -412,17 +412,17 @@ export function StrongholdTracker() {
             )}
 
             <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
-                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Your Victory</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1 text-left">
+                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+                        <DialogHeader className="text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Share Your Victory</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left text-left">
                                 Encourage the body of Christ by sharing how God gave you victory over "{testimonyStronghold?.title}".
                             </DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left">
-                        <div className="p-8 text-left">
+                    <ScrollArea className="flex-1 min-h-0 text-left text-left">
+                        <div className="p-8 text-left text-left text-left">
                             {userProfile && testimonyStronghold && (
                                 <CreateTestimonyForm 
                                     userProfile={userProfile} 
