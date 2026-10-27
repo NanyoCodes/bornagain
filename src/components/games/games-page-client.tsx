@@ -306,7 +306,7 @@ export default function GamesPageClient() {
                                         <Button 
                                             onClick={() => handleAcceptChallenge(notif.id, notif.link || '/games')}
                                             size="sm" 
-                                            className="w-full rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg"
+                                            className="w-full rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[10px] shadow-lg"
                                         >
                                             ENTER ARENA
                                         </Button>

@@ -184,8 +184,8 @@ export function RelationshipTrackerCard() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [completedToday, setCompletedToday] = useState<string[]>([]);
-  const [togglingId, setTogglingId] = setTogglingId = useState<string | null>(null);
-  const [selectedActionId, setSelectedActionId] = setSelectedActionId = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
@@ -325,7 +325,7 @@ export function RelationshipTrackerCard() {
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                 {currentDate && (
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
                     {format(currentDate, 'PPPP')}
                   </div>
                 )}
@@ -338,11 +338,11 @@ export function RelationshipTrackerCard() {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
-                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left"
+                            className="w-full h-14 rounded-2xl font-black uppercase tracking-widest sm:tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left"
                             disabled={togglingId !== null}
                         >
                             {togglingId ? <Loader2 className="h-5 w-5 animate-spin" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110" />}
-                            RECORD KINGDOM IMPACT
+                            RECORD KINGDOM CONNECTION
                             <ChevronDown className="h-4 w-4 ml-auto opacity-40" />
                         </Button>
                     </DropdownMenuTrigger>
@@ -389,7 +389,7 @@ export function RelationshipTrackerCard() {
                          </Badge>
                     ))}
                     {completedToday.length === 0 && (
-                        <p className="text-[10px] text-muted-foreground italic font-medium px-1">No relational actions logged yet today.</p>
+                        <p className="text-[10px] text-muted-foreground italic font-medium px-1">No connections recorded yet today.</p>
                     )}
                 </div>
             </div>

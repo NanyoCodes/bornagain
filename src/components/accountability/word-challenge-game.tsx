@@ -472,7 +472,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             </div>
                             <div className="text-center min-w-0 w-full px-2 text-left">
                                 <p className="text-[10px] sm:text-xs font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-center w-full text-left">
-                                    {partnerName} {partnerProfile?.gender ? `(${partnerProfile.gender.toUpperCase()})` : ''}
+                                    {partnerName}
                                 </p>
                                 <p className="text-2xl sm:text-4xl font-black tracking-tighter leading-none text-muted-foreground text-center text-left">
                                     {headToHeadStats.them}
