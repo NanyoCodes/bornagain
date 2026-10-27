@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { useUser, useDoc, useUserProfile, useFirestore, useCollection } from '@/firebase';
+import { useUser, useDoc, useUserProfile, useCollection, useFirestore } from '@/firebase';
 import { doc, collection, query, where, orderBy, serverTimestamp, addDoc, setDoc } from 'firebase/firestore';
 import type { UserProfile, Fellowship, GameSessionType, GameSession } from '@/lib/types';
 import { 
@@ -129,7 +129,7 @@ function ChallengePartnerDialog({
     );
 }
 
-function PartnerGameCard({ partner, onDuel, duelPoints }: { partner: UserProfile['accountabilityPartners'][0], onDuel: () => void, duelPoints: number }) {
+function PartnerGameCard({ partner, onDuel, myPoints, partnerPoints }: { partner: UserProfile['accountabilityPartners'][0], onDuel: () => void, myPoints: number, partnerPoints: number }) {
     const firestore = useFirestore();
     const partnerRef = useMemo(() => partner.userId ? doc(firestore, 'users', partner.userId) : null, [firestore, partner.userId]);
     const { data: profile } = useDoc<UserProfile>(partnerRef);
@@ -147,13 +147,13 @@ function PartnerGameCard({ partner, onDuel, duelPoints }: { partner: UserProfile
     }, [profile?.lastActive, now]);
 
     return (
-        <Card className="rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-4 border-l-primary/20 text-left text-left text-left">
+        <Card className="rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-4 border-l-primary/20 text-left">
             <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-left">
-                <div className="flex items-center gap-4 min-w-0 flex-1 w-full sm:w-auto text-left text-left text-left">
-                    <div className="relative shrink-0 text-left text-left">
+                <div className="flex items-center gap-4 min-w-0 flex-1 w-full sm:w-auto text-left">
+                    <div className="relative shrink-0 text-left">
                         <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-4 border-background shadow-xl ring-2 ring-primary/5 transition-transform group-hover:scale-105 text-left">
-                            <AvatarImage src={profile?.photoURL || partner.photoURL} className="object-cover text-left text-left" />
-                            <AvatarFallback className="font-black text-xl bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-left text-left">
+                            <AvatarImage src={profile?.photoURL || partner.photoURL} className="object-cover text-left" />
+                            <AvatarFallback className="font-black text-xl bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-left">
                                 {partner.firstName?.charAt(0)}
                             </AvatarFallback>
                         </Avatar>
@@ -168,11 +168,18 @@ function PartnerGameCard({ partner, onDuel, duelPoints }: { partner: UserProfile
                         <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight truncate leading-none mb-1.5 text-left">
                             {partner.firstName} {partner.lastName}
                         </h3>
-                        <div className="flex items-center gap-2 text-left">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-left">
                             <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20 text-left">Partner</Badge>
-                            <div className="flex items-center gap-1 text-muted-foreground text-[10px] font-bold uppercase tracking-widest text-left">
-                                <Trophy className="h-3 w-3 text-amber-500 text-left" />
-                                {duelPoints} XP vs You
+                            <div className="flex items-center gap-3 text-muted-foreground text-[10px] font-bold uppercase tracking-widest text-left">
+                                <div className="flex items-center gap-1">
+                                    <Trophy className="h-3 w-3 text-amber-500" />
+                                    <span>Me: {myPoints}</span>
+                                </div>
+                                <span className="opacity-30">|</span>
+                                <div className="flex items-center gap-1">
+                                    <Users className="h-3 w-3 text-primary" />
+                                    <span>{partner.firstName}: {partnerPoints}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -197,18 +204,18 @@ function GroupChallengeCard({ fellowship }: { fellowship: Fellowship }) {
     return (
         <Card className="rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-4 border-l-indigo-500/20 text-left">
             <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-left">
-                <div className="flex items-center gap-4 min-w-0 flex-1 w-full sm:w-auto text-left">
-                    <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-[1.5rem] bg-indigo-500/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform text-left">
+                <div className="flex items-center gap-4 min-w-0 flex-1 w-full sm:w-auto text-left text-left">
+                    <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-[1.5rem] bg-indigo-500/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform text-left text-left">
                         {isGiftVendor ? <Group className="h-7 w-7 text-indigo-600 text-left" /> : <Users className="h-7 w-7 text-indigo-600 text-left" />}
                     </div>
-                    <div className="min-w-0 flex-1 text-left">
-                        <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight truncate leading-none mb-1.5 text-left">
+                    <div className="min-w-0 flex-1 text-left text-left">
+                        <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight truncate leading-none mb-1.5 text-left text-left">
                             {fellowship.name}
                         </h3>
-                        <div className="flex items-center gap-2 text-left">
-                            <Badge variant="outline" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest border-indigo-500/30 text-indigo-600 bg-indigo-500/5 text-left"> {fellowship.groupType}</Badge>
-                            <div className="flex items-center gap-1 text-muted-foreground text-[10px] font-bold uppercase tracking-widest text-left">
-                                <Users className="h-3 w-3 text-left" />
+                        <div className="flex items-center gap-2 text-left text-left">
+                            <Badge variant="outline" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest border-indigo-500/30 text-indigo-600 bg-indigo-500/5 text-left text-left"> {fellowship.groupType}</Badge>
+                            <div className="flex items-center gap-1 text-muted-foreground text-[10px] font-bold uppercase tracking-widest text-left text-left">
+                                <Users className="h-3 w-3 text-left text-left" />
                                 {fellowship.memberCount} Members
                             </div>
                         </div>
@@ -257,17 +264,25 @@ export default function GamesPageClient() {
     }, [user?.uid, firestore]);
     const { data: allSessions } = useCollection<GameSession>(sessionsQuery);
 
-    const partnerDuelPoints = useMemo(() => {
-        const pointsMap: Record<string, number> = {};
-        if (!allSessions || !user?.uid) return pointsMap;
+    const partnerDuelStats = useMemo(() => {
+        const statsMap: Record<string, { myPoints: number, partnerPoints: number }> = {};
+        if (!allSessions || !user?.uid) return statsMap;
         
         allSessions.forEach(session => {
             const otherId = session.participantIds.find(id => id !== user.uid);
-            if (otherId && session.userId === user.uid) {
-                pointsMap[otherId] = (pointsMap[otherId] || 0) + session.score;
+            if (!otherId) return;
+
+            if (!statsMap[otherId]) {
+                statsMap[otherId] = { myPoints: 0, partnerPoints: 0 };
+            }
+
+            if (session.userId === user.uid) {
+                statsMap[otherId].myPoints += session.score;
+            } else {
+                statsMap[otherId].partnerPoints += session.score;
             }
         });
-        return pointsMap;
+        return statsMap;
     }, [allSessions, user?.uid]);
 
     const partners = useMemo(() => {
@@ -299,113 +314,114 @@ export default function GamesPageClient() {
 
     if (profileLoading || fellowshipsLoading) {
         return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center text-left text-left">
-                <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
-                <p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-center text-left text-left">Opening Kingdom Arena...</p>
+            <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-center">Opening Kingdom Arena...</p>
             </div>
         );
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 pb-32 px-4 sm:px-0 text-left text-left">
-            <header className="space-y-6 pt-4 text-left text-left text-left text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left text-left text-left">
-                    <div className="space-y-1 text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                            <Gamepad2 className="h-6 w-6 text-primary text-left text-left text-left" />
-                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Kingdom Arena</span>
+        <div className="max-w-4xl mx-auto space-y-8 pb-32 px-4 sm:px-0 text-left">
+            <header className="space-y-6 pt-4 text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+                    <div className="space-y-1 text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left">
+                            <Gamepad2 className="h-6 w-6 text-primary text-left" />
+                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Arena</span>
                         </div>
-                        <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left text-left">Battle Lobby</h1>
-                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed italic text-balance text-left text-left">
+                        <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left">Battle Lobby</h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed italic text-balance text-left">
                             Sharpen your spirit through interactive biblical challenges. Duel your partners or lead your community into a shared Word crusade.
                         </p>
                     </div>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-inner relative overflow-hidden text-left text-left text-left">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-left text-left">
-                        <Sparkles className="h-24 w-24 text-primary rotate-12 text-left text-left text-left" />
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-inner relative overflow-hidden text-left">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-left">
+                        <Sparkles className="h-24 w-24 text-primary rotate-12 text-left" />
                     </div>
-                    <div className="flex items-center gap-4 relative z-10 text-left text-left text-left text-left">
-                        <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 text-left text-left">
-                            <Star className="h-7 w-7 text-white animate-pulse text-left text-left text-left" />
+                    <div className="flex items-center gap-4 relative z-10 text-left text-left">
+                        <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 text-left">
+                            <Star className="h-7 w-7 text-white animate-pulse text-left" />
                         </div>
                         <div className="text-left text-left">
-                            <p className="text-lg font-black uppercase tracking-tight leading-tight text-left text-left text-left">Your Kingdom XP</p>
-                            <p className="text-2xl font-black text-primary tracking-tighter text-left text-left text-left">{userProfile?.kingdomPoints || 0} POINTS</p>
+                            <p className="text-lg font-black uppercase tracking-tight leading-tight text-left">Your Kingdom XP</p>
+                            <p className="text-2xl font-black text-primary tracking-tighter text-left">{userProfile?.kingdomPoints || 0} POINTS</p>
                         </div>
                     </div>
-                    <div className="h-px w-full bg-primary/10 sm:hidden text-left text-left text-left" />
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground relative z-10 text-left text-left text-left text-left text-left">
-                        <Trophy className="h-4 w-4 text-amber-500 text-left text-left text-left text-left" />
+                    <div className="h-px w-full bg-primary/10 sm:hidden text-left" />
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground relative z-10 text-left">
+                        <Trophy className="h-4 w-4 text-amber-500 text-left" />
                         Top Ranked Laborer
                     </div>
                 </div>
 
-                <div className="space-y-4 text-left text-left text-left text-left text-left">
-                    <div className="relative text-left text-left text-left text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left text-left" />
+                <div className="space-y-4 text-left">
+                    <div className="relative text-left">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                         <Input 
                             placeholder={activeTab === 'individual' ? "Search partners..." : "Search groups..."}
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            className="h-14 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-lg font-bold w-full text-left text-left text-left"
+                            className="h-14 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-lg font-bold w-full text-left"
                         />
                     </div>
 
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left text-left">
-                        <TabsList className="grid w-full grid-cols-2 h-14 bg-muted/40 p-1 rounded-2xl text-left text-left text-left">
-                            <TabsTrigger value="individual" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full flex items-center gap-2 text-center text-left text-left text-left">
-                                <User className="h-3.5 w-3.5 text-left text-left" />
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
+                        <TabsList className="grid w-full grid-cols-2 h-14 bg-muted/40 p-1 rounded-2xl text-left">
+                            <TabsTrigger value="individual" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full flex items-center gap-2 text-center">
+                                <User className="h-3.5 w-3.5 text-left" />
                                 Individual Duel
                             </TabsTrigger>
-                            <TabsTrigger value="group" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full flex items-center gap-2 text-center text-left text-left text-left">
-                                <Users className="h-3.5 w-3.5 text-left text-left" />
+                            <TabsTrigger value="group" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full flex items-center gap-2 text-center">
+                                <Users className="h-3.5 w-3.5 text-left" />
                                 Group Crusade
                             </TabsTrigger>
                         </TabsList>
                         
-                        <div className="mt-8 text-left text-left text-left text-left text-left text-left">
-                            <TabsContent value="individual" className="space-y-4 outline-none animate-in fade-in slide-in-from-left-4 duration-500 text-left text-left text-left">
+                        <div className="mt-8 text-left">
+                            <TabsContent value="individual" className="space-y-4 outline-none animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                                 {filteredPartners.length > 0 ? (
                                     filteredPartners.map(partner => (
                                         <PartnerGameCard 
                                             key={partner.userId} 
                                             partner={partner} 
                                             onDuel={() => setSelectedPartnerForDuel(partner)} 
-                                            duelPoints={partnerDuelPoints[partner.userId] || 0}
+                                            myPoints={partnerDuelStats[partner.userId]?.myPoints || 0}
+                                            partnerPoints={partnerDuelStats[partner.userId]?.partnerPoints || 0}
                                         />
                                     ))
                                 ) : (
-                                    <div className="py-20 text-center px-8 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left text-left">
-                                        <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left text-left">
-                                            <HeartHandshake className="h-10 w-10 text-primary opacity-10 text-left text-left text-left" />
+                                    <div className="py-20 text-center px-8 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left">
+                                        <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                            <HeartHandshake className="h-10 w-10 text-primary opacity-10 text-left" />
                                         </div>
-                                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left text-left text-left">No Partners found</h3>
-                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center text-left text-left text-left">
+                                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">No Partners found</h3>
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center text-left">
                                             {searchTerm ? "Try a different search term." : "Connect with partners in Settings to challenge them here."}
                                         </p>
                                     </div>
                                 )}
                             </TabsContent>
 
-                            <TabsContent value="group" className="space-y-4 outline-none animate-in fade-in slide-in-from-right-4 duration-500 text-left text-left text-left text-left">
+                            <TabsContent value="group" className="space-y-4 outline-none animate-in fade-in slide-in-from-right-4 duration-500 text-left">
                                 {filteredFellowships.length > 0 ? (
                                     filteredFellowships.map(f => (
                                         <GroupChallengeCard key={f.id} fellowship={f} />
                                     ))
                                 ) : (
-                                    <div className="py-20 text-center px-8 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left text-left text-left">
-                                        <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left text-left">
-                                            <Users className="h-10 w-10 text-primary opacity-10 text-left text-left text-left" />
+                                    <div className="py-20 text-center px-8 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left">
+                                        <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                            <Users className="h-10 w-10 text-primary opacity-10 text-left" />
                                         </div>
-                                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left text-left text-left">No Groups Found</h3>
-                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center text-left text-left text-left">
+                                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">No Groups Found</h3>
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center text-left">
                                             Join or start a Fellowship/Association to mobilize your community in the arena.
                                         </p>
                                         {!searchTerm && (
-                                            <Button asChild variant="outline" className="mt-8 rounded-xl h-11 px-8 font-bold border-primary/20 text-primary hover:bg-primary/5 text-center text-left text-left text-left">
-                                                <Link href="/fellowships" className="text-left text-left text-left text-left">DISCOVER GROUPS</Link>
+                                            <Button asChild variant="outline" className="mt-8 rounded-xl h-11 px-8 font-bold border-primary/20 text-primary hover:bg-primary/5 text-center text-left">
+                                                <Link href="/fellowships" className="text-left">DISCOVER GROUPS</Link>
                                             </Button>
                                         )}
                                     </div>
@@ -416,8 +432,8 @@ export default function GamesPageClient() {
                 </div>
             </header>
 
-            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left text-left text-left text-left text-left">
-                <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center text-left text-left text-left">
+            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left">
+                <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center">
                     "Iron sharpens iron, and one man sharpens another." — Proverbs 27:17
                 </p>
             </footer>
