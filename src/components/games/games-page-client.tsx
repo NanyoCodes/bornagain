@@ -26,13 +26,13 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { differenceInMinutes } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import Link from 'next/link';
 
 function LiveSelectionAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
@@ -78,7 +78,7 @@ function PartnerGameCard({
     return (
         <Card className="rounded-[1.5rem] sm:rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-4 sm:border-l-8 border-l-primary/10 text-left">
             <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-left">
-                <div className="flex items-center gap-3 sm:gap-5 min-w-0 flex-1 w-full text-left">
+                <div className="flex items-start gap-3 sm:gap-5 min-w-0 flex-1 w-full text-left">
                     <div className="relative shrink-0 text-left">
                         <LiveSelectionAvatar 
                             userId={partner.userId} 
@@ -105,14 +105,14 @@ function PartnerGameCard({
                                 </Badge>
                             )}
                             <div className="flex items-center gap-2 sm:gap-3 bg-muted/30 px-3 sm:px-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl border shadow-inner text-left">
-                                <div className="flex items-center gap-1 sm:gap-1.5 text-left">
+                                <div className="flex items-center gap-1 sm:gap-1.5 text-left text-left">
                                     <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary fill-current text-left" />
                                     <span className="text-[8px] sm:text-[10px] font-black uppercase text-primary tracking-widest text-left">You: {myPoints}</span>
                                 </div>
                                 <Separator orientation="vertical" className="h-3 sm:h-4 bg-primary/20 text-left" />
-                                <div className="flex items-center gap-1 sm:gap-1.5 text-left">
+                                <div className="flex items-center gap-1 sm:gap-1.5 text-left text-left">
                                     <Trophy className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-500 text-left" />
-                                    <span className="text-[8px] sm:text-[10px] font-black uppercase text-zinc-500 tracking-widest text-left">Them: {partnerPoints}</span>
+                                    <span className="text-[8px] sm:text-[10px] font-black uppercase text-zinc-500 tracking-widest text-left">Partner: {partnerPoints}</span>
                                 </div>
                             </div>
                         </div>
@@ -249,7 +249,7 @@ export default function GamesPageClient() {
 
                 <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[2rem] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 shadow-inner relative overflow-hidden text-left">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-left">
-                        <Sparkles className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12 text-left" />
+                        <Sparkles className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12" />
                     </div>
                     <div className="flex items-center gap-4 relative z-10 text-left">
                         <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 text-left">
@@ -299,13 +299,13 @@ export default function GamesPageClient() {
                 )}
 
                 <div className="space-y-4 text-left">
-                    <div className="relative text-left">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
+                    <div className="relative text-left text-left text-left">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left" />
                         <Input 
                             placeholder={activeTab === 'individual' ? "Search partners..." : "Search groups..."}
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            className="h-12 sm:h-14 pl-10 sm:pl-12 rounded-[1.25rem] sm:rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-base sm:text-lg font-bold w-full text-left"
+                            className="h-12 sm:h-14 pl-12 rounded-[1.25rem] sm:rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-sm sm:text-lg font-bold w-full text-left text-left text-left"
                         />
                     </div>
 
@@ -387,3 +387,4 @@ export default function GamesPageClient() {
         </div>
     );
 }
+
