@@ -307,7 +307,7 @@ export function RelationshipTrackerCard() {
 
   return (
     <>
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left text-left text-left text-left text-left text-left text-left">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left text-left text-left text-left text-left text-left text-left text-left text-left">
         <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity text-left text-left text-left text-left text-left text-left text-left">
           <Users className="h-32 w-32 text-primary rotate-12 text-left text-left text-left text-left text-left text-left text-left" />
         </div>
@@ -391,7 +391,7 @@ export function RelationshipTrackerCard() {
             </div>
         </CardContent>
         <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-              <Button asChild variant="ghost" className="w-full font-black h-12 rounded-2xl border-2 border-dashed border-primary/20 text-primary hover:bg-primary/5 tracking-widest uppercase text-xs sm:text-sm text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+              <Button asChild variant="ghost" className="w-full font-black h-12 border-2 border-dashed border-primary/20 text-primary hover:bg-primary/5 tracking-widest uppercase text-xs sm:text-sm text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                   <Link href="/souls-won" className="text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                       <UserPlus className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                       MANAGE SOULS WON

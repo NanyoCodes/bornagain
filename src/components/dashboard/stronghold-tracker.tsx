@@ -398,7 +398,7 @@ export function StrongholdTracker() {
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                         <div className="p-8 border-b bg-muted/10">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Enter the Warfare</DialogTitle>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Enter the Warfare</DialogTitle>
                                 <DialogDescription className="text-sm font-medium">Naming a struggle is the first step toward the Light.</DialogDescription>
                             </DialogHeader>
                         </div>
