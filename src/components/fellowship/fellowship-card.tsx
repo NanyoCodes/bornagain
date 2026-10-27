@@ -185,17 +185,17 @@ function FullDevotionalDialog({
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                         <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
-                                <MessageSquare className="h-6 w-6 text-primary shrink-0" />
+                                <MessageSquare className="h-6 w-6 text-primary shrink-0 text-left" />
                                 {devotional.title}
                             </SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left">
-                        <div className="p-8 pb-32">
+                        <div className="p-8 pb-32 text-left">
                             {content}
                         </div>
                     </ScrollArea>
@@ -433,7 +433,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                           {fellowship.name}
                         </CardTitle>
                         <div className="space-y-2 text-left">
-                          <CardDescription className="flex items-center gap-2 text-[11px] sm:text-xs font-medium text-left">
+                          <CardDescription className="flex items-center gap-2 text-[11px] sm:text-xs font-medium text-left text-left">
                               <LiveAvatar userId={fellowship.organizerId} fallbackUrl={fellowship.organizerPhotoURL} fallbackInitials={fellowship.organizerName?.charAt(0)} className="h-5 w-5 border shadow-sm text-left" />
                               <span className="leading-tight text-left">
                                 Organized by{" "}
@@ -555,7 +555,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                 {totalReactions > 0 || commentCount > 0 ? (
                                     <div className="flex items-center gap-3 text-left text-left text-left">
                                         {totalReactions > 0 && (
-                                            <div className="flex items-center gap-1 bg-background/50 px-1.5 py-0.5 rounded-full border border-primary/10 shadow-sm text-left text-left text-left">
+                                            <div className="flex items-center gap-1 bg-background/50 px-1.5 py-0.5 rounded-full border border-primary/10 shadow-sm text-left text-left text-left text-left">
                                                 <div className="flex items-center -space-x-1 text-left text-left text-left text-left">
                                                     {supporters.length > 0 && <HandHeart className="h-3 w-3 text-primary fill-current text-left text-left text-left" />}
                                                     {inspiredBy.length > 0 && <Sparkles className="h-3 w-3 text-chart-3 fill-current text-left text-left text-left" />}
@@ -632,7 +632,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                     {!isOrganizer && (
                         <Button onClick={handleJoin} disabled={isMember || isJoining} size="sm" className="h-9 px-6 text-xs font-black uppercase tracking-widest rounded-xl shadow-lg text-center text-left text-left">
                             {isJoining ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : null}
-                            {isMember ? 'JOINED' : 'JOIN GROUP'}
+                            {isMember ? 'JOINED' : `JOIN ${fellowship.groupType?.toUpperCase() || 'GROUP'}`}
                         </Button>
                     )}
                 </div>

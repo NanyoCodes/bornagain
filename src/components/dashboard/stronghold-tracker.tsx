@@ -244,7 +244,7 @@ export function StrongholdTracker() {
                 disabled={isSubmitting || !title.trim()} 
                 className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left"
             >
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
                 BEGIN TRACKING
             </Button>
         </div>
@@ -377,7 +377,7 @@ export function StrongholdTracker() {
                     <DrawerContent className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
                             <div className="text-left flex-shrink-0 text-left text-left">
-                                <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                                <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
                                     <ShieldCheck className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Warfare Protocol</span>
                                 </div>
