@@ -31,7 +31,8 @@ import {
     MessagesSquare,
     Loader2,
     Users,
-    Hourglass
+    Hourglass,
+    Share2
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, safeToDate } from "@/lib/utils";
@@ -440,6 +441,33 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         return groups.slice(0, 10);
     }, [allHistory, partnerId, user?.uid]);
 
+    const handleShareMatch = async (match: any) => {
+        const type = match.gameType.toUpperCase();
+        const myScore = match.mySession?.score || 0;
+        const partnerScore = match.partnerSession?.score || 0;
+        const date = format(match.date, 'MMM d, yyyy');
+
+        // Anonymized names for external sharing
+        const message = `Kingdom Arena Duel Summary (${date})\n` +
+                        `Mode: ${type}\n\n` +
+                        `Believer 1: ${myScore} Points\n` +
+                        `Believer 2: ${partnerScore} Points\n\n` +
+                        `Join the harvest at Testify: ${window.location.origin}/games`;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Kingdom Arena Match Result',
+                    text: message,
+                    url: `${window.location.origin}/games`,
+                });
+            } catch (err) {}
+        } else {
+            navigator.clipboard.writeText(message);
+            toast({ title: 'Result Copied', description: 'Match data anonymized and ready to share.' });
+        }
+    };
+
     const handleOpenPrivateChat = async () => {
         if (!user || !firestore || !userProfile) return;
         try {
@@ -772,9 +800,16 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50 border-primary/20 text-primary">{match.gameType}</Badge>
                                         <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{format(match.date, 'MMM d, p')}</span>
                                     </div>
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-2">
                                         <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-                                        <span className="text-[8px] font-black uppercase text-muted-foreground opacity-60">Match Sync</span>
+                                        <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="h-7 w-7 rounded-full text-muted-foreground hover:text-primary transition-colors"
+                                            onClick={() => handleShareMatch(match)}
+                                        >
+                                            <Share2 className="h-3.5 w-3.5" />
+                                        </Button>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-4 sm:p-6 grid grid-cols-7 items-center gap-2">
