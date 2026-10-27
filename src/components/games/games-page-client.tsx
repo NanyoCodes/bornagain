@@ -21,7 +21,8 @@ import {
     X,
     ChevronRight,
     Group,
-    User
+    User,
+    Quote
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,14 +39,97 @@ import { format, differenceInMinutes } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
+import { 
+    Dialog, 
+    DialogContent, 
+    DialogHeader, 
+    DialogTitle, 
+    DialogDescription,
+    DialogTrigger 
+} from '@/components/ui/dialog';
+import { 
+    Drawer, 
+    DrawerContent, 
+    DrawerHeader, 
+    DrawerTitle, 
+    DrawerDescription 
+} from '@/components/ui/drawer';
 
 /**
  * @fileOverview High-fidelity Games Arena Lobby.
  * Supports Individual Duels with partners and Group Crusades with Fellowships.
  */
 
-function PartnerGameCard({ partner }: { partner: UserProfile['accountabilityPartners'][0] }) {
-    const router = useRouter();
+function ChallengePartnerDialog({ 
+    partnerName, 
+    onChallenge, 
+    isProcessing, 
+    isOpen, 
+    onOpenChange 
+}: { 
+    partnerName: string, 
+    onChallenge: () => void, 
+    isProcessing: boolean, 
+    isOpen: boolean, 
+    onOpenChange: (open: boolean) => void 
+}) {
+    const isMobile = useIsMobile();
+    const header = (
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <div className="flex items-center gap-2 mb-2">
+                <Gamepad2 className="h-5 w-5 text-primary" />
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Arena</span>
+            </div>
+            <DialogHeader className="text-left p-0">
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Challenge</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1">You're about to enter the arena with {partnerName}.</DialogDescription>
+            </DialogHeader>
+        </div>
+    );
+
+    const content = (
+        <div className="p-8 space-y-8 text-left">
+            <div className="bg-primary/5 rounded-[2rem] p-6 border-2 border-dashed border-primary/20 relative overflow-hidden">
+                <Quote className="absolute top-4 right-6 h-12 w-12 opacity-5 rotate-12" />
+                <p className="text-base font-serif italic leading-relaxed relative z-10">
+                    "Iron sharpens iron, and one man sharpens another."
+                </p>
+                <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest">— Proverbs 27:17</p>
+            </div>
+
+            <p className="text-sm text-muted-foreground font-medium leading-relaxed text-balance">
+                In the next screen, you will select the challenge type (Word Arena, Prayer Altar, or Trivia) and the session duration.
+            </p>
+
+            <Button onClick={onChallenge} disabled={isProcessing} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
+                {isProcessing ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <ArrowRight className="h-5 w-5 mr-2" />}
+                PROCEED TO ARENA
+            </Button>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    {header}
+                    <ScrollArea className="flex-grow">{content}</ScrollArea>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                {header}
+                {content}
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function PartnerGameCard({ partner, onDuel }: { partner: UserProfile['accountabilityPartners'][0], onDuel: () => void }) {
     const firestore = useFirestore();
     const partnerRef = useMemo(() => partner.userId ? doc(firestore, 'users', partner.userId) : null, [firestore, partner.userId]);
     const { data: profile } = useDoc<UserProfile>(partnerRef);
@@ -89,7 +173,7 @@ function PartnerGameCard({ partner }: { partner: UserProfile['accountabilityPart
                 </div>
 
                 <Button 
-                    onClick={() => router.push(`/accountability/challenge/${partner.userId}`)}
+                    onClick={onDuel}
                     className="w-full sm:w-auto h-12 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 transition-all active:scale-95 group-hover:bg-primary/90"
                 >
                     <Sword className="mr-2 h-4 w-4" />
@@ -146,6 +230,7 @@ export default function GamesPageClient() {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('individual');
     const isMobile = useIsMobile();
+    const [selectedPartnerForDuel, setSelectedPartnerForDuel] = useState<any>(null);
 
     // Query for Fellowships the user belongs to
     const fellowshipsQuery = useMemo(() => {
@@ -198,7 +283,7 @@ export default function GamesPageClient() {
                     </div>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-inner relative overflow-hidden text-left">
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-inner relative overflow-hidden text-left">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                         <Sparkles className="h-24 w-24 text-primary rotate-12" />
                     </div>
@@ -231,11 +316,11 @@ export default function GamesPageClient() {
 
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
                         <TabsList className="grid w-full grid-cols-2 h-14 bg-muted/40 p-1 rounded-2xl">
-                            <TabsTrigger value="individual" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full flex items-center gap-2">
+                            <TabsTrigger value="individual" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full flex items-center gap-2 text-center">
                                 <User className="h-3.5 w-3.5" />
                                 Individual Duel
                             </TabsTrigger>
-                            <TabsTrigger value="group" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full flex items-center gap-2">
+                            <TabsTrigger value="group" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full flex items-center gap-2 text-center">
                                 <Users className="h-3.5 w-3.5" />
                                 Group Crusade
                             </TabsTrigger>
@@ -245,7 +330,7 @@ export default function GamesPageClient() {
                             <TabsContent value="individual" className="space-y-4 outline-none animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                                 {filteredPartners.length > 0 ? (
                                     filteredPartners.map(partner => (
-                                        <PartnerGameCard key={partner.userId} partner={partner} />
+                                        <PartnerGameCard key={partner.userId} partner={partner} onDuel={() => setSelectedPartnerForDuel(partner)} />
                                     ))
                                 ) : (
                                     <div className="py-20 text-center px-8 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center">
@@ -288,10 +373,22 @@ export default function GamesPageClient() {
             </header>
 
             <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
-                <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center">
+                <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center text-left">
                     "Iron sharpens iron, and one man sharpens another." — Proverbs 27:17
                 </p>
             </footer>
+
+            <ChallengePartnerDialog 
+                partnerName={selectedPartnerForDuel?.firstName || ''}
+                isOpen={!!selectedPartnerForDuel}
+                onOpenChange={(open) => !open && setSelectedPartnerForDuel(null)}
+                onChallenge={() => {
+                    const id = selectedPartnerForDuel.userId;
+                    setSelectedPartnerForDuel(null);
+                    router.push(`/accountability/challenge/${id}`);
+                }}
+                isProcessing={false}
+            />
         </div>
     );
 }
