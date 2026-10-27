@@ -338,7 +338,7 @@ export function RelationshipTrackerCard() {
                             disabled={togglingId !== null}
                         >
                             {togglingId ? <Loader2 className="h-5 w-5 animate-spin text-left text-left text-left text-left text-left text-left text-left" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110 text-left text-left text-left text-left text-left text-left text-left" />}
-                            RECORD KINGDOM CONNECTION
+                            LOG KINGDOM IMPACT
                             <ChevronDown className="h-4 w-4 ml-auto opacity-40 text-left text-left text-left text-left text-left text-left text-left" />
                         </Button>
                     </DropdownMenuTrigger>

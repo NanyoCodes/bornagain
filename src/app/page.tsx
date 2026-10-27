@@ -146,7 +146,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             {logo && (
-              <Avatar className="h-10 w-10 sm:h-11 sm:w-11">
+              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20">
                 <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
                 <AvatarFallback>T</AvatarFallback>
               </Avatar>
@@ -167,8 +167,8 @@ export default function LandingPage() {
         {/* Hero Section - High Fidelity Gradient Background */}
         <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950">
           <div className="absolute inset-0 z-0">
-             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/30 via-zinc-950 to-zinc-950" />
-             <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent" />
+             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/40 via-zinc-950 to-zinc-950" />
+             <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-indigo-900/30 via-transparent to-transparent" />
           </div>
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
             <div className="max-w-4xl space-y-8 text-center sm:text-left">
@@ -204,7 +204,7 @@ export default function LandingPage() {
               transition={{ delay: 1, duration: 1 }}
               className="flex flex-col items-center gap-1.5 px-6"
             >
-                <p className="text-[7px] sm:text-[9px] font-black uppercase tracking-[0.4em] text-white/40 text-center text-balance max-w-lg">
+                <p className="text-[7px] sm:text-[9px] font-black uppercase tracking-[0.3em] text-white/40 text-center text-balance max-w-lg">
                     "Go into all the world and preach the gospel to all creation."
                 </p>
                 <div className="h-px w-8 bg-primary/40" />
@@ -376,7 +376,7 @@ export default function LandingPage() {
             <div className="col-span-1 sm:col-span-2 space-y-6">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 {logo && (
-                  <Avatar className="h-12 w-12">
+                  <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-lg">
                     <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
                     <AvatarFallback>T</AvatarFallback>
                   </Avatar>

@@ -238,7 +238,7 @@ export function StrongholdTracker() {
 
     const formFooter = (
         <div className="flex flex-col sm:flex-row gap-3 w-full">
-            <Button variant="outline" onClick={() => setIsAddOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
+            <Button variant="outline" onClick={() => setIsAddOpen(false)} className="rounded-xl h-12 font-bold">Cancel</Button>
             <Button 
                 onClick={handleAddStronghold} 
                 disabled={isSubmitting || !title.trim()} 
@@ -382,7 +382,7 @@ export function StrongholdTracker() {
                                     <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Warfare Protocol</span>
                                 </div>
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Enter the Warfare</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1">Naming a struggle is the first step toward the Light.</DrawerDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Naming a struggle is the first step toward the Light.</DrawerDescription>
                             </div>
                         </div>
                         <ScrollArea className="flex-grow p-8">
