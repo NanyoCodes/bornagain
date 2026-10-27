@@ -37,6 +37,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { format, differenceInMinutes } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 function LiveSelectionAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
@@ -91,9 +92,9 @@ function PartnerGameCard({
                             className="h-14 w-14 sm:h-20 sm:w-20 border-4 border-background shadow-2xl ring-2 ring-primary/5 transition-transform group-hover:scale-105"
                         />
                         {isOnline && (
-                            <div className="absolute -top-1 -right-1 flex h-4 w-4">
+                            <div className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left"></span>
-                                <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-background text-left"></span>
+                                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-green-500 border-2 border-background text-left"></span>
                             </div>
                         )}
                     </div>
@@ -379,4 +380,3 @@ export default function GamesPageClient() {
         </div>
     );
 }
-
