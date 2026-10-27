@@ -45,7 +45,6 @@ import {
     limit,
     deleteDoc,
     setDoc,
-    addDoc,
     doc
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -565,7 +564,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                             <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-2xl ring-2 ring-primary/20">
                                                 <AvatarImage src={user?.photoURL || undefined} className="object-cover" />
                                                 <AvatarFallback className="font-black text-xl bg-primary/10 text-primary uppercase">Y</AvatarFallback>
-                                            </div>
+                                            </Avatar>
                                         </div>
                                         <div className="absolute -top-2 -right-2 h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-background animate-bounce">
                                             <Target className="h-5 w-5 text-white" />
@@ -597,7 +596,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </div>
                                 <div className="text-right"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Gain</p><p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right">{correctCount * 10}</p></div>
                             </div>
-                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[160px] text-center relative overflow-hidden"><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
+                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[160px] text-center relative overflow-hidden"><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                                 {quiz?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal", gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_25px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary")} disabled={gameState !== 'playing'} onClick={(e) => { e.stopPropagation(); handleCheck(opt); }}>{opt}</Button>))}
                             </div>
@@ -607,7 +606,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     {gameState === 'finished' && (
                         <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center">
                             <div className="space-y-4 text-center"><div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10"><Award className="h-10 w-10 sm:h-14 sm:w-14 text-white" /></div><div className="space-y-1 text-center"><h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center">Session Complete!</h3><p className="text-zinc-400 font-medium text-center">{isSavingSession ? "Archiving victory..." : "Excellent labor in the Word."}</p></div></div>
-                            <div className="grid grid-cols-3 gap-3 sm:gap-6 text-left"><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center text-center">Points</p><p className="text-xl sm:text-4xl font-black text-white text-center text-center">{correctCount * 10}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center text-center">Correct</p><p className="text-xl sm:text-4xl font-black text-white text-center text-center">{correctCount}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center text-center">Errors</p><p className="text-xl sm:text-4xl font-black text-white text-center text-center">{wrongCount}</p></div></div>
+                            <div className="grid grid-cols-3 gap-3 sm:gap-6 text-left"><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center">Points</p><p className="text-xl sm:text-4xl font-black text-white text-center">{correctCount * 10}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center">Correct</p><p className="text-xl sm:text-4xl font-black text-white text-center">{correctCount}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center">Errors</p><p className="text-xl sm:text-4xl font-black text-white text-center">{wrongCount}</p></div></div>
                             <div className="flex flex-col gap-4 text-left"><Button onClick={resetToSelection} disabled={isSavingSession} size="lg" className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl text-center">NEW SESSION</Button></div>
                         </div>
                     )}
@@ -638,25 +637,25 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         {match.mySession ? (
                                             <div className="space-y-1 text-left">
                                                 <p className="text-2xl sm:text-3xl font-black text-primary tracking-tighter text-left">{match.mySession.score}</p>
-                                                <div className="flex items-center justify-center gap-1 text-[8px] font-bold text-green-500 uppercase text-left text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.mySession.correctCount} Correct</div>
+                                                <div className="flex items-center justify-center gap-1 text-[8px] font-bold text-green-500 uppercase text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.mySession.correctCount} Correct</div>
                                             </div>
                                         ) : (
                                             <div className="flex flex-col items-center gap-1 opacity-20 text-left">
-                                                <Hourglass className="h-6 w-6 animate-pulse text-left" /><p className="text-[8px] font-black uppercase text-left text-left">Wait</p>
+                                                <Hourglass className="h-6 w-6 animate-pulse text-left" /><p className="text-[8px] font-black uppercase text-left">Wait</p>
                                             </div>
                                         )}
                                     </div>
                                     <div className="col-span-1 flex flex-col items-center justify-center text-left"><span className="text-[10px] font-black text-primary/40 italic text-left">VS</span></div>
                                     <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left">
-                                        <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest truncate max-w-full text-left text-center">{partnerName.toUpperCase()}</p>
+                                        <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest truncate max-w-full text-center">{partnerName.toUpperCase()}</p>
                                         {match.partnerSession ? (
                                             <div className="space-y-1 text-left">
                                                 <p className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter text-left">{match.partnerSession.score}</p>
-                                                <div className="flex items-center justify-center gap-1 text-[8px] font-bold text-muted-foreground uppercase text-left text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.partnerSession.correctCount} Correct</div>
+                                                <div className="flex items-center justify-center gap-1 text-[8px] font-bold text-muted-foreground uppercase text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.partnerSession.correctCount} Correct</div>
                                             </div>
                                         ) : (
                                             <div className="flex flex-col items-center gap-1 opacity-20 text-left">
-                                                <Hourglass className="h-6 w-6 animate-pulse text-left" /><p className="text-[8px] font-black uppercase text-left text-left">Wait</p>
+                                                <Hourglass className="h-6 w-6 animate-pulse text-left" /><p className="text-[8px] font-black uppercase text-left">Wait</p>
                                             </div>
                                         )}
                                     </div>
