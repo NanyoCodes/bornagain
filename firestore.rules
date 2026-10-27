@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Updated to allow inspiredBy and connectedBy reactions - 2025-03-06T15:30:00Z
+    // Deployment trigger: Critical fix for miracle reactions (inspiredBy/connectedBy) - 2025-03-06T16:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -333,7 +333,7 @@ service cloud.firestore {
       }
     }
 
-    match /mealsGifts/{giftId} {
+    match /mealGifts/{giftId} {
       allow create: if isAuthenticated();
       allow get, list: if isAuthenticated() && (
         request.auth.uid == resource.data.get('senderId', '') || 
