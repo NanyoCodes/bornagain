@@ -54,6 +54,7 @@ import {
     DrawerTitle, 
     DrawerDescription 
 } from '@/components/ui/drawer';
+import { Separator } from '@/components/ui/separator';
 
 /**
  * @fileOverview High-fidelity Games Arena Lobby.
@@ -147,38 +148,38 @@ function PartnerGameCard({ partner, onDuel, myPoints, partnerPoints }: { partner
     }, [profile?.lastActive, now]);
 
     return (
-        <Card className="rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-4 border-l-primary/20 text-left">
-            <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-left">
-                <div className="flex items-center gap-4 min-w-0 flex-1 w-full sm:w-auto text-left">
+        <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-8 border-l-primary/10 text-left">
+            <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-left">
+                <div className="flex items-center gap-5 min-w-0 flex-1 w-full sm:w-auto text-left">
                     <div className="relative shrink-0 text-left">
-                        <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-4 border-background shadow-xl ring-2 ring-primary/5 transition-transform group-hover:scale-105 text-left">
+                        <Avatar className="h-14 w-14 sm:h-20 sm:w-20 border-4 border-background shadow-2xl ring-2 ring-primary/5 transition-transform group-hover:scale-105 text-left">
                             <AvatarImage src={profile?.photoURL || partner.photoURL} className="object-cover text-left" />
                             <AvatarFallback className="font-black text-xl bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-left">
                                 {partner.firstName?.charAt(0)}
                             </AvatarFallback>
                         </Avatar>
                         {isOnline && (
-                            <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 text-left">
+                            <div className="absolute -top-1 -right-1 flex h-4 w-4 text-left">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left"></span>
                                 <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-background text-left"></span>
                             </div>
                         )}
                     </div>
                     <div className="min-w-0 flex-1 text-left">
-                        <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight truncate leading-none mb-1.5 text-left">
+                        <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight truncate leading-none mb-2 text-left">
                             {partner.firstName} {partner.lastName}
                         </h3>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-left">
-                            <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20 text-left">Partner</Badge>
-                            <div className="flex items-center gap-3 text-muted-foreground text-[10px] font-bold uppercase tracking-widest text-left">
-                                <div className="flex items-center gap-1">
-                                    <Trophy className="h-3 w-3 text-amber-500" />
-                                    <span>Me: {myPoints}</span>
+                        <div className="flex flex-wrap items-center gap-3 text-left">
+                            <Badge variant="secondary" className="h-6 px-3 text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20 text-left">Partner</Badge>
+                            <div className="flex items-center gap-3 bg-muted/30 px-4 py-2 rounded-2xl border shadow-inner text-left">
+                                <div className="flex items-center gap-1.5 text-left">
+                                    <Star className="h-3.5 w-3.5 text-primary fill-current text-left" />
+                                    <span className="text-[10px] font-black uppercase text-primary tracking-widest text-left">Me: {myPoints}</span>
                                 </div>
-                                <span className="opacity-30">|</span>
-                                <div className="flex items-center gap-1">
-                                    <Users className="h-3 w-3 text-primary" />
-                                    <span>{partner.firstName}: {partnerPoints}</span>
+                                <Separator orientation="vertical" className="h-4 bg-primary/20 text-left" />
+                                <div className="flex items-center gap-1.5 text-left">
+                                    <Trophy className="h-3.5 w-3.5 text-amber-500 text-left" />
+                                    <span className="text-[10px] font-black uppercase text-zinc-500 tracking-widest text-left">Them: {partnerPoints}</span>
                                 </div>
                             </div>
                         </div>
@@ -187,9 +188,9 @@ function PartnerGameCard({ partner, onDuel, myPoints, partnerPoints }: { partner
 
                 <Button 
                     onClick={onDuel}
-                    className="w-full sm:w-auto h-12 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 transition-all active:scale-95 group-hover:bg-primary/90 text-center text-left"
+                    className="w-full sm:w-auto h-14 px-10 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 transition-all active:scale-95 text-center text-left"
                 >
-                    <Sword className="mr-2 h-4 w-4 text-left" />
+                    <Sword className="mr-2.5 h-5 w-5 text-left" />
                     DUEL
                 </Button>
             </CardContent>
@@ -341,11 +342,11 @@ export default function GamesPageClient() {
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-left">
                         <Sparkles className="h-24 w-24 text-primary rotate-12 text-left" />
                     </div>
-                    <div className="flex items-center gap-4 relative z-10 text-left text-left">
+                    <div className="flex items-center gap-4 relative z-10 text-left text-left text-left">
                         <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 text-left">
                             <Star className="h-7 w-7 text-white animate-pulse text-left" />
                         </div>
-                        <div className="text-left text-left">
+                        <div className="text-left text-left text-left">
                             <p className="text-lg font-black uppercase tracking-tight leading-tight text-left">Your Kingdom XP</p>
                             <p className="text-2xl font-black text-primary tracking-tighter text-left">{userProfile?.kingdomPoints || 0} POINTS</p>
                         </div>
@@ -416,7 +417,7 @@ export default function GamesPageClient() {
                                             <Users className="h-10 w-10 text-primary opacity-10 text-left" />
                                         </div>
                                         <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">No Groups Found</h3>
-                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center text-left">
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance text-center text-left">
                                             Join or start a Fellowship/Association to mobilize your community in the arena.
                                         </p>
                                         {!searchTerm && (
@@ -433,7 +434,7 @@ export default function GamesPageClient() {
             </header>
 
             <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left">
-                <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center">
+                <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center text-left">
                     "Iron sharpens iron, and one man sharpens another." — Proverbs 27:17
                 </p>
             </footer>

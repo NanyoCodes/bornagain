@@ -32,7 +32,8 @@ import {
     Loader2,
     Users,
     Hourglass,
-    Share2
+    Share2,
+    Sword
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, safeToDate } from "@/lib/utils";
@@ -61,10 +62,11 @@ import { format, differenceInMinutes } from 'date-fns';
 import { Label } from '../ui/label';
 import { BIBLE_GAME_DATA } from '@/lib/bible-game-data';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import { FirestorePermissionError } from '@/firebase/errors';
 import { useIsMobile } from "@/hooks/use-mobile";
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 
 const timerOptions = [30, 60, 90, 120];
 
@@ -401,24 +403,69 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6 pb-32 px-4 sm:px-6 text-left">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full self-start sm:self-auto border bg-background shadow-sm text-left">
-                    <ArrowLeft className="h-4 w-4 text-left" />
-                </Button>
-                <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto text-left">
-                    <div className="flex-1 sm:flex-none flex items-center gap-3 bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 shadow-sm min-w-0 text-left">
-                        <Star className="h-4 w-4 text-primary fill-current shrink-0 text-left" />
-                        <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-primary truncate text-left">
-                            You: {(userProfile?.kingdomPoints || 0) + (isGameActive ? correctCount * 10 : 0)}
-                        </span>
+        <div className="max-w-4xl mx-auto space-y-8 pb-32 px-4 sm:px-6 text-left">
+            <div className="flex flex-col items-center gap-6 w-full text-left">
+                <div className="w-full flex items-center justify-between text-left">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full border bg-background shadow-sm text-left">
+                        <ArrowLeft className="h-4 w-4 text-left" />
+                    </Button>
+                    <div className="hidden sm:flex items-center gap-2 text-left">
+                        <Gamepad2 className="h-4 w-4 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Arena</span>
                     </div>
-                    <div className="flex-1 sm:flex-none flex items-center gap-3 bg-muted/20 px-4 py-1.5 rounded-full border border-dashed min-w-0 relative text-left">
-                        <Trophy className="h-4 w-4 text-muted-foreground opacity-60 shrink-0 text-left" />
-                        <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-muted-foreground truncate text-left">
-                            {partnerName}: {partnerProfile?.kingdomPoints || 0}
-                        </span>
-                        {isPartnerOnline && <div className="absolute -top-1 -right-1 flex h-2.5 w-2.5 text-left"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left"></span><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 border-2 border-background text-left"></span></div>}
+                </div>
+
+                <div className="w-full max-w-2xl bg-muted/20 p-4 sm:p-6 rounded-[2.5rem] border border-dashed shadow-inner flex items-center justify-center gap-4 sm:gap-12 relative overflow-hidden text-left">
+                    <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center overflow-hidden">
+                        <Target className="h-48 w-48 text-primary rotate-12 text-left" />
+                    </div>
+
+                    {/* User Score */}
+                    <div className="flex items-center gap-3 min-w-0 relative z-10 text-left">
+                        <div className="relative shrink-0 text-left">
+                            <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-lg text-left">
+                                <AvatarImage src={user?.photoURL || undefined} className="object-cover text-left" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-left">Y</AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 bg-primary rounded-full p-1 shadow-lg border-2 border-background text-left">
+                                <Star className="h-3 w-3 text-white fill-current text-left" />
+                            </div>
+                        </div>
+                        <div className="text-left min-w-0">
+                            <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest leading-none mb-1 text-left">YOU</p>
+                            <p className="text-xl sm:text-3xl font-black tracking-tighter leading-none truncate text-left">
+                                {(userProfile?.kingdomPoints || 0) + (isGameActive ? correctCount * 10 : 0)}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* VS Divider */}
+                    <div className="flex items-center justify-center shrink-0 relative z-10 text-left">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-md text-left">
+                            <span className="text-[10px] font-black text-primary italic text-left">VS</span>
+                        </div>
+                    </div>
+
+                    {/* Partner Score */}
+                    <div className="flex items-center gap-3 min-w-0 text-right relative z-10 text-left">
+                        <div className="text-right min-w-0 flex-1 text-left">
+                            <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest leading-none mb-1 truncate max-w-[80px] sm:max-w-[120px] text-right">{partnerName.toUpperCase()}</p>
+                            <p className="text-xl sm:text-3xl font-black tracking-tighter leading-none text-muted-foreground truncate text-right">
+                                {partnerProfile?.kingdomPoints || 0}
+                            </p>
+                        </div>
+                        <div className="relative shrink-0 text-left">
+                            <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border-2 border-muted-foreground/20 shadow-lg text-left">
+                                <AvatarImage src={partnerProfile?.photoURL || undefined} className="object-cover text-left" />
+                                <AvatarFallback className="font-black bg-muted text-muted-foreground text-left">{partnerName.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            {isPartnerOnline && (
+                                <div className="absolute -bottom-1 -left-1 flex h-3.5 w-3.5 text-left">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left"></span>
+                                    <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-green-500 border-2 border-background text-left"></span>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -439,7 +486,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     {!isGameActive && gameState !== 'finished' && (
                         <div className="py-4 sm:py-8 flex flex-col items-center gap-8 w-full text-left">
                             {!invitation ? (
-                                <div className="w-full space-y-8 text-left text-left">
+                                <div className="w-full space-y-8 text-left">
                                     <div className="space-y-4 text-left">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1 text-left">Challenge Mode</Label>
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
@@ -460,7 +507,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         </div>
                                     </div>
                                     <Button onClick={handleSendChallenge} disabled={isRequesting} size="lg" className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-left">
-                                        {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Send className="mr-2 h-4 w-4 text-left" />}
+                                        {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Send className="mr-2 h-4 w-4 text-left" />}
                                         ISSUE CHALLENGE
                                     </Button>
                                 </div>
@@ -521,16 +568,16 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     )}
 
                     {isGameActive && (
-                        <div className="space-y-6 sm:space-y-10 animate-in fade-in zoom-in duration-500 text-left text-left">
+                        <div className="space-y-6 sm:space-y-10 animate-in fade-in zoom-in duration-500 text-left">
                             <div className="flex items-center justify-between px-2 text-left">
                                 <div className="flex items-center gap-3 text-left">
                                     <div className={cn("h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center border-2 shadow-lg text-left", timeLeft <= 10 ? "bg-red-500 border-red-400 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary")}><Timer className="h-5 w-5 sm:h-6 sm:w-6 text-left" /></div>
-                                    <div className="text-left text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Left</p><p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
+                                    <div className="text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Left</p><p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
                                 </div>
                                 <div className="text-right text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Gain</p><p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-left">{correctCount * 10}</p></div>
                             </div>
-                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[180px] text-center relative overflow-hidden text-left"><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center text-left">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left text-left">
+                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[180px] text-center relative overflow-hidden text-left text-left"><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center text-left">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                                 {quiz?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal text-left", gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_25px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary")} disabled={gameState !== 'playing'} onClick={(e) => { e.stopPropagation(); handleCheck(opt); }}>{opt}</Button>))}
                             </div>
                         </div>
@@ -538,7 +585,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
                     {gameState === 'finished' && (
                         <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center text-left">
-                            <div className="space-y-4 text-left"><div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-left"><Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-left" /></div><div className="space-y-1 text-left"><h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-left">Session Complete!</h3><p className="text-zinc-400 font-medium text-left">{isSavingSession ? "Archiving victory..." : "Excellent labor in the Word."}</p></div></div>
+                            <div className="space-y-4 text-left text-left"><div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-left"><Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-left" /></div><div className="space-y-1 text-left"><h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-left">Session Complete!</h3><p className="text-zinc-400 font-medium text-left">{isSavingSession ? "Archiving victory..." : "Excellent labor in the Word."}</p></div></div>
                             <div className="grid grid-cols-3 gap-3 sm:gap-6 text-left"><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-left">Points</p><p className="text-xl sm:text-4xl font-black text-white text-left">{correctCount * 10}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-left">Correct</p><p className="text-xl sm:text-4xl font-black text-white text-left">{correctCount}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-left">Errors</p><p className="text-xl sm:text-4xl font-black text-white text-left">{wrongCount}</p></div></div>
                             <div className="flex flex-col gap-4 text-left"><Button onClick={resetToSelection} disabled={isSavingSession} size="lg" className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl text-left">NEW SESSION</Button></div>
                         </div>
@@ -547,21 +594,21 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                 <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5 text-left"><p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center text-left">Faith • Power • Truth</p></CardFooter>
             </Card>
 
-            <div className="space-y-6 text-left text-left">
+            <div className="space-y-6 text-left">
                 <div className="flex items-center gap-2 px-1 text-left"><History className="h-4 w-4 text-primary text-left" /><h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground text-left">Arena History</h4></div>
                 <div className="space-y-4 text-left">
-                    {historyLoading ? (<div className="space-y-3 text-left">{[...Array(2)].map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-2xl text-left" />)}</div>) : matchHistory.length > 0 ? (
+                    {historyLoading ? (<div className="space-y-3 text-left">{[...Array(2)].map((_, i) => <Skeleton className="h-28 w-full rounded-2xl text-left" />)}</div>) : matchHistory.length > 0 ? (
                       matchHistory.map((match, mIdx) => (
-                            <Card key={mIdx} className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm overflow-hidden border-l-4 border-l-primary/10 text-left text-left">
-                                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b bg-muted/5 text-left text-left"><div className="flex items-center gap-2 text-left"><Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase bg-background/50 border-primary/20 text-primary text-left">{match.gameType}</Badge><span className="text-[9px] font-bold text-muted-foreground uppercase text-left">{format(match.date, 'MMM d, p')}</span></div><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => handleShareMatch(match)}><Share2 className="h-3.5 w-3.5 text-left" /></Button></CardHeader>
-                                <CardContent className="p-4 sm:p-6 grid grid-cols-7 items-center gap-2 text-center text-left text-left">
-                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left text-left"><p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest text-left">YOU</p>{match.mySession ? (<div className="space-y-1 text-left"><p className="text-2xl sm:text-3xl font-black text-primary tracking-tighter text-left">{match.mySession.score}</p><div className="flex items-center justify-center gap-1 text-[8px] font-bold text-green-500 uppercase text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.mySession.correctCount} Correct</div></div>) : (<div className="flex flex-col items-center gap-1 opacity-20 text-left"><Hourglass className="h-6 w-6 animate-pulse text-left" /><p className="text-[8px] font-black uppercase text-left">Wait</p></div>)}</div>
-                                    <div className="col-span-1 flex flex-col items-center justify-center text-left text-left"><span className="text-[10px] font-black text-primary/40 italic text-left">VS</span></div>
-                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left text-left"><p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest truncate max-w-full text-left text-left">{partnerName.toUpperCase()}</p>{match.partnerSession ? (<div className="space-y-1 text-left"><p className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter text-left">{match.partnerSession.score}</p><div className="flex items-center justify-center gap-1 text-[8px] font-bold text-muted-foreground uppercase text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.partnerSession.correctCount} Correct</div></div>) : (<div className="flex flex-col items-center gap-1 opacity-20 text-left text-left"><Hourglass className="h-6 w-6 animate-pulse text-left" /><p className="text-[8px] font-black uppercase text-left">Wait</p></div>)}</div>
+                            <Card key={mIdx} className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm overflow-hidden border-l-4 border-l-primary/10 text-left">
+                                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b bg-muted/5 text-left"><div className="flex items-center gap-2 text-left"><Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase bg-background/50 border-primary/20 text-primary text-left">{match.gameType}</Badge><span className="text-[9px] font-bold text-muted-foreground uppercase text-left">{format(match.date, 'MMM d, p')}</span></div><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => handleShareMatch(match)}><Share2 className="h-3.5 w-3.5 text-left" /></Button></CardHeader>
+                                <CardContent className="p-4 sm:p-6 grid grid-cols-7 items-center gap-2 text-center text-left">
+                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest text-left">YOU</p>{match.mySession ? (<div className="space-y-1 text-left"><p className="text-2xl sm:text-3xl font-black text-primary tracking-tighter text-left">{match.mySession.score}</p><div className="flex items-center justify-center gap-1 text-[8px] font-bold text-green-500 uppercase text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.mySession.correctCount} Correct</div></div>) : (<div className="flex flex-col items-center gap-1 opacity-20 text-left"><Hourglass className="h-6 w-6 animate-pulse text-left" /><p className="text-[8px] font-black uppercase text-left">Wait</p></div>)}</div>
+                                    <div className="col-span-1 flex flex-col items-center justify-center text-left"><span className="text-[10px] font-black text-primary/40 italic text-left">VS</span></div>
+                                    <div className="col-span-3 flex flex-col items-center text-center space-y-2 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest truncate max-w-full text-left">{partnerName.toUpperCase()}</p>{match.partnerSession ? (<div className="space-y-1 text-left"><p className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter text-left">{match.partnerSession.score}</p><div className="flex items-center justify-center gap-1 text-[8px] font-bold text-muted-foreground uppercase text-left"><CheckCircle2 className="h-2.5 w-2.5 text-left" />{match.partnerSession.correctCount} Correct</div></div>) : (<div className="flex flex-col items-center gap-1 opacity-20 text-left"><Hourglass className="h-6 w-6 animate-pulse text-left" /><p className="text-[8px] font-black uppercase text-left">Wait</p></div>)}</div>
                                 </CardContent>
                             </Card>
                         ))
-                    ) : (<div className="py-16 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed flex flex-col items-center text-left text-left"><History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-left" /><p className="text-xs text-muted-foreground italic px-12 text-center text-left">No matches recorded between you and {partnerName}.</p></div>)}
+                    ) : (<div className="py-16 text-center bg-muted/20 rounded-[2rem] border-2 border-dashed flex flex-col items-center text-left"><History className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-left" /><p className="text-xs text-muted-foreground italic px-12 text-center text-left">No matches recorded between you and {partnerName}.</p></div>)}
                 </div>
             </div>
         </div>
