@@ -123,7 +123,6 @@ export function StrongholdTracker() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [category, setCategory] = useState('Other');
     const [title, setTitle] = useState('');
-    
     const [testimonyStronghold, setTestimonyStronghold] = useState<Stronghold | null>(null);
 
     useEffect(() => {
@@ -308,24 +307,24 @@ export function StrongholdTracker() {
                                                         <MoreVertical className="h-4 w-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="rounded-xl shadow-lg">
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href={circleLink} className="w-full flex items-center">
-                                                            <Users className="mr-2 h-4 w-4" /> Enter Circle
+                                                <DropdownMenuContent align="end" className="rounded-xl shadow-lg text-left">
+                                                    <DropdownMenuItem asChild className="text-left">
+                                                        <Link href={circleLink} className="w-full flex items-center text-left">
+                                                            <Users className="mr-2 h-4 w-4 text-left" /> Enter Circle
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     {isVictorious ? (
-                                                        <DropdownMenuItem onSelect={() => setTestimonyStronghold(s)} className="rounded-lg">
-                                                            <Newspaper className="mr-2 h-4 w-4 text-primary" /> Share Testimony
+                                                        <DropdownMenuItem onSelect={() => setTestimonyStronghold(s)} className="rounded-lg text-left">
+                                                            <Newspaper className="mr-2 h-4 w-4 text-primary text-left" /> Share Testimony
                                                         </DropdownMenuItem>
                                                     ) : (
-                                                        <DropdownMenuItem onSelect={() => handleClaimVictory(s.id)} className="rounded-lg">
-                                                            <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> Claim Victory
+                                                        <DropdownMenuItem onSelect={() => handleClaimVictory(s.id)} className="rounded-lg text-left">
+                                                            <CheckCircle2 className="mr-2 h-4 w-4 text-green-500 text-left" /> Claim Victory
                                                         </DropdownMenuItem>
                                                     )}
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onSelect={() => handleDelete(s.id)} className="text-destructive focus:text-destructive rounded-lg">
-                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete Tracker
+                                                    <DropdownMenuSeparator className="text-left" />
+                                                    <DropdownMenuItem onSelect={() => handleDelete(s.id)} className="text-destructive focus:text-destructive rounded-lg text-left">
+                                                        <Trash2 className="mr-2 h-4 w-4 text-left" /> Delete Tracker
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -374,7 +373,7 @@ export function StrongholdTracker() {
 
             {mounted && isMobile ? (
                 <Drawer open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DrawerContent className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <DrawerContent className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <div className="flex-shrink-0">
                                 <div className="flex items-center gap-2 mb-2">
@@ -395,7 +394,7 @@ export function StrongholdTracker() {
                 </Drawer>
             ) : (
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Enter the Warfare</DialogTitle>
@@ -414,7 +413,7 @@ export function StrongholdTracker() {
 
             <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
                 <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh]">
-                    <div className="p-8 border-b bg-muted/10 shrink-0">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Share Your Victory</DialogTitle>
                             <DialogDescription className="text-sm font-medium mt-1">
@@ -422,7 +421,7 @@ export function StrongholdTracker() {
                             </DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0">
+                    <ScrollArea className="flex-1 min-h-0 text-left">
                         <div className="p-8">
                             {userProfile && testimonyStronghold && (
                                 <CreateTestimonyForm 
