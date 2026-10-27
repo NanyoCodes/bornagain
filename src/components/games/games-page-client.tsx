@@ -28,7 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
 import { safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { format, differenceInMinutes } from 'date-fns';
+import { differenceInMinutes } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -87,7 +87,7 @@ function PartnerGameCard({
                             className="h-12 w-12 sm:h-20 border-2 sm:border-4 border-background shadow-xl ring-2 ring-primary/5 transition-transform group-hover:scale-105"
                         />
                         {isOnline && (
-                            <div className="absolute -top-0.5 -right-0.5 flex h-3 w-3 sm:h-3.5 sm:w-3.5">
+                            <div className="absolute -top-0.5 -right-0.5 flex h-3 w-3 sm:h-3.5 sm:w-3.5 text-left">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left"></span>
                                 <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-green-500 border-2 border-background text-left"></span>
                             </div>
@@ -123,7 +123,7 @@ function PartnerGameCard({
                     onClick={onDuel}
                     className="w-full sm:w-auto h-11 sm:h-14 px-8 sm:px-10 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest sm:tracking-[0.2em] shadow-lg shadow-primary/20 transition-all active:scale-95 text-xs sm:text-sm text-center"
                 >
-                    <Sword className="mr-2 h-4 w-4 sm:h-5 w-5" />
+                    <Sword className="mr-2 h-4 w-4 sm:h-5 w-5 text-left" />
                     DUEL
                 </Button>
             </CardContent>
@@ -237,11 +237,11 @@ export default function GamesPageClient() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 text-left">
                     <div className="space-y-1.5 text-left">
                         <div className="flex items-center gap-2 mb-1 text-left">
-                            <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Arena</span>
+                            <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Kingdom Arena</span>
                         </div>
-                        <h1 className="text-2xl sm:text-5xl font-black font-headline tracking-tight uppercase">Battle Lobby</h1>
-                        <p className="text-xs sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed italic text-balance">
+                        <h1 className="text-2xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left">Battle Lobby</h1>
+                        <p className="text-xs sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed italic text-balance text-left text-left">
                             Sharpen your spirit through interactive biblical challenges. Duel your partners or lead your community into a shared Word crusade.
                         </p>
                     </div>
@@ -249,29 +249,29 @@ export default function GamesPageClient() {
 
                 <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[2rem] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 shadow-inner relative overflow-hidden text-left">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-left">
-                        <Sparkles className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12" />
+                        <Sparkles className="h-16 w-16 sm:h-24 sm:w-24 text-primary rotate-12 text-left" />
                     </div>
                     <div className="flex items-center gap-4 relative z-10 text-left">
                         <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 text-left">
-                            <Star className="h-6 w-6 sm:h-7 sm:w-7 text-white animate-pulse" />
+                            <Star className="h-6 w-6 sm:h-7 sm:w-7 text-white animate-pulse text-left" />
                         </div>
-                        <div className="text-left">
-                            <p className="text-base sm:text-lg font-black uppercase tracking-tight leading-tight">Your Kingdom XP</p>
-                            <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter">{userProfile?.kingdomPoints || 0} POINTS</p>
+                        <div className="text-left text-left">
+                            <p className="text-base sm:text-lg font-black uppercase tracking-tight leading-tight text-left">Your Kingdom XP</p>
+                            <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter text-left">{userProfile?.kingdomPoints || 0} POINTS</p>
                         </div>
                     </div>
                     <div className="h-px w-full bg-primary/10 sm:hidden" />
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground relative z-10 text-left">
-                        <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground relative z-10 text-left text-left">
+                        <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 text-left" />
                         Top Ranked Laborer
                     </div>
                 </div>
 
                 {challenges && challenges.length > 0 && (
-                    <div className="space-y-4 text-left">
-                        <div className="flex items-center gap-2 px-1 text-left">
-                            <Sword className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
-                            <h3 className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">Received Challenges</h3>
+                    <div className="space-y-4 text-left text-left">
+                        <div className="flex items-center gap-2 px-1 text-left text-left">
+                            <Sword className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary text-left" />
+                            <h3 className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Received Challenges</h3>
                         </div>
                         <div className="grid gap-3 text-left">
                             {challenges.map(notif => (
@@ -281,14 +281,14 @@ export default function GamesPageClient() {
                                             <LiveSelectionAvatar 
                                                 userId={notif.targetId || ''} 
                                                 fallbackInitials="P" 
-                                                className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm" 
+                                                className="h-9 w-9 sm:h-10 sm:w-10 border shadow-sm text-left" 
                                             />
                                             <div className="min-w-0 text-left">
-                                                <p className="text-[13px] sm:text-sm font-black uppercase tracking-tight truncate">{notif.title}</p>
-                                                <p className="text-[10px] text-muted-foreground font-medium truncate">{notif.message}</p>
+                                                <p className="text-[13px] sm:text-sm font-black uppercase tracking-tight truncate text-left">{notif.title}</p>
+                                                <p className="text-[10px] text-muted-foreground font-medium truncate text-left">{notif.message}</p>
                                             </div>
                                         </div>
-                                        <Button asChild size="sm" className="rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg text-left">
+                                        <Button asChild size="sm" className="rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg text-left text-left">
                                             <Link href={notif.link || '/games'} className="text-left">ENTER ARENA</Link>
                                         </Button>
                                     </CardContent>
@@ -311,13 +311,13 @@ export default function GamesPageClient() {
 
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
                         <TabsList className="grid w-full grid-cols-2 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl text-left">
-                            <TabsTrigger value="individual" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center">
+                            <TabsTrigger value="individual" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center text-left">
                                 <User className="h-3.5 w-3.5 text-left" />
-                                <span className="truncate">Individual Duel</span>
+                                <span className="truncate text-left">Individual Duel</span>
                             </TabsTrigger>
-                            <TabsTrigger value="group" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center">
+                            <TabsTrigger value="group" className="rounded-xl font-black text-[9px] sm:text-xs uppercase tracking-widest h-full flex items-center justify-center gap-1.5 sm:gap-2 text-center text-left">
                                 <Users className="h-3.5 w-3.5 text-left" />
-                                <span className="truncate">Group Crusade</span>
+                                <span className="truncate text-left">Group Crusade</span>
                             </TabsTrigger>
                         </TabsList>
                         
@@ -336,10 +336,10 @@ export default function GamesPageClient() {
                                 ) : (
                                     <div className="py-16 sm:py-20 text-center px-8 border-2 border-dashed rounded-[2.5rem] sm:rounded-[3rem] bg-muted/5 flex flex-col items-center text-left">
                                         <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
-                                            <HeartHandshake className="h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-10" />
+                                            <HeartHandshake className="h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-10 text-left" />
                                         </div>
                                         <h3 className="text-lg sm:text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">No Partners found</h3>
-                                        <p className="mt-2 text-xs text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center text-left">
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center text-left">
                                             {searchTerm ? "Try a different search term." : "Connect with partners in Settings to challenge them here."}
                                         </p>
                                     </div>
@@ -352,23 +352,23 @@ export default function GamesPageClient() {
                                         <Card key={f.id} className="rounded-2xl sm:rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden text-left">
                                             <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
                                                 <div className="flex items-center gap-4 text-left w-full sm:w-auto">
-                                                    <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 text-left"><Users className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600 text-left" /></div>
+                                                    <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 text-left text-left"><Users className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600 text-left text-left" /></div>
                                                     <div className="min-w-0 text-left">
-                                                        <h3 className="font-black text-base sm:text-lg uppercase truncate text-left">{f.name}</h3>
-                                                        <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{f.memberCount} Members</p>
+                                                        <h3 className="font-black text-base sm:text-lg uppercase truncate text-left text-left">{f.name}</h3>
+                                                        <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">{f.memberCount} Members</p>
                                                     </div>
                                                 </div>
-                                                <Button className="w-full sm:w-auto h-11 px-8 rounded-xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] text-center">START CRUSADE</Button>
+                                                <Button className="w-full sm:w-auto h-11 px-8 rounded-xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] text-center text-left">START CRUSADE</Button>
                                             </CardContent>
                                         </Card>
                                     ))
                                 ) : (
                                     <div className="py-16 sm:py-20 text-center px-8 border-2 border-dashed rounded-[2.5rem] sm:rounded-[3rem] bg-muted/5 flex flex-col items-center text-left">
                                         <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
-                                            <Users className="h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-10" />
+                                            <Users className="h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-10 text-left" />
                                         </div>
                                         <h3 className="text-lg sm:text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">No Groups Found</h3>
-                                        <p className="mt-2 text-xs text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance text-center text-left">
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance text-center text-left">
                                             Join or start a Fellowship/Association to mobilize your community in the arena.
                                         </p>
                                     </div>

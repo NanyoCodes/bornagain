@@ -31,7 +31,8 @@ import {
     Clock
 } from "lucide-react";
 import { cn, safeToDate } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { format, differenceInMinutes } from "date-fns";
+import { AnimatePresence, motion } from "framer-motion";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from '@/firebase';
 import { 
     collection, 
@@ -50,8 +51,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import type { UserProfile, GameSession, GameInvitation, GameSessionType } from '@/lib/types';
-import { differenceInMinutes } from 'date-fns';
-import { Label } from '../ui/label';
+import { Label } from '@/components/ui/label';
 import { BIBLE_GAME_DATA } from '@/lib/bible-game-data';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -84,7 +84,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
     const [quizIndex, setQuizIndex] = useState(0);
     const [usedIndices, setUsedIndices] = useState<number[]>([]);
-    const [gameState, setGameState] = useState<'playing' | 'correct' | 'wrong' | 'finished'>('playing');
+    const [gameState, setGameState] = setGameState = useState<'playing' | 'correct' | 'wrong' | 'finished'>('playing');
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [isSavingSession, setIsSavingSession] = useState(false);
     const [isRequesting, setIsRequesting] = useState(false);
