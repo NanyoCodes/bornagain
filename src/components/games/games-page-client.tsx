@@ -20,7 +20,8 @@ import {
     ArrowLeft,
     X,
     ChevronRight,
-    Group
+    Group,
+    User
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -57,7 +58,7 @@ function PartnerGameCard({ partner }: { partner: UserProfile['accountabilityPart
     return (
         <Card className="rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-4 border-l-primary/20 text-left">
             <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4 min-w-0 flex-1 w-full sm:w-auto">
+                <div className="flex items-center gap-4 min-w-0 flex-1 w-full sm:w-auto text-left">
                     <div className="relative shrink-0">
                         <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-4 border-background shadow-xl ring-2 ring-primary/5 transition-transform group-hover:scale-105">
                             <AvatarImage src={profile?.photoURL || partner.photoURL} className="object-cover" />
@@ -105,7 +106,7 @@ function GroupChallengeCard({ fellowship }: { fellowship: Fellowship }) {
     return (
         <Card className="rounded-[2rem] border-none shadow-md bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all overflow-hidden border-l-4 border-l-indigo-500/20 text-left">
             <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4 min-w-0 flex-1 w-full sm:w-auto">
+                <div className="flex items-center gap-4 min-w-0 flex-1 w-full sm:w-auto text-left">
                     <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-[1.5rem] bg-indigo-500/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
                         {isGiftVendor ? <Group className="h-7 w-7 text-indigo-600" /> : <Users className="h-7 w-7 text-indigo-600" />}
                     </div>
@@ -196,7 +197,7 @@ export default function GamesPageClient() {
                     </div>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-inner relative overflow-hidden">
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-inner relative overflow-hidden text-left">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                         <Sparkles className="h-24 w-24 text-primary rotate-12" />
                     </div>
@@ -218,7 +219,7 @@ export default function GamesPageClient() {
 
                 <div className="space-y-4">
                     <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                         <Input 
                             placeholder={activeTab === 'individual' ? "Search partners..." : "Search groups..."}
                             value={searchTerm}
@@ -227,7 +228,7 @@ export default function GamesPageClient() {
                         />
                     </div>
 
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
                         <TabsList className="grid w-full grid-cols-2 h-14 bg-muted/40 p-1 rounded-2xl">
                             <TabsTrigger value="individual" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full flex items-center gap-2">
                                 <User className="h-3.5 w-3.5" />
@@ -239,8 +240,8 @@ export default function GamesPageClient() {
                             </TabsTrigger>
                         </TabsList>
                         
-                        <div className="mt-8">
-                            <TabsContent value="individual" className="space-y-4 outline-none animate-in fade-in slide-in-from-left-4 duration-500">
+                        <div className="mt-8 text-left">
+                            <TabsContent value="individual" className="space-y-4 outline-none animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                                 {filteredPartners.length > 0 ? (
                                     filteredPartners.map(partner => (
                                         <PartnerGameCard key={partner.userId} partner={partner} />
@@ -250,26 +251,26 @@ export default function GamesPageClient() {
                                         <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
                                             <HeartHandshake className="h-10 w-10 text-primary opacity-10" />
                                         </div>
-                                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40">No Partners found</h3>
-                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance">
+                                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center">No Partners found</h3>
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center">
                                             {searchTerm ? "Try a different search term." : "Connect with partners in Settings to challenge them here."}
                                         </p>
                                     </div>
                                 )}
                             </TabsContent>
 
-                            <TabsContent value="group" className="space-y-4 outline-none animate-in fade-in slide-in-from-right-4 duration-500">
+                            <TabsContent value="group" className="space-y-4 outline-none animate-in fade-in slide-in-from-right-4 duration-500 text-left">
                                 {filteredFellowships.length > 0 ? (
                                     filteredFellowships.map(f => (
                                         <GroupChallengeCard key={f.id} fellowship={f} />
                                     ))
                                 ) : (
-                                    <div className="py-20 text-center px-8 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center">
+                                    <div className="py-20 text-center px-8 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left">
                                         <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
                                             <Users className="h-10 w-10 text-primary opacity-10" />
                                         </div>
-                                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40">No Groups Found</h3>
-                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance">
+                                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center">No Groups Found</h3>
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance text-center">
                                             Join or start a Fellowship/Association to mobilize your community in the arena.
                                         </p>
                                         {!searchTerm && (
@@ -286,11 +287,10 @@ export default function GamesPageClient() {
             </header>
 
             <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
-                <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance">
+                <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center">
                     "Iron sharpens iron, and one man sharpens another." — Proverbs 27:17
                 </p>
             </footer>
         </div>
     );
 }
-
