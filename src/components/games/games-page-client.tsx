@@ -31,6 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { cn, safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { format, differenceInMinutes } from 'date-fns';
