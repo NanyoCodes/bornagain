@@ -94,6 +94,7 @@ const navItems = [
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "bg-amber-500" },
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "bg-primary" },
   { href: "/campaigns", label: "Missions", icon: Target, color: "bg-rose-500" },
+  { href: "/victory-hub", label: "Victory", icon: ShieldCheck, color: "bg-indigo-600" },
 ];
 
 const itemColors: Record<string, string> = {
@@ -101,6 +102,7 @@ const itemColors: Record<string, string> = {
   "/souls-won": "from-amber-500 to-amber-600",
   "/testimonies": "from-primary to-orange-600",
   "/campaigns": "from-rose-500 to-rose-600",
+  "/victory-hub": "from-indigo-600 to-violet-700",
 };
 
 const inspirationalMessages = [
@@ -221,7 +223,7 @@ function CartButton() {
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Kindness Package</span>
             </div>
             <DialogHeader className="text-center p-0 text-left text-left text-left text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left">Pending Offering</DialogTitle>
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left text-left">Pending Offering</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1 text-center text-balance text-left text-left text-left text-left">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
         </div>
@@ -335,7 +337,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                     </Button>
                 </motion.div>
             </Link>
-            <Link href="/notifications" className="text-left text-left text-left text-left text-left text-left text-left text-left">
+            <Link href="/notifications" className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                       <Bell className="h-6 w-6 transition-transform group-hover:scale-110 text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
@@ -370,9 +372,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   </div>
                 </DropdownMenuLabel>
                 
-                <DropdownMenuSeparator className="text-left text-left text-left text-left text-left text-left text-left text-left" />
+                <DropdownMenuSeparator className="text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                 
-                <div className="p-1 space-y-1 text-left text-left text-left text-left text-left text-left text-left text-left">
+                <div className="p-1 space-y-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left text-left text-left">
                     <Link href="/profile" className="flex items-center gap-3 w-full text-left text-left text-left text-left text-left text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left text-left text-left text-left text-left text-left">
@@ -389,7 +391,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left">Partners</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <Link href="/settings" className="flex items-center gap-3 w-full text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <Settings className="h-3.5 w-3.5 text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
@@ -437,7 +439,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
+                <DropdownMenuSeparator className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                 
                 <div className="p-1 space-y-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left text-left text-left text-left text-left text-left text-left text-left text-left">Provision & Support</p>
@@ -748,7 +750,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-[500px] rounded-[2.5rem] overflow-hidden p-0 text-left border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
+          <DialogContent hideCloseButton className="sm:max-w-[500px] rounded-[2.5rem] overflow-hidden p-0 text-left border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left">
             <div className="p-8 border-b bg-muted/10 flex flex-col items-center justify-center gap-2 text-center text-left text-left text-left text-left text-left text-left text-left">
               <DialogHeader className="text-center p-0 text-left text-left text-left text-left text-left text-left text-left text-left">
                 <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left text-left text-left text-left text-left">Activate Profile</DialogTitle>
