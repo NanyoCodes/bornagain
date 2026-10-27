@@ -64,6 +64,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 import { useIsMobile } from "@/hooks/use-mobile";
 import Image from 'next/image';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const timerOptions = [30, 60, 90, 120];
 
@@ -290,8 +291,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         
         setDoc(invitationRef, invitationData)
             .then(async () => {
-                const notificationRef = doc(collection(firestore, `users/${partnerId}/notifications`));
-                setDoc(notificationRef, {
+                const notificationData = {
                     userId: partnerId,
                     type: 'org_invite',
                     targetId: user.uid,
@@ -300,7 +300,8 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                     link: `/accountability/challenge/${user.uid}`,
                     isRead: false,
                     createdAt: serverTimestamp()
-                }).catch(() => {});
+                };
+                addDoc(collection(firestore, `users/${partnerId}/notifications`), notificationData).catch(() => {});
                 toast({ title: 'Challenge Issued' });
             })
             .finally(() => setIsRequesting(false));
@@ -410,7 +411,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             You: {(userProfile?.kingdomPoints || 0) + (isGameActive ? correctCount * 10 : 0)}
                         </span>
                     </div>
-                    <div className="flex-1 sm:flex-none flex items-center gap-3 bg-muted/30 px-4 py-1.5 rounded-full border border-dashed min-w-0 relative">
+                    <div className="flex-1 sm:flex-none flex items-center gap-3 bg-muted/20 px-4 py-1.5 rounded-full border border-dashed min-w-0 relative">
                         <Trophy className="h-4 w-4 text-muted-foreground opacity-60 shrink-0" />
                         <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-muted-foreground truncate">
                             {partnerName}: {partnerProfile?.kingdomPoints || 0}
@@ -462,16 +463,56 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                     </Button>
                                 </div>
                             ) : invitation.hostId === user?.uid ? (
-                                <div className="space-y-6 w-full flex flex-col items-center justify-center animate-in fade-in">
-                                    <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center border-2 border-dashed border-primary/20"><Loader2 className="h-10 w-10 text-primary animate-spin" /></div>
-                                    <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse">Waiting for {partnerName}...</Badge>
-                                    <Button variant="outline" onClick={handleCancelRequest} disabled={isRequesting} className="h-12 rounded-xl font-black uppercase tracking-widest text-[10px] border-white/10 text-zinc-400 hover:bg-white/5 hover:text-white">Cancel</Button>
+                                <div className="space-y-8 w-full flex flex-col items-center justify-center animate-in fade-in text-center">
+                                    <div className="relative">
+                                        <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shadow-2xl ring-2 ring-primary/20 transition-all duration-500 hover:scale-105">
+                                            <AvatarImage src={partnerProfile?.photoURL} className="object-cover" />
+                                            <AvatarFallback className="font-black text-2xl bg-primary/10 text-primary uppercase">
+                                                {partnerName.charAt(0)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-spin duration-[10s] opacity-30" />
+                                        <div className="absolute -bottom-2 -right-2 h-10 w-10 rounded-full bg-background border flex items-center justify-center shadow-lg ring-2 ring-primary/5">
+                                            <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                        <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse">
+                                            Waiting for {partnerName}...
+                                        </Badge>
+                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] opacity-60">Duel Invitation Pending</p>
+                                    </div>
+
+                                    <Button variant="outline" onClick={handleCancelRequest} disabled={isRequesting} className="h-12 rounded-xl font-black uppercase tracking-widest text-[10px] border-white/10 text-zinc-400 hover:bg-white/5 hover:text-white transition-all active:scale-95">
+                                        Cancel Request
+                                    </Button>
                                 </div>
                             ) : (
-                                <div className="space-y-6 w-full flex flex-col items-center justify-center animate-in slide-in-from-bottom-4">
-                                    <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2"><Target className="h-10 w-10 text-primary animate-bounce" /></div>
-                                    <p className="text-lg font-black text-white uppercase tracking-widest text-center">CHALLENGE RECEIVED!</p>
-                                    <div className="flex flex-col gap-3 w-full max-w-xs mx-auto"><Button onClick={handleAcceptChallenge} size="lg" className="h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl"><Check className="mr-2 h-5 w-5" /> ACCEPT</Button><Button variant="ghost" onClick={handleDeclineChallenge} className="text-destructive font-black uppercase tracking-widest text-xs">DECLINE</Button></div>
+                                <div className="space-y-8 w-full flex flex-col items-center justify-center animate-in slide-in-from-bottom-4 text-center">
+                                    <div className="relative">
+                                        <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shadow-2xl ring-2 ring-primary/20">
+                                            <AvatarImage src={partnerProfile?.photoURL} className="object-cover" />
+                                            <AvatarFallback className="font-black text-2xl bg-primary/10 text-primary uppercase">
+                                                {partnerName.charAt(0)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="absolute -top-2 -right-2 h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-background animate-bounce">
+                                            <Target className="h-5 w-5 text-white" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-xl font-black text-white uppercase tracking-widest text-center">CHALLENGE RECEIVED!</p>
+                                        <p className="text-sm text-zinc-400 font-medium">{partnerName} has called you to the Arena.</p>
+                                    </div>
+                                    <div className="flex flex-col gap-3 w-full max-w-xs mx-auto">
+                                        <Button onClick={handleAcceptChallenge} size="lg" className="h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl">
+                                            <Check className="mr-2 h-5 w-5" /> ACCEPT
+                                        </Button>
+                                        <Button variant="ghost" onClick={handleDeclineChallenge} className="text-destructive font-black uppercase tracking-widest text-xs">
+                                            DECLINE
+                                        </Button>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -486,7 +527,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                 </div>
                                 <div className="text-right"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Gain</p><p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none">{correctCount * 10}</p></div>
                             </div>
-                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[180px] text-center relative overflow-hidden"><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
+                            <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[180px] text-center relative overflow-hidden"><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-2xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                                 {quiz?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal", gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_25px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary")} disabled={gameState !== 'playing'} onClick={(e) => { e.stopPropagation(); handleCheck(opt); }}>{opt}</Button>))}
                             </div>
