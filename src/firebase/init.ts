@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, initializeFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
+import { getMessaging, type Messaging, isSupported } from 'firebase/messaging';
 import { firebaseConfig } from './config';
 
 type FirebaseServices = {
@@ -9,6 +10,7 @@ type FirebaseServices = {
   auth: Auth;
   firestore: Firestore;
   storage: FirebaseStorage;
+  messaging: Messaging | null;
 };
 
 // Use a module-level variable to store the initialized services.
@@ -47,7 +49,20 @@ export function initializeFirebase(): FirebaseServices {
   const auth = getAuth(app);
   const storage = getStorage(app);
   
-  const services = { app, auth, firestore, storage };
+  // Messaging only works in the browser
+  let messaging: Messaging | null = null;
+  if (typeof window !== 'undefined') {
+    // Check if messaging is supported in the current environment
+    isSupported().then(supported => {
+        if (supported) {
+            messaging = getMessaging(app);
+        }
+    }).catch(err => {
+        console.warn("Firebase Messaging not supported in this browser:", err);
+    });
+  }
+  
+  const services = { app, auth, firestore, storage, messaging };
 
   if (typeof window !== 'undefined') {
     firebaseServices = services;

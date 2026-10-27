@@ -5,12 +5,14 @@ import type { FirebaseApp } from 'firebase/app';
 import type { Auth } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
 import type { FirebaseStorage } from 'firebase/storage';
+import type { Messaging } from 'firebase/messaging';
 
 export type FirebaseContextValue = {
   app: FirebaseApp;
   auth: Auth;
   firestore: Firestore;
   storage: FirebaseStorage;
+  messaging: Messaging | null;
 };
 
 const FirebaseContext = createContext<FirebaseContextValue | undefined>(undefined);
@@ -39,4 +41,8 @@ export function useFirestore() {
 
 export function useStorage() {
   return useFirebase().storage;
+}
+
+export function useMessaging() {
+  return useFirebase().messaging;
 }

@@ -16,8 +16,9 @@ import { doc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { BirthdayChecker } from '@/components/common/birthday-checker';
+import { PushNotificationManager } from '@/components/common/push-notification-manager';
 
-const { app, auth, firestore, storage } = initializeFirebase();
+const { app, auth, firestore, storage, messaging } = initializeFirebase();
 
 interface ProfileContextValue {
   userProfile: UserProfile | null;
@@ -46,6 +47,7 @@ function ProfileProvider({ children }: { children: React.ReactNode }) {
   return (
     <ProfileContext.Provider value={contextValue}>
       <BirthdayChecker />
+      <PushNotificationManager />
       {children}
     </ProfileContext.Provider>
   );
@@ -74,7 +76,7 @@ export function FirebaseClientProvider({ children }: { children: React.ReactNode
   }, []);
 
   // Memoize context value to prevent infinite render loops in child components
-  const firebaseValue = useMemo(() => ({ app, auth, firestore, storage }), []);
+  const firebaseValue = useMemo(() => ({ app, auth, firestore, storage, messaging }), []);
 
   // We wait for persistence to be configured before rendering the app
   // to prevent potential session loss or race conditions on the first load.

@@ -134,6 +134,7 @@ export type UserProfile = {
   organizationId?: string;
   kingdomPoints?: number;
   lastGameAt?: Timestamp;
+  fcmTokens?: string[];
 };
 
 export type GameSessionType = 'word' | 'prayer' | 'trivia' | 'wisdom';
