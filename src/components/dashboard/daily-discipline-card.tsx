@@ -300,7 +300,7 @@ export function DailyDisciplineCard() {
           <Skeleton className="h-5 w-32 mb-2" />
           <Skeleton className="h-3 w-48" />
         </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-6">
+        <CardContent className="px-4 sm:px-6 pb-6 text-left">
             <Skeleton className="h-14 w-full rounded-2xl" />
         </CardContent>
       </Card>
@@ -317,33 +317,33 @@ export function DailyDisciplineCard() {
               <CardDescription className="text-sm font-medium text-left">Your spiritual checklist for today.</CardDescription>
             </div>
             {currentDate && (
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
                 {format(currentDate, 'PPPP')}
               </div>
             )}
           </div>
         </CardHeader>
         <CardContent className="space-y-8 text-left">
-            <div className="space-y-4">
+            <div className="space-y-4 text-left">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
-                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn"
+                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left"
                             disabled={togglingId !== null}
                         >
                             {togglingId ? <Loader2 className="h-5 w-5 animate-spin" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110" />}
-                            LOG KINGDOM DISCIPLINE
+                            DECLARE DAILY DISCIPLINE
                             <div className="ml-auto flex items-center gap-2">
-                                <span className="text-[10px] opacity-60">{completedToday.length}/4 DONE</span>
+                                <span className="text-[10px] opacity-60">{completedToday.length}/4 COMPLETED</span>
                                 <ChevronDown className="h-4 w-4 opacity-40" />
                             </div>
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-[400px] rounded-[2rem] p-2 shadow-2xl border-none" align="center" sideOffset={8}>
+                    <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-[400px] rounded-[2rem] p-2 shadow-2xl border-none text-left" align="center" sideOffset={8}>
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3">Select Discipline</DropdownMenuLabel>
                         <DropdownMenuSeparator className="opacity-50" />
-                        <ScrollArea className="h-80">
-                            <div className="p-1.5 space-y-1">
+                        <ScrollArea className="h-80 text-left">
+                            <div className="p-1.5 space-y-1 text-left">
                                 {disciplines.map(discipline => {
                                     const isCompleted = completedToday.includes(discipline.id);
                                     const { Icon, color } = discipline;
@@ -374,12 +374,12 @@ export function DailyDisciplineCard() {
                     </DropdownMenuContent>
                 </DropdownMenu>
                 
-                <div className="px-1 space-y-1">
-                    <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-muted-foreground/60">
+                <div className="px-1 space-y-1 text-left">
+                    <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 text-left">
                         <span>Today's Dedication</span>
                         <span>{Math.round((completedToday.length / 4) * 100)}%</span>
                     </div>
-                    <Progress value={(completedToday.length / 4) * 100} className="h-1" />
+                    <Progress value={(completedToday.length / 4) * 100} className="h-1 text-left" />
                 </div>
             </div>
 
