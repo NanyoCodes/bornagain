@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Hardened fellowship creation and membership rules - 2025-03-05T22:00:00Z
+    // Deployment trigger: Critical fix for fellowship/campaign participation rules - 2025-03-05T23:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -260,7 +260,10 @@ service cloud.firestore {
       allow get, list: if true;
       allow create: if isAuthenticated();
       allow delete: if false; 
-      allow update: if isAuthenticated() && ( (request.auth.uid == resource.data.organizerId) || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged'])) || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants'])) );
+      allow update: if isAuthenticated() && ( 
+        (request.auth.uid == resource.data.organizerId) || 
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged', 'participants', 'participantIds'])) 
+      );
 
       match /participants/{userId} {
         allow read: if isAuthenticated();
@@ -294,7 +297,7 @@ service cloud.firestore {
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
         (resource.data.organizerId == request.auth.uid) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount', 'hasGroupChat', 'status']))
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount', 'hasGroupChat', 'status', 'participantCount', 'participantIds']))
       );
       allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
 
