@@ -29,28 +29,39 @@ export function useFcmToken() {
             return;
         }
 
-        const currentToken = await getToken(messaging, {
-          vapidKey: VAPID_PUBLIC_KEY 
-        });
+        // Register the service worker explicitly to ensure it is ready
+        if ('serviceWorker' in navigator) {
+            const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+            
+            const currentToken = await getToken(messaging, {
+              vapidKey: VAPID_PUBLIC_KEY,
+              serviceWorkerRegistration: registration
+            });
 
-        if (currentToken) {
-          setToken(currentToken);
-          
-          // Sync token to Firestore to enable push notifications for this device
-          const userRef = doc(firestore, 'users', user.uid);
-          await updateDoc(userRef, {
-            fcmTokens: arrayUnion(currentToken)
-          }).catch(() => {
-              // Silently fail if rules prevent update; token is still available locally
-          });
+            if (currentToken) {
+              setToken(currentToken);
+              
+              // Sync token to Firestore to enable push notifications for this device
+              const userRef = doc(firestore, 'users', user.uid);
+              await updateDoc(userRef, {
+                fcmTokens: arrayUnion(currentToken),
+                lastTokenSync: serverTimestamp()
+              }).catch(() => {
+                  // Silently fail if rules prevent update; token is still available locally
+              });
+            }
         }
       } catch (err) {
         console.warn('Failed to retrieve FCM token:', err);
       }
     };
 
-    retrieveToken();
+    // Small delay to allow firebase initialization to stabilize
+    const timer = setTimeout(retrieveToken, 2000);
+    return () => clearTimeout(timer);
   }, [messaging, user, firestore]);
 
   return token;
 }
+
+import { serverTimestamp } from 'firebase/firestore';
