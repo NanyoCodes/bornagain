@@ -31,7 +31,12 @@ import {
   PlusCircle,
   TrendingUp,
   Heart,
-  MessagesSquare
+  MessagesSquare,
+  Crosshair,
+  Sun,
+  Activity,
+  HandHeart,
+  Search
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -43,6 +48,7 @@ import type { Testimony } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 
 const features = [
   {
@@ -130,6 +136,12 @@ const historicalFacts = [
     icon: Zap,
     ref: "Psalm 100:4"
   }
+];
+
+const stats = [
+    { label: "Global Harvest", value: "190+ Nations", desc: "Unified mission reach", icon: Globe },
+    { label: "Miracle Velocity", value: "Thousands", desc: "Shared testimonies daily", icon: Flame },
+    { label: "Unity Index", value: "All Peoples", desc: "Open to every believer", icon: HeartHandshake },
 ];
 
 export default function LandingPage() {
@@ -223,13 +235,64 @@ export default function LandingPage() {
               transition={{ delay: 1, duration: 1 }}
               className="flex flex-col items-center gap-2 px-6"
             >
-                <p className="text-[7px] sm:text-[8px] font-black uppercase tracking-[0.2em] text-white/20 text-center text-balance max-w-xs">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 text-center text-balance max-w-lg">
                     "Go into all the world and preach the gospel to all creation."
                 </p>
                 <div className="h-px w-12 bg-primary/40" />
                 <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest">Mark 16:15</p>
             </motion.div>
           </div>
+        </section>
+
+        {/* Global Inclusivity Section */}
+        <section className="py-24 bg-background border-y border-primary/5">
+            <div className="max-w-7xl mx-auto px-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div className="space-y-8 text-center lg:text-left">
+                        <motion.div 
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            className="space-y-6"
+                        >
+                            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto lg:mx-0">
+                                <Users className="h-7 w-7 text-primary" />
+                            </div>
+                            <h2 className="text-3xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-balance">One Body. One Spirit. Many Nations.</h2>
+                            <div className="space-y-4 text-muted-foreground text-lg font-medium leading-relaxed italic text-pretty">
+                                <p>Testify is a sanctuary for <span className="text-foreground font-black underline decoration-primary/30">all believers</span> across the globe, regardless of denomination or tradition.</p>
+                                <p>We welcome unbelievers and seekers alike who want to see and know what God is doing in the world today. This is an invitation to witness the irrefutable evidence of the Living God.</p>
+                            </div>
+                            <div className="p-6 rounded-[2rem] bg-muted/30 border-2 border-dashed border-primary/20">
+                                <p className="text-xs sm:text-sm font-bold text-primary uppercase tracking-widest leading-loose">
+                                    "This is a call to tell the world about the Greatness of GOD—not just in history, but in our lives right now."
+                                </p>
+                            </div>
+                        </motion.div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6">
+                        {stats.map((stat, i) => (
+                            <motion.div 
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="p-8 rounded-[2.5rem] bg-card border shadow-sm flex items-center gap-6 group hover:border-primary/20 transition-all"
+                            >
+                                <div className="h-16 w-16 rounded-[1.25rem] bg-primary/5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                    <stat.icon className="h-8 w-8 text-primary" />
+                                </div>
+                                <div>
+                                    <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em] mb-1">{stat.label}</h4>
+                                    <p className="text-2xl font-black uppercase tracking-tight text-foreground">{stat.value}</p>
+                                    <p className="text-xs text-muted-foreground font-medium italic mt-1">{stat.desc}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </div>
         </section>
 
         {/* Kingdom Arena Section */}
@@ -242,31 +305,19 @@ export default function LandingPage() {
                     <div className="space-y-8 text-center lg:text-left">
                         <div className="space-y-4">
                             <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1">Kingdom Arena</Badge>
-                            <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter">Sharpen Your Spirit</h2>
+                            <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter">Exercise Your Spirit</h2>
                             <p className="text-zinc-400 text-lg leading-relaxed max-w-md mx-auto lg:mx-0">
-                                Engage in the Word Arena, Prayer Altar, and Kingdom Trivia. Compete with partners and lead your community into interactive biblical challenges.
+                                Sharpen your knowledge of the Word through interactive challenges. Experience the Arena lobby below and join the global leaderboard.
                             </p>
                         </div>
-                        <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest bg-primary text-white shadow-2xl shadow-primary/20">
-                            <Link href="/games">ENTER LOBBY <ChevronRight className="ml-2 h-5 w-5" /></Link>
-                        </Button>
+                        <div className="flex items-center justify-center lg:justify-start gap-4">
+                             <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest bg-primary text-white shadow-2xl shadow-primary/20">
+                                <Link href="/signup">JOIN THE ARENA <ChevronRight className="ml-2 h-5 w-5" /></Link>
+                            </Button>
+                        </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        {[
-                            { label: 'Word Arena', icon: BookOpen, bg: 'bg-indigo-600/20' },
-                            { label: 'Prayer Altar', icon: Flame, bg: 'bg-orange-600/20' },
-                            { label: 'Kingdom Trivia', icon: Gamepad2, bg: 'bg-emerald-600/20' },
-                            { label: 'Match Duels', icon: Users, bg: 'bg-blue-600/20' },
-                        ].map((item, i) => (
-                            <motion.div 
-                                key={i}
-                                whileHover={{ scale: 1.05 }}
-                                className={cn("p-8 rounded-[2rem] border border-white/5 flex flex-col items-center gap-4 text-center", item.bg)}
-                            >
-                                <item.icon className="h-8 w-8 text-primary" />
-                                <span className="font-black uppercase tracking-widest text-[10px]">{item.label}</span>
-                            </motion.div>
-                        ))}
+                    <div className="w-full">
+                         <BibleGameCard />
                     </div>
                 </div>
             </div>
