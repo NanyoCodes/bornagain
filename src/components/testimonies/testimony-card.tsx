@@ -77,9 +77,6 @@ import { useToast } from "@/hooks/use-toast";
 import { MutualConnectBadge } from "./mutual-connect-badge";
 import { motion, AnimatePresence } from "framer-motion";
 
-/**
- * Utility to convert YouTube URL to embed format.
- */
 export function getYouTubeEmbedUrl(url: string | undefined | null) {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -90,9 +87,6 @@ export function getYouTubeEmbedUrl(url: string | undefined | null) {
   return null;
 }
 
-/**
- * High fidelity media preview for the feed.
- */
 export const MediaPreview = ({ url, type, isFull = false }: { url: string, type: 'image' | 'video' | 'audio', isFull?: boolean }) => {
   const isAudio = type === 'audio';
 
@@ -179,9 +173,6 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
   );
 };
 
-/**
- * Live avatar that reflects current profile photo.
- */
 export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
     const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);

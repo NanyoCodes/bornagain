@@ -122,18 +122,28 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
   const getSupportedMimeType = (mode: 'video' | 'audio') => {
     if (typeof MediaRecorder === 'undefined') return '';
-    if (mode === 'audio') {
-        const audioTypes = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm', 'audio/wav'];
-        for (const type of audioTypes) {
-            if (MediaRecorder.isTypeSupported(type)) return type;
-        }
-        return 'audio/webm';
-    }
-    const videoTypes = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
-    for (const type of videoTypes) {
+    const types = mode === 'video' 
+        ? [
+            'video/mp4;codecs=avc1',
+            'video/mp4',
+            'video/webm;codecs=vp9,opus',
+            'video/webm;codecs=vp8,opus',
+            'video/webm',
+            'video/quicktime'
+          ]
+        : [
+            'audio/mp4',
+            'audio/aac',
+            'audio/mpeg',
+            'audio/webm;codecs=opus',
+            'audio/webm',
+            'audio/wav'
+          ];
+          
+    for (const type of types) {
         if (MediaRecorder.isTypeSupported(type)) return type;
     }
-    return 'video/webm';
+    return mode === 'video' ? 'video/webm' : 'audio/webm';
   };
 
   const startRecorder = async (slot: 1 | 2, mode: 'video' | 'audio') => {
@@ -220,6 +230,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
+        // Crucial: Set contentType explicitly for mobile browser compatibility
         const uploadResult = await uploadBytes(fileRef, file, { contentType: file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -642,7 +653,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                                     </Button>
                                 ) : (
                                     <Button 
-                                        onClick={stopRecording}
+                                        onClick={stopRecording} 
                                         size="lg"
                                         className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95"
                                     >

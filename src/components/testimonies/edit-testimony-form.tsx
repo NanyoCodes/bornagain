@@ -35,6 +35,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -117,6 +118,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     if (typeof MediaRecorder === 'undefined') return '';
     const types = mode === 'video' 
         ? [
+            'video/mp4;codecs=avc1',
             'video/mp4',
             'video/webm;codecs=vp9,opus',
             'video/webm;codecs=vp8,opus',
@@ -376,7 +378,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
           </Label>
           
           {!preview ? (
-              <div className="space-y-3 text-left">
+              <div className="space-y-3">
                   <div 
                       className={cn(
                           "border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left",
