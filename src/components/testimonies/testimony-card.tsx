@@ -1,4 +1,3 @@
-// ... existing imports
 'use client';
 
 import * as React from "react";
@@ -76,6 +75,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } f
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { MutualConnectBadge } from "./mutual-connect-badge";
+import { motion, AnimatePresence } from "framer-motion";
 
 /**
  * Utility to convert YouTube URL to embed format.
@@ -135,7 +135,12 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
               </div>
           </DialogTrigger>
           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-              <DialogHeader className="sr-only text-center"><DialogTitle>Full View</DialogTitle></DialogHeader>
+              <div className="sr-only">
+                  <DialogHeader>
+                    <DialogTitle>Full View</DialogTitle>
+                    <DialogDescription>Full miracle proof preview.</DialogDescription>
+                  </DialogHeader>
+              </div>
               <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
                   <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                       {type === 'image' ? (
@@ -195,7 +200,11 @@ export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { user
             </DialogTrigger>
             {photoURL && (
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
+                    <div className="sr-only">
+                        <DialogHeader>
+                            <DialogTitle>Profile Photo</DialogTitle>
+                        </DialogHeader>
+                    </div>
                     <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
                         <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                             <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
@@ -205,20 +214,6 @@ export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { user
             )}
         </Dialog>
     );
-}
-
-export function getStatusClasses(status: FollowUpStatus | undefined): string {
-    if (!status) return 'bg-secondary text-secondary-foreground border-border';
-    switch (status) {
-        case 'New':
-            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
-        case 'Contacted':
-            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
-        case 'Established':
-            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
-        default:
-            return 'bg-secondary text-secondary-foreground border-border';
-    }
 }
 
 export const TestimonyCard = memo(function TestimonyCard({ 
@@ -617,13 +612,23 @@ export const TestimonyCard = memo(function TestimonyCard({
                 <>
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
                         <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Kingdom Testimony</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left">BY {authorName} • {displayDate}</DrawerDescription></DrawerHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Kingdom Testimony</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left">BY {authorName} • {displayDate}</DrawerDescription>
+                                </DrawerHeader>
+                            </div>
                             <div className="flex-grow min-h-0 pt-8 px-6 text-left text-left text-left">{fullTextContent}</div>
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline text-left text-left text-left text-left text-left" />Answered Prayer</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription></DrawerHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline text-left text-left text-left text-left text-left" />Answered Prayer</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
+                                </DrawerHeader>
+                            </div>
                             <ScrollArea className="flex-grow px-8 py-10 text-left text-left text-left text-left text-left">
                                 <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left text-left text-left text-left text-left">
                                     {testimony.answeredPrayerContent}
@@ -632,13 +637,32 @@ export const TestimonyCard = memo(function TestimonyCard({
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Responses</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription><div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Swipe down to close</span></div></DrawerHeader></div><div className="flex-grow min-h-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><CommentSection testimonyId={testimony.id} /></div></DrawerContent>
+                        <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Responses</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
+                                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Swipe down to close</span></div>
+                                </DrawerHeader>
+                            </div>
+                            <div className="flex-grow min-h-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <CommentSection testimonyId={testimony.id} />
+                            </div>
+                        </DrawerContent>
                     </Drawer>
                 </>
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={open => { setShowFullText(open); if(!open) setIsCommentsOpen(false); }}>
-                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0 text-left text-left text-left text-left text-left text-left"><div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><DrawerTitle className="text-3xl font-black font-headline uppercase text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Kingdom Testimony</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">BY {authorName} • {displayDate}</DrawerDescription></DrawerHeader></div><div className="p-8 text-left text-left text-left text-left text-left text-left">{fullTextContent}</div></DialogContent>
+                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0 text-left text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <DialogTitle className="text-3xl font-black font-headline uppercase text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Kingdom Testimony</DialogTitle>
+                                    <DialogDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">BY {authorName} • {displayDate}</DialogDescription>
+                                </DialogHeader>
+                            </div>
+                            <div className="p-8 text-left text-left text-left text-left text-left text-left">{fullTextContent}</div>
+                        </DialogContent>
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
@@ -656,7 +680,17 @@ export const TestimonyCard = memo(function TestimonyCard({
                         </DialogContent>
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Gathered Responses</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DrawerDescription></DrawerHeader></div><div className="flex-1 min-h-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{isCommentsOpen && <CommentSection testimonyId={testimony.id} />}</div></DialogContent>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left text-left text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Gathered Responses</DialogTitle>
+                                    <DialogDescription className="text-sm font-bold uppercase tracking-widest">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription>
+                                </DialogHeader>
+                            </div>
+                            <div className="flex-1 min-h-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                {isCommentsOpen && <CommentSection testimonyId={testimony.id} />}
+                            </div>
+                        </DialogContent>
                     </Dialog>
                 </>
             )}

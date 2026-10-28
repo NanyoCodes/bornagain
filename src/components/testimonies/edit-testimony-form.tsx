@@ -1,4 +1,3 @@
-// ... existing imports
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -519,15 +518,20 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
         <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
             <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black">
-                <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
+                <div className="sr-only">
+                    <DialogHeader>
+                        <DialogTitle>Recorder</DialogTitle>
+                    </DialogHeader>
+                </div>
+                <div className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
                   <div className="flex items-center justify-between gap-4 text-left">
                     <div className="min-w-0 text-left">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</DialogDescription>
+                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</div>
+                        <p className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</p>
                     </div>
                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10" onClick={closeRecorder}><X className="h-6 w-6" /></Button>
                   </div>
-                </DialogHeader>
+                </div>
                 
                 {recorderMode === 'video' ? (
                     <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden text-left">
