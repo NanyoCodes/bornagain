@@ -215,6 +215,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
+        // CRITICAL: Explicitly set contentType metadata so mobile browsers initiate playback
         const metadata = { contentType: file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4') };
         const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
@@ -262,6 +263,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
+        // CRITICAL: Explicitly set contentType metadata
         const uploadResult = await uploadBytes(fileRef, fileToUpload, { contentType: fileToUpload.type || file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -391,7 +393,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           </Label>
           
           {!preview ? (
-              <div className="space-y-3 text-left">
+              <div className="space-y-3">
                   <div 
                       className={cn(
                           "border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left",

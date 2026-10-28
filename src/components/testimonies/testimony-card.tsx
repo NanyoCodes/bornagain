@@ -214,20 +214,6 @@ export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { user
     );
 }
 
-export function getStatusClasses(status: FollowUpStatus | undefined): string {
-    if (!status) return 'bg-secondary text-secondary-foreground border-border';
-    switch (status) {
-        case 'New':
-            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
-        case 'Contacted':
-            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
-        case 'Established':
-            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
-        default:
-            return 'bg-secondary text-secondary-foreground border-border';
-    }
-}
-
 export const TestimonyCard = memo(function TestimonyCard({ 
   testimony, 
   onDelete, 
@@ -589,7 +575,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                 <span className="text-[10px] font-black uppercase text-indigo-600 tracking-[0.3em]">Kingdom Promotion</span>
                             </div>
                             <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Boost Your Testimony</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1">Share your miracle with a wider global audience.</DrawerDescription>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-balance">Share your miracle with a wider global audience.</DrawerDescription>
                         </DrawerHeader>
                     </div>
                     <div className="p-8 space-y-6">
@@ -612,7 +598,7 @@ export const TestimonyCard = memo(function TestimonyCard({
 
                         <div className="flex gap-3">
                             <Button variant="outline" className="flex-1 h-12 rounded-xl font-bold" onClick={() => setIsBoostOpen(false)}>Cancel</Button>
-                            <Button asChild className="flex-1 h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                            <Button asChild className="flex-1 h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center">
                                 <Link href={`/contact?subject=Testimony Boost Request&id=${testimony.id}`}>PROCEED TO HUB</Link>
                             </Button>
                         </div>
@@ -677,7 +663,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                         </DialogContent>
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
-                        <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+                        <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                              <div className="p-8 border-b bg-amber-500/10">
                                 <DialogHeader className="text-left p-0">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase text-amber-600"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer Request</DialogTitle>
@@ -692,14 +678,14 @@ export const TestimonyCard = memo(function TestimonyCard({
                         </DialogContent>
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DialogHeader>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                                <DialogHeader className="text-left p-0">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase">Gathered Responses</DialogTitle>
                                     <DialogDescription className="text-sm font-bold uppercase tracking-widest">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <div className="flex-1 min-h-0">
+                            <div className="flex-1 min-h-0 text-left">
                                 {isCommentsOpen && <CommentSection testimonyId={testimony.id} />}
                             </div>
                         </DialogContent>

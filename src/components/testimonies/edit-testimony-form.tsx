@@ -222,6 +222,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
+        // CRITICAL: Explicitly set contentType metadata
         const metadata = { contentType: file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4') };
         const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
@@ -268,6 +269,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${file.name}`);
+        // CRITICAL: Explicitly set contentType metadata
         const uploadResult = await uploadBytes(fileRef, fileToUpload, { contentType: fileToUpload.type || file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
