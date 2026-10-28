@@ -111,6 +111,17 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     defaultValues: { content: "", category: undefined },
   });
 
+  useEffect(() => {
+    if (prayerRequest) {
+      form.reset({
+        category: testimonyCategories.includes(prayerRequest.category as TestimonyCategory) ? prayerRequest.category : 'General',
+        content: ""
+      });
+    } else if (campaign) {
+      form.reset({ category: 'Salvation', content: "" });
+    }
+  }, [prayerRequest, campaign, form]);
+
   const getSupportedMimeType = (mode: 'video' | 'audio') => {
     if (mode === 'audio') {
         const audioTypes = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm', 'audio/wav'];
@@ -485,12 +496,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         {prayerRequest && (
             <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left">
                 <div className="absolute -top-4 -right-4 h-16 w-16 bg-amber-500/5 rounded-full blur-xl text-left" />
-                <CardHeader className="p-5 pb-2 relative z-10 text-left text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left text-left">
-                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left text-left" />
-                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left text-left">Answering Prayer Altar</span>
+                <CardHeader className="p-5 pb-2 relative z-10 text-left text-left text-left">
+                    <div className="flex items-center gap-2 mb-1 text-left text-left text-left">
+                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left text-left text-left" />
+                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left text-left text-left">Answering Prayer Altar</span>
                     </div>
-                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
+                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left text-left text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
                 </CardHeader>
             </Card>
         )}
@@ -519,15 +530,15 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
             <FormField control={form.control} name="content" render={({ field }) => (
                 <FormItem className="text-left text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Full Story</FormLabel>
-                    <FormControl className="text-left text-left">
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Full Story</FormLabel>
+                    <FormControl className="text-left text-left text-left">
                     <Textarea 
                         placeholder="Detail the greatness of God in this situation..." 
-                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left text-left" 
+                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left text-left text-left" 
                         {...field} 
                     />
                     </FormControl>
-                    <FormMessage className="text-left text-left" />
+                    <FormMessage className="text-left text-left text-left" />
                 </FormItem>
                 )}
             />
@@ -560,7 +571,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     </div>
                 )}
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center text-left text-left">
+              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center text-left text-left text-left">
                 TO THE GLORY OF JESUS CHRIST
               </p>
           </div>
@@ -694,4 +705,3 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
-

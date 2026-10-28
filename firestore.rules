@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for UID logic and reaction authorization - 2025-03-08T22:00:00Z
+    // Deployment trigger: Critical logic fix for reaction authorization and user fields - 2025-03-08T23:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -78,7 +78,7 @@ service cloud.firestore {
       );
 
       match /cart/{itemId} {
-        allow read, list, write: if isOwner(userId);
+        allow read, list, write: if isOwner(itemId) || isOwner(userId);
       }
 
       match /strongholds/{id} {
@@ -208,7 +208,7 @@ service cloud.firestore {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
         allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
-        allow update: if isAuthenticated() && (request.resource.data.authorId == request.auth.uid);
+        allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
       }
     }
     

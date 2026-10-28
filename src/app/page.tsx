@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -272,7 +273,7 @@ export default function LandingPage() {
                                 Vibe Check: Authentic
                             </h3>
                             <p className="text-muted-foreground leading-relaxed font-medium text-pretty text-center">
-                                In this digital age your testimony is the ultimate currency. We welcome non christians and seekers alike who want to see real proof of God moving in our lives today. We must grow this Kingdom network together to proclaim His greatness to the ends of the earth.
+                                In this digital age your testimony is the ultimate currency. We welcome non christians and seekers alike who want to see real proof of God moving in our lives today. We must grow this Kingdom network together to flood the world with irrefutable proof of God's power.
                             </p>
                         </div>
                     </motion.div>
@@ -311,7 +312,7 @@ export default function LandingPage() {
                 <div className="flex flex-col items-center gap-12">
                     <div className="space-y-8 max-w-3xl mx-auto">
                         <div className="space-y-4">
-                            <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto">Kingdom Arena</Badge>
+                            <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0">Kingdom Arena</Badge>
                             <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center">Exercise Your Spirit</h2>
                             <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center">
                                 Sharpen your knowledge of the Word through interactive challenges. Experience the Arena lobby below and join the global leaderboard.
