@@ -506,7 +506,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
               <Link href="/login" className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
               <Link href="/signup" className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Join Movement</Link>
             </Button>
           </div>
@@ -738,12 +738,12 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] flex flex-col items-center justify-center gap-2 text-center text-left text-left text-left text-left text-left text-left text-left">
-              <SheetHeader className="text-center flex-shrink-0 p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+              <SheetHeader className="text-center flex-shrink-0 p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left text-left text-left text-left text-left text-left">Complete Your Identity</SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1 text-zinc-400 text-center text-balance text-left text-left text-left text-left text-left text-left text-left text-left text-left">Join the global movement by introducing yourself to the Body.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-8 text-left text-left text-left text-left text-left text-left text-left">
+            <div className="flex-grow overflow-y-auto p-5 sm:p-8 text-left text-left text-left text-left text-left text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
@@ -752,12 +752,12 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-[500px] rounded-[2.5rem] overflow-hidden p-0 text-left border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left text-left">
             <div className="p-8 border-b bg-muted/10 flex flex-col items-center justify-center gap-2 text-center text-left text-left text-left text-left text-left text-left text-left text-left">
-              <DialogHeader className="text-center p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left text-left text-left text-left text-left text-left">Activate Profile</DialogTitle>
+              <DialogHeader className="text-center p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left">Activate Profile</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1 text-zinc-400 text-center text-balance text-left text-left text-left text-left text-left text-left text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-8 max-h-[70vh] overflow-y-auto text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+            <div className="p-5 sm:p-8 max-h-[70vh] overflow-y-auto text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
