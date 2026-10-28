@@ -33,11 +33,11 @@ import Link from 'next/link';
 import type { Soul, Campaign, Fellowship } from '@/lib/types';
 
 const faithSeeds = [
-    { text: "Your testimony is a weapon that overcomes the enemy.", ref: "Rev 12:11" },
+    { text: "Your testimony is a weapon of love that overcomes the enemy.", ref: "Rev 12:11" },
     { text: "One life reached is a celebration in all of Heaven.", ref: "Luke 15:7" },
-    { text: "The Word you share today can anchor a soul forever.", ref: "Heb 6:19" },
-    { text: "Stand firm, for your labor in the Lord is never in vain.", ref: "1 Cor 15:58" },
-    { text: "God uses the available to reach the unreachable.", ref: "Isa 6:8" },
+    { text: "The care you show today can anchor a soul forever.", ref: "Heb 6:19" },
+    { text: "Stand firm in compassion; your labor is never in vain.", ref: "1 Cor 15:58" },
+    { text: "God uses those who care to reach those who are hurting.", ref: "Isa 6:8" },
 ];
 
 export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMode, className?: string }) {
@@ -74,60 +74,32 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
         return [];
     }, [userProfile, now]);
 
-    const activeGroupsQuery = useMemo(() => {
-        if (!user?.uid || !firestore) return null;
-        return query(
-            collection(firestore, 'fellowships'), 
-            where('memberIds', 'array-contains', user.uid),
-            where('status', '==', 'active')
-        );
-    }, [user?.uid, firestore]);
-    const { data: activeGroups } = useCollection<Fellowship>(activeGroupsQuery);
-
-    const joinedCampaignsQuery = useMemo(() => {
-        if (!user?.uid || !firestore) return null;
-        return query(collection(firestore, `users/${user.uid}/joinedCampaigns`));
-    }, [user?.uid, firestore]);
-    const { data: joinedCampaignRefs } = useCollection<any>(joinedCampaignsQuery);
-
-    const allActiveCampaignsQuery = useMemo(() => {
-        if (!firestore) return null;
-        return query(collection(firestore, 'campaigns'), where('status', '==', 'active'));
-    }, [firestore]);
-    const { data: activeCampaigns } = useCollection<Campaign>(allActiveCampaignsQuery);
-
-    const liveMissionsCount = useMemo(() => {
-        if (!activeCampaigns || !joinedCampaignRefs || !user?.uid) return 0;
-        const joinedIds = new Set(joinedCampaignRefs.map((r: any) => r.id));
-        return activeCampaigns.filter((c: Campaign) => joinedIds.has(c.id) || c.organizerId === user.uid).length;
-    }, [activeCampaigns, joinedCampaignRefs, user?.uid]);
-
     const randomSeed = useMemo(() => faithSeeds[Math.floor(Math.random() * faithSeeds.length)], []);
 
     return (
         <div className={cn("hidden lg:flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-10", className)}>
             
             {mode !== 'fellowships' && (
-                <Card className="rounded-3xl border-none shadow-lg bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-black/10 shrink-0">
-                    <CardHeader className="p-6 pb-2 text-left text-left">
+                <Card className="rounded-3xl border-none shadow-lg bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-black/10 shrink-0 text-left">
+                    <CardHeader className="p-6 pb-2 text-left">
                         <div className="flex items-center justify-between mb-2 text-left">
                             <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center text-left">
-                                <Target className="h-5 w-5 text-white text-left" />
+                                <Heart className="h-5 w-5 text-white" />
                             </div>
-                            <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest text-left">Harvest Progress</Badge>
+                            <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest text-left">Kingdom Care Tracking</Badge>
                         </div>
-                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">HARVEST</CardTitle>
+                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">CARE IMPACT</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 pt-2 space-y-4 text-left">
                         <div className="space-y-1 text-left">
                             <div className="flex justify-between items-baseline text-left">
                                 <span className="text-3xl font-black text-left">{totalSouls}</span>
-                                <span className="text-xs font-bold opacity-70 text-left">/{monthlyGoal} SOULS</span>
+                                <span className="text-xs font-bold opacity-70 text-left">/{monthlyGoal} LIVES</span>
                             </div>
                             <Progress value={progressValue} className="h-2 bg-white/20 text-left" indicatorClassName="bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                         </div>
                         <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
-                            Every life logged contributes to the global harvest map and city impact stats.
+                            Every soul logged is a life you are committed to following up on with compassion and prayer.
                         </p>
                     </CardContent>
                 </Card>
@@ -137,7 +109,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
                     <CardHeader className="p-5 pb-2 text-left">
                         <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 text-left">
-                            <Zap className="h-4 w-4 text-primary text-left" /> Daily Disciplines
+                            <Zap className="h-4 w-4 text-primary text-left" /> Compassionate Habits
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 pt-4 space-y-3 text-left">
@@ -171,7 +143,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
                     <CardHeader className="p-5 pb-2 text-left">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2 text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left" /> Seed of Faith
+                            <Sparkles className="h-4 w-4 text-primary text-left" /> Seed of Compassion
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 pt-4 text-left">
@@ -187,15 +159,15 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
             )}
 
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
-                <CardHeader className="p-5 pb-2 text-left text-left text-left">
-                    <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Kingdom Sectors</CardTitle>
+                <CardHeader className="p-5 pb-2 text-left">
+                    <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Caring Hubs</CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 space-y-1 text-left">
                     <Link href="/victory-hub" className="flex items-center gap-4 p-3 rounded-2xl hover:bg-muted group text-left">
                         <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform text-left">
                             <ShieldCheck className="h-4 w-4 text-primary text-left" />
                         </div>
-                        <span className="font-black uppercase tracking-widest text-[10px] text-left">Victory Hub</span>
+                        <span className="font-black uppercase tracking-widest text-[10px] text-left">Recovery Hub</span>
                     </Link>
                     <Link href="/marketplace" className="flex items-center gap-4 p-3 rounded-2xl hover:bg-muted group text-left">
                         <div className="h-8 w-8 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform text-left">
@@ -213,7 +185,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 <CardFooter className="p-5 pt-0 text-left">
                     <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full text-left">
                         <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic text-center text-left">
-                            "Equipping the saints for the work of ministry." — Eph 4:12
+                            "The number one app to care for family, friends, souls and the kingdom."
                         </p>
                     </div>
                 </CardFooter>

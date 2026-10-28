@@ -54,16 +54,16 @@ import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 
 const features = [
   {
-    title: "TESTIMONIES",
-    description: "Share real time miracles. Your testimony is a weapon that overcomes the enemy. No cap.",
+    title: "COMPASSIONATE TESTIMONIES",
+    description: "Share miracles that inspire hope. Your testimony is a weapon of love that encourages family and friends to trust in God.",
     icon: Newspaper,
     color: "text-orange-500",
     bgColor: "bg-orange-500/10",
     link: "/testimonies",
   },
   {
-    title: "Mission Ops",
-    description: "Launch evangelism campaigns. Coordinate your squad in the field with real time tracking.",
+    title: "Mission Care",
+    description: "Launch evangelism campaigns with heart. Coordinate your squad to compassionately follow up on every soul won in the field.",
     icon: Target,
     color: "text-emerald-500",
     bgColor: "bg-emerald-500/10",
@@ -71,7 +71,7 @@ const features = [
   },
   {
     title: "Victory Circles",
-    description: "Find community driven solutions for spiritual breakthroughs. Overcome strongholds together.",
+    description: "A sanctuary for transparency. Find community driven solutions and support for the people you care about most.",
     icon: ShieldCheck,
     color: "text-indigo-600",
     bgColor: "bg-indigo-600/10",
@@ -79,7 +79,7 @@ const features = [
   },
   {
     title: "Provision Hub",
-    description: "Practical love. Support the brethren with physical meals through the Meals Center.",
+    description: "Practical compassion. Support the brethren and those in need with physical meals through the Meals Center.",
     icon: Utensils,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
@@ -87,23 +87,23 @@ const features = [
   },
   {
     title: "Kindness Center",
-    description: "Gifts, Bibles, and spiritual tokens to nourish the souls in your harvest.",
+    description: "Gifts of love. Send Bibles and spiritual tokens to nurture and care for the souls in your unique harvest.",
     icon: Gift,
     color: "text-purple-600",
     bgColor: "bg-purple-600/10",
     link: "/marketplace/gifts",
   },
   {
-    title: "Daily Flow",
-    description: "Prayer, Word, and Church trackers. Consistency is the ultimate Kingdom flex.",
+    title: "Daily Love Walk",
+    description: "Consistency in care. Track your Prayer and Word study habits to stay spiritually equipped to love others better.",
     icon: Zap,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
     link: "/growth",
   },
   {
-    title: "The Alliance",
-    description: "Partner with believers for high fidelity growth and shared spiritual history.",
+    title: "The Heart Alliance",
+    description: "Partner with believers you love for high fidelity growth and mutual accountability in the Kingdom.",
     icon: HeartHandshake,
     color: "text-blue-600",
     bgColor: "bg-blue-600/10",
@@ -111,7 +111,7 @@ const features = [
   },
   {
     title: "Intercession",
-    description: "Global agreement. Lift up prayer requests with the entire Kingdom Network.",
+    description: "Stand in the gap. Lift up prayer requests with compassion for the global Kingdom Network.",
     icon: HandHeart,
     color: "text-rose-500",
     bgColor: "bg-rose-500/10",
@@ -121,29 +121,29 @@ const features = [
 
 const historicalFacts = [
   {
-    title: "Ebenezer Protocol",
-    description: "Ancient believers established stones of help—physical testimonies to ensure miracles were never forgotten.",
+    title: "The Care Protocol",
+    description: "Early believers established patterns of deep care—ensuring no one was left behind in their spiritual journey.",
     icon: History,
-    ref: "1 Samuel 7:12"
+    ref: "Acts 2:44-45"
   },
   {
-    title: "Viral Gospel",
-    description: "The 1st century church exploded because regular people shared their lived evidence of Christ.",
+    title: "Compassionate Reach",
+    description: "The 1st century church exploded because believers didn't just preach; they cared for the souls they won.",
     icon: Globe,
-    ref: "Acts 4:20"
+    ref: "1 Thess 2:8"
   },
   {
-    title: "The Gratitude Shift",
-    description: "Living in gratitude is not just a vibe—it is a spiritual engine that unlocks Kingdom productivity.",
+    title: "Kingdom Nurturing",
+    description: "Nurturing a new convert with patience and love is the highest form of Kingdom productivity.",
     icon: Zap,
-    ref: "Psalm 100:4"
+    ref: "Colossians 1:28"
   }
 ];
 
 const stats = [
-    { label: "The Global Grid", value: "190+ Nations", desc: "One Body, Many Stations", icon: Globe },
+    { label: "The Global Grid", value: "190+ Nations", desc: "Caring Across Borders", icon: Globe },
     { label: "Miracle Velocity", value: "UNLIMITED", desc: "Daily Proclamations", icon: Flame },
-    { label: "Unity Index", value: "Unlimited", desc: "Open to All Seekers", icon: HeartHandshake },
+    { label: "Love Index", value: "Unlimited", desc: "Open to All Hearts", icon: HeartHandshake },
 ];
 
 export default function LandingPage() {
@@ -205,14 +205,14 @@ export default function LandingPage() {
             <div className="max-w-4xl mx-auto space-y-8">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
-                  PROCLAIMING GOD'S GOODNESS
+                  SHARING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[0.9] tracking-tighter text-balance text-center">
+                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
-                  <span className="text-primary"> Glorify the King!</span>
+                  <span className="text-primary text-2xl sm:text-4xl md:text-5xl block mt-4 uppercase"> The #1 App to Care for Family, Friends, Souls, and the Kingdom.</span>
                 </h1>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
-                  "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
+                  "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11. Follow up on the people you love and care about with compassion.
                 </p>
               </motion.div>
 
@@ -221,7 +221,7 @@ export default function LandingPage() {
                   <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="h-16 px-10 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10">
-                  <Link href="/about">THE VISION</Link>
+                  <Link href="/about">THE COMPASSION VISION</Link>
                 </Button>
               </div>
             </div>
@@ -254,25 +254,25 @@ export default function LandingPage() {
                         className="space-y-8 max-w-4xl"
                     >
                         <Badge className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
-                            THE GLOBAL SANCTUARY
+                            THE COMPASSIONATE NETWORK
                         </Badge>
                         <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-[0.9] tracking-tighter text-balance text-center">
-                            No Gatekeeping.<br/>
-                            <span className="text-primary">Just God.</span>
+                            Nurture the Harvest.<br/>
+                            <span className="text-primary">With Love.</span>
                         </h2>
                         <div className="space-y-6">
                             <p className="text-lg sm:text-2xl text-muted-foreground font-medium leading-relaxed italic border-x-4 border-primary/20 px-8 text-center text-balance">
-                                We are not here for tradition we are here for transformation. Testify is the open access hub for every believer. 
-                                We offer men true success through spiritual authority and professional integrity. We celebrate the radiant beauty of women walking in divine restoration. We ignite the limitless dreams of children through a destiny anchored in Christ.
+                                We are here to help you look after those you lead to Christ. Testify provides the heartbeat of care for your family, your friends, and the souls God places in your path. 
+                                We offer men the tools for spiritual legacy. We provide women a community of radiant restoration. We guard the dreams of our children through intentional spiritual follow up.
                             </p>
                         </div>
                         <div className="group relative p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 transition-all hover:bg-muted/40 max-w-2xl mx-auto">
                             <h3 className="text-xl font-black uppercase tracking-tight flex items-center justify-center gap-3 mb-4 text-center">
                                 <Sparkles className="h-6 w-6 text-primary" />
-                                Vibe Check: Authentic
+                                Care Factor: Unmatched
                             </h3>
                             <p className="text-muted-foreground leading-relaxed font-medium text-pretty text-center">
-                                In this digital age your testimony is the ultimate currency. We welcome non christians and seekers alike who want to see real proof of God moving in our lives today. We must grow this Kingdom network together to flood the world with irrefutable proof of God's power.
+                                In this digital age, your care is your testimony. We provide the tools to ensure no one is forgotten. Follow up on the people you love with strategic compassion, logging every milestone of their journey into the light.
                             </p>
                         </div>
                     </motion.div>
@@ -312,13 +312,13 @@ export default function LandingPage() {
                     <div className="space-y-8 max-w-3xl mx-auto">
                         <div className="space-y-4">
                             <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0">Kingdom Arena</Badge>
-                            <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center">Exercise Your Spirit</h2>
+                            <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center">Empower Your Loved Ones</h2>
                             <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center">
-                                Sharpen your knowledge of the Word through interactive challenges. Experience the Arena lobby below and join the global leaderboard.
+                                Use the Word Arena to challenge and sharpen those you care about. Bible study becomes a collaborative act of love.
                             </p>
                         </div>
                         <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 mx-auto">
-                            <Link href="/signup">JOIN THE ARENA <ChevronRight className="ml-2 h-4 w-4" /></Link>
+                            <Link href="/signup">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4" /></Link>
                         </Button>
                     </div>
                     <div className="w-full max-w-2xl mx-auto text-left">
@@ -338,11 +338,11 @@ export default function LandingPage() {
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4 mx-auto"
               >
                 <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Main Mission: Proclaim</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Mission Critical Care</span>
               </motion.div>
-              <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center">The Laborer Toolkit</h2>
+              <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center">The Caretaker Toolkit</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium italic text-center">
-                Advanced tech for the ancient mission. Organize the harvest with intentionality.
+                Equipping you to follow up and look after your harvest with professional intentionality.
               </p>
             </div>
 
@@ -386,8 +386,8 @@ export default function LandingPage() {
         <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-center">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-20 space-y-4">
-                    <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter text-center">The Legacy of Proclamation</h2>
-                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto italic font-medium text-center">"And they overcame him by the blood of the Lamb and by the word of their testimony..."</p>
+                    <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter text-center">Legacy of Compassion</h2>
+                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto italic font-medium text-center">"Carry each other’s burdens, and in this way you will fulfill the law of Christ."</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -408,16 +408,16 @@ export default function LandingPage() {
                 <div className="mt-24 p-8 sm:p-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.1),transparent_70%)]" />
                     <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl relative z-10">
-                        <Scale className="h-8 w-8 text-white" />
+                        <Heart className="h-8 w-8 text-white" />
                     </div>
                     <div className="space-y-4 relative z-10">
-                        <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-center">Main Character Energy: Gratitude</h3>
+                        <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-center">Caring for the One</h3>
                         <p className="text-zinc-400 max-w-2xl mx-auto text-sm sm:text-lg leading-relaxed font-medium italic text-pretty text-center">
-                            When we live in gratitude to God we are naturally empowered to live out our best virtues. Gratitude is not just a feeling it is the engine of Kingdom productivity and relational integrity.
+                            True spiritual success is measured by the depth of your care. Testify makes it easy to stay present in the lives of your family and friends, ensuring they grow deep in the Word and established in the Kingdom.
                         </p>
                     </div>
                     <Button asChild size="lg" className="rounded-full h-14 px-12 font-black uppercase tracking-widest text-xs relative z-10 shadow-xl bg-white text-primary hover:bg-zinc-100 mx-auto">
-                        <Link href="/signup">JOIN THE HARVEST</Link>
+                        <Link href="/signup">JOIN THE CARE NETWORK</Link>
                     </Button>
                 </div>
             </div>
@@ -430,10 +430,10 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="space-y-10 text-center lg:text-left">
                 <div className="space-y-6">
-                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0">The Digital Altar</Badge>
-                  <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left">See God In Action</h2>
+                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0">The Compassionate Altar</Badge>
+                  <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left">Witness the Care</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-w-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left">
-                    Miracles are not just for history. Witness God moving through the global community right now.
+                    Read how believers are looking after their harvest and following up on those they love with miracles.
                   </p>
                 </div>
                 
@@ -491,15 +491,15 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
             <div className="max-w-3xl mx-auto space-y-10">
               <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance text-center">
-                The Harvest is Plentiful. Ready to Labor?
+                Ready to Look After Your Own?
               </h2>
               <p className="text-lg sm:text-2xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-center">
-                Join thousands of believers who are using technology to fulfill the mission of Jesus Christ. 
-                Record miracles, reach cities, and track the greatness of God.
+                Join the #1 app dedicated to caring for family, friends, and the Kingdom.
+                Follow up on those you love and record the greatness of God together.
               </p>
               <div className="flex justify-center pt-4">
                 <Button asChild size="lg" className="h-16 px-14 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto text-center">
-                  <Link href="/signup">START TESTIFYING <ArrowRight className="ml-3 h-6 w-6" /></Link>
+                  <Link href="/signup">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6" /></Link>
                 </Button>
               </div>
             </div>
@@ -520,27 +520,27 @@ export default function LandingPage() {
                 )}
               </Link>
               <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-w-sm mx-auto sm:mx-0 text-center sm:text-left">
-                Testify is the open access hub for believers to share the greatness of Jesus Christ, who gave his life to reconcile the world to God.
+                Testify is the heart center for believers to care for family, friends, and the global harvest while sharing the greatness of Jesus Christ.
               </p>
             </div>
 
             <div className="space-y-6 text-center sm:text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Platform</h4>
               <ul className="space-y-4">
-                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Testimonies</Link></li>
-                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Mission Hub</Link></li>
-                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Harvest Progress</Link></li>
-                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Directory</Link></li>
+                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Miracle Feed</Link></li>
+                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Care Missions</Link></li>
+                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Love Growth</Link></li>
+                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Community Hubs</Link></li>
               </ul>
             </div>
 
             <div className="space-y-6 text-center sm:text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Ministry</h4>
               <ul className="space-y-4">
-                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Our Story</Link></li>
-                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Partner With Us</Link></li>
-                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">App Guide</Link></li>
-                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Resources</Link></li>
+                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Compassion Vision</Link></li>
+                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Partner with us</Link></li>
+                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Care Guide</Link></li>
+                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Growth Assets</Link></li>
                 <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Terms</Link></li>
                 <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Privacy</Link></li>
               </ul>
@@ -550,7 +550,7 @@ export default function LandingPage() {
           <div className="h-px w-full bg-muted opacity-50 mb-10 text-left" />
           
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-center">
-            <p className="text-center md:text-left uppercase">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>
+            <p className="text-center md:text-left uppercase">© {new Date().getFullYear()} TESTIFY GLOBAL. Caring for the Harvest.</p>
             <div className="flex gap-8 justify-center sm:justify-end">
               <Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms</Link>
               <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy</Link>
