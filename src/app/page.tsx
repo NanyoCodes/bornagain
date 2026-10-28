@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -167,8 +166,8 @@ export default function LandingPage() {
 
   if (authLoading || user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-left">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-background text-left text-left text-left">
+        <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left" />
       </div>
     );
   }
@@ -218,10 +217,10 @@ export default function LandingPage() {
               </motion.div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild size="lg" className="h-16 px-10 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90">
+                <Button asChild size="lg" className="h-16 px-10 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90 text-center">
                   <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-16 px-10 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10">
+                <Button asChild variant="outline" size="lg" className="h-16 px-10 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 text-center">
                   <Link href="/about">THE COMPASSION VISION</Link>
                 </Button>
               </div>
@@ -318,7 +317,7 @@ export default function LandingPage() {
                                 Use the Word Arena to challenge and sharpen those you care about. Bible study becomes a collaborative act of love.
                             </p>
                         </div>
-                        <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 mx-auto">
+                        <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 mx-auto text-center">
                             <Link href="/signup">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4" /></Link>
                         </Button>
                     </div>
@@ -417,7 +416,7 @@ export default function LandingPage() {
                             True spiritual success is measured by the depth of your care. Testify makes it easy to stay present in the lives of your family and friends, ensuring they grow deep in the Word and established in the Kingdom.
                         </p>
                     </div>
-                    <Button asChild size="lg" className="rounded-full h-14 px-12 font-black uppercase tracking-widest text-xs relative z-10 shadow-xl bg-white text-primary hover:bg-zinc-100 mx-auto">
+                    <Button asChild size="lg" className="rounded-full h-14 px-12 font-black uppercase tracking-widest text-xs relative z-10 shadow-xl bg-white text-primary hover:bg-zinc-100 mx-auto text-center">
                         <Link href="/signup">JOIN THE CARE NETWORK</Link>
                     </Button>
                 </div>
@@ -438,14 +437,14 @@ export default function LandingPage() {
                   </p>
                 </div>
                 
-                <Button asChild size="lg" variant="outline" className="h-14 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-10 w-full sm:w-auto uppercase tracking-widest mx-auto lg:mx-0">
+                <Button asChild size="lg" variant="outline" className="h-14 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-10 w-full sm:w-auto uppercase tracking-widest mx-auto lg:mx-0 text-center">
                   <Link href="/testimonies">VIEW FEED</Link>
                 </Button>
               </div>
 
               <div className="space-y-6 text-left">
                 {loadingTestimonies ? (
-                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
+                  <div className="flex justify-center text-left text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left text-left" /></div>
                 ) : testimonies?.map((t, idx) => (
                   <motion.div 
                     key={t.id}
@@ -457,14 +456,14 @@ export default function LandingPage() {
                   >
                     <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left">
                       <CardContent className="p-8 flex gap-6 text-left">
-                        <Quote className="h-10 w-10 text-primary opacity-20 shrink-0 mt-1" />
+                        <Quote className="h-10 w-10 text-primary opacity-20 shrink-0 mt-1 text-left" />
                         <div className="min-w-0 flex-1 text-left">
                           <p className="text-sm sm:text-lg italic text-muted-foreground line-clamp-3 leading-relaxed mb-6 font-medium text-left">
                             "{t.content}"
                           </p>
                           <div className="flex items-center gap-4 text-left">
                             <Avatar className="h-11 w-11 border-2 border-background shadow-md shrink-0 text-left">
-                              <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary font-black uppercase text-center flex items-center justify-center h-full w-full"> {t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
+                              <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary font-black uppercase text-center flex items-center justify-center h-full w-full text-left"> {t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex-1 text-left">
                               <p className="text-[11px] font-black uppercase tracking-tight truncate text-left">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
@@ -499,7 +498,7 @@ export default function LandingPage() {
                 Join the #1 app dedicated to caring for family, friends, and the Kingdom.
                 Follow up on those you love and record the greatness of God together.
               </p>
-              <div className="flex justify-center pt-4">
+              <div className="flex justify-center pt-4 text-center">
                 <Button asChild size="lg" className="h-16 px-14 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto text-center">
                   <Link href="/signup">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6" /></Link>
                 </Button>
@@ -512,7 +511,7 @@ export default function LandingPage() {
       <footer className="bg-muted/50 border-t py-20 text-center sm:text-left">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16 text-center sm:text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-8 text-center sm:text-left text-left text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-8 text-center sm:text-left text-left">
               <Link href="/" className="flex items-center justify-center sm:justify-start gap-2 hover:opacity-80 transition-opacity">
                 {logo && (
                   <Avatar className="h-14 w-14 border-2 border-primary/20">
@@ -552,7 +551,7 @@ export default function LandingPage() {
           <div className="h-px w-full bg-muted opacity-50 mb-10 text-left" />
           
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-center">
-            <p className="text-center md:text-left uppercase">© {new Date().getFullYear()} TESTIFY GLOBAL. Caring for the Harvest.</p>
+            <p className="text-center md:text-left uppercase text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Caring for the Harvest.</p>
             <div className="flex gap-8 justify-center sm:justify-end">
               <Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms</Link>
               <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy</Link>

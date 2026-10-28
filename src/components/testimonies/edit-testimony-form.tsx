@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -481,7 +480,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             </div>
             <div className="min-w-0 flex-1 text-left">
                 <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</h3>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left">Refine your public miracle</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left text-left">Refine your public miracle</p>
             </div>
         </div>
 
