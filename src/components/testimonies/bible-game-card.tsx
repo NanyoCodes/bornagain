@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw, HandHeart, Target, HelpCircle, Share2 } from "lucide-react";
+import { Gamepad2, Trophy, ShieldAlert, BookOpen, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw, HandHeart, Target, HelpCircle, Share2, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUserProfile, useUser } from '@/firebase';
@@ -100,9 +100,9 @@ export function BibleGameCard() {
         <Card className="rounded-none sm:rounded-[2rem] border-y sm:border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden mb-6 group transition-all hover:border-primary/40 text-left">
             <CardHeader className="p-6 sm:p-8 pb-4 text-center">
                 <div className="flex justify-between items-start mb-4 text-left">
-                    <div className="flex items-center gap-2 text-left">
+                    <div className="flex items-center gap-2 text-left text-left">
                         {getIcon()}
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">{getLabel()}</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">{getLabel()}</span>
                     </div>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400" onClick={handleShare}><Share2 className="h-4 w-4" /><span className="sr-only">Share</span></Button>
                 </div>
@@ -110,7 +110,7 @@ export function BibleGameCard() {
                 <CardDescription className="text-zinc-400 text-sm font-medium text-center mt-2 leading-relaxed">Experience a portion of the Word Arena. Sharpen your spirit daily.</CardDescription>
             </CardHeader>
             <CardContent className="p-6 sm:p-10 pt-0 space-y-8 text-left">
-                <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[160px] flex items-center justify-center text-center relative overflow-hidden">
+                <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[160px] text-center relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left"><Target className="h-16 w-16 text-primary text-left" /></div>
                     <AnimatePresence mode="wait"><motion.p key={`${gameType}-${quizIndex}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="text-lg sm:text-xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence>
                 </div>
@@ -123,8 +123,13 @@ export function BibleGameCard() {
                     {gameState !== 'playing' && (
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6 text-center">
                             <div className={cn("p-6 rounded-3xl flex flex-col items-center text-center gap-4 border-2 border-dashed", gameState === 'correct' ? "bg-green-500/5 border-green-500/20 text-green-500" : "bg-red-500/5 border-red-500/20 text-red-500")}>
-                                <div className="flex items-center gap-2"><Trophy className="h-5 w-5 animate-bounce" /><span className="font-black uppercase tracking-[0.2em] text-xs">{gameState === 'correct' ? `WELL DONE, ${firstName.toUpperCase()}!` : "STAY IN THE WORD"}</span></div>
-                                <div className="space-y-2 text-center">
+                                <div className="flex items-center gap-2"><Trophy className={cn("h-5 w-5", gameState === 'correct' ? "animate-bounce" : "animate-pulse")} /><span className="font-black uppercase tracking-[0.2em] text-xs">{gameState === 'correct' ? `WELL DONE, ${firstName.toUpperCase()}!` : "STAY IN THE WORD"}</span></div>
+                                <div className="space-y-3 text-center">
+                                    {gameState === 'wrong' && (
+                                        <div className="bg-red-500 text-white px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest shadow-lg animate-in zoom-in">
+                                            Correct Answer: {quiz.correct}
+                                        </div>
+                                    )}
                                     <p className="text-base font-black uppercase tracking-widest text-zinc-100">{quiz.ref}</p>
                                     <p className="text-xs font-medium italic opacity-70 leading-relaxed text-balance text-zinc-300">
                                         {quiz.explanation || "This Word serves as a spiritual weapon for your victory and peace."}
