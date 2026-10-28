@@ -178,7 +178,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             {logo && (
-              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20">
+              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95">
                 <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
                 <AvatarFallback>T</AvatarFallback>
               </Avatar>
@@ -212,7 +212,7 @@ export default function LandingPage() {
                   <span className="text-primary text-2xl sm:text-4xl md:text-5xl block mt-4 uppercase"> The #1 App to care for family, friends, souls, and the Kingdom.</span>
                 </h1>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty">
-                  "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11. Follow up on the people you love and care about with compassion.
+                  "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
 
@@ -519,7 +519,7 @@ export default function LandingPage() {
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-w-sm">
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-sm">
                 Testify is the heart center for believers to care for family, friends, and the global harvest while sharing the greatness of Jesus Christ.
               </p>
             </div>
