@@ -111,13 +111,18 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   });
 
   const getSupportedMimeType = (mode: 'video' | 'audio') => {
-    const types = mode === 'video' 
-        ? ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
-        : ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/wav'];
-    for (const type of types) {
+    if (mode === 'audio') {
+        const audioTypes = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm', 'audio/wav'];
+        for (const type of audioTypes) {
+            if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type)) return type;
+        }
+        return 'audio/webm';
+    }
+    const videoTypes = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+    for (const type of videoTypes) {
         if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type)) return type;
     }
-    return mode === 'video' ? 'video/webm' : 'audio/webm';
+    return 'video/webm';
   };
 
   const startRecorder = async (slot: 1 | 2, mode: 'video' | 'audio') => {
@@ -170,7 +175,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
       recorder.onstop = async () => {
           const finalMimeType = getSupportedMimeType(recorderMode);
-          const extension = finalMimeType.split('/')[1].split(';')[0];
+          const extension = finalMimeType.includes('mp4') ? 'mp4' : finalMimeType.includes('webm') ? 'webm' : 'bin';
           const blob = new Blob(chunksRef.current, { type: finalMimeType });
           const file = new File([blob], `recorded_testimony_${Date.now()}.${extension}`, { type: finalMimeType });
           await handleUploadProcessedFile(file, activeSlot, recorderMode);
@@ -479,12 +484,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         {prayerRequest && (
             <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left">
                 <div className="absolute -top-4 -right-4 h-16 w-16 bg-amber-500/5 rounded-full blur-xl text-left" />
-                <CardHeader className="p-5 pb-2 relative z-10 text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left">
-                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left" />
-                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left">Answering Prayer Altar</span>
+                <CardHeader className="p-5 pb-2 relative z-10 text-left text-left">
+                    <div className="flex items-center gap-2 mb-1 text-left text-left">
+                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left text-left" />
+                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left text-left">Answering Prayer Altar</span>
                     </div>
-                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
+                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
                 </CardHeader>
             </Card>
         )}
@@ -494,34 +499,34 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
           <div className="space-y-6 text-left">
             <FormField control={form.control} name="category" render={({ field }) => (
-                <FormItem className="text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Theme</FormLabel>
+                <FormItem className="text-left text-left">
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Theme</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl className="text-left">
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base text-left">
-                            <SelectValue placeholder="What is the nature of this miracle?" className="text-left" />
+                        <FormControl className="text-left text-left">
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base text-left text-left">
+                            <SelectValue placeholder="What is the nature of this miracle?" className="text-left text-left" />
                         </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
-                        {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl text-left">{cat}</SelectItem>))}
+                        <SelectContent className="rounded-2xl border-none shadow-2xl text-left text-left">
+                        {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl text-left text-left">{cat}</SelectItem>))}
                         </SelectContent>
                     </Select>
-                    <FormMessage className="text-left" />
+                    <FormMessage className="text-left text-left" />
                 </FormItem>
                 )}
             />
 
             <FormField control={form.control} name="content" render={({ field }) => (
-                <FormItem className="text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Full Story</FormLabel>
-                    <FormControl className="text-left">
+                <FormItem className="text-left text-left">
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Full Story</FormLabel>
+                    <FormControl className="text-left text-left">
                     <Textarea 
                         placeholder="Detail the greatness of God in this situation..." 
-                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left" 
+                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left text-left" 
                         {...field} 
                     />
                     </FormControl>
-                    <FormMessage className="text-left" />
+                    <FormMessage className="text-left text-left" />
                 </FormItem>
                 )}
             />
@@ -554,7 +559,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     </div>
                 )}
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center text-left">
+              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center text-left text-left">
                 TO THE GLORY OF JESUS CHRIST
               </p>
           </div>
@@ -563,9 +568,14 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
       <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
           <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left">
-              <DialogHeader className="sr-only text-left">
-                  <DialogTitle className="text-left">Miracle Recorder</DialogTitle>
-                  <DialogDescription className="text-left">Capture your {recorderMode} proof.</DialogDescription>
+              <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
+                  <div className="flex items-center justify-between gap-4 text-left">
+                    <div className="min-w-0">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</DialogDescription>
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10 text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left" /></Button>
+                  </div>
               </DialogHeader>
               
               {recorderMode === 'video' ? (
@@ -591,14 +601,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                                       {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00
                                   </Badge>
                               </div>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="h-10 w-10 rounded-full bg-black/40 text-white hover:bg-black/60 pointer-events-auto text-left" 
-                                onClick={closeRecorder}
-                              >
-                                  <X className="h-5 w-5 text-left" />
-                              </Button>
                           </div>
 
                           <div className="space-y-4 text-left">
@@ -646,9 +648,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left">Voice of Thanksgiving</h3>
                            <p className="text-zinc-500 text-sm font-medium text-center text-left">Record your vocal proclamation (max 2 minutes).</p>
                            
-                           <div className="flex items-center justify-center gap-3 text-left">
-                               {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse text-left" />}
-                               <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums text-left">
+                           <div className="flex items-center justify-center gap-3 text-left text-left">
+                               {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse text-left text-left" />}
+                               <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums text-left text-left">
                                     {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
                                </span>
                            </div>
@@ -679,14 +681,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                                     <Square className="mr-3 h-6 w-6 fill-current text-left" /> STOP
                                 </Button>
                             )}
-                            <Button 
-                                variant="outline" 
-                                onClick={closeRecorder} 
-                                disabled={isRecording}
-                                className="h-16 w-16 rounded-2xl border-zinc-800 text-zinc-400 text-left"
-                            >
-                                <X className="h-6 w-6 text-left" />
-                            </Button>
                        </div>
                   </div>
               )}
@@ -699,3 +693,4 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
+
