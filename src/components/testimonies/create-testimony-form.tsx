@@ -529,6 +529,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       {/* Video Recorder Overlay */}
       <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
           <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black">
+              <DialogHeader className="sr-only">
+                  <DialogTitle>Live Miracle Recorder</DialogTitle>
+                  <DialogDescription>Record a video of your testimony (max 2 minutes).</DialogDescription>
+              </DialogHeader>
               <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden">
                   <video 
                     ref={videoPreviewRef} 

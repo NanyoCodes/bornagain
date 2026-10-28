@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Universal reaction and sync fix - 2025-03-08T11:45:00Z
+    // Deployment trigger: Universal reaction and sync fix - 2025-03-08T15:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
