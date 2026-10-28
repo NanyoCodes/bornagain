@@ -323,7 +323,6 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4"
               >
-                <Sparkles className="h-4 w-4 text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Mission Critical Care</span>
               </motion.div>
               <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center">The Caretaker Toolkit</h2>
@@ -402,8 +401,8 @@ export default function LandingPage() {
                             True spiritual success is measured by the depth of your care. Testify makes it easy to stay present in the lives of your family and friends, ensuring they grow deep in the Word and established in the Kingdom.
                         </p>
                     </div>
-                    <Button asChild size="lg" className="rounded-full h-12 px-12 font-black uppercase tracking-widest text-[10px] relative z-10 shadow-xl bg-white text-primary hover:bg-zinc-100 mx-auto block">
-                        <Link href="/signup">JOIN THE CARE NETWORK</Link>
+                    <Button asChild size="lg" className="rounded-full h-12 px-12 font-black uppercase tracking-widest text-[10px] relative z-10 shadow-xl bg-white text-primary hover:bg-zinc-100 mx-auto block text-center">
+                        <Link href="/signup">JOIN THE MISSION OF LOVE</Link>
                     </Button>
                 </div>
             </div>
@@ -418,7 +417,7 @@ export default function LandingPage() {
                 <div className="space-y-6 text-center lg:text-left">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 block w-fit">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left">Witness the Care</h2>
-                  <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-w-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left">
+                  <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left">
                     Read how believers are looking after their harvest and following up on those they love with miracles.
                   </p>
                 </div>

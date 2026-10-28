@@ -200,6 +200,12 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     }
   };
 
+  const triggerAction = (action: () => void) => {
+    requestAnimationFrame(() => {
+        action();
+    });
+  };
+
   const loading = profileLoading || testimoniesLoading || campaignsLoading || userLoading;
   
   const videoTestimoniesList = useMemo(() => {
@@ -253,8 +259,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
   const { city, state, country } = location || {};
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
-
-  const profileLink = isOwnProfile ? "/profile" : `/profile/${userId}`;
 
   return (
     <div className="space-y-6 sm:space-y-10 max-w-6xl mx-auto px-4 pb-20 text-left">
@@ -409,10 +413,10 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         <Card className="rounded-none sm:rounded-[3rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950 text-left">
             <CardHeader className="pb-6 pt-10 px-5 sm:px-12 text-center md:text-left text-left text-left text-left">
                 <CardTitle className="flex items-center justify-center md:justify-start gap-3 sm:gap-4 text-2xl sm:text-4xl font-black font-headline text-white tracking-tight uppercase text-left text-left text-left text-left">
-                    <Youtube className="h-8 w-8 sm:h-10 sm:w-10 text-red-600 text-left text-left text-left" />
+                    <Youtube className="h-8 w-8 sm:h-10 sm:w-10 text-red-600 text-left text-left text-left text-left" />
                     Living Testimonies
                 </CardTitle>
-                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl mx-auto md:mx-0 text-left text-left">
+                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl mx-auto md:mx-0 text-left text-left text-left">
                     Witness the manifest power of God through these captured moments of miracle and glory.
                 </CardDescription>
             </CardHeader>
@@ -488,16 +492,16 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 )}
             </div>
 
-            <div className="space-y-8 text-left text-left">
+            <div className="space-y-8 text-left text-left text-left">
                 <div className="flex items-center justify-between px-4 sm:px-0 text-left text-left">
-                    <div className="flex items-center gap-2 text-left text-left">
-                        <CalendarDays className="h-5 w-5 text-primary text-left text-left" />
-                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">Organized Campaigns</h3>
+                    <div className="flex items-center gap-2 text-left text-left text-left">
+                        <CalendarDays className="h-5 w-5 text-primary text-left text-left text-left" />
+                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Organized Campaigns</h3>
                     </div>
-                    <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs text-left">{processedCampaigns.length}</Badge>
+                    <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs text-left text-left">{processedCampaigns.length}</Badge>
                 </div>
                 {processedCampaigns.length > 0 ? (
-                    <div className="flex flex-col gap-8 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto text-left">
+                    <div className="flex flex-col gap-8 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto text-left text-left text-left">
                         {processedCampaigns.map(campaign => (
                             <CampaignCard 
                                 key={campaign.id} 
@@ -513,21 +517,21 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left">
-                        <Target className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left" />
-                        <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left">No public mission campaigns have been organized by this believer.</p>
+                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left text-left">
+                        <Target className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left text-left text-left" />
+                        <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left text-left text-left">No public mission campaigns have been organized by this believer.</p>
                     </div>
                 )}
             </div>
         </div>
 
         {testimonies.length === 0 && processedCampaigns.length === 0 && (
-            <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[3rem] sm:rounded-[4rem] bg-muted/5 mx-4 sm:mx-0 text-left">
-                <Globe className="h-20 w-20 text-muted-foreground/5 mx-auto mb-6 text-left" />
-                <p className="font-black text-2xl sm:text-3xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/20 text-center text-left">
+            <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[3rem] sm:rounded-[4rem] bg-muted/5 mx-4 sm:mx-0 text-left text-left">
+                <Globe className="h-20 w-20 text-muted-foreground/5 mx-auto mb-6 text-left text-left" />
+                <p className="font-black text-2xl sm:text-3xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/20 text-center text-left text-left">
                     Mission in Secret
                 </p>
-                <p className="text-sm sm:text-lg mt-4 px-12 opacity-50 font-medium max-w-lg mx-auto text-center text-left">
+                <p className="text-sm sm:text-lg mt-4 px-12 opacity-50 font-medium max-w-lg mx-auto text-center text-left text-left">
                     This believer is serving the Kingdom through prayer and local fellowship. Their impact is registered in the Book of Life.
                 </p>
             </div>
@@ -536,19 +540,19 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
       {isOwnProfile && userProfile && (
           <Drawer open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-              <DrawerContent className="h-[95dvh] flex flex-col p-0 overflow-hidden rounded-t-[2.5rem] border-none shadow-2xl text-left text-left">
+              <DrawerContent className="h-[95dvh] flex flex-col p-0 overflow-hidden rounded-t-[2.5rem] border-none shadow-2xl text-left text-left text-left">
                   <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                       <div className="p-0 text-left text-left text-left text-left">
                           <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
-                              <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                              <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
                               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity settings</span>
                           </div>
                           <DrawerTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left text-left">Edit Kingdom Profile</DrawerTitle>
                           <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Keep your identity current for the harvest workforce.</DrawerDescription>
                       </div>
                   </div>
-                  <ScrollArea className="flex-1 min-h-0 text-left text-left">
-                      <div className="p-5 sm:p-10 text-left text-left">
+                  <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
+                      <div className="p-5 sm:p-10 text-left text-left text-left">
                         <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
                       </div>
                   </ScrollArea>
