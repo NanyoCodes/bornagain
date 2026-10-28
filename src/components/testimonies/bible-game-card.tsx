@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -102,9 +101,9 @@ export function BibleGameCard() {
         <Card className="rounded-none sm:rounded-[2rem] border-y sm:border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden mb-6 group transition-all hover:border-primary/40 text-left">
             <CardHeader className="p-6 sm:p-8 pb-4 text-center">
                 <div className="flex justify-between items-start mb-4 text-left">
-                    <div className="flex items-center gap-2 text-left text-left">
+                    <div className="flex items-center gap-2 text-left">
                         {getIcon()}
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">{getLabel()}</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">{getLabel()}</span>
                     </div>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400" onClick={handleShare}><Share2 className="h-4 w-4" /><span className="sr-only">Share</span></Button>
                 </div>
@@ -143,7 +142,7 @@ export function BibleGameCard() {
                     )}
                 </AnimatePresence>
             </CardContent>
-            <CardFooter className="p-3 bg-black/40 text-center justify-center"><p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center text-left text-left text-left">Faith • Power • Truth</p></CardFooter>
+            <CardFooter className="p-3 bg-black/40 text-center justify-center"><p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">Faith • Power • Truth</p></CardFooter>
         </Card>
     );
 }
