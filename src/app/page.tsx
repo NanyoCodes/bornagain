@@ -25,7 +25,13 @@ import {
   Gamepad2,
   Award,
   History,
-  Scale
+  Scale,
+  ChevronRight,
+  ChevronDown,
+  PlusCircle,
+  TrendingUp,
+  Heart,
+  MessagesSquare
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -459,7 +465,7 @@ export default function LandingPage() {
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty">
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
             </div>
