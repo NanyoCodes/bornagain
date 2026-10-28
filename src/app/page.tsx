@@ -54,7 +54,7 @@ import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 
 const features = [
   {
-    title: "Glory Feed",
+    title: "TESTIMONIES",
     description: "Share real time miracles. Your testimony is a weapon that overcomes the enemy. No cap.",
     icon: Newspaper,
     color: "text-orange-500",
@@ -574,4 +574,3 @@ export default function LandingPage() {
     </div>
   );
 }
-

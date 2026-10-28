@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for community interactions (inspiredBy/connectedBy) - 2025-03-07T14:45:00Z
+    // Deployment trigger: Critical fix for community interactions (Amen/Hallelujah/Celebrate) - 2025-03-08T11:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
