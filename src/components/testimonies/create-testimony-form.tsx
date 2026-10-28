@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,7 +28,6 @@ import {
   Sparkles, 
   Newspaper, 
   HandHeart, 
-  CheckCircle2, 
   Mic, 
   Square, 
   Target,
@@ -454,7 +452,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     ) : preview.type === 'video' ? (
                         <video src={preview.url} className="w-full h-full object-cover bg-zinc-950 text-left" playsInline controls />
                     ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 p-4 text-left">
+                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
                             <div className="relative text-left">
                                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-left">
                                     <Mic className="h-5 w-5 text-primary text-left" />
@@ -706,3 +704,4 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
+

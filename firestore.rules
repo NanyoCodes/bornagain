@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for reaction permissions and back button logic sync - 2025-03-09T22:00:00Z
+    // Deployment trigger: Critical fix for reaction permissions and user UID identification - 2025-03-10T11:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
