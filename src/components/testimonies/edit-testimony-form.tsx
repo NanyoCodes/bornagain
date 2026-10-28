@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,16 +17,31 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useRef } from "react";
-import { Loader2, Camera, X, FileUp } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { 
+  Loader2, 
+  Camera, 
+  X, 
+  FileUp, 
+  Video, 
+  Mic, 
+  PlusCircle, 
+  CheckCircle2, 
+  Square,
+  Sparkles,
+  Music
+} from "lucide-react";
 import { Testimony, TestimonyCategory } from "@/lib/types";
 import { useFirestore, useUser, useStorage } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 const testimonyCategories: TestimonyCategory[] = [
   'Healing', 
@@ -69,6 +85,20 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     testimony.mediaUrl2 ? { url: testimony.mediaUrl2, type: testimony.mediaType2 as any } : null
   );
 
+  // Unified Recorder State
+  const [isRecorderOpen, setIsRecorderOpen] = useState(false);
+  const [recorderMode, setRecorderMode] = useState<'video' | 'audio'>('video');
+  const [activeSlot, setActiveSlot] = useState<1 | 2>(1);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const videoPreviewRef = useRef<HTMLVideoElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const MAX_RECORDING_SECONDS = 120; // 2 minutes limit
+
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
 
@@ -88,15 +118,120 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     },
   });
 
+  const startRecorder = async (slot: 1 | 2, mode: 'video' | 'audio') => {
+      setActiveSlot(slot);
+      setRecorderMode(mode);
+      try {
+          const constraints = mode === 'video' 
+            ? { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true }
+            : { audio: true };
+            
+          const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+          setStream(mediaStream);
+          setIsRecorderOpen(true);
+          
+          if (mode === 'video') {
+            setTimeout(() => {
+                if (videoPreviewRef.current) {
+                    videoPreviewRef.current.srcObject = mediaStream;
+                }
+            }, 100);
+          }
+      } catch (err) {
+          console.error("Media access error:", err);
+          toast({ variant: 'destructive', title: 'Access Blocked', description: `Please enable ${mode} permissions to record live.` });
+      }
+  };
+
+  const closeRecorder = () => {
+      if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+      }
+      setStream(null);
+      setIsRecording(false);
+      setRecordingTime(0);
+      setIsRecorderOpen(false);
+      if (timerRef.current) clearInterval(timerRef.current);
+  };
+
+  const startRecording = () => {
+      if (!stream) return;
+      chunksRef.current = [];
+      const mimeType = recorderMode === 'video' ? 'video/webm;codecs=vp8,opus' : 'audio/webm;codecs=opus';
+      
+      const recorder = new MediaRecorder(stream, { mimeType });
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+          const type = recorderMode === 'video' ? 'video/mp4' : 'audio/mpeg';
+          const extension = recorderMode === 'video' ? 'mp4' : 'mp3';
+          const blob = new Blob(chunksRef.current, { type });
+          const file = new File([blob], `recorded_testimony_edit_${Date.now()}.${extension}`, { type });
+          await handleUploadProcessedFile(file, activeSlot, recorderMode);
+          closeRecorder();
+      };
+
+      recorder.start();
+      setIsRecording(true);
+      
+      timerRef.current = setInterval(() => {
+          setRecordingTime(prev => {
+              if (prev >= MAX_RECORDING_SECONDS - 1) {
+                  stopRecording();
+                  return MAX_RECORDING_SECONDS;
+              }
+              return prev + 1;
+          });
+      }, 1000);
+  };
+
+  const stopRecording = () => {
+      if (mediaRecorderRef.current && isRecording) {
+          mediaRecorderRef.current.stop();
+          setIsRecording(false);
+          if (timerRef.current) clearInterval(timerRef.current);
+      }
+  };
+
+  const handleUploadProcessedFile = async (file: File | Blob, slot: 1 | 2, type: 'video' | 'audio' | 'image') => {
+    if (!user || !storage) return;
+    setIsUploadingMedia(slot);
+    try {
+        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
+        const uploadResult = await uploadBytes(fileRef, file);
+        const url = await getDownloadURL(uploadResult.ref);
+
+        if (slot === 1) {
+            setMediaPreview1({ url, type: type as any });
+            form.setValue('mediaUrl', url);
+            form.setValue('mediaType', type as any);
+        } else {
+            setMediaPreview2({ url, type: type as any });
+            form.setValue('mediaUrl2', url);
+            form.setValue('mediaType2', type as any);
+        }
+        toast({ title: 'Miracle Updated', description: `Proof ${slot} successfully captured.` });
+    } catch (err) {
+        toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not update the recording.' });
+    } finally {
+        setIsUploadingMedia(null);
+    }
+  };
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, slot: 1 | 2) => {
     const file = e.target.files?.[0];
     if (!file || !user || !storage) return;
 
     const isImage = file.type.startsWith('image/');
     const isVideo = file.type.startsWith('video/');
+    const isAudio = file.type.startsWith('audio/');
 
-    if (!isImage && !isVideo) {
-      toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select an image or video.' });
+    if (!isImage && !isVideo && !isAudio) {
+      toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select an image, video, or audio file.' });
       return;
     }
 
@@ -111,11 +246,11 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
           fileToUpload = await compressImage(file);
         }
 
-        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
+        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${file.name}`);
         const uploadResult = await uploadBytes(fileRef, fileToUpload);
         const url = await getDownloadURL(uploadResult.ref);
 
-        const type = isImage ? 'image' : 'video';
+        const type = isImage ? 'image' : isVideo ? 'video' : 'audio';
         if (slot === 1) {
             setMediaPreview1({ url, type });
             form.setValue('mediaUrl', url);
@@ -126,7 +261,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             form.setValue('mediaType2', type);
         }
         
-        toast({ title: 'Media Updated', description: `Evidence ${slot} updated successfully.` });
+        toast({ title: 'Evidence Updated', description: `Proof ${slot} has been successfully replaced.` });
       } catch (err: any) {
         console.error("Media upload error:", err);
         toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not transmit media.' });
@@ -212,103 +347,216 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         });
   };
 
-  const renderMediaSlot = (slot: 1 | 2, preview: typeof mediaPreview1, setPreview: typeof setMediaPreview1, inputRef: React.RefObject<HTMLInputElement | null>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
+  const renderMediaSlot = (slot: 1 | 2, preview: any, setPreview: any, inputRef: React.RefObject<HTMLInputElement | null>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
     return (
-      <div className="space-y-3 flex-1 text-left">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
-              <Camera className="h-3.5 w-3.5 text-left" /> Evidence {slot}
+      <div className="space-y-4 flex-1 text-left">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+              <Camera className="h-3.5 w-3.5 text-primary" /> Evidence {slot}
           </Label>
           
           {!preview ? (
-              <div 
-                  className={cn(
-                      "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[120px] text-left",
-                      isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
-                  )}
-                  onClick={() => inputRef.current?.click()}
-              >
-                  {isUploadingMedia === slot ? (
-                      <div className="flex flex-col items-center gap-2 text-left">
-                          <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
-                          <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center text-left">Optimizing...</p>
-                      </div>
-                  ) : (
-                      <>
-                          <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform text-left">
-                              <FileUp className="h-4 w-4 text-primary text-left" />
+              <div className="space-y-3">
+                  <div 
+                      className={cn(
+                          "border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left",
+                          isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
+                      )}
+                      onClick={() => inputRef.current?.click()}
+                  >
+                      {isUploadingMedia === slot ? (
+                          <div className="flex flex-col items-center gap-2 text-left">
+                              <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
+                              <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
                           </div>
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Update Media</p>
-                      </>
-                  )}
+                      ) : (
+                          <>
+                              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform text-left">
+                                  <FileUp className="h-4 w-4 text-primary text-left" />
+                              </div>
+                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Select File</p>
+                          </>
+                      )}
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 text-left">
+                        <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1"
+                            onClick={() => startRecorder(slot, 'video')}
+                            disabled={isUploadingMedia !== null}
+                        >
+                            <Video className="h-3 w-3 mb-0.5" />
+                            RECORD VIDEO
+                        </Button>
+                        <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1"
+                            onClick={() => startRecorder(slot, 'audio')}
+                            disabled={isUploadingMedia !== null}
+                        >
+                            <Mic className="h-3 w-3 mb-0.5" />
+                            RECORD AUDIO
+                        </Button>
+                  </div>
               </div>
           ) : (
-              <div className="relative rounded-2xl overflow-hidden border-2 bg-muted aspect-square shadow-inner text-left">
+              <div className="relative rounded-3xl overflow-hidden border-2 bg-muted aspect-square shadow-inner text-left group">
                   {preview.type === 'image' ? (
                       <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-contain text-left" unoptimized />
+                  ) : preview.type === 'video' ? (
+                      <video src={preview.url} className="w-full h-full object-contain bg-zinc-950 text-left" playsInline controls />
                   ) : (
-                      <video src={preview.url} className="w-full h-full object-contain text-left" playsInline controls />
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 p-4 text-left">
+                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 text-left">
+                                <Mic className="h-6 w-6 text-primary text-left" />
+                            </div>
+                            <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-4">Voice Testimony</p>
+                            <audio src={preview.url} className="w-full" controls />
+                        </div>
                   )}
                   <Button 
                       type="button" 
                       variant="destructive" 
                       size="icon" 
-                      className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg text-left" 
+                      className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" 
                       onClick={() => { setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}
                   >
                       <X className="h-3.5 w-3.5 text-left" />
                   </Button>
               </div>
           )}
-          <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*" onChange={(e) => handleFileSelect(e, slot)} />
+          <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*,audio/*" onChange={(e) => handleFileSelect(e, slot)} />
       </div>
     );
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem className="text-left">
-              <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+    <div className="space-y-8 text-left">
+        <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
+            <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+                <FormItem className="text-left">
+                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl className="text-left">
+                    <SelectTrigger className="h-12 rounded-2xl border-2 text-left"><SelectValue className="text-left" /></SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-2xl text-left">
+                    {testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+                <FormItem className="text-left">
+                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Testimony</FormLabel>
                 <FormControl className="text-left">
-                  <SelectTrigger className="h-12 rounded-2xl border-2 text-left"><SelectValue className="text-left" /></SelectTrigger>
+                    <Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed text-left" {...field} />
                 </FormControl>
-                <SelectContent className="rounded-2xl text-left">
-                  {testimonyCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem className="text-left">
-              <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Your Testimony</FormLabel>
-              <FormControl className="text-left">
-                <Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed text-left" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+                </FormItem>
+            )}
+            />
 
-        <div className="flex gap-4 text-left">
-             {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
-             {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
-        </div>
+            <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-6">
+                    {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
+                    {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
+                </div>
+            </div>
 
-        <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting || isUploadingMedia !== null}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
-          {isSubmitting ? 'SAVING...' : 'SAVE CHANGES'}
-        </Button>
-      </form>
-    </Form>
+            <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-left" disabled={isSubmitting || isUploadingMedia !== null}>
+                {isSubmitting ? (
+                    <div className="flex items-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span>SAVING...</span>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-3">
+                        <Sparkles className="h-6 w-6" />
+                        <span>SAVE CHANGES</span>
+                    </div>
+                )}
+            </Button>
+        </form>
+        </Form>
+
+        {/* Media Recorder Overlay */}
+        <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
+            <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black">
+                <DialogHeader className="sr-only">
+                    <DialogTitle>Miracle Recorder</DialogTitle>
+                    <DialogDescription>Capture your {recorderMode} proof.</DialogDescription>
+                </DialogHeader>
+                
+                {recorderMode === 'video' ? (
+                    <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden">
+                        <video ref={videoPreviewRef} autoPlay muted playsInline className="w-full h-full object-cover mirror scale-x-[-1]" />
+                        <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none">
+                            <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-3">
+                                    {isRecording && (
+                                        <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg">
+                                            <div className="h-2 w-2 rounded-full bg-white" />
+                                            <span className="text-[10px] font-black text-white uppercase tracking-widest">REC</span>
+                                        </div>
+                                    )}
+                                    <Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px]">
+                                        {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00
+                                    </Badge>
+                                </div>
+                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-black/40 text-white hover:bg-black/60 pointer-events-auto" onClick={closeRecorder}><X className="h-5 w-5" /></Button>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                                    <motion.div className="h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
+                                </div>
+                                <div className="flex justify-center pointer-events-auto">
+                                    {!isRecording ? (<Button onClick={startRecording} size="lg" className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95"><div className="h-8 w-8 rounded-full bg-white shadow-inner" /></Button>) : (<Button onClick={stopRecording} size="lg" className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95"><Square className="h-8 w-8 fill-current" /></Button>)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10">
+                        <div className="relative">
+                                <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.1)]">
+                                    <Mic className={cn("h-16 w-16 text-primary transition-all", isRecording && "scale-110")} />
+                                </div>
+                                {isRecording && (<div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20" />)}
+                        </div>
+                        <div className="space-y-4 w-full">
+                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-white">Voice of Victory</h3>
+                            <div className="flex items-center justify-center gap-3">
+                                {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />}
+                                <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums">
+                                        {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
+                                </span>
+                            </div>
+                            <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                <motion.div className="h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
+                            </div>
+                        </div>
+                        <div className="flex gap-4 w-full">
+                                {!isRecording ? (<Button onClick={startRecording} className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20"><Mic className="mr-3 h-6 w-6" /> START</Button>) : (<Button onClick={stopRecording} variant="destructive" className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl"><Square className="mr-3 h-6 w-6 fill-current" /> STOP</Button>)}
+                                <Button variant="outline" onClick={closeRecorder} disabled={isRecording} className="h-16 w-16 rounded-2xl border-zinc-800 text-zinc-400"><X className="h-6 w-6" /></Button>
+                        </div>
+                    </div>
+                )}
+            </DialogContent>
+        </Dialog>
+    </div>
   );
 }
