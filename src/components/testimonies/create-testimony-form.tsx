@@ -215,7 +215,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
-        // CRITICAL: Explicitly set contentType metadata
         const metadata = { contentType: file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4') };
         const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
@@ -263,7 +262,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
-        // CRITICAL: Explicitly set contentType metadata
         const uploadResult = await uploadBytes(fileRef, fileToUpload, { contentType: fileToUpload.type || file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -460,7 +458,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                               <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse text-left" />
                           </div>
                           <div className="min-w-0 flex-1 text-left">
-                              <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest mb-3">Voice of Thanksgiving</p>
+                              <p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice of Thanksgiving</p>
                               <audio src={preview.url} className="w-full" controls />
                           </div>
                       </div>
@@ -490,19 +488,19 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             </div>
             <div className="min-w-0 flex-1 text-left">
                 <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Proclaim Victory</h3>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Sharing God's manifest power</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left text-left">Sharing God's manifest power</p>
             </div>
         </div>
 
         {prayerRequest && (
             <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left">
                 <div className="absolute -top-4 -right-4 h-16 w-16 bg-amber-500/5 rounded-full blur-xl text-left" />
-                <CardHeader className="p-5 pb-2 relative z-10 text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left">
-                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left" />
-                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left">Answering Prayer Altar</span>
+                <CardHeader className="p-5 pb-2 relative z-10 text-left text-left">
+                    <div className="flex items-center gap-2 mb-1 text-left text-left">
+                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left text-left" />
+                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left text-left">Answering Prayer Altar</span>
                     </div>
-                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
+                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
                 </CardHeader>
             </Card>
         )}
@@ -512,67 +510,67 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
           <div className="space-y-6 text-left">
             <FormField control={form.control} name="category" render={({ field }) => (
-                <FormItem className="text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Theme</FormLabel>
+                <FormItem className="text-left text-left">
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Theme</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl className="text-left">
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base text-left">
-                            <SelectValue placeholder="What is the nature of this miracle?" className="text-left" />
+                        <FormControl className="text-left text-left">
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base text-left text-left">
+                            <SelectValue placeholder="What is the nature of this miracle?" className="text-left text-left" />
                         </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
-                        {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl text-left">{cat}</SelectItem>))}
+                        <SelectContent className="rounded-2xl border-none shadow-2xl text-left text-left">
+                        {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl text-left text-left">{cat}</SelectItem>))}
                         </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage className="text-left text-left" />
                 </FormItem>
                 )}
             />
 
             <FormField control={form.control} name="content" render={({ field }) => (
-                <FormItem className="text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Full Story</FormLabel>
-                    <FormControl className="text-left">
+                <FormItem className="text-left text-left">
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Full Story</FormLabel>
+                    <FormControl className="text-left text-left">
                     <Textarea 
                         placeholder="Detail the greatness of God in this situation..." 
-                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left" 
+                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left text-left" 
                         {...field} 
                     />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-left text-left" />
                 </FormItem>
                 )}
             />
 
-            <div className="space-y-4 text-left">
-                <div className="flex flex-col sm:flex-row gap-6 text-left">
+            <div className="space-y-4 text-left text-left">
+                <div className="flex flex-col sm:flex-row gap-6 text-left text-left">
                     {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
                     {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
                 </div>
-                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
-                    <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
-                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left">
+                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left text-left">
+                    <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left text-left" />
+                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left text-left">
                         Providing proof (photos/videos/audio) strengthens the community's faith and serves as an irrefutable weapon against the enemy. Maximum recording length is 2 minutes.
                     </p>
                 </div>
             </div>
           </div>
 
-          <div className="pt-4 text-left">
-              <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95 text-center text-left" disabled={isSubmitting || isUploadingMedia !== null}>
+          <div className="pt-4 text-left text-left">
+              <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95 text-center text-left text-left" disabled={isSubmitting || isUploadingMedia !== null}>
                 {isSubmitting ? (
-                    <div className="flex items-center justify-center gap-3 text-left">
-                        <Loader2 className="h-6 w-6 animate-spin text-left" />
-                        <span className="text-left">PROCLAIMING...</span>
+                    <div className="flex items-center justify-center gap-3 text-left text-left">
+                        <Loader2 className="h-6 w-6 animate-spin text-left text-left" />
+                        <span className="text-left text-left">PROCLAIMING...</span>
                     </div>
                 ) : (
-                    <div className="flex items-center justify-center gap-3 text-left">
-                        <Sparkles className="h-6 w-6 text-left" />
-                        <span className="text-left">PUBLISH TESTIMONY</span>
+                    <div className="flex items-center justify-center gap-3 text-left text-left">
+                        <Sparkles className="h-6 w-6 text-left text-left" />
+                        <span className="text-left text-left">PUBLISH TESTIMONY</span>
                     </div>
                 )}
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center text-left">
+              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center text-left text-left">
                 TO THE GLORY OF JESUS CHRIST
               </p>
           </div>

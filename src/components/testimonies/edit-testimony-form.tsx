@@ -222,7 +222,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
-        // CRITICAL: Explicitly set contentType metadata
         const metadata = { contentType: file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4') };
         const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
@@ -269,7 +268,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${file.name}`);
-        // CRITICAL: Explicitly set contentType metadata
         const uploadResult = await uploadBytes(fileRef, fileToUpload, { contentType: fileToUpload.type || file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -588,7 +586,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                                 <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left">
                                     <motion.div className="h-full bg-primary text-left" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
                                 </div>
-                                <div className="flex justify-center pointer-events-auto text-left text-center">
+                                <div className="flex justify-center pointer-events-auto text-left text-center text-left">
                                     {!isRecording ? (<Button onClick={startRecording} size="lg" className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-center text-left"><div className="h-8 w-8 rounded-full bg-white shadow-inner text-left text-left" /></Button>) : (<Button onClick={stopRecording} size="lg" className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-center text-left"><Square className="h-8 w-8 fill-current text-left text-left" /></Button>)}
                                 </div>
                             </div>

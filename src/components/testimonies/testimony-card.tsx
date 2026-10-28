@@ -564,7 +564,7 @@ export const TestimonyCard = memo(function TestimonyCard({
       {mounted && (
         <>
             <Drawer open={isBoostOpen} onOpenChange={setIsBoostOpen}>
-                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
+                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left text-left text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                         <DrawerHeader className="text-left p-0 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">

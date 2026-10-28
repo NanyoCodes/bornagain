@@ -72,7 +72,7 @@ const features = [
   },
   {
     title: "Victory Circles",
-    description: "A sanctuary for transparency. Find community driven solutions and support for the people you care about most.",
+    description: "A sanctuary for transparency. Find community-driven solutions and support for the people you care about most.",
     icon: ShieldCheck,
     color: "text-indigo-600",
     bgColor: "bg-indigo-600/10",
@@ -104,7 +104,7 @@ const features = [
   },
   {
     title: "The Heart Alliance",
-    description: "Partner with believers you love for high fidelity growth and mutual accountability in the Kingdom.",
+    description: "Partner with believers you love for high-fidelity growth and mutual accountability in the Kingdom.",
     icon: HeartHandshake,
     color: "text-blue-600",
     bgColor: "bg-blue-600/10",
@@ -129,7 +129,7 @@ const historicalFacts = [
   },
   {
     title: "Compassionate Reach",
-    description: "The 1st century church exploded because believers didn't just preach; they cared for the souls they won.",
+    description: "The 1st-century church exploded because believers didn't just preach; they cared for the souls they won.",
     icon: Globe,
     ref: "1 Thess 2:8"
   },
@@ -218,10 +218,10 @@ export default function LandingPage() {
               </motion.div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild size="lg" className="h-16 px-10 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90">
+                <Button asChild size="lg" className="h-12 px-8 text-sm font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90">
                   <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-16 px-10 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10">
+                <Button asChild variant="outline" size="lg" className="h-12 px-8 text-sm font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10">
                   <Link href="/about">THE COMPASSION VISION</Link>
                 </Button>
               </div>
@@ -249,7 +249,7 @@ export default function LandingPage() {
                         <div className="space-y-6">
                             <p className="text-lg sm:text-2xl text-muted-foreground font-medium leading-relaxed italic border-x-4 border-primary/20 px-8 text-center text-balance">
                                 We are here to help you look after those you lead to Christ. Testify provides the heartbeat of care for your family, your friends, and the souls God places in your path. 
-                                We offer men the tools for spiritual legacy. We provide women a community of radiant restoration. We guard the dreams of our children through intentional spiritual follow up.
+                                We offer men the tools for spiritual legacy. We provide women a community of radiant restoration. We guard the dreams of our children through intentional spiritual follow-up.
                             </p>
                         </div>
                         <div className="group relative p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 transition-all hover:bg-muted/40 max-w-2xl mx-auto">
@@ -476,11 +476,11 @@ export default function LandingPage() {
           
           <div className="max-w-7xl mx-auto px-6 text-center relative z-10 text-left">
             <div className="max-w-3xl mx-auto space-y-10 text-center">
-              <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance">
+              <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance text-center">
                 Ready to Look After Your Own?
               </h2>
-              <p className="text-lg sm:text-2xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty">
-                Join the app dedicated to caring for family, friends, and the Kingdom.
+              <p className="text-lg sm:text-2xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-center">
+                Join the app dedicated to caring for family, friends, souls, and the Kingdom.
                 Follow up on those you love and record the greatness of God together.
               </p>
               <div className="flex justify-center pt-4 text-left">
