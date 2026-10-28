@@ -55,7 +55,7 @@ import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 const features = [
   {
     title: "Glory Feed",
-    description: "Share real time miracles. Your testimony is a weapon against the enemy. No cap.",
+    description: "Share real time miracles. Your testimony is a weapon that overcomes the enemy. No cap.",
     icon: Newspaper,
     color: "text-orange-500",
     bgColor: "bg-orange-500/10",
@@ -134,7 +134,7 @@ const historicalFacts = [
   },
   {
     title: "The Gratitude Shift",
-    description: "Living in gratitude isn't just a vibe—it's a spiritual engine that unlocks Kingdom productivity.",
+    description: "Living in gratitude is not just a vibe—it is a spiritual engine that unlocks Kingdom productivity.",
     icon: Zap,
     ref: "Psalm 100:4"
   }
@@ -206,13 +206,12 @@ export default function LandingPage() {
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-center">
             <div className="max-w-4xl mx-auto space-y-8">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-                <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px]">
+                <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
                   PROCLAIMING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[0.9] tracking-tighter text-balance">
-                  Share the Story.<br className="hidden sm:block" />
-                  Organize the Harvest.<br className="hidden sm:block" />
-                  <span className="text-primary"> Glorify the King.</span>
+                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[0.9] tracking-tighter text-balance text-center">
+                  Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
+                  <span className="text-primary"> Glorify the King!</span>
                 </h1>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
@@ -246,7 +245,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Universal Sanctuary Section - Redesigned for Gen Z Vibe */}
+        {/* Universal Sanctuary Section */}
         <section className="py-24 relative overflow-hidden bg-background">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.05),transparent_40%)]" />
             <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
@@ -265,7 +264,7 @@ export default function LandingPage() {
                             <span className="text-primary">Just God.</span>
                         </h2>
                         <p className="text-lg sm:text-xl text-muted-foreground font-medium leading-relaxed italic border-x-4 border-primary/20 px-8 text-center">
-                            We're not here for the tradition—we're here for the Transformation. Testify is the open access hub for every believer, from every corner of the planet. 
+                            We are not here for the tradition we are here for the Transformation. Testify is the open access hub for every believer, from every corner of the planet. 
                         </p>
                         <p className="text-sm sm:text-base text-zinc-500 font-bold uppercase tracking-widest text-center">
                             One Body. One Spirit. Many Nations.
@@ -274,7 +273,7 @@ export default function LandingPage() {
 
                     <div className="max-w-2xl mx-auto space-y-8">
                         <div className="group relative p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 transition-all hover:bg-muted/40">
-                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center justify-center gap-3 mb-4">
+                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center justify-center gap-3 mb-4 text-center">
                                 <Sparkles className="h-6 w-6 text-primary" />
                                 Vibe Check: Inclusive
                             </h3>
@@ -337,7 +336,7 @@ export default function LandingPage() {
             </div>
         </section>
 
-        {/* Feature Grid - Kingdom Ready Workforce */}
+        {/* Feature Grid */}
         <section className="py-24 bg-muted/30 text-center">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-20 space-y-4">
@@ -424,7 +423,7 @@ export default function LandingPage() {
                     <div className="space-y-4 relative z-10">
                         <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-center">Main Character Energy: Gratitude</h3>
                         <p className="text-zinc-400 max-w-2xl mx-auto text-sm sm:text-lg leading-relaxed font-medium italic text-pretty text-center">
-                            When we live in gratitude to God, we are naturally empowered to live out our best virtues. Gratitude isn't just a feeling—it's the engine of Kingdom productivity and relational integrity.
+                            When we live in gratitude to God, we are naturally empowered to live out our best virtues. Gratitude is not just a feeling it is the engine of Kingdom productivity and relational integrity.
                         </p>
                     </div>
                     <Button asChild size="lg" className="rounded-full h-14 px-12 font-black uppercase tracking-widest text-xs relative z-10 shadow-xl bg-white text-primary hover:bg-zinc-100 mx-auto">
@@ -445,7 +444,7 @@ export default function LandingPage() {
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0">The Digital Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left">See God In Action</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-w-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left">
-                    Miracles aren't just for history. Witness God moving through the global community right now.
+                    Miracles are not just for history. Witness God moving through the global community right now.
                   </p>
                 </div>
                 
@@ -474,7 +473,7 @@ export default function LandingPage() {
                           </p>
                           <div className="flex items-center gap-4">
                             <Avatar className="h-11 w-11 border-2 border-background shadow-md shrink-0">
-                              <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary font-black uppercase text-center flex items-center justify-center w-full h-full">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
+                              <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary font-black uppercase text-center flex items-center justify-center h-full w-full">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex-1 text-left">
                               <p className="text-[11px] font-black uppercase tracking-tight truncate">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
@@ -575,3 +574,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
