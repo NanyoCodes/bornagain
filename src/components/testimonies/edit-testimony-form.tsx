@@ -495,9 +495,9 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
-                      <SelectTrigger className="h-12 rounded-2xl border-2 text-left">
-                        <SelectValue placeholder="What is the nature of this miracle?" />
-                      </SelectTrigger>
+                        <SelectTrigger className="h-12 rounded-2xl border-2 text-left">
+                            <SelectValue placeholder="What is the nature of this miracle?" />
+                        </SelectTrigger>
                     </FormControl>
                     <SelectContent className="rounded-2xl text-left">
                     {testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl text-left">{cat}</SelectItem>)}

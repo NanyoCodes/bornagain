@@ -460,7 +460,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                               <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse text-left" />
                           </div>
                           <div className="min-w-0 flex-1 text-left">
-                              <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-3">Voice of Thanksgiving</p>
+                              <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest mb-3">Voice of Thanksgiving</p>
                               <audio src={preview.url} className="w-full" controls />
                           </div>
                       </div>

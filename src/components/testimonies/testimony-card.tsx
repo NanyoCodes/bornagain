@@ -214,6 +214,20 @@ export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { user
     );
 }
 
+export function getStatusClasses(status: FollowUpStatus | undefined): string {
+    if (!status) return 'bg-secondary text-secondary-foreground border-border';
+    switch (status) {
+        case 'New':
+            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
+        case 'Contacted':
+            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
+        case 'Established':
+            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
+        default:
+            return 'bg-secondary text-secondary-foreground border-border';
+    }
+}
+
 export const TestimonyCard = memo(function TestimonyCard({ 
   testimony, 
   onDelete, 
@@ -251,27 +265,10 @@ export const TestimonyCard = memo(function TestimonyCard({
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (showFullText || showFullPrayer || isCommentsOpen || isBoostOpen) {
-        window.history.pushState({ overlayOpen: testimony.id }, '');
-        const handlePopState = () => {
-            setShowFullText(false);
-            setShowFullPrayer(false);
-            setIsCommentsOpen(false);
-            setIsBoostOpen(false);
-        };
-        window.addEventListener('popstate', handlePopState);
-        return () => window.removeEventListener('popstate', handlePopState);
-    }
-  }, [showFullText, showFullPrayer, isCommentsOpen, isBoostOpen, testimony.id]);
-
   const isAuthor = user?.uid === testimony.authorId;
   
-  const authorProfileRef = useMemo(() => (!testimony.isAnonymous && testimony.authorId) ? doc(firestore, 'users', testimony.authorId) : null, [firestore, testimony.authorId, testimony.isAnonymous]);
-  const { data: authorProfile } = useDoc<UserProfile>(authorProfileRef);
-
-  const authorFirstName = authorProfile?.firstName || testimony.authorFirstName;
-  const authorLastName = authorProfile?.lastName || testimony.authorLastName;
+  const authorFirstName = testimony.authorFirstName;
+  const authorLastName = testimony.authorLastName;
   const authorName = testimony.isAnonymous ? 'Confidential Request' : ([authorFirstName, authorLastName].filter(Boolean).join(' ') || 'Kingdom Believer');
   const initials = (authorFirstName?.charAt(0) || '') + (authorLastName?.charAt(0) || '');
 
@@ -370,7 +367,7 @@ export const TestimonyCard = memo(function TestimonyCard({
     const participantIds = [String(user.uid), String(testimony.authorId)].sort();
     const requestId = participantIds.join('_');
     const requestRef = doc(firestore, 'accountabilityRequests', requestId);
-    const newRequestData = { fromUserId: user.uid, fromUserFirstName: currentUserProfile.firstName || '', fromUserLastName: currentUserProfile.lastName || '', fromUserPhotoURL: currentUserProfile.photoURL || '', toUserId: testimony.authorId, toUserFirstName: authorFirstName || '', toUserLastName: authorLastName || '', toUserPhotoURL: authorProfile?.photoURL || '', status: 'pending' as const, createdAt: serverTimestamp(), participantIds };
+    const newRequestData = { fromUserId: user.uid, fromUserFirstName: currentUserProfile.firstName || '', fromUserLastName: currentUserProfile.lastName || '', fromUserPhotoURL: currentUserProfile.photoURL || '', toUserId: testimony.authorId, toUserFirstName: authorFirstName || '', toUserLastName: authorLastName || '', toUserPhotoURL: testimony.authorAvatarUrl || '', status: 'pending' as const, createdAt: serverTimestamp(), participantIds };
     const notificationData = { userId: testimony.authorId, type: 'accountability_request' as const, title: 'New Accountability Request', message: `${currentUserProfile.firstName} wants to be your partner!`, link: '/accountability', isRead: false, createdAt: serverTimestamp() };
 
     try {
@@ -456,7 +453,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 </Button>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={(e) => { e.stopPropagation(); }}><MoreVertical className="h-4 w-4" /><span className="sr-only">Options</span></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl text-left">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Manage Story</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {isAuthor ? (
@@ -546,19 +543,19 @@ export const TestimonyCard = memo(function TestimonyCard({
 
         <Separator className="mx-4 sm:mx-6 w-auto opacity-50" />
         <div className="py-2 sm:py-3 px-2 sm:px-6 grid grid-cols-4 gap-1 sm:gap-2">
-            <Button onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}>
-                {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
+            <Button onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-left", hasAmened && "text-primary hover:text-primary bg-primary/5")}>
+                {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
                 Amen {supporters.length > 0 && `(${supporters.length})`}
             </Button>
-            <Button onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}>
-                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5", hasInspired && "fill-current")} />}
+            <Button onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-left", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}>
+                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <Sparkles className={cn("h-3.5 w-3.5", hasInspired && "fill-current")} />}
                 Hallelujah {inspiredBy.length > 0 && `(${inspiredBy.length})`}
             </Button>
-            <Button onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasCelebrated && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}>
-                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
+            <Button onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-left", hasCelebrated && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}>
+                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
                 Celebrate {connectedBy.length > 0 && `(${connectedBy.length})`}
             </Button>
-            <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
+            <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-left", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
                 <div className="relative flex flex-col items-center justify-center h-full"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm text-center"> {commentCount}</span>}</div>Comment
             </Button>
         </div>
@@ -640,7 +637,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                 <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase">Responses</DrawerTitle>
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest">GATHERED JOY FOR {authorName}</DrawerDescription>
-                                    <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
+                                    <div className="flex items-center gap-2 mt-4 text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
                             <div className="flex-grow min-h-0">
@@ -652,8 +649,8 @@ export const TestimonyCard = memo(function TestimonyCard({
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={open => { setShowFullText(open); if(!open) setIsCommentsOpen(false); }}>
-                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0">
-                            <div className="p-8 border-b bg-muted/10">
+                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0 text-left">
+                            <div className="p-8 border-b bg-muted/10 text-left">
                                 <DialogHeader className="text-left p-0">
                                     <DialogTitle className="text-3xl font-black font-headline uppercase">Kingdom Testimony</DialogTitle>
                                     <DialogDescription className="text-sm font-bold uppercase tracking-widest">BY {authorName} • {displayDate}</DialogDescription>
@@ -664,13 +661,13 @@ export const TestimonyCard = memo(function TestimonyCard({
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                             <div className="p-8 border-b bg-amber-500/10">
+                             <div className="p-8 border-b bg-amber-500/10 text-left">
                                 <DialogHeader className="text-left p-0">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase text-amber-600"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer Request</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer Request</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1">The original request shared with the body.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <div className="p-8">
+                            <div className="p-8 text-left">
                                 <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic">
                                     {testimony.answeredPrayerContent}
                                 </div>
