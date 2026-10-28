@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -635,7 +636,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left text-left text-left text-left text-left text-left text-left">
-                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />Answered Prayer</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
                                 </DrawerHeader>
@@ -678,7 +679,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left">
                              <div className="p-8 border-b bg-amber-500/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />Answered Prayer Request</DialogTitle>
                                     <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left text-left text-left">The original request shared with the body.</DialogDescription>
                                 </DialogHeader>

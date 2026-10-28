@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -205,7 +206,7 @@ export default function LandingPage() {
             <div className="max-w-4xl mx-auto space-y-8">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
-                  SHARING GOD'S GOODNESS
+                  PROCLAIMING GOD'S GOODNESS
                 </Badge>
                 <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
@@ -321,7 +322,7 @@ export default function LandingPage() {
                             <Link href="/signup">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4" /></Link>
                         </Button>
                     </div>
-                    <div className="w-full max-w-2xl mx-auto text-left">
+                    <div className="w-full max-w-2xl mx-auto text-left text-left">
                          <BibleGameCard />
                     </div>
                 </div>
@@ -405,7 +406,7 @@ export default function LandingPage() {
                     ))}
                 </div>
 
-                <div className="mt-24 p-8 sm:p-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden text-center">
+                <div className="mt-24 p-8 sm:p-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden text-center text-left text-left">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.1),transparent_70%)]" />
                     <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl relative z-10">
                         <Heart className="h-8 w-8 text-white" />
@@ -426,13 +427,13 @@ export default function LandingPage() {
         <section className="py-24 relative overflow-hidden bg-background text-center">
           <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary" />
           
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="max-w-7xl mx-auto px-6 text-center text-left">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-center">
               <div className="space-y-10 text-center lg:text-left">
                 <div className="space-y-6 text-center lg:text-left">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left">Witness the Care</h2>
-                  <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-w-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-center lg:text-left text-center lg:text-left">
+                  <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-w-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left">
                     Read how believers are looking after their harvest and following up on those they love with miracles.
                   </p>
                 </div>
@@ -511,7 +512,7 @@ export default function LandingPage() {
       <footer className="bg-muted/50 border-t py-20 text-center sm:text-left">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16 text-center sm:text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-8 text-center sm:text-left text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-8 text-center sm:text-left text-left text-left">
               <Link href="/" className="flex items-center justify-center sm:justify-start gap-2 hover:opacity-80 transition-opacity">
                 {logo && (
                   <Avatar className="h-14 w-14 border-2 border-primary/20">
@@ -520,12 +521,12 @@ export default function LandingPage() {
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-w-sm mx-auto sm:mx-0 text-center sm:text-left text-center sm:text-left">
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-w-sm mx-auto sm:mx-0 text-center sm:text-left">
                 Testify is the heart center for believers to care for family, friends, and the global harvest while sharing the greatness of Jesus Christ.
               </p>
             </div>
 
-            <div className="space-y-6 text-center sm:text-left text-left text-center sm:text-left">
+            <div className="space-y-6 text-center sm:text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Platform</h4>
               <ul className="space-y-4">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Miracle Feed</Link></li>
@@ -535,7 +536,7 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div className="space-y-6 text-center sm:text-left text-left text-center sm:text-left">
+            <div className="space-y-6 text-center sm:text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Ministry</h4>
               <ul className="space-y-4">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Compassion Vision</Link></li>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -215,7 +216,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
-        const uploadResult = await uploadBytes(fileRef, file, { contentType: file.type });
+        // Robust metadata is essential for mobile device playback
+        const metadata = { contentType: file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4') };
+        const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
 
         if (slot === 1) {
@@ -386,7 +389,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     return (
       <div className="space-y-4 flex-1 text-left">
           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-              <Camera className="h-3.5 w-3.5 text-primary" /> Proof {slot} {slot === 2 && "(Optional)"}
+              <Camera className="h-3.5 w-3.5 text-primary" /> Evidence {slot} {slot === 2 && "(Optional)"}
           </Label>
           
           {!preview ? (
@@ -495,11 +498,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left">
                 <div className="absolute -top-4 -right-4 h-16 w-16 bg-amber-500/5 rounded-full blur-xl text-left" />
                 <CardHeader className="p-5 pb-2 relative z-10 text-left text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left text-left">
-                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left text-left" />
-                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left text-left">Answering Prayer Altar</span>
+                    <div className="flex items-center gap-2 mb-1 text-left text-left text-left">
+                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left text-left text-left" />
+                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left text-left text-left">Answering Prayer Altar</span>
                     </div>
-                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
+                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left text-left text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
                 </CardHeader>
             </Card>
         )}
@@ -627,7 +630,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                                     animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }}
                                 />
                             </div>
-                            <div className="flex justify-center pointer-events-auto text-left text-left text-left">
+                            <div className="flex justify-center pointer-events-auto text-left text-center text-left">
                                 {!isRecording ? (
                                     <Button 
                                         onClick={startRecording}

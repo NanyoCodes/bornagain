@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -222,7 +223,9 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
-        const uploadResult = await uploadBytes(fileRef, file, { contentType: file.type });
+        // Robust metadata is essential for mobile device playback
+        const metadata = { contentType: file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4') };
+        const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
 
         if (slot === 1) {

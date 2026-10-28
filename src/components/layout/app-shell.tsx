@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -278,7 +279,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
       <div className="flex shrink-0 w-auto text-left">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
-            <Avatar className="h-11 w-11 md:h-14 md:w-14 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95">
+            <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
               <AvatarFallback>T</AvatarFallback>
             </Avatar>
@@ -738,11 +739,11 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           <DrawerContent hideCloseButton className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] flex flex-col items-center justify-center gap-2 text-center">
               <DrawerHeader className="text-center flex-shrink-0 p-0">
-                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                    <UserPlus className="h-7 w-7 text-primary" />
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+                    <UserPlus className="h-7 w-7 text-primary text-left" />
                 </div>
-                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center">Complete Your Identity</DrawerTitle>
-                <DrawerDescription className="text-sm font-medium mt-1 text-zinc-400 text-center text-balance">Join the global movement by introducing yourself to the Body.</DrawerDescription>
+                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">Complete Your Identity</DrawerTitle>
+                <DrawerDescription className="text-sm font-medium mt-1 text-zinc-400 text-center text-balance text-left">Join the global movement by introducing yourself to the Body.</DrawerDescription>
               </DrawerHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-5 sm:p-8 text-left">
