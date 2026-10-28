@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,8 +17,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Loader2, Camera, Video, X, FileUp, Sparkles, Newspaper, HandHeart, CheckCircle2, Mic, Play, Square, Timer } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { 
+  Loader2, 
+  Camera, 
+  Video, 
+  X, 
+  FileUp, 
+  Sparkles, 
+  Newspaper, 
+  HandHeart, 
+  CheckCircle2, 
+  Mic, 
+  Play, 
+  Square, 
+  Timer,
+  Target 
+} from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
@@ -27,9 +41,11 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 const testimonyCategories: TestimonyCategory[] = [
   'Healing', 
@@ -115,9 +131,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           });
           setStream(mediaStream);
           setIsRecorderOpen(true);
-          if (videoPreviewRef.current) {
-              videoPreviewRef.current.srcObject = mediaStream;
-          }
+          // Small delay to ensure the video element is mounted before setting srcObject
+          setTimeout(() => {
+            if (videoPreviewRef.current) {
+                videoPreviewRef.current.srcObject = mediaStream;
+            }
+          }, 100);
       } catch (err) {
           console.error("Camera access error:", err);
           toast({ variant: 'destructive', title: 'Camera Blocked', description: 'Please enable camera and microphone permissions to record live.' });
@@ -447,7 +466,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Testimony Theme</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base">
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base text-left">
                             <SelectValue placeholder="What is the nature of this miracle?" />
                         </SelectTrigger>
                         </FormControl>
@@ -466,7 +485,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     <FormControl>
                     <Textarea 
                         placeholder="Detail the greatness of God in this situation..." 
-                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0" 
+                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left" 
                         {...field} 
                     />
                     </FormControl>
@@ -575,7 +594,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               </div>
           </DialogContent>
       </Dialog>
+
+      <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+          <Target className="h-16 w-16 text-primary" />
+      </div>
     </div>
   );
 }
-
