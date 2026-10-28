@@ -90,6 +90,39 @@ export function getYouTubeEmbedUrl(url: string | undefined | null) {
 }
 
 /**
+ * Live avatar that reflects current profile photo.
+ */
+export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const photoURL = profile?.photoURL;
+    
+    return (
+        <Dialog>
+            <DialogTrigger asChild disabled={!photoURL}>
+                <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
+                    <Avatar className="h-full w-full border shadow-sm">
+                        <AvatarImage src={photoURL} className="object-cover" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary font-bold text-center flex items-center justify-center h-full w-full">{fallbackInitials || 'U'}</AvatarFallback>
+                    </Avatar>
+                </div>
+            </DialogTrigger>
+            {photoURL && (
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
+                    <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                            <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
+                        </div>
+                    </div>
+                </DialogContent>
+            )}
+        </Dialog>
+    );
+}
+
+/**
  * High fidelity media preview for the feed.
  * Optimized for mobile playback and MIME compatibility.
  */
@@ -167,53 +200,6 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
       </Dialog>
   );
 };
-
-/**
- * Live avatar that reflects current profile photo.
- */
-export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
-    const firestore = useFirestore();
-    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
-    const { data: profile } = useDoc<UserProfile>(userRef);
-    const photoURL = profile?.photoURL;
-    
-    return (
-        <Dialog>
-            <DialogTrigger asChild disabled={!photoURL}>
-                <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
-                    <Avatar className="h-full w-full border shadow-sm">
-                        <AvatarImage src={photoURL} className="object-cover" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary font-bold text-center flex items-center justify-center h-full w-full">{fallbackInitials || 'U'}</AvatarFallback>
-                    </Avatar>
-                </div>
-            </DialogTrigger>
-            {photoURL && (
-                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
-                    <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
-                            <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
-                        </div>
-                    </div>
-                </DialogContent>
-            )}
-        </Dialog>
-    );
-}
-
-export function getStatusClasses(status: FollowUpStatus | undefined): string {
-    if (!status) return 'bg-secondary text-secondary-foreground border-border';
-    switch (status) {
-        case 'New':
-            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
-        case 'Contacted':
-            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
-        case 'Established':
-            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
-        default:
-            return 'bg-secondary text-secondary-foreground border-border';
-    }
-}
 
 export const TestimonyCard = memo(function TestimonyCard({ 
   testimony, 
@@ -420,7 +406,7 @@ export const TestimonyCard = memo(function TestimonyCard({
       )}>
         <div className="p-4 sm:p-6 pb-2 text-left">
           <div className="flex flex-row items-start justify-between gap-3 text-left">
-            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+            <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left">
                 {testimony.isAnonymous ? (
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm text-left">
                         <AvatarFallback className="bg-primary/10 text-primary font-bold"><Users className="h-5 w-5" /></AvatarFallback>
@@ -428,7 +414,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 ) : (
                     <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14 text-left" />
                 )}
-                <div className="min-w-0 flex-1 text-left">
+                <div className="min-w-0 flex-1 text-left text-left">
                     <div className="flex items-center gap-2 flex-wrap text-left">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0 text-left">
                              <h3 className="text-base sm:text-lg font-bold capitalize leading-none text-left">{authorName}</h3>
@@ -447,13 +433,13 @@ export const TestimonyCard = memo(function TestimonyCard({
                             </TooltipProvider>
                         )}
                     </div>
-                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left">
+                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left text-left">
                         <div className="truncate text-[10px] sm:text-xs opacity-70 text-left">{displayDate}</div>
                         <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium text-left text-left"><Globe className="h-3 w-3 text-primary shrink-0 text-left" /> {locationString}</div>
                     </div>
                 </div>
             </div>
-            <div className="flex items-center gap-1.5 text-left text-left">
+            <div className="flex items-center gap-1.5 text-left text-left text-left">
                 <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-background text-left text-left" onClick={handleShare}>
                     <Share2 className="h-3.5 w-3.5 text-left text-left" /><span className="sr-only text-left">Share</span>
                 </Button>
@@ -518,7 +504,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center text-left">
                         <Music className="h-3.5 w-3.5 text-primary text-left" />
                     </div>
-                    <div className="min-w-0 flex-1 text-left text-left text-left">
+                    <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left">
                         <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest leading-none text-left">Sound of Praise</p>
                         <p className="text-[11px] font-black uppercase tracking-tight text-white/90 truncate mt-1 text-left">{testimony.musicTitle || 'Atmospheric Worship'}</p>
                     </div>
@@ -616,12 +602,12 @@ export const TestimonyCard = memo(function TestimonyCard({
                             </ul>
                         </div>
                         
-                        <div className="p-6 rounded-2xl border bg-muted/20 space-y-4 text-left text-left text-left">
+                        <div className="p-6 rounded-2xl border bg-muted/20 space-y-4 text-left text-left text-left text-left">
                             <div className="space-y-1 text-left text-left text-left">
                                 <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest text-left text-left text-left">Estimated Reach</p>
                                 <p className="text-2xl font-black text-primary text-left text-left">5,000+ Believers</p>
                             </div>
-                            <p className="text-xs text-muted-foreground italic text-left text-left text-left">Select 'Proceed' to view payment coordinates and finalize your boost request.</p>
+                            <p className="text-xs text-muted-foreground italic text-left text-left text-left text-left">Select 'Proceed' to view payment coordinates and finalize your boost request.</p>
                         </div>
 
                         <div className="flex gap-3 text-left text-left text-left">

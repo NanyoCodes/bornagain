@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for reaction permissions and back button logic sync - 2025-03-09T16:00:00Z
+    // Deployment trigger: Critical fix for permission ID mismatch and playback metadata - 2025-03-11T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;

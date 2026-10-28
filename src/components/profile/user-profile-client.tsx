@@ -331,9 +331,9 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <div className="flex-1 min-w-0 space-y-6 w-full text-center lg:text-left">
                 <div className="space-y-4">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                        <div className="min-w-0 space-y-2">
+                        <div className="min-w-0 space-y-2 text-left">
                             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-headline tracking-tight leading-tight uppercase text-balance break-words">{displayName}</h1>
-                            <div className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
+                            <div className="flex flex-wrap justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
                                 {(city || state || country) && (
                                     <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider">
                                         <MapPin className="h-4 w-4" /> 

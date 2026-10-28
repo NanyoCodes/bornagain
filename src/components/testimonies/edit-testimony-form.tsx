@@ -358,80 +358,80 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     const isAudio = preview?.type === 'audio';
 
     return (
-      <div className="space-y-4 flex-1 text-left text-left">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
-              <Camera className="h-3.5 w-3.5 text-primary text-left" /> Evidence {slot}
+      <div className="space-y-4 flex-1 text-left">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+              <Camera className="h-3.5 w-3.5 text-primary" /> Evidence {slot}
           </Label>
           
           {!preview ? (
-              <div className="space-y-3 text-left">
+              <div className="space-y-3">
                   <div 
                       className={cn(
-                          "border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left",
+                          "border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px]",
                           isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
                       )}
                       onClick={() => inputRef.current?.click()}
                   >
                       {isUploadingMedia === slot ? (
-                          <div className="flex flex-col items-center gap-2 text-left">
-                              <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
+                          <div className="flex flex-col items-center gap-2">
+                              <Loader2 className="h-6 w-6 animate-spin text-primary" />
                               <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
                           </div>
                       ) : (
                           <>
-                              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform text-left">
-                                  <FileUp className="h-4 w-4 text-primary text-left" />
+                              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                  <FileUp className="h-4 w-4 text-primary" />
                               </div>
-                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Select File</p>
+                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select File</p>
                           </>
                       )}
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2 text-left">
+                  <div className="grid grid-cols-2 gap-2">
                         <Button 
                             type="button" 
                             variant="outline" 
                             size="sm" 
-                            className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1 text-center text-left"
+                            className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1 text-center"
                             onClick={() => startRecorder(slot, 'video')}
                             disabled={isUploadingMedia !== null}
                         >
-                            <Video className="h-3 w-3 mb-0.5 text-left" />
+                            <Video className="h-3 w-3 mb-0.5" />
                             RECORD VIDEO
                         </Button>
                         <Button 
                             type="button" 
                             variant="outline" 
                             size="sm" 
-                            className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1 text-center text-left"
+                            className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1 text-center"
                             onClick={() => startRecorder(slot, 'audio')}
                             disabled={isUploadingMedia !== null}
                         >
-                            <Mic className="h-3 w-3 mb-0.5 text-left" />
+                            <Mic className="h-3 w-3 mb-0.5" />
                             RECORD AUDIO
                         </Button>
                   </div>
               </div>
           ) : (
               <div className={cn(
-                  "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner text-left group",
+                  "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group",
                   isAudio ? "h-auto min-h-[100px]" : "aspect-square"
               )}>
                   {preview.type === 'image' ? (
-                      <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-contain text-left" unoptimized />
+                      <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
                   ) : preview.type === 'video' ? (
-                      <video src={preview.url} className="w-full h-full object-cover bg-zinc-950 text-left" playsInline controls />
+                      <video src={preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls />
                   ) : (
                         <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
                             <div className="relative shrink-0">
-                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-left">
-                                    <Mic className="h-5 w-5 text-primary text-left" />
+                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                                    <Mic className="h-5 w-5 text-primary" />
                                 </div>
-                                <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse text-left" />
+                                <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" />
                             </div>
-                            <div className="min-w-0 flex-1">
-                                <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-4 text-left">Voice of Thanksgiving</p>
-                                <audio src={preview.url} className="w-full text-left" controls />
+                            <div className="min-w-0 flex-1 text-left">
+                                <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-4">Voice of Thanksgiving</p>
+                                <audio src={preview.url} className="w-full" controls />
                             </div>
                         </div>
                   )}
@@ -439,10 +439,10 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                       type="button" 
                       variant="destructive" 
                       size="icon" 
-                      className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-left" 
+                      className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" 
                       onClick={() => { setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}
                   >
-                      <X className="h-3.5 w-3.5 text-left" />
+                      <X className="h-3.5 w-3.5" />
                   </Button>
               </div>
           )}
@@ -454,22 +454,22 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   return (
     <div className="space-y-8 text-left">
         <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left text-left text-left">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
             control={form.control}
             name="category"
             render={({ field }) => (
-                <FormItem className="text-left text-left text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Category</FormLabel>
+                <FormItem>
+                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl className="text-left text-left text-left text-left">
-                    <SelectTrigger className="h-12 rounded-2xl border-2 text-left text-left text-left"><SelectValue className="text-left text-left text-left" /></SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="rounded-2xl text-left text-left text-left text-left">
-                    {testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl text-left text-left text-left">{cat}</SelectItem>)}
+                    <FormControl>
+                    <SelectTrigger className="h-12 rounded-2xl border-2"><SelectValue /></FormControl>
+                    </SelectContent>
+                    <SelectContent className="rounded-2xl">
+                    {testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}
                     </SelectContent>
                 </Select>
-                <FormMessage className="text-left text-left text-left" />
+                <FormMessage />
                 </FormItem>
             )}
             />
@@ -477,39 +477,39 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             control={form.control}
             name="content"
             render={({ field }) => (
-                <FormItem className="text-left text-left text-left text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Your Testimony</FormLabel>
-                <FormControl className="text-left text-left text-left text-left text-left">
-                    <Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed text-left text-left text-left text-left" {...field} />
+                <FormItem>
+                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Testimony</FormLabel>
+                <FormControl>
+                    <Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} />
                 </FormControl>
-                <FormMessage className="text-left text-left text-left text-left" />
+                <FormMessage />
                 </FormItem>
             )}
             />
 
-            <div className="space-y-4 text-left text-left text-left text-left">
-                <div className="flex flex-col sm:flex-row gap-6 text-left text-left text-left text-left">
+            <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-6">
                     {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
                     {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
                 </div>
-                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left text-left text-left text-left">
-                    <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left" />
-                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left text-left text-left text-left">
+                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4">
+                    <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
                         Updating your miracle proof strengthens the record of God's goodness.
                     </p>
                 </div>
             </div>
 
-            <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-center text-left text-left text-left" disabled={isSubmitting || isUploadingMedia !== null}>
+            <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-center" disabled={isSubmitting || isUploadingMedia !== null}>
                 {isSubmitting ? (
-                    <div className="flex items-center gap-3 text-left text-left text-left text-left">
-                        <Loader2 className="h-6 w-6 animate-spin text-left text-left text-left text-left text-left" />
-                        <span className="text-left text-left text-left text-left">SAVING...</span>
+                    <div className="flex items-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span>SAVING...</span>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-3 text-left text-left text-left text-left">
-                        <Sparkles className="h-6 w-6 text-left text-left text-left text-left text-left" />
-                        <span className="text-left text-left text-left text-left">SAVE CHANGES</span>
+                    <div className="flex items-center gap-3">
+                        <Sparkles className="h-6 w-6" />
+                        <span>SAVE CHANGES</span>
                     </div>
                 )}
             </Button>
@@ -517,72 +517,72 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         </Form>
 
         <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
-            <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left text-left text-left text-left text-left">
+            <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black">
                 <div className="sr-only">
                     <DialogHeader>
                         <DialogTitle>Miracle Recorder</DialogTitle>
                         <DialogDescription>Capture live proof of God's goodness.</DialogDescription>
                     </DialogHeader>
                 </div>
-                <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
-                  <div className="flex items-center justify-between gap-4 text-left">
+                <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0">
+                  <div className="flex items-center justify-between gap-4">
                     <div className="min-w-0">
-                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</div>
-                        <p className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</p>
+                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white">Miracle Recorder</div>
+                        <p className="text-sm font-medium text-zinc-400 mt-1">Capture your {recorderMode} proof.</p>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10 text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left" /></Button>
+                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10" onClick={closeRecorder}><X className="h-6 w-6" /></Button>
                   </div>
                 </DialogHeader>
                 
                 {recorderMode === 'video' ? (
-                    <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden text-left text-left text-left text-left">
-                        <video ref={videoPreviewRef} autoPlay muted playsInline className="w-full h-full object-cover mirror scale-x-[-1] text-left text-left text-left text-left" />
-                        <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none text-left text-left text-left text-left">
-                            <div className="flex justify-between items-start text-left text-left text-left text-left text-left">
-                                <div className="flex items-center gap-3 text-left text-left text-left text-left text-left">
+                    <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden">
+                        <video ref={videoPreviewRef} autoPlay muted playsInline className="w-full h-full object-cover mirror scale-x-[-1]" />
+                        <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none">
+                            <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-3">
                                     {isRecording && (
-                                        <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left text-left text-left text-left text-left">
-                                            <div className="h-2 w-2 rounded-full bg-white text-left text-left text-left text-left text-left" />
-                                            <span className="text-[10px] font-black text-white uppercase tracking-widest text-left text-left text-left text-left text-left">REC</span>
+                                        <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg">
+                                            <div className="h-2 w-2 rounded-full bg-white" />
+                                            <span className="text-[10px] font-black text-white uppercase tracking-widest">REC</span>
                                         </div>
                                     )}
-                                    <Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px] text-left text-left text-left text-left text-left">
+                                    <Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px]">
                                         {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00
                                     </Badge>
                                 </div>
                             </div>
-                            <div className="space-y-4 text-left text-left text-left text-left text-left">
-                                <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left text-left text-left text-left text-left">
-                                    <motion.div className="h-full bg-primary text-left text-left text-left text-left text-left text-left" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
+                            <div className="space-y-4">
+                                <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                                    <motion.div className="h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
                                 </div>
-                                <div className="flex justify-center pointer-events-auto text-left text-left text-left text-left text-left">
-                                    {!isRecording ? (<Button onClick={startRecording} size="lg" className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-center text-left text-left text-left text-left text-left text-left"><div className="h-8 w-8 rounded-full bg-white shadow-inner text-left text-left text-left text-left text-left text-left" /></Button>) : (<Button onClick={stopRecording} size="lg" className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-center text-left text-left text-left text-left text-left text-left"><Square className="h-8 w-8 fill-current text-left text-left text-left text-left text-left text-left" /></Button>)}
+                                <div className="flex justify-center pointer-events-auto">
+                                    {!isRecording ? (<Button onClick={startRecording} size="lg" className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95"><div className="h-8 w-8 rounded-full bg-white shadow-inner" /></Button>) : (<Button onClick={stopRecording} size="lg" className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95"><Square className="h-8 w-8 fill-current" /></Button>)}
                                 </div>
                             </div>
                         </div>
                     </div>
                 ) : (
-                    <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10 text-left text-left text-left text-left text-left">
-                        <div className="relative text-left text-left text-left text-left text-left">
-                                <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] text-left text-left text-left text-left text-left">
-                                    <Mic className={cn("h-16 w-16 text-primary transition-all text-left text-left text-left text-left text-left", isRecording && "scale-110")} />
+                    <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10">
+                        <div className="relative">
+                                <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)]">
+                                    <Mic className={cn("h-16 w-16 text-primary transition-all", isRecording && "scale-110")} />
                                 </div>
-                                {isRecording && (<div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20 text-left text-left text-left text-left text-left text-left" />)}
+                                {isRecording && (<div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20" />)}
                         </div>
-                        <div className="space-y-4 w-full text-left text-left text-left text-left text-left">
-                            <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left text-left text-left text-left text-left">Voice of Thanksgiving</div>
-                            <div className="flex items-center justify-center gap-3 text-left text-left text-left text-left text-left">
-                                {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse text-left text-left text-left text-left text-left" />}
-                                <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums text-left text-left text-left text-left text-left">
+                        <div className="space-y-4 w-full">
+                            <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center">Voice of Thanksgiving</div>
+                            <div className="flex items-center justify-center gap-3 text-left">
+                                {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />}
+                                <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums">
                                         {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
                                 </span>
                             </div>
-                            <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden text-left text-left text-left text-left text-left text-left">
-                                <motion.div className="h-full bg-primary text-left text-left text-left text-left text-left text-left" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
+                            <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                <motion.div className="h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
                             </div>
                         </div>
-                        <div className="flex gap-4 w-full text-left text-left text-left text-left text-left text-left">
-                                {!isRecording ? (<Button onClick={startRecording} className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center text-left text-left text-left text-left text-left text-left"><Mic className="mr-3 h-6 w-6 text-left text-left text-left text-left text-left text-left text-left" /> START</Button>) : (<Button onClick={stopRecording} variant="destructive" className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center text-left text-left text-left text-left text-left text-left"><Square className="mr-3 h-6 w-6 fill-current text-left text-left text-left text-left text-left text-left text-left" /> STOP</Button>)}
+                        <div className="flex gap-4 w-full">
+                                {!isRecording ? (<Button onClick={startRecording} className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center"><Mic className="mr-3 h-6 w-6" /> START</Button>) : (<Button onClick={stopRecording} variant="destructive" className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center"><Square className="mr-3 h-6 w-6 fill-current" /> STOP</Button>)}
                         </div>
                     </div>
                 )}
