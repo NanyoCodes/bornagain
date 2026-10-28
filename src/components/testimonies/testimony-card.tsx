@@ -102,6 +102,69 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
     );
 }
 
+const MediaPreview = ({ url, type, isFull = false }: { url: string, type: 'image' | 'video' | 'audio', isFull?: boolean }) => {
+  return (
+      <Dialog>
+          <DialogTrigger asChild>
+              <div className={cn(
+                  "relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted aspect-square group/media cursor-pointer",
+                  isFull && "h-full w-full"
+              )}>
+                  {type === 'image' ? (
+                      <Image src={url} alt="Proof" fill className="object-cover transition-transform group-hover/media:scale-105" unoptimized />
+                  ) : type === 'video' ? (
+                      <video src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline autoPlay loop />
+                  ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 p-4 text-center">
+                          <div className="relative">
+                              <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-[0_0_20px_rgba(249,116,22,0.1)]">
+                                  <Mic className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+                              </div>
+                              <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-primary animate-pulse" />
+                          </div>
+                          <p className="mt-3 text-[8px] sm:text-[10px] font-black uppercase text-primary/80">Voice of Thanksgiving</p>
+                      </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/5 group-hover/media:bg-transparent transition-colors duration-500" />
+                  <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 opacity-0 group-hover/media:opacity-100 transition-opacity shadow-2xl">
+                      <Sparkles className="h-3 w-3 sm:h-4 w-4 text-primary animate-pulse" />
+                  </div>
+              </div>
+          </DialogTrigger>
+          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+              <DialogHeader className="sr-only text-center"><DialogTitle>Full View</DialogTitle></DialogHeader>
+              <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                  <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                      {type === 'image' ? (
+                          <Image src={url} alt="Proof Full" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
+                      ) : type === 'video' ? (
+                          <video src={url} className="w-full h-full object-contain" playsInline controls autoPlay />
+                      ) : (
+                          <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl">
+                              <div className="relative text-center">
+                                  <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto">
+                                      <Mic className="h-16 w-16 text-primary" />
+                                  </div>
+                                  <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse" />
+                              </div>
+                              <div className="space-y-2 text-center">
+                                  <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white">Voice Proclamation</h4>
+                                  <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic">A testimony of God's goodness</p>
+                              </div>
+                              <audio src={url} className="w-full" controls autoPlay />
+                              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary/60 text-center">
+                                  <HandHeart className="h-3 w-3" />
+                                  Glory to God
+                              </div>
+                          </div>
+                      )}
+                  </div>
+              </div>
+          </DialogContent>
+      </Dialog>
+  );
+};
+
 export function getStatusClasses(status: FollowUpStatus | undefined): string {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
     switch (status) {
@@ -343,69 +406,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({
       </div>
     </ScrollArea>
   );
-
-  const MediaPreview = ({ url, type, isFull = false }: { url: string, type: 'image' | 'video' | 'audio', isFull?: boolean }) => {
-    return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <div className={cn(
-                    "relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted aspect-square group/media cursor-pointer",
-                    isFull && "h-full w-full"
-                )}>
-                    {type === 'image' ? (
-                        <Image src={url} alt="Proof" fill className="object-cover transition-transform group-hover/media:scale-105" unoptimized />
-                    ) : type === 'video' ? (
-                        <video src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline autoPlay loop />
-                    ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 p-4 text-center">
-                            <div className="relative">
-                                <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-[0_0_20px_rgba(249,116,22,0.1)]">
-                                    <Mic className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-                                </div>
-                                <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-primary animate-pulse" />
-                            </div>
-                            <p className="mt-3 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-primary/80">Voice of Thanksgiving</p>
-                        </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/5 group-hover/media:bg-transparent transition-colors duration-500" />
-                    <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 opacity-0 group-hover/media:opacity-100 transition-opacity shadow-2xl">
-                        <Sparkles className="h-3 w-3 sm:h-4 w-4 text-primary animate-pulse" />
-                    </div>
-                </div>
-            </DialogTrigger>
-            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                <DialogHeader className="sr-only text-center"><DialogTitle>Full View</DialogTitle></DialogHeader>
-                <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
-                        {type === 'image' ? (
-                            <Image src={url} alt="Proof Full" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
-                        ) : type === 'video' ? (
-                            <video src={url} className="w-full h-full object-contain" playsInline controls autoPlay />
-                        ) : (
-                            <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl">
-                                <div className="relative text-center">
-                                    <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto">
-                                        <Mic className="h-16 w-16 text-primary" />
-                                    </div>
-                                    <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse" />
-                                </div>
-                                <div className="space-y-2 text-center">
-                                    <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white">Voice Proclamation</h4>
-                                    <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic">A testimony of God's goodness</p>
-                                </div>
-                                <audio src={url} className="w-full" controls autoPlay />
-                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary/60 text-center">
-                                    <HandHeart className="h-3 w-3" />
-                                    Glory to God
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
-  };
 
   const musicEmbedUrl = useMemo(() => getYouTubeEmbedUrl(testimony.musicUrl), [testimony.musicUrl]);
 
