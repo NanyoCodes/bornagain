@@ -426,7 +426,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                                     allowFullScreen
                                     className="absolute inset-0 w-full h-full border-0 text-left"
                                 />
-                                <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity text-left text-left text-left">
+                                <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity text-left text-left text-left text-left">
                                     <Badge className="bg-red-600 text-white font-black text-[10px] tracking-widest uppercase border-none text-left">YOUTUBE</Badge>
                                 </div>
                             </div>

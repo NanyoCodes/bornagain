@@ -16,6 +16,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
 import { Loader2, Camera, Video, X, FileUp, Sparkles, Mic, Square, Info, Newspaper } from "lucide-react";
@@ -214,7 +215,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
-        // Explicitly set contentType metadata for correct playback on mobile devices
         const uploadResult = await uploadBytes(fileRef, file, { contentType: file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -399,12 +399,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       onClick={() => inputRef.current?.click()}
                   >
                       {isUploadingMedia === slot ? (
-                          <div className="flex flex-col items-center gap-2 text-left text-left">
+                          <div className="flex flex-col items-center gap-2 text-left">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
                               <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
                           </div>
                       ) : (
-                          <div className="flex flex-col items-center text-left text-left">
+                          <div className="flex flex-col items-center text-left">
                               <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                                   <FileUp className="h-4 w-4 text-primary" />
                               </div>
@@ -652,7 +652,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               ) : (
                   <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10 text-left text-left text-left">
                        <div className="relative text-left text-left">
-                            <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.1)] text-left text-left">
+                            <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.1)] text-left text-left text-left">
                                 <Mic className={cn("h-16 w-16 text-primary transition-all text-left text-left text-left", isRecording && "scale-110")} />
                             </div>
                             {isRecording && (

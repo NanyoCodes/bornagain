@@ -482,7 +482,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                     <TrendingUp className="mr-2 h-4 w-4 text-indigo-600 text-left text-left text-left" />
                                     Boost Miracle
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator className="text-left text-left text-left" />
+                                <DropdownMenuSeparator className="text-left text-left" />
                                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg text-left text-left text-left">
                                     <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" />
                                     Delete Permanently
@@ -583,7 +583,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left text-left text-left text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                         <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left text-left">
                                 <TrendingUp className="h-5 w-5 text-indigo-600 text-left text-left text-left text-left text-left text-left" />
                                 <span className="text-[10px] font-black uppercase text-indigo-600 tracking-[0.3em] text-left text-left text-left text-left text-left text-left">Kingdom Promotion</span>
                             </div>
@@ -648,12 +648,12 @@ export const TestimonyCard = memo(function TestimonyCard({
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left text-left text-left text-left">Responses</DrawerTitle>
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
-                                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Swipe down to close</span></div>
+                                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
                             <div className="flex-grow min-h-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
@@ -683,7 +683,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                     <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left text-left text-left">The original request shared with the body.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <div className="p-8 text-left text-left text-left text-left text-left text-left text-left">
+                            <div className="p-8 text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left text-left text-left text-left text-left text-left text-left text-left">
                                     {testimony.answeredPrayerContent}
                                 </div>

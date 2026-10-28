@@ -15,6 +15,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
 import { 
@@ -36,7 +37,6 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -222,7 +222,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
-        // Explicitly set contentType metadata for correct playback on mobile devices
         const uploadResult = await uploadBytes(fileRef, file, { contentType: file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -446,7 +445,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                                     animate={{ opacity: [0.4, 1, 0.4] }}
                                     transition={{ repeat: Infinity, duration: 2 }}
                                 >
-                                    <Sparkles className="h-3 w-3 text-primary" />
+                                    <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                                 </motion.div>
                             </div>
                             <div className="min-w-0 flex-1 text-left">
@@ -492,7 +491,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <FormItem className="text-left">
                 <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                    <FormControl className="text-left">
+                    <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl border-2 text-left">
                         <SelectValue placeholder="What is the nature of this miracle?" />
                       </SelectTrigger>
