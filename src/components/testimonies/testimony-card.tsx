@@ -124,7 +124,6 @@ export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { user
 
 /**
  * High fidelity media preview for the feed.
- * Optimized for mobile playback and MIME compatibility.
  */
 export const MediaPreview = ({ url, type, isFull = false }: { url: string, type: 'image' | 'video' | 'audio', isFull?: boolean }) => {
   const isAudio = type === 'audio';

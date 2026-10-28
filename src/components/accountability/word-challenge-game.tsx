@@ -611,7 +611,20 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
 
                     {gameState === 'finished' && (
                         <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center">
-                            <div className="space-y-4 text-center"><div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10"><Award className="h-10 w-10 sm:h-14 sm:w-14 text-white" /></div><div className="space-y-1 text-center"><h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center">Session Complete!</h3><p className="text-zinc-400 font-medium text-center">{isSavingSession ? "Archiving victory..." : "Excellent labor in the Word."}</p></div></div>
+                            <div className="space-y-4 text-center">
+                                <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10">
+                                    <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white" />
+                                </div>
+                                <div className="space-y-2 text-center">
+                                    <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight">Session Complete!</h3>
+                                    <div className="bg-zinc-900 rounded-3xl p-6 border-2 border-dashed border-primary/20 max-w-sm mx-auto">
+                                        <p className="text-lg font-black text-primary uppercase tracking-widest">{quiz.ref}</p>
+                                        <p className="text-xs text-zinc-400 italic mt-2 leading-relaxed">
+                                            {quiz.explanation || "Your labor in the Word builds an unshakeable foundation for victory."}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                             <div className="grid grid-cols-3 gap-3 sm:gap-6"><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center">Points</p><p className="text-xl sm:text-4xl font-black text-white text-center">{correctCount * 10}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center">Correct</p><p className="text-xl sm:text-4xl font-black text-white text-center">{correctCount}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-red-500 uppercase mb-1 tracking-widest text-center">Errors</p><p className="text-xl sm:text-4xl font-black text-white text-center">{wrongCount}</p></div></div>
                             <div className="flex flex-col gap-4"><Button onClick={resetToSelection} disabled={isSavingSession} size="lg" className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl text-center">NEW SESSION</Button></div>
                         </div>

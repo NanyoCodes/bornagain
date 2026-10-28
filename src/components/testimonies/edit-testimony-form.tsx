@@ -15,7 +15,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
 import { 
@@ -25,7 +24,6 @@ import {
   FileUp, 
   Video, 
   Mic, 
-  CheckCircle2, 
   Square,
   Sparkles,
   Info
@@ -464,7 +462,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl border-2">
-                        <SelectValue />
+                        <SelectValue placeholder="What is the nature of this miracle?" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="rounded-2xl">

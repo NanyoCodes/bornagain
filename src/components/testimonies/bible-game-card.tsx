@@ -1,5 +1,4 @@
-'use client';
-
+// ... existing imports
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -123,9 +122,14 @@ export function BibleGameCard() {
                 <AnimatePresence mode="wait">
                     {gameState !== 'playing' && (
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6 text-center">
-                            <div className={cn("p-6 rounded-2xl flex flex-col items-center text-center gap-3 border-2 border-dashed", gameState === 'correct' ? "bg-green-500/5 border-green-500/20 text-green-500" : "bg-red-500/5 border-red-500/20 text-red-500")}>
+                            <div className={cn("p-6 rounded-3xl flex flex-col items-center text-center gap-4 border-2 border-dashed", gameState === 'correct' ? "bg-green-500/5 border-green-500/20 text-green-500" : "bg-red-500/5 border-red-500/20 text-red-500")}>
                                 <div className="flex items-center gap-2"><Trophy className="h-5 w-5 animate-bounce" /><span className="font-black uppercase tracking-[0.2em] text-xs">{gameState === 'correct' ? `WELL DONE, ${firstName.toUpperCase()}!` : "STAY IN THE WORD"}</span></div>
-                                <p className="text-sm font-bold italic opacity-80 text-center">{quiz.ref}</p>
+                                <div className="space-y-2 text-center">
+                                    <p className="text-base font-black uppercase tracking-widest text-zinc-100">{quiz.ref}</p>
+                                    <p className="text-xs font-medium italic opacity-70 leading-relaxed text-balance text-zinc-300">
+                                        {quiz.explanation || "This Word serves as a spiritual weapon for your victory and peace."}
+                                    </p>
+                                </div>
                             </div>
                             <Button onClick={nextChallenge} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-white text-black hover:bg-zinc-200 shadow-xl flex items-center justify-center gap-3 transition-all active:scale-95 text-center">NEXT CHALLENGE<ArrowRight className="h-5 w-5" /></Button>
                         </motion.div>
