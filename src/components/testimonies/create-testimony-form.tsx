@@ -215,7 +215,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
-        // CRITICAL: Explicitly set contentType metadata so mobile browsers initiate playback
+        // CRITICAL: Explicitly set contentType metadata
         const metadata = { contentType: file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4') };
         const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
@@ -490,7 +490,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             </div>
             <div className="min-w-0 flex-1 text-left">
                 <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Proclaim Victory</h3>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Sharing God's manifest power</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left">Sharing God's manifest power</p>
             </div>
         </div>
 

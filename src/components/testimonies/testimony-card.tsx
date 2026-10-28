@@ -214,6 +214,20 @@ export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { user
     );
 }
 
+function getStatusClasses(status: FollowUpStatus | undefined): string {
+    if (!status) return 'bg-secondary text-secondary-foreground border-border';
+    switch (status) {
+        case 'New':
+            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
+        case 'Contacted':
+            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
+        case 'Established':
+            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
+        default:
+            return 'bg-secondary text-secondary-foreground border-border';
+    }
+}
+
 export const TestimonyCard = memo(function TestimonyCard({ 
   testimony, 
   onDelete, 
@@ -661,7 +675,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                              <div className="p-8 border-b bg-amber-500/10 text-left">
                                 <DialogHeader className="text-left p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer Request</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">The original request shared with the body.</DialogDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">The original request shared with the body.</DrawerDescription>
                                 </DialogHeader>
                             </div>
                             <div className="p-8 text-left">
