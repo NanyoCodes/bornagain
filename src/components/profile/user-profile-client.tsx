@@ -1,28 +1,16 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useRouter } from 'next/navigation';
+import { useDoc, useUser, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogTrigger,
-  DialogClose
 } from '@/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import {
     Drawer,
     DrawerContent,
@@ -30,8 +18,8 @@ import {
     DrawerTitle,
     DrawerDescription,
 } from "@/components/ui/drawer";
-import { doc, updateDoc, serverTimestamp, collection, query, where, orderBy, setDoc, addDoc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { doc, updateDoc, serverTimestamp, collection, query, where, setDoc, addDoc } from 'firebase/firestore';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
     Loader2, 
@@ -46,15 +34,12 @@ import {
     HeartHandshake,
     Sparkles,
     CalendarDays,
-    Video,
     MessageSquare,
     UserPlus,
     Hourglass,
     Briefcase,
     Heart,
     ChevronRight,
-    ChevronDown,
-    Music,
     Quote,
     X,
     TrendingUp
@@ -69,7 +54,6 @@ import { ScrollArea } from '../ui/scroll-area';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
 import { CampaignCard } from '@/components/campaigns/campaign-card';
 import { EditProfileModal } from './edit-profile-modal';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 function getYouTubeEmbedUrl(url: string | undefined | null) {
   if (!url) return null;
@@ -86,7 +70,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const firestore = useFirestore();
   const { user: currentUser, loading: userLoading } = useUser();
   const { toast } = useToast();
-  const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
   const [isRequestingPartner, setIsRequestingPartner] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
