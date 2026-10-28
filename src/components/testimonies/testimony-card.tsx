@@ -144,7 +144,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                   ) : (
                       <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
                           <div className="relative shrink-0">
-                              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
+                              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
                                   <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                               </div>
                               <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse text-left" />
@@ -200,6 +200,20 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
       </Dialog>
   );
 };
+
+export function getStatusClasses(status: FollowUpStatus | undefined): string {
+    if (!status) return 'bg-secondary text-secondary-foreground border-border';
+    switch (status) {
+        case 'New':
+            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
+        case 'Contacted':
+            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
+        case 'Established':
+            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
+        default:
+            return 'bg-secondary text-secondary-foreground border-border';
+    }
+}
 
 export const TestimonyCard = memo(function TestimonyCard({ 
   testimony, 
@@ -623,8 +637,8 @@ export const TestimonyCard = memo(function TestimonyCard({
             {isMobile ? (
                 <>
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
-                        <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Kingdom Testimony</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left">BY {authorName} • {displayDate}</DrawerDescription></DrawerHeader></div>
+                        <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Kingdom Testimony</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left">BY {authorName} • {displayDate}</DrawerDescription></DrawerHeader></div>
                             <div className="flex-grow min-h-0 pt-8 px-6 text-left text-left text-left">{fullTextContent}</div>
                         </DrawerContent>
                     </Drawer>

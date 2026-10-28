@@ -463,8 +463,10 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                    <SelectTrigger className="h-12 rounded-2xl border-2"><SelectValue /></FormControl>
-                    </SelectContent>
+                      <SelectTrigger className="h-12 rounded-2xl border-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
                     <SelectContent className="rounded-2xl">
                     {testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}
                     </SelectContent>
@@ -518,17 +520,11 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
         <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
             <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black">
-                <div className="sr-only">
-                    <DialogHeader>
-                        <DialogTitle>Miracle Recorder</DialogTitle>
-                        <DialogDescription>Capture live proof of God's goodness.</DialogDescription>
-                    </DialogHeader>
-                </div>
                 <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0">
                   <div className="flex items-center justify-between gap-4">
                     <div className="min-w-0">
-                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white">Miracle Recorder</div>
-                        <p className="text-sm font-medium text-zinc-400 mt-1">Capture your {recorderMode} proof.</p>
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white">Miracle Recorder</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-zinc-400 mt-1">Capture your {recorderMode} proof.</DialogDescription>
                     </div>
                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10" onClick={closeRecorder}><X className="h-6 w-6" /></Button>
                   </div>
