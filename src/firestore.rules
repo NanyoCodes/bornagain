@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for reaction permissions and author identity - 2025-03-09T14:30:00Z
+    // Deployment trigger: Critical fix for reaction permissions and back button logic sync - 2025-03-09T16:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -316,7 +316,7 @@ service cloud.firestore {
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
             allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              (request.resource.data.authorId == request.auth.uid) ||
+              (resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }

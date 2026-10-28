@@ -291,6 +291,28 @@ export default function SoulsWonPage() {
     };
   }, [setIsSearchVisible, setSearchTerm, setSearchPlaceholder]);
 
+  // Back Button Intercept for Overlays
+  useEffect(() => {
+    if (selectedId || followUpSoulId || historySoulId || assignSoulId || editSoulId || assessmentSoulId || shareWordSoulId || prayerSoulId || messageSoulId || isLogDialogOpen || selectedFilterGroup) {
+        window.history.pushState({ overlayOpen: true }, '');
+        const handlePopState = () => {
+            setSelectedId(null);
+            setFollowUpSoulId(null);
+            setHistorySoulId(null);
+            setAssignSoulId(null);
+            setEditSoulId(null);
+            setAssessmentSoulId(null);
+            setShareWordSoulId(null);
+            setPrayerSoulId(null);
+            setMessageSoulId(null);
+            setIsLogDialogOpen(false);
+            setSelectedFilterGroup(null);
+        };
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }
+  }, [selectedId, followUpSoulId, historySoulId, assignSoulId, editSoulId, assessmentSoulId, shareWordSoulId, prayerSoulId, messageSoulId, isLogDialogOpen, selectedFilterGroup]);
+
   useEffect(() => {
     const soulIdFromUrl = searchParams?.get('soulId');
     if (soulIdFromUrl) {
@@ -601,7 +623,7 @@ export default function SoulsWonPage() {
                                             <NextImage src={s.photoURL!} alt={s.firstName} fill className="object-cover transition-transform group-hover:scale-110 duration-500 text-left text-left" unoptimized />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left" />
                                             <div className="absolute bottom-3 left-3 right-3 text-white text-left text-left">
-                                                <p className="font-black text-[10px] sm:text-xs uppercase tracking-tight text-left">
+                                                <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight text-left">
                                                     {s.nickname || s.firstName} {s.age && <span className="opacity-60 font-bold ml-1">({s.age})</span>}
                                                 </p>
                                                 <Badge className={cn("text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm text-left", getStatusClasses(s.status))}>{s.status}</Badge>

@@ -529,9 +529,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             />
 
             <FormField control={form.control} name="content" render={({ field }) => (
-                <FormItem className="text-left text-left">
+                <FormItem className="text-left text-left text-left">
                     <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Full Story</FormLabel>
-                    <FormControl className="text-left text-left text-left">
+                    <FormControl className="text-left text-left text-left text-left">
                     <Textarea 
                         placeholder="Detail the greatness of God in this situation..." 
                         className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left text-left text-left" 
