@@ -227,21 +227,6 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-
-          <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 1, duration: 1 }}
-              className="flex flex-col items-center gap-2 px-6"
-            >
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] text-white/40 text-center text-balance max-w-lg">
-                    "Go into all the world and preach the gospel to all creation."
-                </p>
-                <div className="h-px w-12 bg-primary/40" />
-                <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest">Mark 16:15</p>
-            </motion.div>
-          </div>
         </section>
 
         <section className="py-24 relative overflow-hidden bg-background">

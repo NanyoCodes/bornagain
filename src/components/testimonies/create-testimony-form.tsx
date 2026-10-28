@@ -490,7 +490,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             </div>
             <div className="min-w-0 flex-1 text-left">
                 <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Proclaim Victory</h3>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left">Sharing God's manifest power</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Sharing God's manifest power</p>
             </div>
         </div>
 
