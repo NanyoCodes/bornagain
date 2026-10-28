@@ -507,7 +507,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 <div className="flex items-center justify-between px-4 sm:px-0 text-left">
                     <div className="flex items-center gap-2 text-left">
                         <CalendarDays className="h-5 w-5 text-primary text-left" />
-                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">Organized Campaigns</h3>
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Organized Campaigns</h3>
                     </div>
                     <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs text-left">{processedCampaigns.length}</Badge>
                 </div>
@@ -551,19 +551,19 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
       {isOwnProfile && userProfile && (
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-              <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                      <DialogHeader className="text-left p-0 text-left text-left text-left">
-                          <div className="flex items-center gap-2 mb-2 text-left text-left">
-                              <Sparkles className="h-4 w-4 text-primary text-left text-left" />
-                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity settings</span>
+              <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] overflow-hidden p-0 text-left border-none shadow-2xl">
+                  <div className="p-8 border-b shrink-0 bg-muted/10">
+                      <DialogHeader className="text-left p-0">
+                          <div className="flex items-center gap-2 mb-2">
+                              <Sparkles className="h-4 w-4 text-primary" />
+                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity settings</span>
                           </div>
-                          <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">Edit Kingdom Profile</DialogTitle>
-                          <DialogDescription className="text-sm font-medium text-left text-left">Keep your identity current for the harvest workforce.</DialogDescription>
+                          <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Edit Kingdom Profile</DialogTitle>
+                          <DialogDescription className="text-sm font-medium mt-1">Keep your identity current for the harvest workforce.</DialogDescription>
                       </DialogHeader>
                   </div>
-                  <ScrollArea className="flex-1 min-h-0 text-left">
-                      <div className="p-8 text-left">
+                  <ScrollArea className="flex-1 min-h-0">
+                      <div className="p-8">
                         <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
                       </div>
                   </ScrollArea>

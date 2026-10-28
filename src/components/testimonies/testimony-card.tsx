@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from "react";
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { useState, useMemo, useEffect, memo, useRef } from "react";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,24 @@ import {
   Music,
   Mic
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription, 
+  DialogTrigger,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
 import {
   doc, 
@@ -197,7 +215,7 @@ export function getStatusClasses(status: FollowUpStatus | undefined): string {
     }
 }
 
-export const TestimonyCard = React.memo(function TestimonyCard({ 
+export const TestimonyCard = memo(function TestimonyCard({ 
   testimony, 
   onDelete, 
   onEdit,
@@ -221,12 +239,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({
 
   const [isProcessingReaction, setIsProcessingReaction] = useState<string | null>(null);
   const [isRequestingPartner, setIsRequestingPartner] = useState(false);
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const prayerRef = React.useRef<HTMLDivElement>(null);
-  const [isTruncated, setIsTruncated] = React.useState(false);
-  const [isPrayerTruncated, setIsPrayerTruncated] = React.useState(false);
-  const [showFullText, setShowFullText] = React.useState(false);
-  const [showFullPrayer, setShowFullPrayer] = React.useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const prayerRef = useRef<HTMLDivElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+  const [isPrayerTruncated, setIsPrayerTruncated] = useState(false);
+  const [showFullText, setShowFullText] = useState(false);
+  const [showFullPrayer, setShowFullPrayer] = useState(false);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [isBoostOpen, setIsBoostOpen] = useState(false);
 
@@ -234,11 +252,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     setMounted(true);
   }, []);
 
-  // Back button intercept for Detail Drawers
   useEffect(() => {
     if (showFullText || showFullPrayer || isCommentsOpen || isBoostOpen) {
         window.history.pushState({ overlayOpen: testimony.id }, '');
-        const handlePopState = (e: PopStateEvent) => {
+        const handlePopState = () => {
             setShowFullText(false);
             setShowFullPrayer(false);
             setIsCommentsOpen(false);
@@ -251,7 +268,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
 
   const isAuthor = user?.uid === testimony.authorId;
   
-  const authorProfileRef = React.useMemo(() => (!testimony.isAnonymous && testimony.authorId) ? doc(firestore, 'users', testimony.authorId) : null, [firestore, testimony.authorId, testimony.isAnonymous]);
+  const authorProfileRef = useMemo(() => (!testimony.isAnonymous && testimony.authorId) ? doc(firestore, 'users', testimony.authorId) : null, [firestore, testimony.authorId, testimony.isAnonymous]);
   const { data: authorProfile } = useDoc<UserProfile>(authorProfileRef);
 
   const authorFirstName = authorProfile?.firstName || testimony.authorFirstName;
@@ -629,14 +646,14 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left">Answered Prayer</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription></DrawerHeader></div>
                             <ScrollArea className="flex-grow px-8 py-10 text-left text-left text-left text-left">
-                                <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left text-left text-left">
+                                <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left text-left text-left text-left">
                                     {testimony.answeredPrayerContent}
                                 </div>
                             </ScrollArea>
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left">Responses</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription><div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left">Swipe down to close</span></div></DrawerHeader></div><div className="flex-grow min-h-0 text-left text-left text-left text-left text-left"><CommentSection testimonyId={testimony.id} /></div></DrawerContent>
+                        <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left">Responses</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription><div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left">Swipe down to close</span></div></DrawerHeader></div><div className="flex-grow min-h-0 text-left text-left text-left text-left text-left"><CommentSection testimonyId={testimony.id} /></div></DrawerContent>
                     </Drawer>
                 </>
             ) : (
