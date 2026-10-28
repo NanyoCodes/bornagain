@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,7 +33,9 @@ import {
   Square, 
   Timer,
   Target,
-  Music
+  Music,
+  Info,
+  Badge
 } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
@@ -44,7 +45,6 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -249,6 +249,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         let fileToUpload: File | Blob = file;
         const sizeInMb = file.size / (1024 * 1024);
 
+        // Resize/Compress if > 5MB (for images)
         if (isImage && sizeInMb > 5) {
           fileToUpload = await compressImage(file);
         }
