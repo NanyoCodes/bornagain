@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +16,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
 import { 
@@ -42,7 +42,6 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -386,8 +385,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   }
 
   const renderMediaSlot = (slot: 1 | 2, preview: any, setPreview: any, inputRef: React.RefObject<HTMLInputElement | null>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
+      const isAudio = preview?.type === 'audio';
+
       return (
-        <div className="space-y-4 flex-1 text-left">
+        <div className="space-y-4 flex-1 text-left text-left">
             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
                 <Camera className="h-3.5 w-3.5 text-primary text-left" /> Proof {slot} {slot === 2 && "(Optional)"}
             </Label>
@@ -443,7 +444,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     </div>
                 </div>
             ) : (
-                <div className="relative rounded-3xl overflow-hidden border-2 bg-muted aspect-square shadow-inner group text-left">
+                <div className={cn(
+                  "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group text-left",
+                  isAudio ? "h-auto min-h-[100px]" : "aspect-square"
+                )}>
                     {preview.type === 'image' ? (
                         <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-contain text-left" unoptimized />
                     ) : preview.type === 'video' ? (
@@ -451,12 +455,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 p-4 text-left">
                             <div className="relative text-left">
-                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 text-left">
-                                    <Mic className="h-6 w-6 text-primary text-left" />
+                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-left">
+                                    <Mic className="h-5 w-5 text-primary text-left" />
                                 </div>
-                                <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-primary animate-pulse text-left" />
+                                <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse text-left" />
                             </div>
-                            <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-4 text-left">Voice of Thanksgiving</p>
+                            <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-3 text-left">Voice of Thanksgiving</p>
                             <audio src={preview.url} className="w-full text-left" controls />
                         </div>
                     )}
@@ -469,10 +473,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     >
                         <X className="h-3.5 w-3.5 text-left" />
                     </Button>
-                    <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 flex items-center gap-1 text-left">
-                        <CheckCircle2 className="h-2.5 w-2.5 text-green-500 text-left" />
-                        <span className="text-[8px] font-black text-white uppercase tracking-tighter text-left">Ready</span>
-                    </div>
                 </div>
             )}
             <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*,audio/*" onChange={(e) => handleFileSelect(e, slot)} />
