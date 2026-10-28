@@ -421,15 +421,17 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                   ) : preview.type === 'video' ? (
                       <video src={preview.url} className="w-full h-full object-cover bg-zinc-950 text-left" playsInline controls />
                   ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 p-4 text-left">
-                            <div className="relative text-left">
-                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 text-left">
-                                    <Mic className="h-6 w-6 text-primary text-left" />
+                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
+                            <div className="relative shrink-0">
+                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-left">
+                                    <Mic className="h-5 w-5 text-primary text-left" />
                                 </div>
-                                <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-primary animate-pulse text-left" />
+                                <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse text-left" />
                             </div>
-                            <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-4 text-center">Voice of Thanksgiving</p>
-                            <audio src={preview.url} className="w-full text-left" controls />
+                            <div className="min-w-0 flex-1">
+                                <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-4 text-left">Voice of Thanksgiving</p>
+                                <audio src={preview.url} className="w-full text-left" controls />
+                            </div>
                         </div>
                   )}
                   <Button 
@@ -515,9 +517,14 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
         <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
             <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left text-left text-left text-left text-left">
-                <DialogHeader className="sr-only text-left text-left text-left text-left text-left">
-                    <DialogTitle className="text-left text-left text-left text-left text-left">Miracle Recorder</DialogTitle>
-                    <DialogDescription className="text-left text-left text-left text-left text-left">Capture your {recorderMode} proof.</DialogDescription>
+                <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
+                  <div className="flex items-center justify-between gap-4 text-left">
+                    <div className="min-w-0">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</DialogDescription>
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10 text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left" /></Button>
+                  </div>
                 </DialogHeader>
                 
                 {recorderMode === 'video' ? (
@@ -536,7 +543,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                                         {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00
                                     </Badge>
                                 </div>
-                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-black/40 text-white hover:bg-black/60 pointer-events-auto text-left text-left text-left text-left text-left text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left text-left text-left text-left text-left text-left text-left" /></Button>
                             </div>
                             <div className="space-y-4 text-left text-left text-left text-left text-left">
                                 <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left text-left text-left text-left text-left">
@@ -570,7 +576,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                         </div>
                         <div className="flex gap-4 w-full text-left text-left text-left text-left text-left text-left">
                                 {!isRecording ? (<Button onClick={startRecording} className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center text-left text-left text-left text-left text-left text-left"><Mic className="mr-3 h-6 w-6 text-left text-left text-left text-left text-left text-left text-left" /> START</Button>) : (<Button onClick={stopRecording} variant="destructive" className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center text-left text-left text-left text-left text-left text-left"><Square className="mr-3 h-6 w-6 fill-current text-left text-left text-left text-left text-left text-left text-left" /> STOP</Button>)}
-                                <Button variant="outline" onClick={closeRecorder} disabled={isRecording} className="h-16 w-16 rounded-2xl border-zinc-800 text-zinc-400 text-left text-left text-left text-left text-left text-left"><X className="h-6 w-6 text-left text-left text-left text-left text-left text-left text-left" /></Button>
                         </div>
                     </div>
                 )}
@@ -579,4 +584,3 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     </div>
   );
 }
-

@@ -453,14 +453,16 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                         <video src={preview.url} className="w-full h-full object-cover bg-zinc-950 text-left" playsInline controls />
                     ) : (
                         <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
-                            <div className="relative text-left">
+                            <div className="relative shrink-0">
                                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-left">
                                     <Mic className="h-5 w-5 text-primary text-left" />
                                 </div>
                                 <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse text-left" />
                             </div>
-                            <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-3 text-left">Voice of Thanksgiving</p>
-                            <audio src={preview.url} className="w-full text-left" controls />
+                            <div className="min-w-0 flex-1">
+                                <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-3 text-left">Voice of Thanksgiving</p>
+                                <audio src={preview.url} className="w-full text-left" controls />
+                            </div>
                         </div>
                     )}
                     <Button 
@@ -704,4 +706,3 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
-
