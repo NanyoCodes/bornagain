@@ -27,7 +27,8 @@ import {
   ChevronDown,
   TrendingUp,
   Target,
-  Music
+  Music,
+  Mic
 } from "lucide-react";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
 import { useState, useMemo, useEffect } from "react";
@@ -330,22 +331,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({
       <div className="space-y-8 pb-8 px-2 text-left">
         <div className={cn("grid gap-4", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
             {testimony.mediaUrl && (
-              <div className="rounded-[2rem] overflow-hidden border-2 shadow-xl bg-black aspect-square relative">
-                {testimony.mediaType === 'image' ? (
-                    <Image src={testimony.mediaUrl} alt="Proof 1" fill className="object-contain" unoptimized />
-                ) : (
-                    <video src={testimony.mediaUrl} className="w-full h-full object-contain bg-zinc-950" playsInline controls />
-                )}
-              </div>
+              <MediaPreview url={testimony.mediaUrl} type={testimony.mediaType as any} isFull />
             )}
             {testimony.mediaUrl2 && (
-              <div className="rounded-[2rem] overflow-hidden border-2 shadow-xl bg-black aspect-square relative">
-                {testimony.mediaType2 === 'image' ? (
-                    <Image src={testimony.mediaUrl2} alt="Proof 2" fill className="object-contain" unoptimized />
-                ) : (
-                    <video src={testimony.mediaUrl2} className="w-full h-full object-contain bg-zinc-950" playsInline controls />
-                )}
-              </div>
+              <MediaPreview url={testimony.mediaUrl2} type={testimony.mediaType2 as any} isFull />
             )}
         </div>
         <div className="text-base sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium">
@@ -355,17 +344,30 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     </ScrollArea>
   );
 
-  const MediaPreview = ({ url, type }: { url: string, type: 'image' | 'video' | 'audio' }) => {
+  const MediaPreview = ({ url, type, isFull = false }: { url: string, type: 'image' | 'video' | 'audio', isFull?: boolean }) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted aspect-square group/media cursor-pointer">
+                <div className={cn(
+                    "relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted aspect-square group/media cursor-pointer",
+                    isFull && "h-full w-full"
+                )}>
                     {type === 'image' ? (
                         <Image src={url} alt="Proof" fill className="object-cover transition-transform group-hover/media:scale-105" unoptimized />
-                    ) : (
+                    ) : type === 'video' ? (
                         <video src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline autoPlay loop />
+                    ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 p-4 text-center">
+                            <div className="relative">
+                                <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-[0_0_20px_rgba(249,116,22,0.1)]">
+                                    <Mic className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+                                </div>
+                                <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-primary animate-pulse" />
+                            </div>
+                            <p className="mt-3 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-primary/80">Voice of Thanksgiving</p>
+                        </div>
                     )}
-                    <div className="absolute inset-0 bg-black/20 group-hover/media:bg-transparent transition-colors duration-500" />
+                    <div className="absolute inset-0 bg-black/5 group-hover/media:bg-transparent transition-colors duration-500" />
                     <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 opacity-0 group-hover/media:opacity-100 transition-opacity shadow-2xl">
                         <Sparkles className="h-3 w-3 sm:h-4 w-4 text-primary animate-pulse" />
                     </div>
@@ -377,8 +379,26 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                     <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                         {type === 'image' ? (
                             <Image src={url} alt="Proof Full" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
-                        ) : (
+                        ) : type === 'video' ? (
                             <video src={url} className="w-full h-full object-contain" playsInline controls autoPlay />
+                        ) : (
+                            <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl">
+                                <div className="relative text-center">
+                                    <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto">
+                                        <Mic className="h-16 w-16 text-primary" />
+                                    </div>
+                                    <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse" />
+                                </div>
+                                <div className="space-y-2 text-center">
+                                    <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white">Voice Proclamation</h4>
+                                    <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic">A testimony of God's goodness</p>
+                                </div>
+                                <audio src={url} className="w-full" controls autoPlay />
+                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary/60 text-center">
+                                    <HandHeart className="h-3 w-3" />
+                                    Glory to God
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -602,7 +622,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         </div>
                         
                         <div className="p-6 rounded-2xl border bg-muted/20 space-y-4 text-left text-left">
-                            <div className="space-y-1 text-left text-left">
+                            <div className="space-y-1 text-left text-left text-left">
                                 <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest text-left">Estimated Reach</p>
                                 <p className="text-2xl font-black text-primary text-left">5,000+ Believers</p>
                             </div>
@@ -623,13 +643,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <>
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
                         <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left"><DrawerHeader className="text-left p-0"><DrawerTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription></DrawerHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left"><DrawerHeader className="text-left p-0 text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription></DrawerHeader></div>
                             <div className="flex-grow min-h-0 pt-8 px-6 text-left">{fullTextContent}</div>
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left"><DrawerHeader className="text-left p-0"><DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600">Answered Prayer</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">The specific request that God has fulfilled.</DrawerDescription></DrawerHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left"><DrawerHeader className="text-left p-0 text-left"><DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600">Answered Prayer</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">The specific request that God has fulfilled.</DrawerDescription></DrawerHeader></div>
                             <ScrollArea className="flex-grow px-8 py-10 text-left">
                                 <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left">
                                     {testimony.answeredPrayerContent}
@@ -638,18 +658,18 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left p-0"><DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Responses</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">GATHERED JOY FOR {authorName}</DrawerDescription><div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div></DrawerHeader></div><div className="flex-grow min-h-0 text-left"><CommentSection testimonyId={testimony.id} /></div></DrawerContent>
+                        <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left p-0 text-left"><DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Responses</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">GATHERED JOY FOR {authorName}</DrawerDescription><div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div></DrawerHeader></div><div className="flex-grow min-h-0 text-left"><CommentSection testimonyId={testimony.id} /></div></DrawerContent>
                     </Drawer>
                 </>
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={open => { setShowFullText(open); if(!open) setIsCommentsOpen(false); }}>
-                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0 text-left"><div className="p-8 border-b bg-muted/10 text-left"><DrawerHeader className="text-left p-0"><DrawerTitle className="text-3xl font-black font-headline uppercase text-left">Kingdom Testimony</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription></DrawerHeader></div><div className="p-8 text-left">{fullTextContent}</div></DialogContent>
+                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0 text-left"><div className="p-8 border-b bg-muted/10 text-left"><DrawerHeader className="text-left p-0 text-left"><DrawerTitle className="text-3xl font-black font-headline uppercase text-left">Kingdom Testimony</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription></DrawerHeader></div><div className="p-8 text-left">{fullTextContent}</div></DialogContent>
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                              <div className="p-8 border-b bg-amber-500/10 text-left">
-                                <DialogHeader className="text-left p-0">
+                                <DialogHeader className="text-left p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase text-amber-600">Answered Prayer Request</DialogTitle>
                                     <DialogDescription className="text-sm font-medium">The original request shared with the body.</DialogDescription>
                                 </DialogHeader>
@@ -662,7 +682,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         </DialogContent>
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left"><DrawerHeader className="text-left p-0"><DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Gathered Responses</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DrawerDescription></DrawerHeader></div><div className="flex-1 min-h-0 text-left"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left"><DrawerHeader className="text-left p-0 text-left"><DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Gathered Responses</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DrawerDescription></DrawerHeader></div><div className="flex-1 min-h-0 text-left"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
                     </Dialog>
                 </>
             )}

@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Logic correction for UID and resource author - 2025-03-08T15:30:00Z
+    // Deployment trigger: Critical fix for community interactions (Hallelujah/Celebrate) - 2025-03-08T18:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
