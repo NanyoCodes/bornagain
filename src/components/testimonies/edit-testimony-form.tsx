@@ -359,7 +359,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
     return (
       <div className="space-y-4 flex-1 text-left">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
               <Camera className="h-3.5 w-3.5 text-primary" /> Evidence {slot}
           </Label>
           
@@ -367,7 +367,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
               <div className="space-y-3">
                   <div 
                       className={cn(
-                          "border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px]",
+                          "border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left",
                           isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
                       )}
                       onClick={() => inputRef.current?.click()}
@@ -414,7 +414,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
               </div>
           ) : (
               <div className={cn(
-                  "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group",
+                  "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group text-left",
                   isAudio ? "h-auto min-h-[100px]" : "aspect-square"
               )}>
                   {preview.type === 'image' ? (
