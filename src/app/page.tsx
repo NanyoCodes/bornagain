@@ -36,7 +36,9 @@ import {
   Sun,
   Activity,
   HandHeart,
-  Search
+  Search,
+  CheckCircle2,
+  Trophy
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -244,28 +246,39 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Global Inclusivity Section */}
+        {/* Universal Sanctuary Section */}
         <section className="py-24 bg-background border-y border-primary/5">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div className="space-y-8 text-center lg:text-left">
+                    <div className="space-y-10 text-center lg:text-left">
                         <motion.div 
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="space-y-6"
+                            className="space-y-8"
                         >
-                            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto lg:mx-0">
-                                <Users className="h-7 w-7 text-primary" />
+                            <div className="flex flex-col items-center lg:items-start gap-4">
+                                <div className="h-16 w-16 rounded-3xl bg-primary/10 flex items-center justify-center shadow-inner">
+                                    <Users className="h-8 w-8 text-primary" />
+                                </div>
+                                <h2 className="text-3xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-balance">One Body. One Spirit. Many Nations.</h2>
                             </div>
-                            <h2 className="text-3xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-balance">One Body. One Spirit. Many Nations.</h2>
-                            <div className="space-y-4 text-muted-foreground text-lg font-medium leading-relaxed italic text-pretty">
-                                <p>Testify is a sanctuary for <span className="text-foreground font-black underline decoration-primary/30">all believers</span> across the globe, regardless of denomination or tradition.</p>
-                                <p>We welcome unbelievers and seekers alike who want to see and know what God is doing in the world today. This is an invitation to witness the irrefutable evidence of the Living God.</p>
+
+                            <div className="space-y-6 text-muted-foreground text-lg sm:text-xl font-medium leading-relaxed italic text-pretty">
+                                <p className="relative pl-8 border-l-4 border-primary/20">
+                                    Testify is a sanctuary for <span className="text-foreground font-black underline decoration-primary/30">all believers</span> across the globe, regardless of denomination, tradition, or cultural background. We are unified by the blood of the Lamb.
+                                </p>
+                                <p className="relative pl-8 border-l-4 border-indigo-500/20">
+                                    We welcome <span className="text-foreground font-black underline decoration-indigo-500/30">non-christians and seekers</span> alike who desire to see and know what God is doing in the world today. This is an invitation to witness the irrefutable evidence of the Living God.
+                                </p>
                             </div>
-                            <div className="p-6 rounded-[2rem] bg-muted/30 border-2 border-dashed border-primary/20">
-                                <p className="text-xs sm:text-sm font-bold text-primary uppercase tracking-widest leading-loose">
-                                    "This is a call to tell the world about the Greatness of GOD—not just in history, but in our lives right now."
+
+                            <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 relative group overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                                    <Sparkles className="h-20 w-20 text-primary" />
+                                </div>
+                                <p className="text-sm sm:text-lg font-bold text-primary uppercase tracking-[0.1em] leading-relaxed relative z-10">
+                                    "This is a global call to tell the world about the Greatness of GOD—not just in history, but in our lives right now."
                                 </p>
                             </div>
                         </motion.div>
