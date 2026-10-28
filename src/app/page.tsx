@@ -15,21 +15,17 @@ import {
   Globe, 
   Quote,
   Loader2,
-  Instagram,
   ShieldCheck,
   Zap,
   HeartHandshake,
-  Store,
   Gift,
   MapPin,
-  CheckCircle2,
-  BookOpen,
   Utensils,
-  PlusCircle,
-  MessagesSquare,
-  TrendingUp,
-  Heart,
-  ChevronRight
+  BookOpen,
+  Gamepad2,
+  Award,
+  History,
+  Scale
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -41,7 +37,6 @@ import type { Testimony } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
-import NextImage from 'next/image';
 
 const features = [
   {
@@ -51,7 +46,6 @@ const features = [
     color: "text-orange-500",
     bgColor: "bg-orange-500/10",
     link: "/testimonies",
-    imageId: "feature-glory"
   },
   {
     title: "Mission Hub",
@@ -60,7 +54,6 @@ const features = [
     color: "text-emerald-500",
     bgColor: "bg-emerald-500/10",
     link: "/campaigns",
-    imageId: "feature-mission"
   },
   {
     title: "Victory Circles",
@@ -69,7 +62,6 @@ const features = [
     color: "text-indigo-600",
     bgColor: "bg-indigo-600/10",
     link: "/victory-hub",
-    imageId: "feature-victory"
   },
   {
     title: "Provision Hub",
@@ -78,7 +70,6 @@ const features = [
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
     link: "/marketplace",
-    imageId: "feature-provision"
   },
   {
     title: "Kindness Center",
@@ -87,7 +78,6 @@ const features = [
     color: "text-purple-600",
     bgColor: "bg-purple-600/10",
     link: "/marketplace/gifts",
-    imageId: "feature-kindness"
   },
   {
     title: "Daily Disciplines",
@@ -96,7 +86,6 @@ const features = [
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
     link: "/growth",
-    imageId: "feature-disciplines"
   },
   {
     title: "Fellowship Groups",
@@ -105,7 +94,6 @@ const features = [
     color: "text-blue-600",
     bgColor: "bg-blue-600/10",
     link: "/fellowships",
-    imageId: "feature-fellowship"
   },
   {
     title: "Intercession",
@@ -114,7 +102,27 @@ const features = [
     color: "text-rose-500",
     bgColor: "bg-rose-500/10",
     link: "/testimonies?tab=prayers",
-    imageId: "feature-intercession"
+  }
+];
+
+const historicalFacts = [
+  {
+    title: "Ebenezer Stones",
+    description: "Ancient Hebrews established 'stones of help' as physical testimonies to ensure God's interventions were never forgotten by future generations.",
+    icon: History,
+    ref: "1 Samuel 7:12"
+  },
+  {
+    title: "Early Church Growth",
+    description: "The exponential spread of the Gospel in the first century was powered by believers sharing personal accounts of the resurrected Christ.",
+    icon: Globe,
+    ref: "Acts 4:20"
+  },
+  {
+    title: "Gratitude as Power",
+    description: "Science confirms that gratitude rewires the brain, but spiritually, it opens the portals of heaven for more of God's manifest power.",
+    icon: Zap,
+    ref: "Psalm 100:4"
   }
 ];
 
@@ -218,6 +226,46 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Kingdom Arena Section */}
+        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
+                <Gamepad2 className="h-[40rem] w-[40rem] text-primary" />
+            </div>
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div className="space-y-8 text-center lg:text-left">
+                        <div className="space-y-4">
+                            <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1">Kingdom Arena</Badge>
+                            <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter">Sharpen Your Spirit</h2>
+                            <p className="text-zinc-400 text-lg leading-relaxed max-w-md mx-auto lg:mx-0">
+                                Engage in the Word Arena, Prayer Altar, and Kingdom Trivia. Compete with partners and lead your community into interactive biblical challenges.
+                            </p>
+                        </div>
+                        <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest bg-primary text-white shadow-2xl shadow-primary/20">
+                            <Link href="/games">ENTER LOBBY <ChevronRight className="ml-2 h-5 w-5" /></Link>
+                        </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        {[
+                            { label: 'Word Arena', icon: BookOpen, bg: 'bg-indigo-600/20' },
+                            { label: 'Prayer Altar', icon: Flame, bg: 'bg-orange-600/20' },
+                            { label: 'Kingdom Trivia', icon: Gamepad2, bg: 'bg-emerald-600/20' },
+                            { label: 'Match Duels', icon: Users, bg: 'bg-blue-600/20' },
+                        ].map((item, i) => (
+                            <motion.div 
+                                key={i}
+                                whileHover={{ scale: 1.05 }}
+                                className={cn("p-8 rounded-[2rem] border border-white/5 flex flex-col items-center gap-4 text-center", item.bg)}
+                            >
+                                <item.icon className="h-8 w-8 text-primary" />
+                                <span className="font-black uppercase tracking-widest text-[10px]">{item.label}</span>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </section>
+
         {/* Feature Grid - Kingdom Ready Workforce */}
         <section className="py-24 bg-muted/30">
           <div className="max-w-7xl mx-auto px-6">
@@ -239,7 +287,6 @@ export default function LandingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {features.map((feature, i) => {
-                    const featureImage = PlaceHolderImages.find(img => img.id === feature.imageId);
                     return (
                         <motion.div
                             key={i}
@@ -249,31 +296,18 @@ export default function LandingPage() {
                             transition={{ delay: i * 0.1 }}
                         >
                             <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group">
-                                <div className="relative aspect-[4/3] w-full overflow-hidden">
-                                    {featureImage && (
-                                        <NextImage 
-                                            src={featureImage.imageUrl} 
-                                            alt={featureImage.description} 
-                                            fill 
-                                            className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                            unoptimized
-                                            data-ai-hint={featureImage.imageHint}
-                                        />
-                                    )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                                    <div className={cn("absolute top-4 left-4 h-10 w-10 rounded-2xl flex items-center justify-center shadow-xl backdrop-blur-md border border-white/20", feature.bgColor.replace('10', '40'))}>
-                                        <feature.icon className={cn("h-5 w-5", feature.color.replace('500', '200').replace('600', '200'))} />
+                                <CardHeader className="p-8 pb-4">
+                                    <div className={cn("h-14 w-14 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500", feature.bgColor)}>
+                                        <feature.icon className={cn("h-7 w-7", feature.color)} />
                                     </div>
-                                    <div className="absolute bottom-4 left-6 right-6">
-                                        <h3 className="text-xl font-black text-white uppercase tracking-tight leading-tight">{feature.title}</h3>
-                                    </div>
-                                </div>
-                                <CardContent className="p-6 sm:p-8 flex-grow">
+                                    <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-6 group-hover:text-primary transition-colors">{feature.title}</h3>
+                                </CardHeader>
+                                <CardContent className="px-8 pb-8 flex-grow">
                                     <p className="text-muted-foreground text-sm leading-relaxed font-medium">
                                         {feature.description}
                                     </p>
                                 </CardContent>
-                                <CardFooter className="px-6 sm:p-8 pt-0 mt-auto justify-end">
+                                <CardFooter className="px-8 pb-8 pt-0 mt-auto justify-end">
                                     <Button variant="ghost" size="icon" asChild className="rounded-full text-primary hover:bg-primary/5 transition-all group/btn">
                                         <Link href={feature.link}>
                                             <ArrowRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
@@ -286,6 +320,44 @@ export default function LandingPage() {
                 })}
             </div>
           </div>
+        </section>
+
+        {/* Legacy of Testimony Section */}
+        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden">
+            <div className="max-w-7xl mx-auto px-6">
+                <div className="text-center mb-20 space-y-4">
+                    <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter">The Legacy of Proclamation</h2>
+                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto italic">"And they overcame him by the blood of the Lamb and by the word of their testimony..."</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    {historicalFacts.map((fact, i) => (
+                        <div key={i} className="space-y-6 text-center md:text-left">
+                            <div className="h-16 w-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center mx-auto md:mx-0">
+                                <fact.icon className="h-8 w-8 text-primary" />
+                            </div>
+                            <div className="space-y-2">
+                                <h4 className="text-xl font-black uppercase tracking-tight">{fact.title}</h4>
+                                <p className="text-sm text-zinc-400 leading-relaxed font-medium text-balance">{fact.description}</p>
+                                <Badge variant="outline" className="mt-2 border-primary/20 text-primary uppercase font-bold tracking-widest text-[9px]">{fact.ref}</Badge>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-24 p-8 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-6">
+                    <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl">
+                        <Scale className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-black uppercase tracking-tight">Active Virtue in Gratitude</h3>
+                    <p className="text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+                        When we live in gratitude to God, we are naturally empowered to live out our best virtues. Gratitude isn't just a feeling; it's the engine of Kingdom productivity and relational integrity.
+                    </p>
+                    <Button asChild className="rounded-full h-12 px-10 font-black uppercase tracking-widest text-xs">
+                        <Link href="/signup">JOIN THE HARVEST</Link>
+                    </Button>
+                </div>
+            </div>
         </section>
 
         {/* Glory Feed Section */}
@@ -376,10 +448,10 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="bg-muted/50 border-t py-16">
-        <div className="max-w-7xl mx-auto px-8">
+        <div className="max-w-7xl mx-auto px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
                 {logo && (
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={logo.imageUrl} alt="Logo" className="object-cover" />
@@ -387,17 +459,9 @@ export default function LandingPage() {
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm max-sm font-medium leading-relaxed italic text-pretty">
+              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
-              <div className="flex gap-4">
-                <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm">
-                  <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer">
-                    <Instagram className="h-4 w-4" />
-                    <span className="sr-only">Instagram</span>
-                  </Link>
-                </Button>
-              </div>
             </div>
 
             <div className="space-y-4">
