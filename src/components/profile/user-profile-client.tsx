@@ -254,6 +254,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const { city, state, country } = location || {};
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
 
+  const profileLink = isOwnProfile ? "/profile" : `/profile/${userId}`;
+
   return (
     <div className="space-y-6 sm:space-y-10 max-w-6xl mx-auto px-4 pb-20 text-left">
         <div className="flex items-center justify-between text-left">
@@ -313,8 +315,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             
             <div className="flex-1 min-w-0 space-y-6 w-full text-center lg:text-left text-left">
                 <div className="space-y-4 text-center lg:text-left text-left">
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 text-center lg:text-left text-left">
-                        <div className="min-w-0 space-y-3 text-center lg:text-left text-left">
+                    <div className="flex flex-col items-center lg:items-start justify-between gap-6 text-center lg:text-left text-left">
+                        <div className="min-w-0 space-y-3 text-center lg:text-left text-left w-full">
                             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-headline tracking-tight leading-tight uppercase text-balance break-words text-center lg:text-left">{displayName}</h1>
                             <div className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium text-left">
                                 {(city || state || country) && (
@@ -360,7 +362,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                                         disabled={isRequestingPartner}
                                     >
                                         {isRequestingPartner ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <UserPlus className="mr-2 h-4 w-4 text-left" />}
-                               connect Partner
+                                        CONNECT PARTNER
                                     </Button>
                                 )}
                             </div>
