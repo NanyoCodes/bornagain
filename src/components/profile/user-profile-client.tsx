@@ -349,7 +349,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                                 {workStatus && (
                                     <div className="flex items-center gap-1.5">
                                         <Briefcase className="h-3.5 w-3.5 text-primary" />
-                                        <span className="truncate max-w-[200px] sm:max-w-none">
+                                        <span className="font-bold uppercase tracking-tight text-balance">
                                             {roleInOrganization && `${roleInOrganization}${organizationName ? ' @ ' : ''}`}
                                             {organizationName || workStatus}
                                         </span>
@@ -553,13 +553,13 @@ export default function UserProfileClient({ userId }: { userId: string }) {
           <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
               <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                   <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                      <DialogHeader className="text-left p-0 text-left">
-                          <div className="flex items-center gap-2 mb-2 text-left">
-                              <Sparkles className="h-4 w-4 text-primary text-left" />
-                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity settings</span>
+                      <DialogHeader className="text-left p-0 text-left text-left text-left">
+                          <div className="flex items-center gap-2 mb-2 text-left text-left">
+                              <Sparkles className="h-4 w-4 text-primary text-left text-left" />
+                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity settings</span>
                           </div>
-                          <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Edit Kingdom Profile</DialogTitle>
-                          <DialogDescription className="text-sm font-medium text-left">Keep your identity current for the harvest workforce.</DialogDescription>
+                          <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">Edit Kingdom Profile</DialogTitle>
+                          <DialogDescription className="text-sm font-medium text-left text-left">Keep your identity current for the harvest workforce.</DialogDescription>
                       </DialogHeader>
                   </div>
                   <ScrollArea className="flex-1 min-h-0 text-left">

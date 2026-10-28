@@ -116,11 +116,12 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   });
 
   const getSupportedMimeType = (mode: 'video' | 'audio') => {
+    if (typeof MediaRecorder === 'undefined') return '';
     const types = mode === 'video' 
         ? ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
         : ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/wav'];
     for (const type of types) {
-        if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type)) return type;
+        if (MediaRecorder.isTypeSupported(type)) return type;
     }
     return mode === 'video' ? 'video/webm' : 'audio/webm';
   };
@@ -517,11 +518,17 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
         <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
             <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left text-left text-left text-left text-left">
+                <div className="sr-only">
+                    <DialogHeader>
+                        <DialogTitle>Miracle Recorder</DialogTitle>
+                        <DialogDescription>Capture live proof of God's goodness.</DialogDescription>
+                    </DialogHeader>
+                </div>
                 <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
                   <div className="flex items-center justify-between gap-4 text-left">
                     <div className="min-w-0">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</DialogDescription>
+                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</div>
+                        <p className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</p>
                     </div>
                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10 text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left" /></Button>
                   </div>
@@ -557,13 +564,13 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 ) : (
                     <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10 text-left text-left text-left text-left text-left">
                         <div className="relative text-left text-left text-left text-left text-left">
-                                <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.1)] text-left text-left text-left text-left text-left">
+                                <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] text-left text-left text-left text-left text-left">
                                     <Mic className={cn("h-16 w-16 text-primary transition-all text-left text-left text-left text-left text-left", isRecording && "scale-110")} />
                                 </div>
                                 {isRecording && (<div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20 text-left text-left text-left text-left text-left text-left" />)}
                         </div>
                         <div className="space-y-4 w-full text-left text-left text-left text-left text-left">
-                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left text-left text-left text-left text-left">Voice of Thanksgiving</h3>
+                            <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left text-left text-left text-left text-left">Voice of Thanksgiving</div>
                             <div className="flex items-center justify-center gap-3 text-left text-left text-left text-left text-left">
                                 {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse text-left text-left text-left text-left text-left" />}
                                 <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums text-left text-left text-left text-left text-left">

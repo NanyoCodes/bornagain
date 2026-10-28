@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for UID identification and community engagement logic - 2025-03-10T14:30:00Z
+    // Deployment trigger: Fixed UID verification for community interactions and deletions - 2025-03-10T16:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;

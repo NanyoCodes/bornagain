@@ -121,16 +121,17 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   }, [prayerRequest, campaign, form]);
 
   const getSupportedMimeType = (mode: 'video' | 'audio') => {
+    if (typeof MediaRecorder === 'undefined') return '';
     if (mode === 'audio') {
         const audioTypes = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm', 'audio/wav'];
         for (const type of audioTypes) {
-            if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type)) return type;
+            if (MediaRecorder.isTypeSupported(type)) return type;
         }
         return 'audio/webm';
     }
     const videoTypes = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
     for (const type of videoTypes) {
-        if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type)) return type;
+        if (MediaRecorder.isTypeSupported(type)) return type;
     }
     return 'video/webm';
   };
@@ -488,7 +489,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
                 <Newspaper className="h-5 w-5 text-primary text-left" />
             </div>
-            <div className="min-w-0 flex-1 text-left">
+            <div className="min-w-0 flex-1 text-left text-left">
                 <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Proclaim Victory</h3>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Sharing God's manifest power</p>
             </div>
@@ -581,11 +582,17 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
       <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
           <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left">
+              <div className="sr-only">
+                  <DialogHeader>
+                      <DialogTitle>Miracle Recorder</DialogTitle>
+                      <DialogDescription>Capture live proof of God's goodness.</DialogDescription>
+                  </DialogHeader>
+              </div>
               <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
                   <div className="flex items-center justify-between gap-4 text-left">
                     <div className="min-w-0">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</DialogDescription>
+                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</div>
+                        <p className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</p>
                     </div>
                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10 text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left" /></Button>
                   </div>
@@ -658,7 +665,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                        </div>
 
                        <div className="space-y-4 w-full text-left">
-                           <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left">Voice of Thanksgiving</h3>
+                           <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left">Voice of Thanksgiving</div>
                            <p className="text-zinc-500 text-sm font-medium text-center text-left">Record your vocal proclamation (max 2 minutes).</p>
                            
                            <div className="flex items-center justify-center gap-3 text-left text-left">
