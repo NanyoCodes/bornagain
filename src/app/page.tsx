@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Newspaper, 
   Target, 
@@ -55,7 +56,7 @@ import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 const features = [
   {
     title: "Glory Feed",
-    description: "Share real-time miracles. Your testimony is a weapon against the enemy. No cap.",
+    description: "Share real time miracles. Your testimony is a weapon against the enemy. No cap.",
     icon: Newspaper,
     color: "text-orange-500",
     bgColor: "bg-orange-500/10",
@@ -63,7 +64,7 @@ const features = [
   },
   {
     title: "Mission Ops",
-    description: "Launch evangelism campaigns. Coordinate your squad in the field with real-time tracking.",
+    description: "Launch evangelism campaigns. Coordinate your squad in the field with real time tracking.",
     icon: Target,
     color: "text-emerald-500",
     bgColor: "bg-emerald-500/10",
@@ -71,7 +72,7 @@ const features = [
   },
   {
     title: "Victory Circles",
-    description: "Find community-driven solutions for spiritual breakthroughs. Overcome strongholds together.",
+    description: "Find community driven solutions for spiritual breakthroughs. Overcome strongholds together.",
     icon: ShieldCheck,
     color: "text-indigo-600",
     bgColor: "bg-indigo-600/10",
@@ -103,7 +104,7 @@ const features = [
   },
   {
     title: "The Alliance",
-    description: "Partner with believers for high-fidelity growth and shared spiritual history.",
+    description: "Partner with believers for high fidelity growth and shared spiritual history.",
     icon: HeartHandshake,
     color: "text-blue-600",
     bgColor: "bg-blue-600/10",
@@ -122,13 +123,13 @@ const features = [
 const historicalFacts = [
   {
     title: "Ebenezer Protocol",
-    description: "Ancient believers established 'stones of help'—physical testimonies to ensure miracles were never forgotten.",
+    description: "Ancient believers established stones of help—physical testimonies to ensure miracles were never forgotten.",
     icon: History,
     ref: "1 Samuel 7:12"
   },
   {
     title: "Viral Gospel",
-    description: "The 1st-century church exploded because regular people shared their lived evidence of Christ.",
+    description: "The 1st century church exploded because regular people shared their lived evidence of Christ.",
     icon: Globe,
     ref: "Acts 4:20"
   },
@@ -266,7 +267,7 @@ export default function LandingPage() {
                                 <span className="text-primary">Just God.</span>
                             </h2>
                             <p className="text-lg sm:text-xl text-muted-foreground font-medium leading-relaxed italic border-l-4 border-primary/20 pl-6">
-                                We're not here for the tradition—we're here for the Transformation. Testify is the open-access hub for every believer, from every corner of the planet. 
+                                We're not here for the tradition—we're here for the Transformation. Testify is the open access hub for every believer, from every corner of the planet. 
                             </p>
                         </motion.div>
 
@@ -277,7 +278,7 @@ export default function LandingPage() {
                                     Vibe Check: Inclusive
                                 </h3>
                                 <p className="text-muted-foreground leading-relaxed font-medium text-pretty">
-                                    Whether you're a lifelong believer or a curious seeker, if you want to see <span className="text-foreground font-bold">real proof</span> of God's power in 2025, you're in. This is an invitation to witness the most compelling evidence on earth.
+                                    Whether you're a lifelong believer or a curious seeker, if you want to see <span className="text-foreground font-bold">real proof</span> of God's power in 2025, you're in. This is an invitation to witness the irrefutable evidence of the Living God.
                                 </p>
                             </div>
 
@@ -287,7 +288,7 @@ export default function LandingPage() {
                                 </div>
                                 <div className="space-y-1">
                                     <p className="font-black uppercase text-sm tracking-tight">Radical Unity</p>
-                                    <p className="text-xs text-muted-foreground font-medium leading-relaxed">Breaking silos. Building the Body. Glorifying the King.</p>
+                                    <p className="text-xs text-muted-foreground font-medium leading-relaxed">Breaking silos. Building the Body. Telling the world about the Greatness of GOD.</p>
                                 </div>
                             </div>
                         </div>
@@ -339,7 +340,7 @@ export default function LandingPage() {
                             </p>
                         </div>
                         <div className="flex items-center justify-center lg:justify-start gap-4">
-                             <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/20 bg-primary text-white hover:bg-primary/90">
+                             <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90">
                                 <Link href="/signup">JOIN THE ARENA <ChevronRight className="ml-2 h-5 w-5" /></Link>
                             </Button>
                         </div>
@@ -365,7 +366,7 @@ export default function LandingPage() {
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Main Mission: Proclaim</span>
               </motion.div>
               <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance">The Laborer Toolkit</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium italic">
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium italic text-center">
                 Advanced tech for the ancient mission. Organize the harvest with intentionality.
               </p>
             </div>
@@ -515,10 +516,10 @@ export default function LandingPage() {
           
           <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
             <div className="max-w-3xl mx-auto space-y-8">
-              <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance">
+              <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance text-center">
                 The Harvest is Plentiful. Ready to Labor?
               </h2>
-              <p className="text-lg sm:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty">
+              <p className="text-lg sm:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-center">
                 Join thousands of believers who are using technology to fulfill the mission of Jesus Christ. 
                 Record miracles, reach cities, and track the greatness of God.
               </p>
@@ -545,8 +546,8 @@ export default function LandingPage() {
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-w-sm">
-                Testify is the open-access hub for believers to share the greatness of Jesus Christ, who gave his life to reconcile the world to God.
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-w-sm text-left">
+                Testify is the open access hub for believers to share the greatness of Jesus Christ, who gave his life to reconcile the world to God.
               </p>
             </div>
 
