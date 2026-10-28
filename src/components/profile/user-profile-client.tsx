@@ -271,8 +271,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const { city, state, country } = location || {};
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
 
-  const profileLink = isAuthor ? "/profile" : `/profile/${testimony.authorId}`;
-
   return (
     <div className="space-y-6 sm:space-y-10 max-w-6xl mx-auto px-0 sm:px-4 pb-20">
         <div className="flex items-center justify-between px-4 sm:px-0">
@@ -467,7 +465,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 shrink-0">
                     <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                 </div>
-                <h2 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">Kingdom Activity</h2>
+                <h2 className="text-2xl font-black font-headline tracking-tight uppercase">Kingdom Activity</h2>
             </div>
             <div className="h-px bg-muted flex-grow hidden sm:block mx-8" />
             <Badge variant="outline" className="h-8 px-4 font-black uppercase tracking-[0.2em] border-primary/20 text-primary bg-primary/5 text-[10px]">Mobilizer Dashboard</Badge>

@@ -238,7 +238,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     const isAudio = file.type.startsWith('audio/');
 
     if (!isImage && !isVideo && !isAudio) {
-      toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select an image, video, or audio file.' });
+      toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please select an image, video, or audio file.' });
       return;
     }
 
