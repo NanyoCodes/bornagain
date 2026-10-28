@@ -175,9 +175,9 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative text-center">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b">
+      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b text-left">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             {logo && (
               <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20">
                 <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
@@ -254,7 +254,7 @@ export default function LandingPage() {
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="space-y-6 max-w-4xl"
+                        className="space-y-8 max-w-4xl"
                     >
                         <Badge className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
                             THE GLOBAL SANCTUARY
@@ -263,25 +263,22 @@ export default function LandingPage() {
                             No Gatekeeping.<br/>
                             <span className="text-primary">Just God.</span>
                         </h2>
-                        <p className="text-lg sm:text-xl text-muted-foreground font-medium leading-relaxed italic border-x-4 border-primary/20 px-8 text-center">
-                            We are not here for the tradition we are here for the Transformation. Testify is the open access hub for every believer, from every corner of the planet. 
-                        </p>
-                        <p className="text-sm sm:text-base text-zinc-500 font-bold uppercase tracking-widest text-center">
-                            One Body. One Spirit. Many Nations.
-                        </p>
-                    </motion.div>
-
-                    <div className="max-w-2xl mx-auto space-y-8">
-                        <div className="group relative p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 transition-all hover:bg-muted/40">
-                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center justify-center gap-3 mb-4 text-center">
-                                <Sparkles className="h-6 w-6 text-primary" />
-                                Vibe Check: Inclusive
-                            </h3>
-                            <p className="text-muted-foreground leading-relaxed font-medium text-pretty text-center">
-                                Testify is a sanctuary for all believers regardless of denomination or tradition. We welcome non christians and seekers alike who want to see and know what God is doing in the world today. This is an invitation to witness the irrefutable evidence of the Living God.
+                        <div className="space-y-6">
+                            <p className="text-lg sm:text-2xl text-muted-foreground font-medium leading-relaxed italic border-x-4 border-primary/20 px-8 text-center text-balance">
+                                We are not here for tradition we are here for transformation. Testify is the open access hub for every believer. 
+                                We offer men true success through spiritual authority and professional integrity. We celebrate the radiant beauty of women walking in divine restoration. We ignite the limitless dreams of children through a destiny anchored in Christ.
                             </p>
                         </div>
-                    </div>
+                        <div className="group relative p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 transition-all hover:bg-muted/40 max-w-2xl mx-auto">
+                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center justify-center gap-3 mb-4 text-center">
+                                <Sparkles className="h-6 w-6 text-primary" />
+                                Vibe Check: Authentic
+                            </h3>
+                            <p className="text-muted-foreground leading-relaxed font-medium text-pretty text-center">
+                                In this digital age your testimony is the ultimate currency. We welcome non christians and seekers alike who want to see real proof of God moving in our lives today. We must grow this Kingdom network together to proclaim His greatness to the ends of the earth.
+                            </p>
+                        </div>
+                    </motion.div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
                         {stats.map((stat, i) => (
@@ -291,8 +288,7 @@ export default function LandingPage() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: i * 0.1 }}
                                 className={cn(
-                                    "p-8 rounded-[2.5rem] bg-card border shadow-xl flex flex-col items-center justify-center group hover:border-primary/40 transition-all h-[220px]",
-                                    i === 0 && "lg:col-span-1"
+                                    "p-8 rounded-[2.5rem] bg-card border shadow-xl flex flex-col items-center justify-center group hover:border-primary/40 transition-all h-[220px]"
                                 )}
                             >
                                 <div className="space-y-4 text-center">
@@ -317,7 +313,7 @@ export default function LandingPage() {
             </div>
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="flex flex-col items-center gap-12">
-                    <div className="space-y-8 max-w-3xl">
+                    <div className="space-y-8 max-w-3xl mx-auto">
                         <div className="space-y-4">
                             <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto">Kingdom Arena</Badge>
                             <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center">Exercise Your Spirit</h2>
@@ -329,7 +325,7 @@ export default function LandingPage() {
                             <Link href="/signup">JOIN THE ARENA <ChevronRight className="ml-2 h-4 w-4" /></Link>
                         </Button>
                     </div>
-                    <div className="w-full max-w-2xl mx-auto">
+                    <div className="w-full max-w-2xl mx-auto text-left">
                          <BibleGameCard />
                     </div>
                 </div>
@@ -423,7 +419,7 @@ export default function LandingPage() {
                     <div className="space-y-4 relative z-10">
                         <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-center">Main Character Energy: Gratitude</h3>
                         <p className="text-zinc-400 max-w-2xl mx-auto text-sm sm:text-lg leading-relaxed font-medium italic text-pretty text-center">
-                            When we live in gratitude to God, we are naturally empowered to live out our best virtues. Gratitude is not just a feeling it is the engine of Kingdom productivity and relational integrity.
+                            When we live in gratitude to God we are naturally empowered to live out our best virtues. Gratitude is not just a feeling it is the engine of Kingdom productivity and relational integrity.
                         </p>
                     </div>
                     <Button asChild size="lg" className="rounded-full h-14 px-12 font-black uppercase tracking-widest text-xs relative z-10 shadow-xl bg-white text-primary hover:bg-zinc-100 mx-auto">
@@ -433,7 +429,7 @@ export default function LandingPage() {
             </div>
         </section>
 
-        {/* Glory Feed Section */}
+        {/* Hero Testimony Stream */}
         <section className="py-24 relative overflow-hidden bg-background text-center">
           <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary" />
           
@@ -523,7 +519,7 @@ export default function LandingPage() {
       <footer className="bg-muted/50 border-t py-20 text-center sm:text-left">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16">
-            <div className="col-span-1 sm:col-span-2 space-y-8 text-center sm:text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-8 text-center sm:text-left text-left">
               <Link href="/" className="flex items-center justify-center sm:justify-start gap-2 hover:opacity-80 transition-opacity">
                 {logo && (
                   <Avatar className="h-14 w-14 border-2 border-primary/20">
@@ -537,7 +533,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="space-y-6 text-center sm:text-left">
+            <div className="space-y-6 text-center sm:text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Platform</h4>
               <ul className="space-y-4">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Testimonies</Link></li>
@@ -547,7 +543,7 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div className="space-y-6 text-center sm:text-left">
+            <div className="space-y-6 text-center sm:text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Ministry</h4>
               <ul className="space-y-4">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Our Story</Link></li>
@@ -560,7 +556,7 @@ export default function LandingPage() {
             </div>
           </div>
           
-          <div className="h-px w-full bg-muted opacity-50 mb-10" />
+          <div className="h-px w-full bg-muted opacity-50 mb-10 text-left" />
           
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-center">
             <p className="text-center md:text-left uppercase">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>
