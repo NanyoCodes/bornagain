@@ -20,7 +20,7 @@ export default function AboutPage() {
             <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Heart className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-4xl font-black font-headline uppercase tracking-tight">Testify Global</h1>
+            <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase tracking-tight">Testify Global</h1>
             <p className="text-muted-foreground italic font-medium">The #1 App to care for family, friends, souls and the Kingdom.</p>
         </header>
 
@@ -42,7 +42,7 @@ export default function AboutPage() {
 
         <section className="space-y-4">
             <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><Award className="h-5 w-5 text-primary" /> The Ebenezer of Care</h2>
-            <Card className="border-l-4 border-l-primary rounded-2xl bg-primary/5">
+            <Card className="border-l-4 border-l-primary rounded-2xl bg-primary/5 shadow-none border-none">
                 <CardContent className="pt-6 italic text-muted-foreground leading-relaxed font-medium">
                     "I believe that the greatest move of God in our time will be marked by a return to genuine care. Testify was birthed to ensure that when a soul is won, they are nurtured. It is the platform for the laborer who loves—the one who cares enough to follow up, to pray, and to support their brethren as they walk into the light. This is our offering to the King." - by Nanyo Theophilus
                 </CardContent>
@@ -50,7 +50,7 @@ export default function AboutPage() {
         </section>
 
         <section className="grid gap-6 sm:grid-cols-2">
-            <Card className="rounded-2xl">
+            <Card className="rounded-2xl shadow-none">
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2 font-black uppercase"><ShieldCheck className="h-4 w-4 text-primary" /> Safe Sanctuary</CardTitle>
                 </CardHeader>
@@ -58,7 +58,7 @@ export default function AboutPage() {
                     To maintain an edifying environment, all content is screened for faith alignment and compassion. We strictly prohibit hate speech, ensuring the platform remains a safe space to care for others.
                 </CardContent>
             </Card>
-            <Card className="rounded-2xl">
+            <Card className="rounded-2xl shadow-none">
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2 font-black uppercase"><Zap className="h-4 w-4 text-primary" /> Active Following</CardTitle>
                 </CardHeader>

@@ -432,7 +432,7 @@ export default function LandingPage() {
                 <div className="space-y-6 text-center lg:text-left">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left">Witness the Care</h2>
-                  <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-w-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-center lg:text-left">
+                  <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-w-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-center lg:text-left text-center lg:text-left">
                     Read how believers are looking after their harvest and following up on those they love with miracles.
                   </p>
                 </div>
@@ -444,7 +444,7 @@ export default function LandingPage() {
 
               <div className="space-y-6 text-left">
                 {loadingTestimonies ? (
-                  <div className="flex justify-center"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
+                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
                 ) : testimonies?.map((t, idx) => (
                   <motion.div 
                     key={t.id}
@@ -452,17 +452,18 @@ export default function LandingPage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
+                    className="text-left"
                   >
-                    <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden">
+                    <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left">
                       <CardContent className="p-8 flex gap-6 text-left">
                         <Quote className="h-10 w-10 text-primary opacity-20 shrink-0 mt-1" />
-                        <div className="min-w-0 flex-1">
+                        <div className="min-w-0 flex-1 text-left">
                           <p className="text-sm sm:text-lg italic text-muted-foreground line-clamp-3 leading-relaxed mb-6 font-medium text-left">
                             "{t.content}"
                           </p>
                           <div className="flex items-center gap-4 text-left">
-                            <Avatar className="h-11 w-11 border-2 border-background shadow-md shrink-0">
-                              <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary font-black uppercase text-center flex items-center justify-center h-full w-full">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
+                            <Avatar className="h-11 w-11 border-2 border-background shadow-md shrink-0 text-left">
+                              <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary font-black uppercase text-center flex items-center justify-center h-full w-full"> {t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex-1 text-left">
                               <p className="text-[11px] font-black uppercase tracking-tight truncate text-left">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>

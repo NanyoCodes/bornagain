@@ -268,7 +268,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${file.name}`);
-        const uploadResult = await uploadBytes(fileRef, fileToUpload, { contentType: file.type });
+        const uploadResult = await uploadBytes(fileRef, fileToUpload, { contentType: fileToUpload.type || file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
         const type = isImage ? 'image' : isVideo ? 'video' : 'audio';
@@ -475,9 +475,9 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             render={({ field }) => (
                 <FormItem className="text-left">
                 <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
-                      <SelectTrigger className="h-12 rounded-2xl border-2">
+                      <SelectTrigger className="h-12 rounded-2xl border-2 text-left">
                         <SelectValue placeholder="What is the nature of this miracle?" />
                       </SelectTrigger>
                     </FormControl>
@@ -518,13 +518,13 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
             <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-center" disabled={isSubmitting || isUploadingMedia !== null}>
                 {isSubmitting ? (
-                    <div className="flex items-center gap-3">
-                        <Loader2 className="h-6 w-6 animate-spin" />
+                    <div className="flex items-center justify-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin text-left" />
                         <span>SAVING...</span>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-3">
-                        <Sparkles className="h-6 w-6" />
+                    <div className="flex items-center justify-center gap-3">
+                        <Sparkles className="h-6 w-6 text-left" />
                         <span>SAVE CHANGES</span>
                     </div>
                 )}
@@ -571,7 +571,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                                     <motion.div className="h-full bg-primary text-left" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
                                 </div>
                                 <div className="flex justify-center pointer-events-auto text-left">
-                                    {!isRecording ? (<Button onClick={startRecording} size="lg" className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left"><div className="h-8 w-8 rounded-full bg-white shadow-inner text-left" /></Button>) : (<Button onClick={stopRecording} size="lg" className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left"><Square className="h-8 w-8 fill-current text-left" /></Button>)}
+                                    {!isRecording ? (<Button onClick={startRecording} size="lg" className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-center"><div className="h-8 w-8 rounded-full bg-white shadow-inner text-left" /></Button>) : (<Button onClick={stopRecording} size="lg" className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-center"><Square className="h-8 w-8 fill-current text-left" /></Button>)}
                                 </div>
                             </div>
                         </div>

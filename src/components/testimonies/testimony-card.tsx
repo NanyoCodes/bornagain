@@ -49,6 +49,11 @@ import {
   DialogFooter,
   DialogClose
 } from "@/components/ui/dialog";
+import { 
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription
+} from "@/components/ui/drawer";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
 import {
   doc, 
@@ -71,7 +76,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentSection } from "./comment-section";
 import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { MutualConnectBadge } from "./mutual-connect-badge";
@@ -689,7 +694,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Gathered Responses</DialogTitle>
-                                    <DialogDescription className="text-sm font-bold uppercase tracking-widest">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription>
+                                    <DialogDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <div className="flex-1 min-h-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">

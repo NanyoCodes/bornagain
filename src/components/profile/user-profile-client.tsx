@@ -410,7 +410,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     <Youtube className="h-8 w-8 sm:h-10 sm:w-10 text-red-600 text-left" />
                     Living Testimonies
                 </CardTitle>
-                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl mx-auto md:mx-0 text-left">
+                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl mx-auto md:mx-0 text-left text-left">
                     Witness the manifest power of God through these captured moments of miracle and glory.
                 </CardDescription>
             </CardHeader>
@@ -426,7 +426,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                                     allowFullScreen
                                     className="absolute inset-0 w-full h-full border-0 text-left"
                                 />
-                                <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity text-left">
+                                <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity text-left text-left">
                                     <Badge className="bg-red-600 text-white font-black text-[10px] tracking-widest uppercase border-none text-left">YOUTUBE</Badge>
                                 </div>
                             </div>
@@ -542,7 +542,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity settings</span>
                           </div>
                           <DrawerTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Edit Kingdom Profile</DrawerTitle>
-                          <DrawerDescription className="text-sm font-medium mt-1 text-left">Keep your identity current for the harvest workforce.</DrawerDescription>
+                          <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Keep your identity current for the harvest workforce.</DrawerDescription>
                       </DrawerHeader>
                   </div>
                   <ScrollArea className="flex-1 min-h-0 text-left">
