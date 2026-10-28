@@ -534,19 +534,19 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
       {isOwnProfile && userProfile && (
           <Drawer open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-              <DrawerContent className="h-[95dvh] flex flex-col p-0 overflow-hidden rounded-t-[2.5rem] border-none shadow-2xl text-left text-left text-left">
-                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                      <DrawerHeader className="text-left p-0 text-left text-left text-left">
-                          <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                              <Sparkles className="h-4 w-4 text-primary text-left text-left text-left" />
-                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity settings</span>
+              <DrawerContent className="h-[95dvh] flex flex-col p-0 overflow-hidden rounded-t-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left">
+                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                      <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
+                          <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                              <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity settings</span>
                           </div>
-                          <DrawerTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">Edit Kingdom Profile</DrawerTitle>
-                          <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Keep your identity current for the harvest workforce.</DrawerDescription>
+                          <DrawerTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left text-left">Edit Kingdom Profile</DrawerTitle>
+                          <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Keep your identity current for the harvest workforce.</DrawerDescription>
                       </DrawerHeader>
                   </div>
-                  <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
-                      <div className="p-5 sm:p-10 text-left text-left text-left">
+                  <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left">
+                      <div className="p-5 sm:p-10 text-left text-left text-left text-left">
                         <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
                       </div>
                   </ScrollArea>
