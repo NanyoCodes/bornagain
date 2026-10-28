@@ -208,7 +208,7 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
                   PROCLAIMING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
                   <span className="text-primary text-xl sm:text-2xl md:text-3xl block mt-4 uppercase"> The App to care for family, friends, souls, and the Kingdom.</span>
                 </h1>
@@ -401,9 +401,11 @@ export default function LandingPage() {
                             True spiritual success is measured by the depth of your care. Testify makes it easy to stay present in the lives of your family and friends, ensuring they grow deep in the Word and established in the Kingdom.
                         </p>
                     </div>
-                    <Button asChild size="lg" className="rounded-full h-12 px-12 font-black uppercase tracking-widest text-[10px] relative z-10 shadow-xl bg-white text-primary hover:bg-zinc-100 mx-auto block text-center">
-                        <Link href="/signup">JOIN THE MISSION OF LOVE</Link>
-                    </Button>
+                    <div className="flex justify-center relative z-10">
+                        <Button asChild size="lg" className="rounded-full h-12 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all text-center">
+                            <Link href="/signup">JOIN THE MISSION OF LOVE</Link>
+                        </Button>
+                    </div>
                 </div>
             </div>
         </section>

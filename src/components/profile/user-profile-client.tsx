@@ -200,12 +200,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     }
   };
 
-  const triggerAction = (action: () => void) => {
-    requestAnimationFrame(() => {
-        action();
-    });
-  };
-
   const loading = profileLoading || testimoniesLoading || campaignsLoading || userLoading;
   
   const videoTestimoniesList = useMemo(() => {

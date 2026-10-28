@@ -453,7 +453,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       <video src={preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls />
                   ) : (
                       <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
-                          <div className="relative shrink-0 text-left">
+                          <div className="relative shrink-0 text-left text-left">
                               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-left">
                                   <Mic className="h-5 w-5 text-primary text-left" />
                               </div>
@@ -611,7 +611,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                           <div className="flex justify-between items-start text-left">
                               <div className="flex items-center gap-3 text-left">
                                   {isRecording && (
-                                      <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left">
+                                      <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left text-left">
                                           <div className="h-2 w-2 rounded-full bg-white text-left" />
                                           <span className="text-[10px] font-black text-white uppercase tracking-widest text-left">REC</span>
                                       </div>
@@ -663,7 +663,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                             )}
                        </div>
 
-                       <div className="space-y-4 w-full text-left">
+                       <div className="space-y-4 w-full text-left text-left">
                            <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left">Voice of Thanksgiving</div>
                            <p className="text-zinc-500 text-sm font-medium text-center text-left">Record your vocal proclamation (max 2 minutes).</p>
                            

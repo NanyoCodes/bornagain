@@ -611,24 +611,24 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
                         <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/20 text-left">
-                                <div className="p-0">
+                                <div className="p-0 text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline">Kingdom Testimony</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest">BY {authorName} • {displayDate}</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription>
                                 </div>
                             </div>
-                            <div className="flex-grow min-h-0 pt-8 px-6">{fullTextContent}</div>
+                            <div className="flex-grow min-h-0 pt-8 px-6 text-left">{fullTextContent}</div>
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left">
-                                <div className="p-0">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1">The specific request that God has fulfilled.</DrawerDescription>
+                                <div className="p-0 text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">The specific request that God has fulfilled.</DrawerDescription>
                                 </div>
                             </div>
                             <ScrollArea className="flex-grow px-8 py-10">
-                                <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic">
+                                <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left">
                                     {testimony.answeredPrayerContent}
                                 </div>
                             </ScrollArea>
@@ -636,14 +636,14 @@ export const TestimonyCard = memo(function TestimonyCard({
                     </Drawer>
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
                         <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <div className="p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase">Responses</DrawerTitle>
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Responses</DrawerTitle>
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
                                     <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
                                 </div>
                             </div>
-                            <div className="flex-grow min-h-0">{isCommentsOpen && <CommentSection testimonyId={testimony.id} />}</div>
+                            <div className="flex-grow min-h-0 text-left">{isCommentsOpen && <CommentSection testimonyId={testimony.id} />}</div>
                         </DrawerContent>
                     </Drawer>
                 </>
@@ -657,18 +657,18 @@ export const TestimonyCard = memo(function TestimonyCard({
                                     <DialogDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DialogDescription>
                                 </div>
                             </div>
-                            <div className="p-8">{fullTextContent}</div>
+                            <div className="p-8 text-left">{fullTextContent}</div>
                         </DialogContent>
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                             <div className="p-8 border-b bg-amber-500/10 text-left">
-                                <div className="p-0">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase text-amber-600"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer Request</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1">The original request shared with the body.</DialogDescription>
+                             <div className="p-8 border-b bg-amber-500/10 text-left text-left">
+                                <div className="p-0 text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer Request</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">The original request shared with the body.</DialogDescription>
                                 </div>
                             </div>
-                            <div className="p-8 text-left">
+                            <div className="p-8 text-left text-left">
                                 <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left">
                                     {testimony.answeredPrayerContent}
                                 </div>
@@ -677,13 +677,13 @@ export const TestimonyCard = memo(function TestimonyCard({
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
                         <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <div className="p-0">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase">Gathered Responses</DialogTitle>
-                                    <DialogDescription className="text-sm font-bold uppercase tracking-widest">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription>
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                                <div className="p-0 text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Gathered Responses</DialogTitle>
+                                    <DialogDescription className="text-sm font-bold uppercase tracking-widest text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription>
                                 </div>
                             </div>
-                            <div className="flex-1 min-h-0">{isCommentsOpen && <CommentSection testimonyId={testimony.id} />}</div>
+                            <div className="flex-1 min-h-0 text-left">{isCommentsOpen && <CommentSection testimonyId={testimony.id} />}</div>
                         </DialogContent>
                     </Dialog>
                 </>
