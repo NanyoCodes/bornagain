@@ -245,8 +245,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <Globe className="h-10 w-10 text-muted-foreground/30" />
         </div>
         <div className="space-y-2">
-            <h3 className="text-2xl font-bold font-headline text-center">Profile Not Found</h3>
-            <p className="text-sm text-muted-foreground max-w-xs mx-auto text-center">This profile might have been set to private or the believer has moved to a new station.</p>
+            <h3 className="text-2xl font-bold font-headline text-center text-balance">Profile Not Found</h3>
+            <p className="text-sm text-muted-foreground max-w-xs mx-auto text-center text-balance">This profile might have been set to private or the believer has moved to a new station.</p>
         </div>
         <Button variant="outline" onClick={() => router.back()} className="h-11 px-8 rounded-full mx-auto block font-bold">
             <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
@@ -272,8 +272,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
 
   return (
-    <div className="space-y-6 sm:space-y-10 max-w-6xl mx-auto px-0 sm:px-4 pb-20">
-        <div className="flex items-center justify-between px-4 sm:px-0">
+    <div className="space-y-6 sm:space-y-10 max-w-6xl mx-auto px-4 pb-20">
+        <div className="flex items-center justify-between">
             <Button variant="ghost" size="sm" onClick={() => router.back()} className="h-9 px-0 text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="mr-2 h-4 w-4"/>
                 Back
@@ -292,14 +292,14 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </div>
       
       <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-none shadow-2xl bg-gradient-to-br from-background via-background to-primary/5">
-        <CardContent className="p-5 sm:p-12 lg:p-16 relative z-20">
+        <CardContent className="p-6 sm:p-12 lg:p-16 relative z-20">
           <div className="flex flex-col lg:flex-row items-center lg:items-start text-center lg:text-left gap-8 lg:gap-16">
-            <div className="relative shrink-0">
+            <div className="relative shrink-0 flex justify-center w-full lg:w-auto">
               <Dialog>
                 <DialogTrigger asChild disabled={!photoURL}>
                   <div className="relative group shrink-0">
                       <Avatar className={cn(
-                          "h-28 w-28 sm:h-48 sm:w-48 lg:h-64 lg:w-64 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-500", 
+                          "h-32 w-32 sm:h-48 sm:w-48 lg:h-64 lg:w-64 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-500", 
                           photoURL && "cursor-pointer hover:scale-105 active:scale-95 ring-2 ring-primary/10"
                       )}>
                       <AvatarImage src={photoURL ?? undefined} alt={displayName || 'believer'} className="object-cover" />
@@ -328,12 +328,12 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               </Dialog>
             </div>
             
-            <div className="flex-1 min-w-0 space-y-6 w-full text-center lg:text-left">
+            <div className="flex-1 min-w-0 space-y-6 w-full">
                 <div className="space-y-4">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                        <div className="min-w-0 space-y-2 text-left">
+                        <div className="min-w-0 space-y-2">
                             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-headline tracking-tight leading-tight uppercase text-balance break-words">{displayName}</h1>
-                            <div className="flex flex-wrap justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
+                            <div className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
                                 {(city || state || country) && (
                                     <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider">
                                         <MapPin className="h-4 w-4" /> 
@@ -385,7 +385,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     </div>
 
                     {personalMessage && (
-                        <div className="bg-primary/10 p-4 sm:p-8 rounded-2xl sm:rounded-[2.5rem] border-2 border-dashed border-primary/20 inline-flex items-start lg:items-center gap-4 text-left group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 w-full">
+                        <div className="bg-primary/10 p-5 sm:p-8 rounded-[2rem] border-2 border-dashed border-primary/20 inline-flex items-start lg:items-center gap-4 text-left group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 w-full">
                             <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0 mt-1 lg:mt-0 transition-transform group-hover:scale-110" />
                             <p className="text-base sm:text-xl lg:text-2xl font-black text-foreground leading-tight italic tracking-tight text-balance break-words">
                                 &ldquo;{personalMessage}&rdquo;
@@ -407,8 +407,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     </div>
                 </div>
 
-                <div className="pt-4 lg:max-w-2xl">
-                    <div className="relative pl-6 border-l-4 border-primary/20 text-left">
+                <div className="pt-4 lg:max-w-2xl text-left">
+                    <div className="relative pl-6 border-l-4 border-primary/20">
                         <Quote className="absolute -top-1 -left-2 h-6 w-6 text-primary/10" />
                         <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed italic font-medium text-balance break-words">
                             {bio ? bio : "This believer is a dedicated member of the global Kingdom workforce, committed to sharing the goodness of Jesus Christ with the nations."}
@@ -507,7 +507,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 <div className="flex items-center justify-between px-4 sm:px-0">
                     <div className="flex items-center gap-2">
                         <CalendarDays className="h-5 w-5 text-primary" />
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight">Organized Campaigns</h3>
+                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">Organized Campaigns</h3>
                     </div>
                     <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs">{processedCampaigns.length}</Badge>
                 </div>
