@@ -24,11 +24,9 @@ import {
   FileUp, 
   Video, 
   Mic, 
-  PlusCircle, 
   CheckCircle2, 
   Square,
-  Sparkles,
-  Music
+  Sparkles
 } from "lucide-react";
 import { Testimony, TestimonyCategory } from "@/lib/types";
 import { useFirestore, useUser, useStorage } from "@/firebase";
@@ -84,7 +82,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     testimony.mediaUrl2 ? { url: testimony.mediaUrl2, type: testimony.mediaType2 as any } : null
   );
 
-  // Unified Recorder State
   const [isRecorderOpen, setIsRecorderOpen] = useState(false);
   const [recorderMode, setRecorderMode] = useState<'video' | 'audio'>('video');
   const [activeSlot, setActiveSlot] = useState<1 | 2>(1);
@@ -96,7 +93,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const videoPreviewRef = useRef<HTMLVideoElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   
-  const MAX_RECORDING_SECONDS = 120; // 2 minutes limit
+  const MAX_RECORDING_SECONDS = 120; 
 
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
@@ -116,6 +113,16 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       mediaType2: testimony.mediaType2 || null,
     },
   });
+
+  const getSupportedMimeType = (mode: 'video' | 'audio') => {
+    const types = mode === 'video' 
+        ? ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
+        : ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/wav'];
+    for (const type of types) {
+        if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type)) return type;
+    }
+    return mode === 'video' ? 'video/webm' : 'audio/webm';
+  };
 
   const startRecorder = async (slot: 1 | 2, mode: 'video' | 'audio') => {
       setActiveSlot(slot);
@@ -137,7 +144,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             }, 100);
           }
       } catch (err) {
-          console.error("Media access error:", err);
           toast({ variant: 'destructive', title: 'Access Blocked', description: `Please enable ${mode} permissions to record live.` });
       }
   };
@@ -156,7 +162,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const startRecording = () => {
       if (!stream) return;
       chunksRef.current = [];
-      const mimeType = recorderMode === 'video' ? 'video/webm;codecs=vp8,opus' : 'audio/webm;codecs=opus';
+      const mimeType = getSupportedMimeType(recorderMode);
       
       const recorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
@@ -166,10 +172,10 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       };
 
       recorder.onstop = async () => {
-          const type = recorderMode === 'video' ? 'video/mp4' : 'audio/mpeg';
-          const extension = recorderMode === 'video' ? 'mp4' : 'mp3';
-          const blob = new Blob(chunksRef.current, { type });
-          const file = new File([blob], `recorded_testimony_edit_${Date.now()}.${extension}`, { type });
+          const finalMimeType = getSupportedMimeType(recorderMode);
+          const extension = finalMimeType.split('/')[1].split(';')[0];
+          const blob = new Blob(chunksRef.current, { type: finalMimeType });
+          const file = new File([blob], `recorded_testimony_edit_${Date.now()}.${extension}`, { type: finalMimeType });
           await handleUploadProcessedFile(file, activeSlot, recorderMode);
           closeRecorder();
       };
@@ -377,7 +383,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                       )}
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2 text-left text-left">
+                  <div className="grid grid-cols-2 gap-2 text-left text-left text-left">
                         <Button 
                             type="button" 
                             variant="outline" 
@@ -424,10 +430,10 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                       type="button" 
                       variant="destructive" 
                       size="icon" 
-                      className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-left text-left" 
+                      className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity text-left text-left text-left" 
                       onClick={() => { setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}
                   >
-                      <X className="h-3.5 w-3.5 text-left text-left" />
+                      <X className="h-3.5 w-3.5 text-left text-left text-left" />
                   </Button>
               </div>
           )}
@@ -448,10 +454,10 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl className="text-left">
-                    <SelectTrigger className="h-12 rounded-2xl border-2 text-left text-left"><SelectValue className="text-left" /></SelectTrigger>
+                    <SelectTrigger className="h-12 rounded-2xl border-2 text-left text-left text-left"><SelectValue className="text-left" /></SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded-2xl text-left text-left">
-                    {testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl text-left text-left">{cat}</SelectItem>)}
+                    <SelectContent className="rounded-2xl text-left text-left text-left">
+                    {testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl text-left text-left text-left">{cat}</SelectItem>)}
                     </SelectContent>
                 </Select>
                 <FormMessage className="text-left" />
@@ -465,7 +471,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <FormItem className="text-left">
                 <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Your Testimony</FormLabel>
                 <FormControl className="text-left">
-                    <Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed text-left text-left" {...field} />
+                    <Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed text-left text-left text-left" {...field} />
                 </FormControl>
                 <FormMessage className="text-left" />
                 </FormItem>
@@ -495,7 +501,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         </form>
         </Form>
 
-        {/* Media Recorder Overlay */}
         <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
             <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left">
                 <DialogHeader className="sr-only text-left">
@@ -562,4 +567,3 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     </div>
   );
 }
-

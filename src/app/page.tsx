@@ -174,7 +174,6 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative text-center">
-      {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b text-left">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
@@ -197,7 +196,6 @@ export default function LandingPage() {
       </nav>
 
       <main className="flex-grow pt-16">
-        {/* Hero Section */}
         <section className="relative h-[85vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-zinc-950">
           <div className="absolute inset-0 z-0">
              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-zinc-950 to-zinc-950" />
@@ -245,7 +243,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Universal Sanctuary Section */}
         <section className="py-24 relative overflow-hidden bg-background">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.05),transparent_40%)]" />
             <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
@@ -306,7 +303,6 @@ export default function LandingPage() {
             </div>
         </section>
 
-        {/* Kingdom Arena Section */}
         <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-center">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
                 <Gamepad2 className="h-[40rem] w-[40rem] text-primary" />
@@ -332,7 +328,6 @@ export default function LandingPage() {
             </div>
         </section>
 
-        {/* Feature Grid */}
         <section className="py-24 bg-muted/30 text-center">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-20 space-y-4">
@@ -388,7 +383,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Legacy of Testimony Section */}
         <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-center">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-20 space-y-4">
@@ -429,7 +423,6 @@ export default function LandingPage() {
             </div>
         </section>
 
-        {/* Hero Testimony Stream */}
         <section className="py-24 relative overflow-hidden bg-background text-center">
           <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary" />
           
@@ -486,7 +479,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* CTA Section */}
         <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden text-center">
           <div className="absolute inset-0 opacity-10 pointer-events-none">
             <div className="absolute inset-0 grid grid-cols-6 gap-8 rotate-12 -translate-y-1/4">
@@ -506,7 +498,7 @@ export default function LandingPage() {
                 Record miracles, reach cities, and track the greatness of God.
               </p>
               <div className="flex justify-center pt-4">
-                <Button asChild size="lg" className="h-16 px-14 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto">
+                <Button asChild size="lg" className="h-16 px-14 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto text-center">
                   <Link href="/signup">START TESTIFYING <ArrowRight className="ml-3 h-6 w-6" /></Link>
                 </Button>
               </div>
@@ -515,7 +507,6 @@ export default function LandingPage() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="bg-muted/50 border-t py-20 text-center sm:text-left">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16">
