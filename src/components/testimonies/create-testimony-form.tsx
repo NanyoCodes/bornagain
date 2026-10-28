@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,8 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect, useRef } from "react";
-import { Loader2, Camera, X, FileUp, Sparkles, Newspaper, HandHeart, CheckCircle2 } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Loader2, Camera, Video, X, FileUp, Sparkles, Newspaper, HandHeart, CheckCircle2, Mic, Play, Square, Timer } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
@@ -26,6 +27,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -68,6 +70,19 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const [mediaPreview1, setMediaPreview1] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
   const [mediaPreview2, setMediaPreview2] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
   
+  // Recorder State
+  const [isRecorderOpen, setIsRecorderOpen] = useState(false);
+  const [activeSlot, setActiveSlot] = useState<1 | 2>(1);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const videoPreviewRef = useRef<HTMLVideoElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const MAX_RECORDING_SECONDS = 120; // 2 minutes limit
+
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
   
@@ -90,6 +105,100 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       form.reset({ category: 'Salvation', content: "" });
     }
   }, [prayerRequest, campaign, form]);
+
+  const startCamera = async (slot: 1 | 2) => {
+      setActiveSlot(slot);
+      try {
+          const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+              video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, 
+              audio: true 
+          });
+          setStream(mediaStream);
+          setIsRecorderOpen(true);
+          if (videoPreviewRef.current) {
+              videoPreviewRef.current.srcObject = mediaStream;
+          }
+      } catch (err) {
+          console.error("Camera access error:", err);
+          toast({ variant: 'destructive', title: 'Camera Blocked', description: 'Please enable camera and microphone permissions to record live.' });
+      }
+  };
+
+  const closeRecorder = () => {
+      if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+      }
+      setStream(null);
+      setIsRecording(false);
+      setRecordingTime(0);
+      setIsRecorderOpen(false);
+      if (timerRef.current) clearInterval(timerRef.current);
+  };
+
+  const startRecording = () => {
+      if (!stream) return;
+      chunksRef.current = [];
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8,opus' });
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+          const blob = new Blob(chunksRef.current, { type: 'video/mp4' });
+          const file = new File([blob], `recorded_testimony_${Date.now()}.mp4`, { type: 'video/mp4' });
+          await handleUploadProcessedFile(file, activeSlot);
+          closeRecorder();
+      };
+
+      recorder.start();
+      setIsRecording(true);
+      
+      timerRef.current = setInterval(() => {
+          setRecordingTime(prev => {
+              if (prev >= MAX_RECORDING_SECONDS - 1) {
+                  stopRecording();
+                  return MAX_RECORDING_SECONDS;
+              }
+              return prev + 1;
+          });
+      }, 1000);
+  };
+
+  const stopRecording = () => {
+      if (mediaRecorderRef.current && isRecording) {
+          mediaRecorderRef.current.stop();
+          setIsRecording(false);
+          if (timerRef.current) clearInterval(timerRef.current);
+      }
+  };
+
+  const handleUploadProcessedFile = async (file: File | Blob, slot: 1 | 2) => {
+    if (!user || !storage) return;
+    setIsUploadingMedia(slot);
+    try {
+        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded.mp4'}`);
+        const uploadResult = await uploadBytes(fileRef, file);
+        const url = await getDownloadURL(uploadResult.ref);
+
+        const type = 'video';
+        if (slot === 1) {
+            setMediaPreview1({ url, type });
+            form.setValue('mediaUrl', url);
+            form.setValue('mediaType', type);
+        } else {
+            setMediaPreview2({ url, type });
+            form.setValue('mediaUrl2', url);
+            form.setValue('mediaType2', type);
+        }
+        toast({ title: 'Miracle Captured', description: `Proof ${slot} has been successfully recorded.` });
+    } catch (err) {
+        toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not save the recording.' });
+    } finally {
+        setIsUploadingMedia(null);
+    }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, slot: 1 | 2) => {
     const file = e.target.files?.[0];
@@ -242,26 +351,39 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             </Label>
             
             {!preview ? (
-                <div 
-                    className={cn(
-                        "border-2 border-solid rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[120px]",
-                        isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
-                    )}
-                    onClick={() => inputRef.current?.click()}
-                >
-                    {isUploadingMedia === slot ? (
-                        <div className="flex flex-col items-center gap-2">
-                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                            <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                                <FileUp className="h-3.5 w-3.5 sm:h-4 w-4 text-primary" />
+                <div className="space-y-2">
+                    <div 
+                        className={cn(
+                            "border-2 border-solid rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[120px]",
+                            isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
+                        )}
+                        onClick={() => inputRef.current?.click()}
+                    >
+                        {isUploadingMedia === slot ? (
+                            <div className="flex flex-col items-center gap-2">
+                                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                                <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
                             </div>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select Evidence</p>
-                        </>
-                    )}
+                        ) : (
+                            <>
+                                <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                    <FileUp className="h-3.5 w-3.5 sm:h-4 w-4 text-primary" />
+                                </div>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select Evidence</p>
+                            </>
+                        )}
+                    </div>
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full h-10 rounded-xl font-black uppercase text-[9px] tracking-widest border-primary/20 text-primary hover:bg-primary/5"
+                        onClick={() => startCamera(slot)}
+                        disabled={isUploadingMedia !== null}
+                    >
+                        <Video className="mr-1.5 h-3.5 w-3.5" />
+                        RECORD MIRACLE
+                    </Button>
                 </div>
             ) : (
                 <div className="relative rounded-2xl overflow-hidden border-2 bg-muted aspect-square shadow-inner">
@@ -384,6 +506,76 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           </div>
         </form>
       </Form>
+
+      {/* Video Recorder Overlay */}
+      <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
+          <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black">
+              <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden">
+                  <video 
+                    ref={videoPreviewRef} 
+                    autoPlay 
+                    muted 
+                    playsInline 
+                    className="w-full h-full object-cover mirror scale-x-[-1]"
+                  />
+                  
+                  {/* Recording UI Overlay */}
+                  <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none">
+                      <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-3">
+                              {isRecording && (
+                                  <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg">
+                                      <div className="h-2 w-2 rounded-full bg-white" />
+                                      <span className="text-[10px] font-black text-white uppercase tracking-widest">REC</span>
+                                  </div>
+                              )}
+                              <Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px]">
+                                  {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00
+                              </Badge>
+                          </div>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-10 w-10 rounded-full bg-black/40 text-white hover:bg-black/60 pointer-events-auto" 
+                            onClick={closeRecorder}
+                          >
+                              <X className="h-5 w-5" />
+                          </Button>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                            <motion.div 
+                                className="h-full bg-primary"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }}
+                            />
+                        </div>
+                        <div className="flex justify-center pointer-events-auto">
+                            {!isRecording ? (
+                                <Button 
+                                    onClick={startRecording}
+                                    size="lg"
+                                    className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95"
+                                >
+                                    <div className="h-8 w-8 rounded-full bg-white shadow-inner" />
+                                </Button>
+                            ) : (
+                                <Button 
+                                    onClick={stopRecording}
+                                    size="lg"
+                                    className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95"
+                                >
+                                    <Square className="h-8 w-8 fill-current" />
+                                </Button>
+                            )}
+                        </div>
+                      </div>
+                  </div>
+              </div>
+          </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
