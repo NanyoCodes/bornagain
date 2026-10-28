@@ -359,7 +359,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
     return (
       <div className="space-y-4 flex-1 text-left">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
               <Camera className="h-3.5 w-3.5 text-primary" /> Evidence {slot}
           </Label>
           
@@ -429,7 +429,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                                 </div>
                                 <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" />
                             </div>
-                            <div className="min-w-0 flex-1 text-left">
+                            <div className="min-w-0 flex-1">
                                 <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-4">Voice of Thanksgiving</p>
                                 <audio src={preview.url} className="w-full" controls />
                             </div>

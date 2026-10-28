@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical logic sync for community interactions and deletions - 2025-03-10T18:00:00Z
+    // Deployment trigger: Universal UID logic fix for reactions and community interactions - 2025-03-12T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
