@@ -142,7 +142,7 @@ export function BibleGameCard() {
                     )}
                 </AnimatePresence>
             </CardContent>
-            <CardFooter className="p-3 bg-black/40 text-center justify-center"><p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">Faith • Power • Truth</p></CardFooter>
+            <CardFooter className="p-3 bg-black/40 text-center justify-center"><p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center text-left text-left text-left">Faith • Power • Truth</p></CardFooter>
         </Card>
     );
 }

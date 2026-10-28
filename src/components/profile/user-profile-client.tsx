@@ -405,16 +405,16 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       
       {videoTestimoniesList.length > 0 && (
         <Card className="rounded-none sm:rounded-[3rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950 text-left">
-            <CardHeader className="pb-6 pt-10 px-5 sm:px-12 text-center md:text-left text-left">
+            <CardHeader className="pb-6 pt-10 px-5 sm:px-12 text-center md:text-left text-left text-left">
                 <CardTitle className="flex items-center justify-center md:justify-start gap-3 sm:gap-4 text-2xl sm:text-4xl font-black font-headline text-white tracking-tight uppercase text-left">
                     <Youtube className="h-8 w-8 sm:h-10 sm:w-10 text-red-600 text-left" />
                     Living Testimonies
                 </CardTitle>
-                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl mx-auto md:mx-0 text-left text-left">
+                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl mx-auto md:mx-0 text-left text-left text-left">
                     Witness the manifest power of God through these captured moments of miracle and glory.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="px-4 sm:px-12 pb-12 sm:pb-16 text-left">
+            <CardContent className="px-4 sm:px-12 pb-12 sm:pb-16 text-left text-left">
                 <div className="flex flex-col gap-8 sm:gap-12 text-left">
                     {videoTestimoniesList.map((video, idx) => (
                         <div key={idx} className="space-y-4 text-left">
@@ -426,7 +426,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                                     allowFullScreen
                                     className="absolute inset-0 w-full h-full border-0 text-left"
                                 />
-                                <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity text-left text-left">
+                                <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity text-left text-left text-left">
                                     <Badge className="bg-red-600 text-white font-black text-[10px] tracking-widest uppercase border-none text-left">YOUTUBE</Badge>
                                 </div>
                             </div>
@@ -442,8 +442,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </Card>
       )}
 
-      <div className="space-y-12 text-left">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-0 text-left">
+      <div className="space-y-12 text-left text-left">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-0 text-left text-left text-left">
             <div className="flex items-center gap-3 text-left">
                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 shrink-0 text-left">
                     <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground text-left" />
@@ -465,7 +465,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </div>
                 
                 {testimonies.length > 0 ? (
-                    <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto text-left">
+                    <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto text-left text-left">
                         {testimonies.map(testimony => (
                             <TestimonyCard 
                                 key={testimony.id} 
@@ -479,7 +479,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left">
+                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left">
                         <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left" />
                         <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left">This folder is currently empty. No shared testimonies recorded.</p>
                     </div>
@@ -488,9 +488,9 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
             <div className="space-y-8 text-left">
                 <div className="flex items-center justify-between px-4 sm:px-0 text-left">
-                    <div className="flex items-center gap-2 text-left">
+                    <div className="flex items-center gap-2 text-left text-left">
                         <CalendarDays className="h-5 w-5 text-primary text-left" />
-                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">Organized Campaigns</h3>
+                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Organized Campaigns</h3>
                     </div>
                     <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs text-left">{processedCampaigns.length}</Badge>
                 </div>
@@ -536,13 +536,13 @@ export default function UserProfileClient({ userId }: { userId: string }) {
           <Drawer open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
               <DrawerContent className="h-[95dvh] flex flex-col p-0 overflow-hidden rounded-t-[2.5rem] border-none shadow-2xl text-left">
                   <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                      <DrawerHeader className="text-left p-0 text-left text-left">
-                          <div className="flex items-center gap-2 mb-2 text-left text-left">
-                              <Sparkles className="h-4 w-4 text-primary text-left text-left" />
-                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity settings</span>
+                      <DrawerHeader className="text-left p-0 text-left">
+                          <div className="flex items-center gap-2 mb-2 text-left">
+                              <Sparkles className="h-4 w-4 text-primary text-left" />
+                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity settings</span>
                           </div>
-                          <DrawerTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">Edit Kingdom Profile</DrawerTitle>
-                          <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Keep your identity current for the harvest workforce.</DrawerDescription>
+                          <DrawerTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Edit Kingdom Profile</DrawerTitle>
+                          <DrawerDescription className="text-sm font-medium mt-1 text-left">Keep your identity current for the harvest workforce.</DrawerDescription>
                       </DrawerHeader>
                   </div>
                   <ScrollArea className="flex-1 min-h-0 text-left">
