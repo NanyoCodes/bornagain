@@ -116,8 +116,22 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const getSupportedMimeType = (mode: 'video' | 'audio') => {
     if (typeof MediaRecorder === 'undefined') return '';
     const types = mode === 'video' 
-        ? ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
-        : ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/wav'];
+        ? [
+            'video/mp4',
+            'video/webm;codecs=vp9,opus',
+            'video/webm;codecs=vp8,opus',
+            'video/webm',
+            'video/quicktime'
+          ]
+        : [
+            'audio/mp4',
+            'audio/aac',
+            'audio/mpeg',
+            'audio/webm;codecs=opus',
+            'audio/webm',
+            'audio/wav'
+          ];
+          
     for (const type of types) {
         if (MediaRecorder.isTypeSupported(type)) return type;
     }
@@ -236,7 +250,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     const isAudio = file.type.startsWith('audio/');
 
     if (!isImage && !isVideo && !isAudio) {
-      toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please select an image, video, or audio file.' });
+      toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select an image, video, or audio file.' });
       return;
     }
 

@@ -1,9 +1,8 @@
-// ... existing imports
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useDoc, useUser, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/lib/types';
 import {
   Dialog,
@@ -233,7 +232,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <p className="text-sm text-muted-foreground max-w-xs mx-auto text-center text-balance text-left">This profile might have been set to private or the believer has moved to a new station.</p>
         </div>
         <Button variant="outline" onClick={() => router.back()} className="h-11 px-8 rounded-full mx-auto block font-bold text-left text-left">
-            <ArrowLeft className="mr-2 h-4 w-4 text-left" /> Go Back
+            <ArrowLeft className="mr-2 h-4 w-4 text-left text-left" /> Go Back
         </Button>
       </div>
     );
@@ -369,7 +368,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     </div>
 
                     {personalMessage && (
-                        <div className="bg-primary/10 p-4 sm:p-8 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-primary/20 inline-flex items-start lg:items-center gap-4 text-left group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 w-full text-left text-left">
+                        <div className="bg-primary/10 p-4 sm:p-8 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-primary/20 inline-flex items-start lg:items-center gap-4 text-left group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 w-full text-left text-left text-left">
                             <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0 mt-1 lg:mt-0 transition-transform group-hover:scale-110 text-left text-left" />
                             <p className="text-base sm:text-xl lg:text-2xl font-black text-foreground leading-tight italic tracking-tight text-balance break-words text-left text-left">
                                 &ldquo;{personalMessage}&rdquo;
@@ -445,7 +444,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
       <div className="space-y-12 text-left text-left">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-0 text-left text-left">
-            <div className="flex items-center gap-3 text-left text-left">
+            <div className="flex items-center gap-3 text-left text-left text-left">
                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 shrink-0 text-left text-left">
                     <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground text-left text-left" />
                 </div>
@@ -458,7 +457,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         <div className="space-y-16 text-left text-left">
             <div className="space-y-8 text-left text-left">
                 <div className="flex items-center justify-between px-4 sm:px-0 text-left text-left">
-                    <div className="flex items-center gap-2 text-left text-left">
+                    <div className="flex items-center gap-2 text-left text-left text-left">
                         <Sparkles className="h-5 w-5 text-primary text-left text-left" />
                         <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Shared Testimonies</h3>
                     </div>
@@ -489,7 +488,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
             <div className="space-y-8 text-left text-left">
                 <div className="flex items-center justify-between px-4 sm:px-0 text-left text-left text-left">
-                    <div className="flex items-center gap-2 text-left text-left text-left">
+                    <div className="flex items-center gap-2 text-left text-left text-left text-left">
                         <CalendarDays className="h-5 w-5 text-primary text-left text-left text-left" />
                         <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Organized Campaigns</h3>
                     </div>
