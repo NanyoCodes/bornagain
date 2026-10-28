@@ -122,16 +122,14 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             'video/mp4',
             'video/webm;codecs=vp9,opus',
             'video/webm;codecs=vp8,opus',
-            'video/webm',
-            'video/quicktime'
+            'video/webm'
           ]
         : [
             'audio/mp4',
             'audio/aac',
             'audio/mpeg',
             'audio/webm;codecs=opus',
-            'audio/webm',
-            'audio/wav'
+            'audio/webm'
           ];
           
     for (const type of types) {
@@ -223,6 +221,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
+        // Explicitly set contentType metadata for correct playback on mobile devices
         const uploadResult = await uploadBytes(fileRef, file, { contentType: file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -273,13 +272,13 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
         const type = isImage ? 'image' : isVideo ? 'video' : 'audio';
         if (slot === 1) {
-            setMediaPreview1({ url, type });
+            setMediaPreview1({ url, type: type as any });
             form.setValue('mediaUrl', url);
-            form.setValue('mediaType', type);
+            form.setValue('mediaType', type as any);
         } else {
-            setMediaPreview2({ url, type });
+            setMediaPreview2({ url, type: type as any });
             form.setValue('mediaUrl2', url);
-            form.setValue('mediaType2', type);
+            form.setValue('mediaType2', type as any);
         }
         
         toast({ title: 'Evidence Updated', description: `Proof ${slot} has been successfully replaced.` });
@@ -441,7 +440,13 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-left">
                                     <Mic className="h-5 w-5 text-primary text-left" />
                                 </div>
-                                <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" />
+                                <motion.div 
+                                    className="absolute -top-1 -right-1"
+                                    animate={{ opacity: [0.4, 1, 0.4] }}
+                                    transition={{ repeat: Infinity, duration: 2 }}
+                                >
+                                    <Sparkles className="h-3 w-3 text-primary" />
+                                </motion.div>
                             </div>
                             <div className="min-w-0 flex-1 text-left">
                                 <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-4">Voice of Thanksgiving</p>
@@ -476,7 +481,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <FormItem className="text-left">
                 <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                    <FormControl>
+                    <FormControl className="text-left">
                       <SelectTrigger className="h-12 rounded-2xl border-2 text-left">
                         <SelectValue placeholder="What is the nature of this miracle?" />
                       </SelectTrigger>
@@ -570,7 +575,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                                 <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left">
                                     <motion.div className="h-full bg-primary text-left" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
                                 </div>
-                                <div className="flex justify-center pointer-events-auto text-left">
+                                <div className="flex justify-center pointer-events-auto text-left text-center">
                                     {!isRecording ? (<Button onClick={startRecording} size="lg" className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-center"><div className="h-8 w-8 rounded-full bg-white shadow-inner text-left" /></Button>) : (<Button onClick={stopRecording} size="lg" className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-center"><Square className="h-8 w-8 fill-current text-left" /></Button>)}
                                 </div>
                             </div>
@@ -585,8 +590,8 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                                 {isRecording && (<div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20 text-left" />)}
                         </div>
                         <div className="space-y-4 w-full text-left">
-                            <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left">Voice of Thanksgiving</div>
-                            <div className="flex items-center justify-center gap-3 text-left text-left">
+                            <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center">Voice of Thanksgiving</div>
+                            <div className="flex items-center justify-center gap-3 text-left">
                                 {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse text-left" />}
                                 <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums text-left">
                                         {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}

@@ -16,29 +16,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
-import { 
-  Loader2, 
-  Camera, 
-  Video, 
-  X, 
-  FileUp, 
-  Sparkles, 
-  Newspaper, 
-  HandHeart, 
-  Mic, 
-  Square, 
-  Target,
-  Info
-} from "lucide-react";
+import { Loader2, Camera, Video, X, FileUp, Sparkles, Mic, Square, Info } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Image from "next/image";
@@ -128,16 +114,14 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             'video/mp4',
             'video/webm;codecs=vp9,opus',
             'video/webm;codecs=vp8,opus',
-            'video/webm',
-            'video/quicktime'
+            'video/webm'
           ]
         : [
             'audio/mp4',
             'audio/aac',
             'audio/mpeg',
             'audio/webm;codecs=opus',
-            'audio/webm',
-            'audio/wav'
+            'audio/webm'
           ];
           
     for (const type of types) {
@@ -230,7 +214,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
-        // Crucial: Set contentType explicitly for mobile browser compatibility
+        // Explicitly set contentType metadata for correct playback on mobile devices
         const uploadResult = await uploadBytes(fileRef, file, { contentType: file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -243,9 +227,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             form.setValue('mediaUrl2', url);
             form.setValue('mediaType2', type as any);
         }
-        toast({ title: 'Miracle Captured', description: `Proof ${slot} has been successfully recorded.` });
+        toast({ title: 'Proof Captured', description: `Evidence for slot ${slot} has been optimized.` });
     } catch (err) {
-        toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not save the recording.' });
+        console.error("Upload error:", err);
+        toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not transmit media to Kingdom Storage.' });
     } finally {
         setIsUploadingMedia(null);
     }
@@ -281,13 +266,13 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
         const type = isImage ? 'image' : isVideo ? 'video' : 'audio';
         if (slot === 1) {
-            setMediaPreview1({ url, type });
+            setMediaPreview1({ url, type: type as any });
             form.setValue('mediaUrl', url);
-            form.setValue('mediaType', type);
+            form.setValue('mediaType', type as any);
         } else {
-            setMediaPreview2({ url, type });
+            setMediaPreview2({ url, type: type as any });
             form.setValue('mediaUrl2', url);
-            form.setValue('mediaType2', type);
+            form.setValue('mediaType2', type as any);
         }
         
         toast({ title: 'Media Ready', description: `Proof ${slot} optimized for the harvest.` });
@@ -337,7 +322,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     
     try {
       const testimonyData: any = {
-          authorId: String(user.uid),
+          authorId: user.uid,
           authorFirstName: userProfile.firstName,
           authorLastName: userProfile.lastName,
           authorAvatarUrl: userProfile.photoURL || null,
@@ -396,136 +381,136 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   }
 
   const renderMediaSlot = (slot: 1 | 2, preview: any, setPreview: any, inputRef: React.RefObject<HTMLInputElement | null>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
-      const isAudio = preview?.type === 'audio';
+    const isAudio = preview?.type === 'audio';
 
-      return (
-        <div className="space-y-4 flex-1 text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
-                <Camera className="h-3.5 w-3.5 text-primary" /> Proof {slot} {slot === 2 && "(Optional)"}
-            </Label>
-            
-            {!preview ? (
-                <div className="space-y-3">
-                    <div 
-                        className={cn(
-                            "border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left",
-                            isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
-                        )}
-                        onClick={() => inputRef.current?.click()}
-                    >
-                        {isUploadingMedia === slot ? (
-                            <div className="flex flex-col items-center gap-2">
-                                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                                <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
-                            </div>
-                        ) : (
-                            <>
-                                <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                                    <FileUp className="h-4 w-4 text-primary" />
-                                </div>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select File</p>
-                                <p className="text-[8px] text-muted-foreground/40 mt-1 uppercase">Image or Video</p>
-                            </>
-                        )}
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-2">
-                        <Button 
-                            type="button" 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1 text-center"
-                            onClick={() => startRecorder(slot, 'video')}
-                            disabled={isUploadingMedia !== null}
-                        >
-                            <Video className="h-3 w-3 mb-0.5" />
-                            RECORD VIDEO
-                        </Button>
-                        <Button 
-                            type="button" 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1 text-center"
-                            onClick={() => startRecorder(slot, 'audio')}
-                            disabled={isUploadingMedia !== null}
-                        >
-                            <Mic className="h-3 w-3 mb-0.5" />
-                            RECORD AUDIO
-                        </Button>
-                    </div>
-                </div>
-            ) : (
-                <div className={cn(
-                  "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group text-left",
-                  isAudio ? "h-auto min-h-[100px]" : "aspect-square"
-                )}>
-                    {preview.type === 'image' ? (
-                        <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
-                    ) : preview.type === 'video' ? (
-                        <video src={preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls />
-                    ) : (
-                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
-                            <div className="relative shrink-0">
-                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                                    <Mic className="h-5 w-5 text-primary" />
-                                </div>
-                                <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                                <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-3">Voice of Thanksgiving</p>
-                                <audio src={preview.url} className="w-full" controls />
-                            </div>
-                        </div>
-                    )}
-                    <Button 
-                        type="button" 
-                        variant="destructive" 
-                        size="icon" 
-                        className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" 
-                        onClick={() => { setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}
-                    >
-                        <X className="h-3.5 w-3.5" />
-                    </Button>
-                </div>
-            )}
-            <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*,audio/*" onChange={(e) => handleFileSelect(e, slot)} />
-        </div>
-      );
+    return (
+      <div className="space-y-4 flex-1 text-left">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+              <Camera className="h-3.5 w-3.5 text-primary" /> Proof {slot} {slot === 2 && "(Optional)"}
+          </Label>
+          
+          {!preview ? (
+              <div className="space-y-3">
+                  <div 
+                      className={cn(
+                          "border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left",
+                          isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
+                      )}
+                      onClick={() => inputRef.current?.click()}
+                  >
+                      {isUploadingMedia === slot ? (
+                          <div className="flex flex-col items-center gap-2 text-left">
+                              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                              <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
+                          </div>
+                      ) : (
+                          <div className="flex flex-col items-center text-left">
+                              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                  <FileUp className="h-4 w-4 text-primary" />
+                              </div>
+                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select File</p>
+                              <p className="text-[8px] text-muted-foreground/40 mt-1 uppercase">Image or Video</p>
+                          </div>
+                      )}
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 text-left">
+                      <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1 text-center"
+                          onClick={() => startRecorder(slot, 'video')}
+                          disabled={isUploadingMedia !== null}
+                      >
+                          <Video className="h-3 w-3 mb-0.5" />
+                          RECORD VIDEO
+                      </Button>
+                      <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1 text-center"
+                          onClick={() => startRecorder(slot, 'audio')}
+                          disabled={isUploadingMedia !== null}
+                      >
+                          <Mic className="h-3 w-3 mb-0.5" />
+                          RECORD AUDIO
+                      </Button>
+                  </div>
+              </div>
+          ) : (
+              <div className={cn(
+                "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group text-left",
+                isAudio ? "h-auto min-h-[100px]" : "aspect-square"
+              )}>
+                  {preview.type === 'image' ? (
+                      <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
+                  ) : preview.type === 'video' ? (
+                      <video src={preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls />
+                  ) : (
+                      <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
+                          <div className="relative shrink-0 text-left">
+                              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-left">
+                                  <Mic className="h-5 w-5 text-primary text-left" />
+                              </div>
+                              <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" />
+                          </div>
+                          <div className="min-w-0 flex-1 text-left">
+                              <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-3">Voice of Thanksgiving</p>
+                              <audio src={preview.url} className="w-full" controls />
+                          </div>
+                      </div>
+                  )}
+                  <Button 
+                      type="button" 
+                      variant="destructive" 
+                      size="icon" 
+                      className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" 
+                      onClick={() => { setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}
+                  >
+                      <X className="h-3.5 w-3.5" />
+                  </Button>
+              </div>
+          )}
+          <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*,audio/*" onChange={(e) => handleFileSelect(e, slot)} />
+      </div>
+    );
   };
 
   return (
     <div className="space-y-10 text-left">
-      <div className="space-y-4">
-        <div className="flex items-center gap-3 px-1">
-            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
-                <Newspaper className="h-5 w-5 text-primary" />
+      <div className="space-y-4 text-left">
+        <div className="flex items-center gap-3 px-1 text-left">
+            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
+                <Newspaper className="h-5 w-5 text-primary text-left" />
             </div>
-            <div className="min-w-0 flex-1">
-                <h3 className="text-xl font-black font-headline uppercase tracking-tight">Proclaim Victory</h3>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Sharing God's manifest power</p>
+            <div className="min-w-0 flex-1 text-left">
+                <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Proclaim Victory</h3>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Sharing God's manifest power</p>
             </div>
         </div>
 
         {prayerRequest && (
             <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left">
                 <div className="absolute -top-4 -right-4 h-16 w-16 bg-amber-500/5 rounded-full blur-xl text-left" />
-                <CardHeader className="p-5 pb-2 relative z-10 text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left">
-                        <HandHeart className="h-3.5 w-3.5 text-amber-600" />
-                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left">Answering Prayer Altar</span>
+                <CardHeader className="p-5 pb-2 relative z-10 text-left text-left">
+                    <div className="flex items-center gap-2 mb-1 text-left text-left">
+                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left text-left" />
+                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left text-left">Answering Prayer Altar</span>
                     </div>
-                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
+                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
                 </CardHeader>
             </Card>
         )}
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
-          <div className="space-y-6 text-left">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left text-left">
+          <div className="space-y-6 text-left text-left">
             <FormField control={form.control} name="category" render={({ field }) => (
-                <FormItem className="text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Theme</FormLabel>
+                <FormItem className="text-left text-left">
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Theme</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl className="text-left">
                         <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base text-left">
@@ -543,7 +528,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
             <FormField control={form.control} name="content" render={({ field }) => (
                 <FormItem className="text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Story</FormLabel>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Full Story</FormLabel>
                     <FormControl className="text-left">
                     <Textarea 
                         placeholder="Detail the greatness of God in this situation..." 
@@ -584,7 +569,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     </div>
                 )}
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center">
+              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center text-left">
                 TO THE GLORY OF JESUS CHRIST
               </p>
           </div>
@@ -592,43 +577,43 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       </Form>
 
       <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
-          <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left">
-              <div className="sr-only">
-                  <DialogHeader className="text-left">
-                      <DialogTitle className="text-left">Miracle Recorder</DialogTitle>
-                      <DialogDescription className="text-left">Capture live proof of God's goodness.</DialogDescription>
+          <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left text-left">
+              <div className="sr-only text-left">
+                  <DialogHeader className="text-left text-left text-left">
+                      <DialogTitle className="text-left text-left">Miracle Recorder</DialogTitle>
+                      <DialogDescription className="text-left text-left text-left">Capture live proof of God's goodness.</DialogDescription>
                   </DialogHeader>
               </div>
-              <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
-                  <div className="flex items-center justify-between gap-4 text-left">
-                    <div className="min-w-0 text-left">
-                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</div>
-                        <p className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</p>
+              <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left text-left">
+                  <div className="flex items-center justify-between gap-4 text-left text-left">
+                    <div className="min-w-0 text-left text-left">
+                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left text-left">Miracle Recorder</div>
+                        <p className="text-sm font-medium text-zinc-400 mt-1 text-left text-left">Capture your {recorderMode} proof.</p>
                     </div>
                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10 text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left" /></Button>
                   </div>
               </DialogHeader>
               
               {recorderMode === 'video' ? (
-                  <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden text-left">
+                  <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden text-left text-left">
                       <video 
                         ref={videoPreviewRef} 
                         autoPlay 
                         muted 
                         playsInline 
-                        className="w-full h-full object-cover mirror scale-x-[-1] text-left"
+                        className="w-full h-full object-cover mirror scale-x-[-1] text-left text-left"
                       />
                       
                       <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none text-left">
-                          <div className="flex justify-between items-start text-left">
-                              <div className="flex items-center gap-3 text-left">
+                          <div className="flex justify-between items-start text-left text-left">
+                              <div className="flex items-center gap-3 text-left text-left">
                                   {isRecording && (
-                                      <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left">
-                                          <div className="h-2 w-2 rounded-full bg-white text-left" />
-                                          <span className="text-[10px] font-black text-white uppercase tracking-widest text-left">REC</span>
+                                      <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left text-left">
+                                          <div className="h-2 w-2 rounded-full bg-white text-left text-left" />
+                                          <span className="text-[10px] font-black text-white uppercase tracking-widest text-left text-left">REC</span>
                                       </div>
                                   )}
-                                  <Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px] text-left">
+                                  <Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px] text-left text-left">
                                       {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00
                                   </Badge>
                               </div>
@@ -642,14 +627,14 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                                     animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }}
                                 />
                             </div>
-                            <div className="flex justify-center pointer-events-auto text-left">
+                            <div className="flex justify-center pointer-events-auto text-left text-left">
                                 {!isRecording ? (
                                     <Button 
                                         onClick={startRecording}
                                         size="lg"
                                         className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-center"
                                     >
-                                        <div className="h-8 w-8 rounded-full bg-white shadow-inner text-left" />
+                                        <div className="h-8 w-8 rounded-full bg-white shadow-inner text-left text-left" />
                                     </Button>
                                 ) : (
                                     <Button 
@@ -657,7 +642,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                                         size="lg"
                                         className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-center"
                                     >
-                                        <Square className="h-8 w-8 fill-current text-left" />
+                                        <Square className="h-8 w-8 fill-current text-left text-left" />
                                     </Button>
                                 )}
                             </div>
@@ -665,23 +650,23 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       </div>
                   </div>
               ) : (
-                  <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10 text-left">
+                  <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10 text-left text-left">
                        <div className="relative text-left">
                             <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.1)] text-left">
-                                <Mic className={cn("h-16 w-16 text-primary transition-all text-left", isRecording && "scale-110")} />
+                                <Mic className={cn("h-16 w-16 text-primary transition-all text-left text-left", isRecording && "scale-110")} />
                             </div>
                             {isRecording && (
-                                <div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20 text-left" />
+                                <div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20 text-left text-left" />
                             )}
                        </div>
 
-                       <div className="space-y-4 w-full text-left">
-                           <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center">Voice of Thanksgiving</div>
-                           <p className="text-zinc-500 text-sm font-medium text-center">Record your vocal proclamation (max 2 minutes).</p>
+                       <div className="space-y-4 w-full text-left text-left">
+                           <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left text-left">Voice of Thanksgiving</div>
+                           <p className="text-zinc-500 text-sm font-medium text-center text-left text-left">Record your vocal proclamation (max 2 minutes).</p>
                            
-                           <div className="flex items-center justify-center gap-3 text-left">
-                               {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse text-left" />}
-                               <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums text-left">
+                           <div className="flex items-center justify-center gap-3 text-left text-left text-left">
+                               {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse text-left text-left" />}
+                               <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums text-left text-left">
                                     {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
                                </span>
                            </div>
@@ -695,13 +680,13 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                             </div>
                        </div>
 
-                       <div className="flex gap-4 w-full text-left">
+                       <div className="flex gap-4 w-full text-left text-left text-left">
                             {!isRecording ? (
                                 <Button 
                                     onClick={startRecording} 
                                     className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center text-left"
                                 >
-                                    <Mic className="mr-3 h-6 w-6 text-left" /> START
+                                    <Mic className="mr-3 h-6 w-6 text-left text-left" /> START
                                 </Button>
                             ) : (
                                 <Button 
@@ -709,7 +694,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                                     variant="destructive"
                                     className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center text-left"
                                 >
-                                    <Square className="mr-3 h-6 w-6 fill-current text-left" /> STOP
+                                    <Square className="mr-3 h-6 w-6 fill-current text-left text-left" /> STOP
                                 </Button>
                             )}
                        </div>
@@ -717,10 +702,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               )}
           </DialogContent>
       </Dialog>
-
-      <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left">
-          <Target className="h-16 w-16 text-primary text-left" />
-      </div>
     </div>
   );
 }
+
