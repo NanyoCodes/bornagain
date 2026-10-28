@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -71,6 +72,7 @@ export function getYouTubeEmbedUrl(url: string | undefined | null) {
 
 /**
  * High fidelity media preview for the feed.
+ * Optimized for mobile playback and Android compatibility.
  */
 export const MediaPreview = ({ url, type, isFull = false }: { url: string, type: 'image' | 'video' | 'audio', isFull?: boolean }) => {
   const isAudio = type === 'audio';
@@ -127,7 +129,13 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                                   <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white">Voice Proclamation</h4>
                                   <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic">A testimony of God's goodness</p>
                               </div>
-                              <audio src={url} className="w-full" controls />
+                              <audio 
+                                key={url} 
+                                src={url} 
+                                className="w-full" 
+                                controls 
+                                preload="metadata" 
+                              />
                               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary/60 text-center">
                                   <HandHeart className="h-3 w-3" />
                                   Glory to God
@@ -174,20 +182,6 @@ export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { user
     );
 }
 
-export function getStatusClasses(status: FollowUpStatus | undefined): string {
-    if (!status) return 'bg-secondary text-secondary-foreground border-border';
-    switch (status) {
-        case 'New':
-            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
-        case 'Contacted':
-            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
-        case 'Established':
-            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
-        default:
-            return 'bg-secondary text-secondary-foreground border-border';
-    }
-}
-
 export const TestimonyCard = React.memo(function TestimonyCard({ 
   testimony, 
   onDelete, 
@@ -228,8 +222,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   // Back button intercept for Detail Drawers
   useEffect(() => {
     if (showFullText || showFullPrayer || isCommentsOpen || isBoostOpen) {
-        window.history.pushState({ overlayOpen: true }, '');
-        const handlePopState = () => {
+        window.history.pushState({ overlayOpen: testimony.id }, '');
+        const handlePopState = (e: PopStateEvent) => {
             setShowFullText(false);
             setShowFullPrayer(false);
             setIsCommentsOpen(false);
@@ -238,7 +232,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         window.addEventListener('popstate', handlePopState);
         return () => window.removeEventListener('popstate', handlePopState);
     }
-  }, [showFullText, showFullPrayer, isCommentsOpen, isBoostOpen]);
+  }, [showFullText, showFullPrayer, isCommentsOpen, isBoostOpen, testimony.id]);
 
   const isAuthor = user?.uid === testimony.authorId;
   
@@ -402,7 +396,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 ) : (
                     <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
                 )}
-                <div className="min-w-0 flex-1 text-left">
+                <div className="min-w-0 flex-1 text-left text-left">
                     <div className="flex items-center gap-2 flex-wrap text-left">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0 text-left">
                              <h3 className="text-base sm:text-lg font-bold capitalize leading-none text-left">{authorName}</h3>
@@ -633,12 +627,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={open => { setShowFullText(open); if(!open) setIsCommentsOpen(false); }}>
-                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0 text-left text-left"><div className="p-8 border-b bg-muted/10 text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left"><DrawerTitle className="text-3xl font-black font-headline uppercase text-left">Kingdom Testimony</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription></DrawerHeader></div><div className="p-8 text-left">{fullTextContent}</div></DialogContent>
+                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0 text-left text-left text-left"><div className="p-8 border-b bg-muted/10 text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left"><DrawerTitle className="text-3xl font-black font-headline uppercase text-left">Kingdom Testimony</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription></DrawerHeader></div><div className="p-8 text-left">{fullTextContent}</div></DialogContent>
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
-                        <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
-                             <div className="p-8 border-b bg-amber-500/10 text-left text-left text-left">
-                                <DialogHeader className="text-left p-0 text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
+                             <div className="p-8 border-b bg-amber-500/10 text-left text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left">Answered Prayer Request</DialogTitle>
                                     <DialogDescription className="text-sm font-medium text-left">The original request shared with the body.</DialogDescription>
                                 </DialogHeader>
@@ -651,7 +645,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         </DialogContent>
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Gathered Responses</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DrawerDescription></DrawerHeader></div><div className="flex-1 min-h-0 text-left"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left text-left text-left text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left"><DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Gathered Responses</DrawerTitle><DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DrawerDescription></DrawerHeader></div><div className="flex-1 min-h-0 text-left"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
                     </Dialog>
                 </>
             )}
@@ -661,3 +655,4 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   );
 });
 TestimonyCard.displayName = "TestimonyCard";
+

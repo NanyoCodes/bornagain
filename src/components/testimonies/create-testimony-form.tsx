@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -220,7 +221,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
-        const uploadResult = await uploadBytes(fileRef, file);
+        const uploadResult = await uploadBytes(fileRef, file, { contentType: file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
         if (slot === 1) {
@@ -265,7 +266,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
-        const uploadResult = await uploadBytes(fileRef, fileToUpload);
+        const uploadResult = await uploadBytes(fileRef, fileToUpload, { contentType: file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
         const type = isImage ? 'image' : isVideo ? 'video' : 'audio';

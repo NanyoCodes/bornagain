@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -208,7 +209,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
-        const uploadResult = await uploadBytes(fileRef, file);
+        const uploadResult = await uploadBytes(fileRef, file, { contentType: file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
         if (slot === 1) {
@@ -253,7 +254,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${file.name}`);
-        const uploadResult = await uploadBytes(fileRef, fileToUpload);
+        const uploadResult = await uploadBytes(fileRef, fileToUpload, { contentType: file.type });
         const url = await getDownloadURL(uploadResult.ref);
 
         const type = isImage ? 'image' : isVideo ? 'video' : 'audio';
@@ -536,7 +537,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                                         {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00
                                     </Badge>
                                 </div>
-                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-black/40 text-white hover:bg-black/60 pointer-events-auto text-left text-left text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left text-left text-left" /></Button>
+                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-black/40 text-white hover:bg-black/60 pointer-events-auto text-left text-left text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left text-left text-left text-left text-left text-left" /></Button>
                             </div>
                             <div className="space-y-4 text-left text-left text-left text-left">
                                 <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left text-left text-left text-left">
