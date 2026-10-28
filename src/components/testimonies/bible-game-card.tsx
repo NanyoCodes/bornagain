@@ -110,13 +110,13 @@ export function BibleGameCard() {
                 <CardDescription className="text-zinc-400 text-sm font-medium text-center mt-2 leading-relaxed">Experience a portion of the Word Arena. Sharpen your spirit daily.</CardDescription>
             </CardHeader>
             <CardContent className="p-6 sm:p-10 pt-0 space-y-8 text-left">
-                <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner relative overflow-hidden text-center min-h-[160px] flex items-center justify-center">
+                <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[160px] flex items-center justify-center text-center relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left"><Target className="h-16 w-16 text-primary text-left" /></div>
                     <AnimatePresence mode="wait"><motion.p key={`${gameType}-${quizIndex}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="text-lg sm:text-xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-left">
                     {quiz?.options.map(opt => (
-                        <Button key={opt} variant="outline" className={cn("h-12 sm:h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs transition-all border-2 text-center whitespace-normal", gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_20px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary")} disabled={gameState !== 'playing'} onClick={(e) => { e.stopPropagation(); handleCheck(opt); }}>{opt}</Button>
+                        <Button key={opt} variant="outline" className={cn("h-12 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal", gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_20px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary")} disabled={gameState !== 'playing'} onClick={(e) => { e.stopPropagation(); handleCheck(opt); }}>{opt}</Button>
                     ))}
                 </div>
                 <AnimatePresence mode="wait">

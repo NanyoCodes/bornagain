@@ -698,7 +698,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       </AnimatePresence>
 
       <motion.div 
-          initial={{ opacity: 0 }}
+          initial={{ opacity: 1 }}
           animate={{ opacity: contentVisible ? 1 : 0 }}
           transition={{ duration: 1 }}
           className="flex-1 flex flex-col min-h-0 text-left"
