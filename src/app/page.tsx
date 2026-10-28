@@ -54,16 +54,16 @@ import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 
 const features = [
   {
-    title: "Testimony Feed",
-    description: "Share and read real-time miracle stories. Your testimony is a weapon that overcomes the enemy.",
+    title: "Glory Feed",
+    description: "Share real-time miracles. Your testimony is a weapon against the enemy. No cap.",
     icon: Newspaper,
     color: "text-orange-500",
     bgColor: "bg-orange-500/10",
     link: "/testimonies",
   },
   {
-    title: "Mission Hub",
-    description: "Organize evangelism campaigns. Coordinate your team in the field with real-time tracking.",
+    title: "Mission Ops",
+    description: "Launch evangelism campaigns. Coordinate your squad in the field with real-time tracking.",
     icon: Target,
     color: "text-emerald-500",
     bgColor: "bg-emerald-500/10",
@@ -71,7 +71,7 @@ const features = [
   },
   {
     title: "Victory Circles",
-    description: "Find communal solutions for spiritual breakthroughs. Bring struggles into the Light and overcome together.",
+    description: "Find community-driven solutions for spiritual breakthroughs. Overcome strongholds together.",
     icon: ShieldCheck,
     color: "text-indigo-600",
     bgColor: "bg-indigo-600/10",
@@ -79,7 +79,7 @@ const features = [
   },
   {
     title: "Provision Hub",
-    description: "Support brethren with physical meals through the Meals Center. Practical love in action.",
+    description: "Practical love. Support the brethren with physical meals through the Meals Center.",
     icon: Utensils,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
@@ -87,32 +87,32 @@ const features = [
   },
   {
     title: "Kindness Center",
-    description: "Send spiritual gifts, Bibles, and tokens of encouragement to nourish the souls in your harvest.",
+    description: "Gifts, Bibles, and spiritual tokens to nourish the souls in your harvest.",
     icon: Gift,
     color: "text-purple-600",
     bgColor: "bg-purple-600/10",
     link: "/marketplace/gifts",
   },
   {
-    title: "Daily Disciplines",
-    description: "Build spiritual strength with Prayer, Word study, and Church trackers. Consistency is power.",
+    title: "Daily Flow",
+    description: "Prayer, Word, and Church trackers. Consistency is the ultimate Kingdom flex.",
     icon: Zap,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
     link: "/growth",
   },
   {
-    title: "Fellowship Groups",
-    description: "Connect converts to local or virtual fellowships for long-term growth and discipleship.",
-    icon: Users,
+    title: "The Alliance",
+    description: "Partner with believers for high-fidelity growth and shared spiritual history.",
+    icon: HeartHandshake,
     color: "text-blue-600",
     bgColor: "bg-blue-600/10",
-    link: "/fellowships",
+    link: "/accountability",
   },
   {
     title: "Intercession",
-    description: "Share prayer requests and stand in agreement with the global Body of Christ.",
-    icon: HeartHandshake,
+    description: "Global agreement. Lift up prayer requests with the entire Kingdom Network.",
+    icon: HandHeart,
     color: "text-rose-500",
     bgColor: "bg-rose-500/10",
     link: "/testimonies?tab=prayers",
@@ -121,29 +121,29 @@ const features = [
 
 const historicalFacts = [
   {
-    title: "Ebenezer Stones",
-    description: "Ancient Hebrews established 'stones of help' as physical testimonies to ensure God's interventions were never forgotten by future generations.",
+    title: "Ebenezer Protocol",
+    description: "Ancient believers established 'stones of help'—physical testimonies to ensure miracles were never forgotten.",
     icon: History,
     ref: "1 Samuel 7:12"
   },
   {
-    title: "Early Church Growth",
-    description: "The exponential spread of the Gospel in the first century was powered by believers sharing personal accounts of the resurrected Christ.",
+    title: "Viral Gospel",
+    description: "The 1st-century church exploded because regular people shared their lived evidence of Christ.",
     icon: Globe,
     ref: "Acts 4:20"
   },
   {
-    title: "Gratitude as Power",
-    description: "Science confirms that gratitude rewires the brain, but spiritually, it opens the portals of heaven for more of God's manifest power.",
+    title: "The Gratitude Shift",
+    description: "Living in gratitude isn't just a vibe—it's a spiritual engine that unlocks Kingdom productivity.",
     icon: Zap,
     ref: "Psalm 100:4"
   }
 ];
 
 const stats = [
-    { label: "Global Harvest", value: "190+ Nations", desc: "Unified mission reach", icon: Globe },
-    { label: "Miracle Velocity", value: "Thousands", desc: "Shared testimonies daily", icon: Flame },
-    { label: "Unity Index", value: "All Peoples", desc: "Open to every believer", icon: HeartHandshake },
+    { label: "The Global Grid", value: "190+ Nations", desc: "One Body, Many Stations", icon: Globe },
+    { label: "Miracle Velocity", value: "Thousands", desc: "Daily Proclamations", icon: Flame },
+    { label: "Unity Index", value: "Unlimited", desc: "Open to All Seekers", icon: HeartHandshake },
 ];
 
 export default function LandingPage() {
@@ -179,7 +179,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
             {logo && (
-              <Avatar className="h-10 w-10 sm:h-11 sm:w-11">
+              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20">
                 <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
                 <AvatarFallback>T</AvatarFallback>
               </Avatar>
@@ -206,25 +206,25 @@ export default function LandingPage() {
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-center sm:text-left">
             <div className="max-w-4xl space-y-8">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-                <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[10px]">
-                  SHARING GOD'S GOODNESS
+                <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px]">
+                  PROCLAIMING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
-                  Testify of The Greatness of GOD.<br className="hidden sm:block" />
+                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[0.9] tracking-tighter text-balance">
+                  Share the Story.<br className="hidden sm:block" />
                   Organize the Harvest.<br className="hidden sm:block" />
                   <span className="text-primary"> Glorify the King.</span>
                 </h1>
-                <p className="mt-6 text-sm sm:text-base text-white/60 font-medium max-w-xl italic leading-relaxed text-pretty">
+                <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl italic leading-relaxed text-pretty">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="h-14 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest">
+                <Button asChild size="lg" className="h-16 px-10 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90">
                   <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10">
-                  <Link href="/about">OUR MISSION</Link>
+                <Button asChild variant="outline" size="lg" className="h-16 px-10 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10">
+                  <Link href="/about">THE VISION</Link>
                 </Button>
               </div>
             </div>
@@ -237,7 +237,7 @@ export default function LandingPage() {
               transition={{ delay: 1, duration: 1 }}
               className="flex flex-col items-center gap-2 px-6"
             >
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 text-center text-balance max-w-lg">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] text-white/40 text-center text-balance max-w-lg">
                     "Go into all the world and preach the gospel to all creation."
                 </p>
                 <div className="h-px w-12 bg-primary/40" />
@@ -246,60 +246,75 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Universal Sanctuary Section */}
-        <section className="py-24 bg-background border-y border-primary/5">
-            <div className="max-w-7xl mx-auto px-6">
+        {/* Universal Sanctuary Section - Redesigned for Gen Z Vibe */}
+        <section className="py-24 relative overflow-hidden bg-background">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(249,116,22,0.05),transparent_40%)]" />
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div className="space-y-10 text-center lg:text-left">
+                    <div className="space-y-12 text-left">
                         <motion.div 
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="space-y-8"
+                            className="space-y-6"
                         >
-                            <div className="flex flex-col items-center lg:items-start gap-4">
-                                <div className="h-16 w-16 rounded-3xl bg-primary/10 flex items-center justify-center shadow-inner">
-                                    <Users className="h-8 w-8 text-primary" />
-                                </div>
-                                <h2 className="text-3xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-balance">One Body. One Spirit. Many Nations.</h2>
-                            </div>
-
-                            <div className="space-y-6 text-muted-foreground text-lg sm:text-xl font-medium leading-relaxed italic text-pretty">
-                                <p className="relative pl-8 border-l-4 border-primary/20">
-                                    Testify is a sanctuary for <span className="text-foreground font-black underline decoration-primary/30">all believers</span> across the globe, regardless of denomination, tradition, or cultural background. We are unified by the blood of the Lamb.
-                                </p>
-                                <p className="relative pl-8 border-l-4 border-indigo-500/20">
-                                    We welcome <span className="text-foreground font-black underline decoration-indigo-500/30">non-christians and seekers</span> alike who desire to see and know what God is doing in the world today. This is an invitation to witness the irrefutable evidence of the Living God.
-                                </p>
-                            </div>
-
-                            <div className="p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 relative group overflow-hidden">
-                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-                                    <Sparkles className="h-20 w-20 text-primary" />
-                                </div>
-                                <p className="text-sm sm:text-lg font-bold text-primary uppercase tracking-[0.1em] leading-relaxed relative z-10">
-                                    "This is a global call to tell the world about the Greatness of GOD—not just in history, but in our lives right now."
-                                </p>
-                            </div>
+                            <Badge className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px]">
+                                THE GLOBAL SANCTUARY
+                            </Badge>
+                            <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-[0.9] tracking-tighter text-balance">
+                                No Gatekeeping.<br/>
+                                <span className="text-primary">Just God.</span>
+                            </h2>
+                            <p className="text-lg sm:text-xl text-muted-foreground font-medium leading-relaxed italic border-l-4 border-primary/20 pl-6">
+                                We're not here for the tradition—we're here for the Transformation. Testify is the open-access hub for every believer, from every corner of the planet. 
+                            </p>
                         </motion.div>
+
+                        <div className="space-y-8">
+                            <div className="group relative p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 transition-all hover:bg-muted/40">
+                                <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-3 mb-4">
+                                    <Sparkles className="h-6 w-6 text-primary" />
+                                    Vibe Check: Inclusive
+                                </h3>
+                                <p className="text-muted-foreground leading-relaxed font-medium text-pretty">
+                                    Whether you're a lifelong believer or a curious seeker, if you want to see <span className="text-foreground font-bold">real proof</span> of God's power in 2025, you're in. This is an invitation to witness the most compelling evidence on earth.
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
+                                <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center shrink-0 border border-indigo-500/20">
+                                    <Globe className="h-6 w-6 text-indigo-600" />
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="font-black uppercase text-sm tracking-tight">Radical Unity</p>
+                                    <p className="text-xs text-muted-foreground font-medium leading-relaxed">Breaking silos. Building the Body. Glorifying the King.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {stats.map((stat, i) => (
                             <motion.div 
                                 key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: i * 0.1 }}
-                                className="p-8 rounded-[2.5rem] bg-card border shadow-sm flex items-center gap-6 group hover:border-primary/20 transition-all"
+                                className={cn(
+                                    "p-8 rounded-[2.5rem] bg-card border shadow-xl flex flex-col justify-between group hover:border-primary/40 transition-all h-[200px]",
+                                    i === 0 && "sm:col-span-2 sm:h-[180px] sm:flex-row sm:items-center"
+                                )}
                             >
-                                <div className="h-16 w-16 rounded-[1.25rem] bg-primary/5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                                    <stat.icon className="h-8 w-8 text-primary" />
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <stat.icon className="h-5 w-5 text-primary" />
+                                        <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em]">{stat.label}</h4>
+                                    </div>
+                                    <p className="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-foreground">{stat.value}</p>
                                 </div>
-                                <div>
-                                    <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em] mb-1">{stat.label}</h4>
-                                    <p className="text-2xl font-black uppercase tracking-tight text-foreground">{stat.value}</p>
-                                    <p className="text-xs text-muted-foreground font-medium italic mt-1">{stat.desc}</p>
+                                <div className="flex flex-col items-start sm:items-end">
+                                    <Badge variant="outline" className="border-primary/20 text-primary text-[8px] px-2 uppercase font-black">{stat.desc}</Badge>
+                                    <div className="h-1.5 w-12 bg-primary/20 rounded-full mt-3 group-hover:w-20 transition-all" />
                                 </div>
                             </motion.div>
                         ))}
@@ -324,7 +339,7 @@ export default function LandingPage() {
                             </p>
                         </div>
                         <div className="flex items-center justify-center lg:justify-start gap-4">
-                             <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest bg-primary text-white shadow-2xl shadow-primary/20">
+                             <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/20 bg-primary text-white hover:bg-primary/90">
                                 <Link href="/signup">JOIN THE ARENA <ChevronRight className="ml-2 h-5 w-5" /></Link>
                             </Button>
                         </div>
@@ -347,11 +362,11 @@ export default function LandingPage() {
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4"
               >
                 <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Mission Critical Tools</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Main Mission: Proclaim</span>
               </motion.div>
-              <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance">Kingdom Ready Workforce</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium">
-                Equipping believers with the technology needed to fulfill the Great Commission in a digital age.
+              <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance">The Laborer Toolkit</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium italic">
+                Advanced tech for the ancient mission. Organize the harvest with intentionality.
               </p>
             </div>
 
@@ -365,7 +380,7 @@ export default function LandingPage() {
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
                         >
-                            <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group">
+                            <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group border-b-8 border-b-primary/5">
                                 <CardHeader className="p-8 pb-4">
                                     <div className={cn("h-14 w-14 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500", feature.bgColor)}>
                                         <feature.icon className={cn("h-7 w-7", feature.color)} />
@@ -403,7 +418,7 @@ export default function LandingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     {historicalFacts.map((fact, i) => (
                         <div key={i} className="space-y-6 text-center md:text-left">
-                            <div className="h-16 w-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center mx-auto md:mx-0">
+                            <div className="h-16 w-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center mx-auto md:mx-0 shadow-2xl">
                                 <fact.icon className="h-8 w-8 text-primary" />
                             </div>
                             <div className="space-y-2">
@@ -415,15 +430,16 @@ export default function LandingPage() {
                     ))}
                 </div>
 
-                <div className="mt-24 p-8 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-6">
-                    <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl">
+                <div className="mt-24 p-8 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-6 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.1),transparent_70%)]" />
+                    <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl relative z-10">
                         <Scale className="h-6 w-6 text-white" />
                     </div>
-                    <h3 className="text-2xl font-black uppercase tracking-tight">Active Virtue in Gratitude</h3>
-                    <p className="text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+                    <h3 className="text-2xl font-black uppercase tracking-tight relative z-10">Main Character Energy: Gratitude</h3>
+                    <p className="text-zinc-400 max-w-2xl mx-auto leading-relaxed relative z-10">
                         When we live in gratitude to God, we are naturally empowered to live out our best virtues. Gratitude isn't just a feeling; it's the engine of Kingdom productivity and relational integrity.
                     </p>
-                    <Button asChild className="rounded-full h-12 px-10 font-black uppercase tracking-widest text-xs">
+                    <Button asChild className="rounded-full h-12 px-10 font-black uppercase tracking-widest text-xs relative z-10 shadow-lg">
                         <Link href="/signup">JOIN THE HARVEST</Link>
                     </Button>
                 </div>
@@ -440,13 +456,13 @@ export default function LandingPage() {
                 <div className="space-y-4">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1">The Digital Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance">See God In Action</h2>
-                  <p className="text-muted-foreground text-lg leading-relaxed max-w-md mx-auto lg:mx-0">
-                    Miracles aren't just for the Bible. Read real-time stories from believers around the world seeing the power of Jesus Christ today.
+                  <p className="text-muted-foreground text-lg leading-relaxed max-w-md mx-auto lg:mx-0 italic font-medium">
+                    Miracles aren't just for history. Witness God moving through the global community right now.
                   </p>
                 </div>
                 
                 <Button asChild size="lg" variant="outline" className="h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-8 w-full sm:w-auto">
-                  <Link href="/testimonies">VIEW TESTIMONIES</Link>
+                  <Link href="/testimonies">VIEW FEED</Link>
                 </Button>
               </div>
 
@@ -499,7 +515,7 @@ export default function LandingPage() {
           
           <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
             <div className="max-w-3xl mx-auto space-y-8">
-              <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance">
+              <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance">
                 The Harvest is Plentiful. Ready to Labor?
               </h2>
               <p className="text-lg sm:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty">
@@ -507,7 +523,7 @@ export default function LandingPage() {
                 Record miracles, reach cities, and track the greatness of God.
               </p>
               <div className="flex justify-center pt-4">
-                <Button asChild size="lg" className="h-14 px-10 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto">
+                <Button asChild size="lg" className="h-16 px-12 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto">
                   <Link href="/signup">START TESTIFYING <ArrowRight className="ml-3 h-6 w-6" /></Link>
                 </Button>
               </div>
@@ -523,14 +539,14 @@ export default function LandingPage() {
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
                 {logo && (
-                  <Avatar className="h-12 w-12">
+                  <Avatar className="h-12 w-12 border-2 border-primary/20">
                     <AvatarImage src={logo.imageUrl} alt="Logo" className="object-cover" />
                     <AvatarFallback>T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty">
-                Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-w-sm">
+                Testify is the open-access hub for believers to share the greatness of Jesus Christ, who gave his life to reconcile the world to God.
               </p>
             </div>
 
