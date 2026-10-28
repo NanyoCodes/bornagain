@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useDoc, useUser, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/lib/types';
 import {
   Dialog,
@@ -294,7 +294,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </DialogTrigger>
                 {photoURL && (
                   <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                      <div className="sr-only text-left text-left"><DialogHeader className="text-left"><DialogTitle className="text-left">Identity Preview</DialogTitle></DialogHeader></div>
+                      <div className="sr-only text-left text-left text-left"><DialogHeader className="text-left"><DialogTitle className="text-left">Identity Preview</DialogTitle></DialogHeader></div>
                       <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
                           <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                               <Image 
@@ -311,28 +311,28 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               </Dialog>
             </div>
             
-            <div className="flex-1 min-w-0 space-y-6 w-full text-left">
-                <div className="space-y-4 text-left">
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 text-left">
-                        <div className="min-w-0 space-y-2 text-left">
-                            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-headline tracking-tight leading-tight uppercase text-balance break-words text-left">{displayName}</h1>
-                            <div className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium text-left">
+            <div className="flex-1 min-w-0 space-y-6 w-full text-center lg:text-left">
+                <div className="space-y-4 text-center lg:text-left">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 text-center lg:text-left">
+                        <div className="min-w-0 space-y-3 text-center lg:text-left">
+                            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-headline tracking-tight leading-tight uppercase text-balance break-words">{displayName}</h1>
+                            <div className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
                                 {(city || state || country) && (
-                                    <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider text-left">
-                                        <MapPin className="h-4 w-4 text-left" /> 
+                                    <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider">
+                                        <MapPin className="h-4 w-4" /> 
                                         {[city, state].filter(Boolean).join(', ') || country}
                                     </div>
                                 )}
                                 {maritalStatus && (
-                                    <div className="flex items-center gap-1.5 text-left">
-                                        <Heart className="h-3.5 w-3.5 text-primary text-left" />
+                                    <div className="flex items-center gap-1.5">
+                                        <Heart className="h-3.5 w-3.5 text-primary" />
                                         {maritalStatus}
                                     </div>
                                 )}
                                 {workStatus && (
-                                    <div className="flex items-center gap-1.5 text-left">
-                                        <Briefcase className="h-3.5 w-3.5 text-primary text-left" />
-                                        <span className="font-bold uppercase tracking-tight text-balance text-left">
+                                    <div className="flex items-center gap-1.5">
+                                        <Briefcase className="h-3.5 w-3.5 text-primary" />
+                                        <span className="font-bold uppercase tracking-tight text-balance">
                                             {roleInOrganization && `${roleInOrganization}${organizationName ? ' @ ' : ''}`}
                                             {organizationName || workStatus}
                                         </span>
@@ -342,25 +342,25 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         </div>
 
                         {!isOwnProfile && currentUserProfile && (
-                            <div className="shrink-0 flex justify-center lg:justify-end gap-2 w-full lg:w-auto text-left">
+                            <div className="shrink-0 flex justify-center lg:justify-end gap-2 w-full lg:w-auto">
                                 {isPartnerMember ? (
-                                    <Badge variant="secondary" className="h-11 px-8 rounded-full font-black tracking-widest bg-primary/10 text-primary border-primary/20 flex items-center gap-2 text-[10px] text-left">
-                                        <HeartHandshake className="h-4 w-4 text-left" />
+                                    <Badge variant="secondary" className="h-11 px-8 rounded-full font-black tracking-widest bg-primary/10 text-primary border-primary/20 flex items-center gap-2 text-[10px]">
+                                        <HeartHandshake className="h-4 w-4" />
                                         ALLIANCE ACTIVE
                                     </Badge>
                                 ) : isPendingPartner ? (
-                                    <Button variant="outline" className="h-11 px-8 rounded-full font-black tracking-widest opacity-70 text-[10px] text-left" disabled>
-                                        <Hourglass className="mr-2 h-4 w-4 animate-pulse text-left" />
+                                    <Button variant="outline" className="h-11 px-8 rounded-full font-black tracking-widest opacity-70 text-[10px]" disabled>
+                                        <Hourglass className="mr-2 h-4 w-4 animate-pulse" />
                                         PENDING
                                     </Button>
                                 ) : (
                                     <Button 
-                                        className="h-11 px-8 rounded-full font-black shadow-xl shadow-primary/20 uppercase tracking-widest text-[10px] text-center text-left"
+                                        className="h-11 px-8 rounded-full font-black shadow-xl shadow-primary/20 uppercase tracking-widest text-[10px] text-center"
                                         onClick={handleSendPartnerRequest}
                                         disabled={isRequestingPartner}
                                     >
-                                        {isRequestingPartner ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <UserPlus className="mr-2 h-4 w-4 text-left" />}
-                                        CONNECT PARTNER
+                                        {isRequestingPartner ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                               connect Partner
                                     </Button>
                                 )}
                             </div>
@@ -369,31 +369,31 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
                     {personalMessage && (
                         <div className="bg-primary/10 p-4 sm:p-8 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-primary/20 inline-flex items-start lg:items-center gap-4 group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 w-full text-left">
-                            <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0 mt-1 lg:mt-0 transition-transform group-hover:scale-110 text-left" />
-                            <p className="text-base sm:text-xl lg:text-2xl font-black text-foreground leading-tight italic tracking-tight text-balance break-words text-left">
+                            <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0 mt-1 lg:mt-0 transition-transform group-hover:scale-110" />
+                            <p className="text-base sm:text-xl lg:text-2xl font-black text-foreground leading-tight italic tracking-tight text-balance break-words">
                                 &ldquo;{personalMessage}&rdquo;
                             </p>
                         </div>
                     )}
                 </div>
 
-                <div className="flex flex-wrap justify-center lg:justify-start gap-3 text-left">
-                     <div className="flex items-center gap-2.5 bg-muted/40 px-4 py-2 rounded-2xl border shadow-inner text-left">
-                        <Newspaper className="h-4 w-4 text-primary text-left" />
-                        <span className="text-lg font-black text-left">{testimonies.length}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground text-left">Testimonies</span>
+                <div className="flex flex-wrap justify-center lg:justify-start gap-3">
+                     <div className="flex items-center gap-2.5 bg-muted/40 px-4 py-2 rounded-2xl border shadow-inner">
+                        <Newspaper className="h-4 w-4 text-primary" />
+                        <span className="text-lg font-black">{testimonies.length}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Testimonies</span>
                     </div>
-                    <div className="flex items-center gap-2.5 bg-muted/40 px-4 py-2 rounded-2xl border shadow-inner text-left">
-                        <Target className="h-4 w-4 text-primary text-left" />
-                        <span className="text-lg font-black text-left">{processedCampaigns.length}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground text-left">Missions</span>
+                    <div className="flex items-center gap-2.5 bg-muted/40 px-4 py-2 rounded-2xl border shadow-inner">
+                        <Target className="h-4 w-4 text-primary" />
+                        <span className="text-lg font-black">{processedCampaigns.length}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Missions</span>
                     </div>
                 </div>
 
-                <div className="pt-4 lg:max-w-2xl text-left">
+                <div className="pt-4 lg:max-w-2xl">
                     <div className="relative pl-6 border-l-4 border-primary/20 text-left">
-                        <Quote className="absolute -top-1 -left-2 h-6 w-6 text-primary/10 text-left" />
-                        <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed italic font-medium text-balance break-words text-left">
+                        <Quote className="absolute -top-1 -left-2 h-6 w-6 text-primary/10" />
+                        <p className="text-sm sm:text-lg text-muted-foreground leading-relaxed italic font-medium text-balance break-words">
                             {bio ? bio : "This believer is a dedicated member of the global Kingdom workforce, committed to sharing the goodness of Jesus Christ with the nations."}
                         </p>
                     </div>
@@ -405,33 +405,33 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       
       {videoTestimoniesList.length > 0 && (
         <Card className="rounded-none sm:rounded-[3rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950 text-left">
-            <CardHeader className="pb-6 pt-10 px-5 sm:px-12 text-center md:text-left text-left">
-                <CardTitle className="flex items-center justify-center md:justify-start gap-3 sm:gap-4 text-2xl sm:text-4xl font-black font-headline text-white tracking-tight uppercase text-left">
-                    <Youtube className="h-8 w-8 sm:h-10 sm:w-10 text-red-600 text-left" />
+            <CardHeader className="pb-6 pt-10 px-5 sm:px-12 text-center md:text-left">
+                <CardTitle className="flex items-center justify-center md:justify-start gap-3 sm:gap-4 text-2xl sm:text-4xl font-black font-headline text-white tracking-tight uppercase">
+                    <Youtube className="h-8 w-8 sm:h-10 sm:w-10 text-red-600" />
                     Living Testimonies
                 </CardTitle>
-                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl mx-auto md:mx-0 text-left">
+                <CardDescription className="text-zinc-400 text-sm sm:text-lg font-medium text-center md:text-left max-w-2xl mx-auto md:mx-0">
                     Witness the manifest power of God through these captured moments of miracle and glory.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="px-4 sm:px-12 pb-12 sm:pb-16 text-left">
-                <div className="flex flex-col gap-8 sm:gap-12 text-left">
+            <CardContent className="px-4 sm:px-12 pb-12 sm:pb-16">
+                <div className="flex flex-col gap-8 sm:gap-12">
                     {videoTestimoniesList.map((video, idx) => (
-                        <div key={idx} className="space-y-4 text-left">
-                            <div className="relative w-full aspect-video rounded-2xl sm:rounded-[2.5rem] overflow-hidden bg-black shadow-2xl border-2 border-white/5 group/vid text-left">
+                        <div key={idx} className="space-y-4">
+                            <div className="relative w-full aspect-video rounded-2xl sm:rounded-[2.5rem] overflow-hidden bg-black shadow-2xl border-2 border-white/5 group/vid">
                                 <iframe
                                     src={`${video.embedUrl!}?rel=0&modestbranding=1`}
                                     title={video.title || `Kingdom Testimony`}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen
-                                    className="absolute inset-0 w-full h-full border-0 text-left"
+                                    className="absolute inset-0 w-full h-full border-0"
                                 />
-                                <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity text-left">
-                                    <Badge className="bg-red-600 text-white font-black text-[10px] tracking-widest uppercase border-none text-left">YOUTUBE</Badge>
+                                <div className="absolute top-4 left-6 z-10 opacity-0 group-hover/vid:opacity-100 transition-opacity">
+                                    <Badge className="bg-red-600 text-white font-black text-[10px] tracking-widest uppercase border-none">YOUTUBE</Badge>
                                 </div>
                             </div>
                             {video.title && (
-                                <h4 className="text-xs sm:text-lg font-black uppercase tracking-widest text-zinc-500 ml-2 text-left">
+                                <h4 className="text-xs sm:text-lg font-black uppercase tracking-widest text-zinc-500 ml-2">
                                     {video.title}
                                 </h4>
                             )}
@@ -443,29 +443,29 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       )}
 
       <div className="space-y-12 text-left">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-0 text-left">
-            <div className="flex items-center gap-3 text-left">
-                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 shrink-0 text-left text-left">
-                    <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground text-left text-left" />
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-0">
+            <div className="flex items-center gap-3">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 shrink-0 text-left">
+                    <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground text-left" />
                 </div>
-                <h2 className="text-2xl font-black font-headline tracking-tight uppercase text-left">Kingdom Activity</h2>
+                <h2 className="text-2xl font-black font-headline tracking-tight uppercase">Kingdom Activity</h2>
             </div>
-            <div className="h-px bg-muted flex-grow hidden sm:block mx-8 text-left" />
-            <Badge variant="outline" className="h-8 px-4 font-black uppercase tracking-[0.2em] border-primary/20 text-primary bg-primary/5 text-[10px] text-left">Mobilizer Dashboard</Badge>
+            <div className="h-px bg-muted flex-grow hidden sm:block mx-8" />
+            <Badge variant="outline" className="h-8 px-4 font-black uppercase tracking-[0.2em] border-primary/20 text-primary bg-primary/5 text-[10px]">Mobilizer Dashboard</Badge>
         </div>
         
-        <div className="space-y-16 text-left">
-            <div className="space-y-8 text-left">
-                <div className="flex items-center justify-between px-4 sm:px-0 text-left">
-                    <div className="flex items-center gap-2 text-left">
-                        <Sparkles className="h-5 w-5 text-primary text-left" />
-                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">Shared Testimonies</h3>
+        <div className="space-y-16">
+            <div className="space-y-8">
+                <div className="flex items-center justify-between px-4 sm:px-0">
+                    <div className="flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">Shared Testimonies</h3>
                     </div>
-                    <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs text-left">{testimonies.length}</Badge>
+                    <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs">{testimonies.length}</Badge>
                 </div>
                 
                 {testimonies.length > 0 ? (
-                    <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto text-left">
+                    <div className="flex flex-col gap-0 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
                         {testimonies.map(testimony => (
                             <TestimonyCard 
                                 key={testimony.id} 
@@ -479,23 +479,23 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left">
-                        <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left" />
-                        <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left">This folder is currently empty. No shared testimonies recorded.</p>
+                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0">
+                        <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4" />
+                        <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center">This folder is currently empty. No shared testimonies recorded.</p>
                     </div>
                 )}
             </div>
 
-            <div className="space-y-8 text-left">
-                <div className="flex items-center justify-between px-4 sm:px-0 text-left">
-                    <div className="flex items-center gap-2 text-left">
-                        <CalendarDays className="h-5 w-5 text-primary text-left" />
-                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Organized Campaigns</h3>
+            <div className="space-y-8">
+                <div className="flex items-center justify-between px-4 sm:px-0">
+                    <div className="flex items-center gap-2">
+                        <CalendarDays className="h-5 w-5 text-primary" />
+                        <h3 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">Organized Campaigns</h3>
                     </div>
-                    <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs text-left">{processedCampaigns.length}</Badge>
+                    <Badge variant="secondary" className="rounded-full px-4 h-7 font-black text-xs">{processedCampaigns.length}</Badge>
                 </div>
                 {processedCampaigns.length > 0 ? (
-                    <div className="flex flex-col gap-8 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto text-left text-left">
+                    <div className="flex flex-col gap-8 w-full max-w-3xl mx-auto -mx-4 sm:mx-auto">
                         {processedCampaigns.map(campaign => (
                             <CampaignCard 
                                 key={campaign.id} 
@@ -511,21 +511,21 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left text-left">
-                        <Target className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left text-left text-left" />
-                        <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left text-left">No public mission campaigns have been organized by this believer.</p>
+                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0">
+                        <Target className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4" />
+                        <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center">No public mission campaigns have been organized by this believer.</p>
                     </div>
                 )}
             </div>
         </div>
 
         {testimonies.length === 0 && processedCampaigns.length === 0 && (
-            <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[3rem] sm:rounded-[4rem] bg-muted/5 mx-4 sm:mx-0 text-left">
-                <Globe className="h-20 w-20 text-muted-foreground/5 mx-auto mb-6 text-left" />
-                <p className="font-black text-2xl sm:text-3xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/20 text-center text-left">
+            <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[3rem] sm:rounded-[4rem] bg-muted/5 mx-4 sm:mx-0">
+                <Globe className="h-20 w-20 text-muted-foreground/5 mx-auto mb-6" />
+                <p className="font-black text-2xl sm:text-3xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/20 text-center">
                     Mission in Secret
                 </p>
-                <p className="text-sm sm:text-lg mt-4 px-12 opacity-50 font-medium max-w-lg mx-auto text-center text-left">
+                <p className="text-sm sm:text-lg mt-4 px-12 opacity-50 font-medium max-w-lg mx-auto text-center">
                     This believer is serving the Kingdom through prayer and local fellowship. Their impact is registered in the Book of Life.
                 </p>
             </div>
@@ -534,19 +534,19 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
       {isOwnProfile && userProfile && (
           <Drawer open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-              <DrawerContent className="h-[95dvh] flex flex-col p-0 overflow-hidden rounded-t-[2.5rem] border-none shadow-2xl text-left text-left">
-                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                      <DrawerHeader className="text-left p-0 text-left text-left">
-                          <div className="flex items-center gap-2 mb-2 text-left text-left">
-                              <Sparkles className="h-4 w-4 text-primary text-left text-left" />
-                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity settings</span>
+              <DrawerContent className="h-[95dvh] flex flex-col p-0 overflow-hidden rounded-t-[2.5rem] border-none shadow-2xl text-left">
+                  <div className="p-8 border-b shrink-0 bg-muted/10">
+                      <DrawerHeader className="text-left p-0">
+                          <div className="flex items-center gap-2 mb-2">
+                              <Sparkles className="h-4 w-4 text-primary" />
+                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity settings</span>
                           </div>
-                          <DrawerTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">Edit Kingdom Profile</DrawerTitle>
-                          <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Keep your identity current for the harvest workforce.</DrawerDescription>
+                          <DrawerTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Edit Kingdom Profile</DrawerTitle>
+                          <DrawerDescription className="text-sm font-medium mt-1">Keep your identity current for the harvest workforce.</DrawerDescription>
                       </DrawerHeader>
                   </div>
-                  <ScrollArea className="flex-1 min-h-0 text-left text-left">
-                      <div className="p-5 sm:p-10 text-left text-left text-left">
+                  <ScrollArea className="flex-1 min-h-0">
+                      <div className="p-5 sm:p-10">
                         <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
                       </div>
                   </ScrollArea>
