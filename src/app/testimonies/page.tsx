@@ -83,7 +83,7 @@ function TestimoniesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
-  const [activeTab, setActiveTab] = useState('testimonies');
+  const [activeTab, setActiveTab] = useState("testimonies");
   const [highlightedTestimonyId, setHighlightedTestimonyId] = React.useState<string | null>(null);
 
   // Filter States
@@ -292,7 +292,7 @@ function TestimoniesContent() {
     setIsTestimonyDialogOpen(false);
     setTimeout(() => setPrayerToAnswer(null), 300);
   };
-  const handlePrayerRequestCreated = () => {
+  const handlePrayerRequestCreatedInternal = () => {
     setIsPrayerDialogOpen(false);
   };
 
@@ -347,10 +347,6 @@ function TestimoniesContent() {
         setItemToDelete(null);
         setIsDeleting(false);
     }
-  };
-
-  const handlePrayerRequestCreatedInternal = () => {
-    setIsPrayerDialogOpen(false);
   };
 
   const testimonyFormContent = userProfile ? (
@@ -679,7 +675,7 @@ function TestimoniesContent() {
                   <div className="p-8 border-b shrink-0 bg-muted/10">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Testimony</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">Make changes to your shared story.</DialogDescription>
+                        <DialogDescription className="text-sm font-medium">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="flex-1 min-h-0">
@@ -734,7 +730,7 @@ function TestimoniesContent() {
 export default function TestimoniesPage() {
     return (
         <AppShell>
-            <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+            <Suspense fallback={<div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
                 <TestimoniesContent />
             </Suspense>
         </AppShell>
