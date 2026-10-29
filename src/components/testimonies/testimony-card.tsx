@@ -611,10 +611,10 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
                         <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/20 text-left">
-                                <div className="p-0 text-left">
+                                <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline">Kingdom Testimony</DrawerTitle>
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription>
-                                </div>
+                                </DrawerHeader>
                             </div>
                             <div className="flex-grow min-h-0 pt-8 px-6 text-left">{fullTextContent}</div>
                         </DrawerContent>
@@ -622,10 +622,10 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left">
-                                <div className="p-0 text-left">
+                                <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left">The specific request that God has fulfilled.</DrawerDescription>
-                                </div>
+                                </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow px-8 py-10">
                                 <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left">
@@ -637,11 +637,11 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
                         <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <div className="p-0 text-left">
+                                <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Responses</DrawerTitle>
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
                                     <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
-                                </div>
+                                </DrawerHeader>
                             </div>
                             <div className="flex-grow min-h-0 text-left">{isCommentsOpen && <CommentSection testimonyId={testimony.id} />}</div>
                         </DrawerContent>

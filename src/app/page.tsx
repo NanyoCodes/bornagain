@@ -208,7 +208,7 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
                   PROCLAIMING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
+                <h1 className="text-2xl sm:text-3xl md:text-5xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
                   <span className="text-primary text-xl sm:text-2xl md:text-3xl block mt-4 uppercase"> The App to care for family, friends, souls, and the Kingdom.</span>
                 </h1>
@@ -217,11 +217,11 @@ export default function LandingPage() {
                 </p>
               </motion.div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90 text-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center">
                   <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
-                <Button asChild variant="outline" size="sm" className="h-10 px-8 text-[10px] font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 text-center">
+                <Button asChild variant="outline" size="sm" className="h-10 px-8 text-[10px] font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 flex items-center justify-center">
                   <Link href="/about">THE COMPASSION VISION</Link>
                 </Button>
               </div>
@@ -303,7 +303,7 @@ export default function LandingPage() {
                                 Use the Word Arena to challenge and sharpen those you care about. Bible study becomes a collaborative act of love.
                             </p>
                         </div>
-                        <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 text-center">
+                        <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center">
                             <Link href="/signup">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4" /></Link>
                         </Button>
                     </div>
@@ -354,7 +354,7 @@ export default function LandingPage() {
                                     </p>
                                 </CardContent>
                                 <CardFooter className="px-8 pb-8 pt-0 mt-auto justify-center text-center">
-                                    <Button variant="ghost" size="icon" asChild className="rounded-full text-primary hover:bg-primary/5 transition-all group/btn text-center">
+                                    <Button variant="ghost" size="icon" asChild className="rounded-full text-primary hover:bg-primary/5 transition-all group/btn flex items-center justify-center">
                                         <Link href={feature.link}>
                                             <ArrowRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
                                         </Link>
@@ -384,7 +384,7 @@ export default function LandingPage() {
                             <div className="space-y-3 text-center">
                                 <h4 className="text-xl font-black uppercase tracking-tight text-center">{fact.title}</h4>
                                 <p className="text-sm text-zinc-400 leading-relaxed font-medium text-balance text-center">{fact.description}</p>
-                                <Badge variant="outline" className="mt-2 border-primary/20 text-primary uppercase font-bold tracking-widest text-[9px] mx-auto block w-fit"> {fact.ref}</Badge>
+                                <Badge variant="outline" className="mt-2 border-primary/20 text-primary uppercase font-bold tracking-widest text-[9px] mx-auto flex items-center justify-center w-fit"> {fact.ref}</Badge>
                             </div>
                         </div>
                     ))}
@@ -401,8 +401,8 @@ export default function LandingPage() {
                             True spiritual success is measured by the depth of your care. Testify makes it easy to stay present in the lives of your family and friends, ensuring they grow deep in the Word and established in the Kingdom.
                         </p>
                     </div>
-                    <div className="flex justify-center relative z-10">
-                        <Button asChild size="lg" className="rounded-full h-12 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all text-center">
+                    <div className="flex justify-center relative z-10 items-center">
+                        <Button asChild size="lg" className="rounded-full h-12 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center">
                             <Link href="/signup">JOIN THE MISSION OF LOVE</Link>
                         </Button>
                     </div>
@@ -417,14 +417,14 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
               <div className="space-y-10 text-center lg:text-left">
                 <div className="space-y-6 text-center lg:text-left">
-                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 block w-fit">The Compassionate Altar</Badge>
+                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left">Witness the Care</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left">
                     Read how believers are looking after their harvest and following up on those they love with miracles.
                   </p>
                 </div>
                 
-                <Button asChild size="lg" variant="outline" className="h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-10 w-full sm:w-auto uppercase tracking-widest mx-auto block lg:mx-0 text-center">
+                <Button asChild size="lg" variant="outline" className="h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-10 w-full sm:w-auto uppercase tracking-widest mx-auto lg:mx-0 flex items-center justify-center">
                   <Link href="/testimonies">VIEW FEED</Link>
                 </Button>
               </div>
@@ -484,8 +484,8 @@ export default function LandingPage() {
                 Join the app dedicated to caring for family, friends, souls, and the Kingdom.
                 Follow up on those you love and record the greatness of God together.
               </p>
-              <div className="flex justify-center pt-4 text-left">
-                <Button asChild size="lg" className="h-14 px-12 text-sm font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto block text-center">
+              <div className="flex justify-center pt-4 text-left items-center">
+                <Button asChild size="lg" className="h-14 px-12 text-sm font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center">
                   <Link href="/signup">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6" /></Link>
                 </Button>
               </div>
@@ -501,7 +501,7 @@ export default function LandingPage() {
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
                 {logo && (
                   <Avatar className="h-14 w-14 border-2 border-primary/20">
-                    <AvatarImage src={logo.imageUrl} alt="Logo" className="object-cover" />
+                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
                     <AvatarFallback>T</AvatarFallback>
                   </Avatar>
                 )}
