@@ -215,7 +215,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
               <video src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
           ) : (
               <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
-                  <div className="relative shrink-0">
+                  <div className="relative shrink-0 text-left">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
                           <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
@@ -234,9 +234,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
               </div>
           )}
           <div className="absolute inset-0 bg-black/5 group-hover/media:bg-transparent transition-colors duration-500" />
-          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 opacity-0 group-hover/media:opacity-100 transition-opacity shadow-2xl">
-              <Sparkles className="h-3 w-3 sm:h-4 w-4 text-primary animate-pulse" />
-          </div>
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 opacity-0 group-hover/media:opacity-100 transition-opacity shadow-2xl" />
       </div>
   );
 
@@ -540,7 +538,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
 
   return (
     <React.Fragment>
-        <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
+        <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
             <CardHeader className="p-8 pb-4 text-center text-left">
                 <div className="relative inline-block mx-auto mb-4 text-left">
                     <Dialog><DialogTrigger asChild disabled={!soul.photoURL}><div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-105", soul.photoURL && "cursor-pointer hover:scale-105")}><Avatar className="h-full w-full border shadow-sm"><AvatarImage src={soul.photoURL || undefined} className="object-cover" /><AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl"> {soul.firstName?.charAt(0)}</AvatarFallback></Avatar></div></DialogTrigger>{soul.photoURL && (<DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center"><DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader><div className="relative h-full w-full flex items-center justify-center p-4 text-center"><div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center"><Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized /></div></div></DialogContent>)}</Dialog>
@@ -562,7 +560,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                 <Separator className="opacity-20" />
                 <div className="space-y-4 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Harvest Context</p><div className="space-y-1 text-left"><p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 text-left"><Target className="h-3 w-3 text-primary text-left" />Source: {soul.source}</p></div></div>
                 <Separator className="opacity-20" />
-                <div className="space-y-4 text-left"><div className="flex items-center justify-between text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onOpenAssignDialog(soul)}><Edit className="h-4 w-4" /></Button></div><div className="space-y-3 text-left"><div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left"><HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left" /><div className="min-w-0 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p></div></div><div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left"><Users className="h-4 w-4 text-blue-500 shrink-0 text-left" /><div className="min-w-0 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p></div></div></div></div>
+                <div className="space-y-4 text-left"><div className="flex items-center justify-between text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onOpenAssignDialog(soul)}><Edit className="h-4 w-4" /></Button></div><div className="space-y-3 text-left"><div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left"><HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left" /><div className="min-w-0 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p></div></div><div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left"><Users className="h-4 w-4 text-blue-500 shrink-0 text-left" /><div className="min-w-0 text-left"><p className="text-[8px) font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p></div></div></div></div>
                 <Separator className="opacity-20" />
                 <div className="space-y-4 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Milestones</p><div className="grid grid-cols-2 gap-2 text-left">{[{ label: 'Church', val: soul.attendingChurch, icon: Church }, { label: 'Word Study', val: soul.inBibleStudy, icon: BookOpen }, { label: 'Prayer', val: soul.attendingPrayer, icon: Zap }, { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck }].map(milestone => (
                   <div key={milestone.label} className={cn("flex items-center gap-2 p-2 rounded-xl border transition-all text-left", milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40")}>

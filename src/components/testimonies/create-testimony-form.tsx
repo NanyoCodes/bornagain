@@ -29,7 +29,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 const testimonyCategories: TestimonyCategory[] = [
@@ -252,25 +252,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     handleUploadProcessedFile(file, slot, type as any);
   };
 
-  const compressImage = (file: File): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const img = new (window as any).Image();
-      img.src = URL.createObjectURL(file);
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const maxDimension = 1920;
-        let width = img.width, height = img.height;
-        if (width > height) { if (width > maxDimension) { height *= maxDimension / width; width = maxDimension; } }
-        else { if (height > maxDimension) { width *= maxDimension / height; height = maxDimension; } }
-        canvas.width = width; canvas.height = height;
-        ctx?.drawImage(img, 0, 0, width, height);
-        canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Compression failed')), 'image/jpeg', 0.7);
-      };
-      img.onerror = reject;
-    });
-  };
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !userProfile) return;
     setIsSubmitting(true);
@@ -359,7 +340,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none text-left"><div className="flex justify-between items-start text-left"><div className="flex items-center gap-3 text-left">{isRecording && (<div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left"><div className="h-2 w-2 rounded-full bg-white" /><span className="text-[10px] font-black text-white uppercase tracking-widest">REC</span></div>)}<Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px]">{Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00</Badge></div></div>
                           <div className="space-y-4 text-left"><div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left"><motion.div className="h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} /></div><div className="flex justify-center pointer-events-auto text-left">{!isRecording ? (<Button onClick={startRecording} size="lg" className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95"><div className="h-8 w-8 rounded-full bg-white shadow-inner" /></Button>) : (<Button onClick={stopRecording} size="lg" className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95"><Square className="h-8 w-8 fill-current" /></Button>)}</div></div></div></div>) : (
                   <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10 text-left"><div className="relative text-left"><div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.1)]"><Mic className={cn("h-16 w-16 text-primary transition-all", isRecording && "scale-110")} /></div>{isRecording && (<div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20" />)}</div>
-                       <div className="space-y-4 w-full text-left"><div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center">Voice of Thanksgiving</div><p className="text-zinc-500 text-sm font-medium text-center">Record your vocal proclamation (max 2 minutes).</p><div className="flex items-center justify-center gap-3"><{isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />}<span className="text-3xl font-black font-mono text-zinc-100 tabular-nums">{Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}</span></div><div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden text-left"><motion.div className="h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} /></div></div>
+                       <div className="space-y-4 w-full text-left"><div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center">Voice of Thanksgiving</div><p className="text-zinc-500 text-sm font-medium text-center">Record your vocal proclamation (max 2 minutes).</p><div className="flex items-center justify-center gap-3">{isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />}<span className="text-3xl font-black font-mono text-zinc-100 tabular-nums">{Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}</span></div><div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden text-left"><motion.div className="h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} /></div></div>
                        <div className="flex gap-4 w-full text-left">{!isRecording ? (<Button onClick={startRecording} className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center"><Mic className="mr-3 h-6 w-6" /> START</Button>) : (<Button onClick={stopRecording} variant="destructive" className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center"><Square className="mr-3 h-6 w-6 fill-current" /> STOP</Button>)}</div></div>
               )}</DialogContent></Dialog>
     </div>
