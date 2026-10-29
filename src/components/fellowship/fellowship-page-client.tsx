@@ -421,11 +421,11 @@ export default function FellowshipPageClient() {
 
     const handleEditDevotional = (devo: DailyDevotional) => {
         form.reset({
-            title: d.title,
-            scripture: d.scripture,
-            text: d.text,
-            prayer: d.prayer || '',
-            scheduledDate: d.scheduledDate,
+            title: devo.title,
+            scripture: devo.scripture,
+            text: devo.text,
+            prayer: devo.prayer || '',
+            scheduledDate: devo.scheduledDate,
         });
     };
 
@@ -878,7 +878,7 @@ export default function FellowshipPageClient() {
 
             {isScheduleViewOpen && (
                 isMobile ? (
-                    <Drawer open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left flex-shrink-0 p-0 text-left"><div className="flex items-center gap-2 mb-2 text-left"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-widest text-primary">Spiritual Schedule</span></div><DrawerTitle className="text-2xl font-black font-headline text-left">Planned Word</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">Browse scheduled meditations for this group.</DrawerDescription></DrawerHeader></div><ScrollArea className="flex-grow px-8 pt-6 text-left">{ScheduleList}</ScrollArea></DrawerContent></Drawer>
+                    <Drawer open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left flex-shrink-0 p-0 text-left"><div className="flex items-center gap-2 mb-2 text-left"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-widest text-primary">Spiritual Schedule</span></div><DrawerTitle className="text-2xl font-black font-headline text-left">Planned Word</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Browse scheduled meditations for this group.</DrawerDescription></DrawerHeader></div><ScrollArea className="flex-grow px-8 pt-6 text-left">{ScheduleList}</ScrollArea></DrawerContent></Drawer>
                 ) : (
                     <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left"><div className="p-8 border-b bg-muted/10 text-left text-left"><DialogHeader className="p-0 text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Spiritual Schedule</DialogTitle><DialogDescription className="text-sm font-medium text-left">Peek ahead at scheduled meditations.</DialogDescription></DialogHeader></div><ScrollArea className="max-h-[60vh] p-6 text-left">{ScheduleList}</ScrollArea></DialogContent></Dialog>
                 )
@@ -943,3 +943,4 @@ export default function FellowshipPageClient() {
         </div>
     );
 }
+
