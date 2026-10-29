@@ -28,7 +28,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 const testimonyCategories: TestimonyCategory[] = [
@@ -257,7 +257,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     )}
                     <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 transition-opacity" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}><X className="h-3.5 w-3.5" /></Button>
                 </div>
-                <Button asChild variant="link" className="h-auto p-0 text-[9px] font-bold uppercase tracking-tighter text-muted-foreground hover:text-primary"><a href={preview.url} target="_blank" rel="noopener noreferrer"><ExternalLink className="mr-1 h-2 w-2" /> Open proof in new tab</a></Button>
+                <Button asChild variant="link" className="h-auto p-0 text-[9px] font-bold uppercase tracking-tighter text-muted-foreground hover:text-primary"><a href={preview.url} target="_blank" rel="noopener noreferrer"><ExternalLink className="mr-1 h-2 w-2" /> Open in new tab</a></Button>
               </div>
           )}
           <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*,audio/*" onChange={(e) => handleFileSelect(e, slot)} />

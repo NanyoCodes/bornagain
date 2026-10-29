@@ -51,8 +51,7 @@ import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -145,7 +144,7 @@ function FullDevotionalDialog({
 
     const content = (
         <div className="space-y-8 text-left" onClick={(e) => e.stopPropagation()}>
-            <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
+            <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden text-left">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
                 <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-left text-balance relative z-10 break-words">{devotional.text}</p>
                 <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10">— {devotional.scripture}</p>
@@ -153,7 +152,7 @@ function FullDevotionalDialog({
             
             {devotional.prayer && (
                 <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden text-left">
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center gap-3 mb-4 text-left">
                         <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                             <HandHeart className="h-4 w-4 text-primary" />
                         </div>
@@ -217,8 +216,8 @@ function FullDevotionalDialog({
                 </div>
             </div>
 
-            <div ref={commentsRef} className="border-t border-dashed pt-8">
-                <div className="flex items-center gap-3 mb-6 px-1">
+            <div ref={commentsRef} className="border-t border-dashed pt-8 text-left">
+                <div className="flex items-center gap-3 mb-6 px-1 text-left">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                         <MessageSquare className="h-4 w-4 text-primary" />
                     </div>
@@ -234,10 +233,10 @@ function FullDevotionalDialog({
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                         <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
-                                <MessageSquare className="h-6 w-6 text-primary shrink-0 text-left" />
+                                <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
                             </SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1 text-left">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
@@ -260,19 +259,19 @@ function FullDevotionalDialog({
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
                 <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                    <div className="flex items-center gap-3 mb-2 text-left">
-                        <Target className="h-5 w-5 text-primary text-left" />
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Mission Overview</span>
+                    <div className="flex items-center gap-3 mb-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
-                    <DialogHeader className="text-left p-0 text-left">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance text-left">
-                            <MessageSquare className="h-6 w-6 text-primary shrink-0 text-left" />
+                    <DialogHeader className="text-left p-0">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight break-words flex items-center gap-3 text-balance text-left">
+                            <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                             {devotional.title}
                         </DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1 text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
+                        <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="flex-1 min-h-0 text-left">
+                <div className="flex-1 min-h-0">
                   <ScrollArea className="h-full">
                       <div className="p-8">
                           {content}
@@ -644,7 +643,7 @@ export default function FellowshipPageClient() {
     }
 
     const ScheduleList = (
-        <div className="space-y-4">
+        <div className="space-y-4 text-left">
             {loadingSchedule ? (
                 <div className="py-12 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
             ) : (scheduledDevotionals && scheduledDevotionals.length > 0) ? (
@@ -873,7 +872,7 @@ export default function FellowshipPageClient() {
                     </Drawer>
                 ) : (
                     <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
-                        <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="text-left p-0">
                                     <DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Devotional Hub</DialogTitle>
@@ -905,10 +904,10 @@ export default function FellowshipPageClient() {
                 isMobile ? (
                     <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1">Record a new life won directly to this community.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won directly to this community.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow px-8 text-left">
@@ -924,7 +923,7 @@ export default function FellowshipPageClient() {
                             <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                                 <DialogHeader className="text-left p-0">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1">Record a new life won. This convert will be automatically assigned to this group.</DrawerDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-1 min-h-0 p-8 text-left">
