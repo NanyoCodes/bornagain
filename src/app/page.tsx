@@ -217,7 +217,7 @@ export default function LandingPage() {
                 </p>
               </motion.div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="flex flex-row gap-4 justify-center items-center">
                 <Button asChild size="lg" className="h-11 px-8 text-[10px] font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center text-center">
                   <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
@@ -487,7 +487,7 @@ export default function LandingPage() {
                 Follow up on those you love and record the greatness of God together.
               </p>
               <div className="flex justify-center pt-4 items-center">
-                <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center">
+                <Button asChild size="lg" className="h-14 px-12 text-sm font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center">
                   <Link href="/signup" className="text-center">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6" /></Link>
                 </Button>
               </div>
@@ -550,3 +550,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

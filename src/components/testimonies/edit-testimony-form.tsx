@@ -224,10 +224,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
-        // Ensure accurate contentType metadata for cross-platform playback (iOS/Android)
-        const contentType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
-        const metadata = { contentType };
-        const uploadResult = await uploadBytes(fileRef, file, metadata);
+        const uploadResult = await uploadBytes(fileRef, file);
         const url = await getDownloadURL(uploadResult.ref);
 
         if (slot === 1) {
@@ -239,7 +236,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             form.setValue('mediaUrl2', url);
             form.setValue('mediaType2', type as any);
         }
-        toast({ title: 'Miracle Updated', description: `Proof ${slot} successfully captured.` });
+        toast({ title: 'Miracle Updated', description: `Proof ${slot} successfully captured and uploaded.` });
     } catch (err) {
         toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not update the recording.' });
     } finally {
@@ -272,7 +269,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${file.name}`);
-        const uploadResult = await uploadBytes(fileRef, fileToUpload, { contentType: fileToUpload.type || file.type });
+        const uploadResult = await uploadBytes(fileRef, fileToUpload);
         const url = await getDownloadURL(uploadResult.ref);
 
         const type = isImage ? 'image' : isVideo ? 'video' : 'audio';
@@ -391,9 +388,9 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                       onClick={() => inputRef.current?.click()}
                   >
                       {isUploadingMedia === slot ? (
-                          <div className="flex flex-col items-center gap-2 text-left text-left">
+                          <div className="flex flex-col items-center gap-2 text-left">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                              <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
+                              <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Uploading...</p>
                           </div>
                       ) : (
                           <div className="flex flex-col items-center text-left">
@@ -441,7 +438,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                       <video src={preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls />
                   ) : (
                         <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
-                            <div className="relative shrink-0 text-left text-left">
+                            <div className="relative shrink-0 text-left">
                                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                                     <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                                 </div>
@@ -626,3 +623,4 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     </div>
   );
 }
+
