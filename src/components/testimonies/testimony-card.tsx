@@ -133,6 +133,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         className="w-full" 
                         controls 
                         preload="metadata" 
+                        autoPlay
                       />
                   </div>
               )}
@@ -167,8 +168,8 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                       </motion.div>
                   </div>
-                  <div className="min-w-0 flex-1 text-left text-left">
-                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left">Voice Proclamation</p>
+                  <div className="min-w-0 flex-1 text-left">
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
                     <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left">Tap to Hear Miracle</p>
                   </div>
               </div>
@@ -207,10 +208,10 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
           {trigger}
           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
-              <div className="sr-only text-left text-left">
-                  <DialogHeader className="text-left text-left">
-                    <DialogTitle className="text-left text-left">Full View</DialogTitle>
-                    <DialogDescription className="text-left text-left">Full miracle proof preview.</DialogDescription>
+              <div className="sr-only text-left">
+                  <DialogHeader className="text-left">
+                    <DialogTitle className="text-left">Full View</DialogTitle>
+                    <DialogDescription className="text-left">Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
               {mediaContent}
@@ -465,71 +466,71 @@ export const TestimonyCard = memo(function TestimonyCard({
         isPartner && "sm:ring-1 ring-primary/20",
         testimony.answeredPrayerId && "sm:border-l-4 sm:border-l-amber-500"
       )}>
-        <div className="p-4 sm:p-6 pb-2 text-left">
+        <div className="p-4 sm:p-6 pb-2 text-left text-left">
           <div className="flex flex-row items-start justify-between gap-3 text-left">
             <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 {testimony.isAnonymous ? (
-                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm text-left">
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-left text-center flex items-center justify-center h-full w-full"><Users className="h-5 w-5" /></AvatarFallback>
+                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-center flex items-center justify-center h-full w-full text-left"><Users className="h-5 w-5" /></AvatarFallback>
                     </Avatar>
                 ) : (
-                    <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14 text-left" />
+                    <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
                 )}
                 <div className="min-w-0 flex-1 text-left">
-                    <div className="flex items-center gap-2 flex-wrap text-left">
-                        <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0 text-left">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
                              <h3 className="text-base sm:text-lg font-bold capitalize leading-none text-left"> 
                                 <LiveAuthorName userId={String(testimony.authorId)} fallbackName={authorName} />
                              </h3>
                         </Link>
-                        {isPartner && <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20 shrink-0 text-left">Partner</Badge>}
+                        {isPartner && <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20 shrink-0">Partner</Badge>}
                         {!isAuthor && !isPartner && currentUserProfile && (
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <button className={cn("h-6 w-6 rounded-full transition-colors flex items-center justify-center text-center", hasPendingRequest ? "text-muted-foreground" : "text-primary hover:bg-primary/10")} onClick={handleSendPartnerRequest} disabled={isRequestingPartner || hasPendingRequest}>
-                                            {isRequestingPartner ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : hasPendingRequest ? <Hourglass className="h-3.5 w-3.5 text-left" /> : <UserPlus className="h-3.5 w-3.5 text-left" />}
+                                            {isRequestingPartner ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : hasPendingRequest ? <Hourglass className="h-3.5 w-3.5" /> : <UserPlus className="h-3.5 w-3.5" />}
                                         </button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left"><p className={cn("text-[10px] font-black uppercase tracking-widest text-left")}>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p></TooltipContent>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className={cn("text-[10px] font-black uppercase tracking-widest text-left")}>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         )}
                     </div>
-                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left">
-                        <div className="truncate text-[10px] sm:text-xs opacity-70 text-left"> {displayDate}</div>
-                        <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium text-left"><Globe className="h-3 w-3 text-primary shrink-0 text-left" /> {locationString}</div>
+                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left text-left">
+                        <div className="truncate text-[10px] sm:text-xs opacity-70 text-left text-left"> {displayDate}</div>
+                        <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium text-left text-left"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
                     </div>
                 </div>
             </div>
-            <div className="flex items-center gap-1.5 text-left">
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-background text-left" onClick={handleShare}>
-                    <Share2 className="h-3.5 w-3.5 text-left" /><span className="sr-only text-left">Share</span>
+            <div className="flex items-center gap-1.5">
+                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-background" onClick={handleShare}>
+                    <Share2 className="h-3.5 w-3.5" /><span className="sr-only">Share</span>
                 </Button>
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left" onClick={(e) => { e.stopPropagation(); }}><MoreVertical className="h-4 w-4 text-left" /></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl text-left">
+                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={(e) => { e.stopPropagation(); }}><MoreVertical className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl text-left text-left">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Manage Story</DropdownMenuLabel>
-                        <DropdownMenuSeparator className="text-left" />
+                        <DropdownMenuSeparator />
                         {isAuthor ? (
                             <React.Fragment>
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onEdit); }} className="rounded-lg text-left">
-                                    <Edit className="mr-2 h-4 w-4 text-primary text-left" />
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onEdit); }} className="rounded-lg">
+                                    <Edit className="mr-2 h-4 w-4 text-primary" />
                                     Edit Story
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setIsBoostOpen(true); }} className="rounded-lg text-left">
-                                    <TrendingUp className="mr-2 h-4 w-4 text-indigo-600 text-left" />
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setIsBoostOpen(true); }} className="rounded-lg">
+                                    <TrendingUp className="mr-2 h-4 w-4 text-indigo-600" />
                                     Boost Miracle
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg text-left">
-                                    <Trash2 className="mr-2 h-4 w-4 text-left" />
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg">
+                                    <Trash2 className="mr-2 h-4 w-4" />
                                     Delete Permanently
                                 </DropdownMenuItem>
                             </React.Fragment>
                         ) : (
-                            <DropdownMenuItem onClick={handleShare} className="rounded-lg text-left">
-                                <Share2 className="mr-2 h-4 w-4 text-primary text-left" />
+                            <DropdownMenuItem onClick={handleShare} className="rounded-lg">
+                                <Share2 className="mr-2 h-4 w-4 text-primary" />
                                 Spread the Word
                             </DropdownMenuItem>
                         )}
@@ -540,15 +541,15 @@ export const TestimonyCard = memo(function TestimonyCard({
         </div>
         
         <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4 text-left">
-          <div className="text-sm sm:text-base text-muted-foreground leading-relaxed text-left">
-            <div className={cn("leading-relaxed max-w-full text-left", (testimony.mediaUrl || testimony.mediaUrl2) ? "line-clamp-3" : "line-clamp-6")}>
-                <div ref={contentRef} className="text-left">{testimony.content}</div>
+          <div className="text-sm sm:text-base text-muted-foreground leading-relaxed text-left text-left">
+            <div className={cn("leading-relaxed max-w-full text-left text-left", (testimony.mediaUrl || testimony.mediaUrl2) ? "line-clamp-3" : "line-clamp-6")}>
+                <div ref={contentRef}>{testimony.content}</div>
             </div>
             {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1 text-left" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
           </div>
 
           {(testimony.mediaUrl || testimony.mediaUrl2) && (
-              <div className={cn("grid gap-3 text-left", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-2" : "grid-cols-1")}>
+              <div className={cn("grid gap-3", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-2" : "grid-cols-1")}>
                  {testimony.mediaUrl && (
                     <MediaPreview url={testimony.mediaUrl} type={testimony.mediaType as any} />
                  )}
@@ -559,12 +560,12 @@ export const TestimonyCard = memo(function TestimonyCard({
           )}
 
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
-            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden text-left">
+            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden text-left text-left">
                 <div className="p-4 text-left">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1 text-left">Answering Prayer Request:</div>
-                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground text-left">
-                        <div className="line-clamp-2 text-left">
-                           <div ref={prayerRef} className="text-left">{testimony.answeredPrayerContent}</div>
+                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground">
+                        <div className="line-clamp-2">
+                           <div ref={prayerRef}>{testimony.answeredPrayerContent}</div>
                         </div>
                     </div>
                     {isPrayerTruncated && (
@@ -582,22 +583,22 @@ export const TestimonyCard = memo(function TestimonyCard({
           )}
 
            {totalReactions > 0 && (
-             <div className="flex items-center justify-between pt-2 text-left">
-                <div className="flex items-center gap-1.5 text-left">
-                    <div className="flex items-center -space-x-1.5 text-left">
-                        {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30 shadow-sm text-left"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current text-left" /></div>}
-                        {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20 shadow-sm text-left"><Sparkles className="h-2.5 w-2.5 text-white fill-current text-left" /></div>}
-                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm text-left"><PartyPopper className="h-2.5 w-2.5 text-white text-left" /></div>}
+             <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-1.5">
+                    <div className="flex items-center -space-x-1.5">
+                        {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30 shadow-sm"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
+                        {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20 shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
+                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
                     </div>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight text-left"> {totalReactions}</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight"> {totalReactions}</span>
                 </div>
-                {testimony.campaignTitle && <span className="text-[9px] font-black uppercase text-muted-foreground/60 truncate italic bg-muted/50 px-2 py-0.5 rounded-full border max-w-[150px] text-left">RE: {testimony.campaignTitle}</span>}
+                {testimony.campaignTitle && <span className="text-[9px] font-black uppercase text-muted-foreground/60 truncate italic bg-muted/50 px-2 py-0.5 rounded-full border max-w-[150px]">RE: {testimony.campaignTitle}</span>}
              </div>
            )}
         </div>
 
-        <Separator className="mx-4 sm:mx-6 w-auto opacity-50 text-left" />
-        <div className="py-2 sm:py-3 px-2 sm:px-6 grid grid-cols-4 gap-1 sm:gap-2 text-left text-left">
+        <Separator className="mx-4 sm:mx-6 w-auto opacity-50" />
+        <div className="py-2 sm:py-3 px-2 sm:px-6 grid grid-cols-4 gap-1 sm:gap-2 text-left">
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-center", hasAmened && "text-primary hover:text-primary bg-primary/5")}>
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
                 Amen {supporters.length > 0 && `(${supporters.length})`}
@@ -617,7 +618,7 @@ export const TestimonyCard = memo(function TestimonyCard({
       </div>
 
       {mounted && (
-        <React.Fragment>
+        <>
             <Drawer open={isBoostOpen} onOpenChange={setIsBoostOpen}>
                 <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
@@ -685,7 +686,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     </Drawer>
                 )}
             </AnimatePresence>
-        </React.Fragment>
+        </>
       )}
     </React.Fragment>
   );
