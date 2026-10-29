@@ -757,4 +757,3 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
     </React.Fragment>
   );
 }
-
