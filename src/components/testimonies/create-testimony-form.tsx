@@ -111,13 +111,14 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     if (typeof MediaRecorder === 'undefined') return '';
     const types = mode === 'video' 
         ? [
-            'video/mp4;codecs=avc1',
+            'video/mp4;codecs=avc1,mp4a.40.2',
             'video/mp4',
+            'video/quicktime',
             'video/webm;codecs=vp9,opus',
-            'video/webm;codecs=vp8,opus',
             'video/webm'
           ]
         : [
+            'audio/mp4;codecs=mp4a.40.2',
             'audio/mp4',
             'audio/aac',
             'audio/mpeg',
@@ -582,7 +583,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       </Form>
 
       <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
-          <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black">
+          <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left">
               <div className="sr-only text-left">
                   <DialogHeader>
                       <DialogTitle>Miracle Recorder</DialogTitle>

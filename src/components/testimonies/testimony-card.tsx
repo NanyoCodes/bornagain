@@ -111,64 +111,64 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                       <video src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop />
                   ) : (
                       <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left text-left">
-                          <div className="relative shrink-0 text-left text-left">
-                              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner text-left text-left">
-                                  <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary text-left text-left" />
+                          <div className="relative shrink-0 text-left text-left text-left">
+                              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner text-left text-left text-left">
+                                  <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary text-left text-left text-left" />
                               </div>
                               <motion.div 
-                                className="absolute -top-1 -right-1 text-left text-left"
+                                className="absolute -top-1 -right-1 text-left text-left text-left"
                                 animate={{ opacity: [0.4, 1, 0.4] }}
                                 transition={{ repeat: Infinity, duration: 2 }}
                               >
-                                <Sparkles className="h-3 w-3 text-primary animate-pulse text-left text-left" />
+                                <Sparkles className="h-3 w-3 text-primary animate-pulse text-left text-left text-left" />
                               </motion.div>
                           </div>
-                          <div className="min-w-0 flex-1 text-left text-left">
-                            <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left text-left">Voice of Thanksgiving</p>
-                            <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left text-left">Tap to Hear Miracle</p>
+                          <div className="min-w-0 flex-1 text-left text-left text-left">
+                            <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left text-left text-left">Voice of Thanksgiving</p>
+                            <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left text-left text-left">Tap to Hear Miracle</p>
                           </div>
                       </div>
                   )}
-                  <div className="absolute inset-0 bg-black/5 group-hover/media:bg-transparent transition-colors duration-500 text-left text-left" />
-                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 opacity-0 group-hover/media:opacity-100 transition-opacity shadow-2xl text-left text-left">
-                      <Sparkles className="h-3 w-3 sm:h-4 w-4 text-primary animate-pulse text-left text-left" />
+                  <div className="absolute inset-0 bg-black/5 group-hover/media:bg-transparent transition-colors duration-500 text-left text-left text-left" />
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 opacity-0 group-hover/media:opacity-100 transition-opacity shadow-2xl text-left text-left text-left">
+                      <Sparkles className="h-3 w-3 sm:h-4 w-4 text-primary animate-pulse text-left text-left text-left" />
                   </div>
               </div>
           </DialogTrigger>
-          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left text-left">
-              <div className="sr-only text-left text-left">
-                  <DialogHeader className="text-left text-left">
-                    <DialogTitle className="text-left text-left text-left">Full View</DialogTitle>
-                    <DialogDescription className="text-left text-left text-left">Full miracle proof preview.</DialogDescription>
+          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left text-left text-left">
+              <div className="sr-only text-left text-left text-left">
+                  <DialogHeader className="text-left text-left text-left text-left">
+                    <DialogTitle className="text-left text-left text-left text-left">Full View</DialogTitle>
+                    <DialogDescription className="text-left text-left text-left text-left">Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left">
-                  <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
+              <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left text-left">
+                  <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left">
                       {type === 'image' ? (
-                          <Image src={url} alt="Proof Full" fill className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left" unoptimized />
+                          <Image src={url} alt="Proof Full" fill className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left text-left" unoptimized />
                       ) : type === 'video' ? (
-                          <video src={url} className="w-full h-full object-contain text-left text-left" playsInline controls />
+                          <video src={url} className="w-full h-full object-contain text-left text-left text-left" playsInline controls />
                       ) : (
-                          <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl text-left text-left text-left">
-                              <div className="relative text-center text-left text-left">
-                                  <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto text-left text-left text-left">
-                                      <Mic className="h-16 w-16 text-primary text-left text-left text-left" />
+                          <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl text-left text-left text-left text-left">
+                              <div className="relative text-center text-left text-left text-left">
+                                  <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto text-left text-left text-left text-left">
+                                      <Mic className="h-16 w-16 text-primary text-left text-left text-left text-left" />
                                   </div>
-                                  <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse text-left text-left text-left" />
+                                  <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse text-left text-left text-left text-left" />
                               </div>
-                              <div className="space-y-2 text-center text-left text-left text-left">
-                                  <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white text-left text-left text-left">Voice Proclamation</h4>
-                                  <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic text-left text-left text-left">A testimony of God's goodness</p>
+                              <div className="space-y-2 text-center text-left text-left text-left text-left">
+                                  <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white text-left text-left text-left text-left">Voice Proclamation</h4>
+                                  <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic text-left text-left text-left text-left">A testimony of God's goodness</p>
                               </div>
                               <audio 
                                 key={url} 
                                 src={url} 
-                                className="w-full text-left text-left" 
+                                className="w-full text-left text-left text-left" 
                                 controls 
                                 preload="metadata" 
                               />
-                              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary/60 text-center text-left text-left text-left">
-                                  <HandHeart className="h-3 w-3 text-left text-left text-left" />
+                              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary/60 text-center text-left text-left text-left text-left">
+                                  <HandHeart className="h-3 w-3 text-left text-left text-left text-left" />
                                   Glory to God
                               </div>
                           </div>
@@ -402,8 +402,8 @@ export const TestimonyCard = memo(function TestimonyCard({
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="space-y-8 pb-8 px-2 text-left">
-        <div className={cn("grid gap-4", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
+      <div className="space-y-8 pb-8 px-2 text-left text-left">
+        <div className={cn("grid gap-4 text-left text-left", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
             {testimony.mediaUrl && (
               <MediaPreview url={testimony.mediaUrl} type={testimony.mediaType as any} isFull />
             )}
@@ -411,7 +411,7 @@ export const TestimonyCard = memo(function TestimonyCard({
               <MediaPreview url={testimony.mediaUrl2} type={testimony.mediaType2 as any} isFull />
             )}
         </div>
-        <div className="text-base sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium text-left">
+        <div className="text-base sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium text-left text-left">
             {testimony.content}
         </div>
       </div>
@@ -421,18 +421,18 @@ export const TestimonyCard = memo(function TestimonyCard({
   return (
     <>
       <div id={testimony.id} className={cn(
-        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 text-left",
+        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 text-left text-left",
         "rounded-none sm:rounded-[2rem] border-y border-border sm:border-x border-t-4 border-t-amber-500/20 shadow-none sm:shadow-lg",
         "bg-card/50 backdrop-blur-sm",
         isPartner && "sm:ring-1 ring-primary/20",
         testimony.answeredPrayerId && "sm:border-l-4 sm:border-l-amber-500"
       )}>
-        <div className="p-4 sm:p-6 pb-2 text-left">
-          <div className="flex flex-row items-start justify-between gap-3 text-left">
+        <div className="p-4 sm:p-6 pb-2 text-left text-left">
+          <div className="flex flex-row items-start justify-between gap-3 text-left text-left">
             <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left">
                 {testimony.isAnonymous ? (
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm text-left text-left">
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-left text-left text-left"><Users className="h-5 w-5 text-left text-left" /></AvatarFallback>
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-left text-left"><Users className="h-5 w-5 text-left text-left" /></AvatarFallback>
                     </Avatar>
                 ) : (
                     <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14 text-left text-left" />
@@ -470,7 +470,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 </Button>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left text-left" onClick={(e) => { e.stopPropagation(); }}><MoreVertical className="h-4 w-4 text-left text-left" /></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl text-left text-left text-left">
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl text-left text-left">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black text-left text-left">Manage Story</DropdownMenuLabel>
                         <DropdownMenuSeparator className="text-left text-left" />
                         {isAuthor ? (
@@ -638,7 +638,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                             <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left text-left text-left text-left text-left">
                                 <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline text-left text-left" />Answered Prayer</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow px-8 py-10 text-left text-left text-left text-left">

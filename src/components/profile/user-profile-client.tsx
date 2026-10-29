@@ -294,7 +294,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </DialogTrigger>
                 {photoURL && (
                   <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left text-left text-left">
-                      <div className="sr-only text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">Identity Preview</DialogTitle></DialogHeader></div>
+                      <div className="sr-only text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">Identity Preview</DialogTitle></DialogHeader></div>
                       <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left text-left">
                           <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left">
                               <Image 
@@ -479,7 +479,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left text-left">
+                    <div className="text-center py-20 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left text-left">
                         <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left text-left text-left text-left" />
                         <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left text-left text-left text-left">This folder is currently empty. No shared testimonies recorded.</p>
                     </div>
@@ -511,9 +511,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left text-left text-left text-left">
-                        <Target className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left text-left text-left text-left text-left" />
-                        <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left text-left text-left text-left text-left">No public mission campaigns have been organized by this believer.</p>
+                    <div className="text-center py-20 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left text-left text-left text-left">
+                        <Target className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left text-left text-left text-left text-left">No public mission campaigns have been organized by this believer.</p>
                     </div>
                 )}
             </div>

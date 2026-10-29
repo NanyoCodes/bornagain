@@ -121,13 +121,14 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     if (typeof MediaRecorder === 'undefined') return '';
     const types = mode === 'video' 
         ? [
-            'video/mp4;codecs=avc1',
+            'video/mp4;codecs=avc1,mp4a.40.2',
             'video/mp4',
+            'video/quicktime',
             'video/webm;codecs=vp9,opus',
-            'video/webm;codecs=vp8,opus',
             'video/webm'
           ]
         : [
+            'audio/mp4;codecs=mp4a.40.2',
             'audio/mp4',
             'audio/aac',
             'audio/mpeg',
@@ -308,24 +309,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const maxDimension = 1920;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > maxDimension) { height *= maxDimension / width; width = maxDimension; }
-        } else {
-          if (height > maxDimension) { width *= maxDimension / height; height = maxDimension; }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        ctx?.drawImage(img, 0, 0, width, height);
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob);
-          else reject(new Error('Canvas compression failed'));
-        }, 'image/jpeg', 0.7);
-      };
+        const maxDimension = 1920; let width = img.width; let height = img.height; if (width > height) { if (width > maxDimension) { height *= maxDimension / width; width = maxDimension; } } else { if (height > maxDimension) { width *= maxDimension / height; height = maxDimension; } } canvas.width = width; canvas.height = height; ctx?.drawImage(img, 0, 0, width, height); canvas.toBlob((blob) => { if (blob) resolve(blob); else reject(new Error('Canvas compression failed')); }, 'image/jpeg', 0.7); };
       img.onerror = reject;
     });
   };
