@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -70,7 +71,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const firestore = useFirestore();
   const storage = useStorage();
 
-  // Generate the testimony ID on mount so it's ready for storage metadata
   const [testimonyId] = useState(() => doc(collection(firestore, "testimonies")).id);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -220,7 +220,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
         const actualMimeType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
         
-        // Pass metadata to trigger Cloud Function transcoding
         const metadata = { 
             contentType: actualMimeType,
             customMetadata: {
