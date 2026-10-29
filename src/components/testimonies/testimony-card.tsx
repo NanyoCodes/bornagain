@@ -636,7 +636,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     </Drawer>
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
                         <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Responses</DrawerTitle>
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
@@ -662,13 +662,13 @@ export const TestimonyCard = memo(function TestimonyCard({
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                             <div className="p-8 border-b bg-amber-500/10 text-left text-left">
+                             <div className="p-8 border-b bg-amber-500/10 text-left">
                                 <div className="p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer Request</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">The original request shared with the body.</DialogDescription>
                                 </div>
                             </div>
-                            <div className="p-8 text-left text-left">
+                            <div className="p-8 text-left">
                                 <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left">
                                     {testimony.answeredPrayerContent}
                                 </div>
@@ -677,7 +677,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
                         <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <div className="p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Gathered Responses</DialogTitle>
                                     <DialogDescription className="text-sm font-bold uppercase tracking-widest text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription>

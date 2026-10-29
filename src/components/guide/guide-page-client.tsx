@@ -18,10 +18,13 @@ export function GuidePageClient() {
   const { toast } = useToast();
 
   const handleShare = async () => {
+    const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
+    const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://testifyglobal.com';
+    
     const shareData = {
       title: 'Join Testify - Global Evangelism Platform',
       text: 'Help us organize the harvest and track evangelism progress for the Kingdom of God.',
-      url: typeof window !== 'undefined' ? window.location.origin : 'https://testifyglobal.com'
+      url: shareUrl
     };
 
     try {
@@ -32,7 +35,7 @@ export function GuidePageClient() {
       }
     } catch (err) {
       if (typeof window !== 'undefined') {
-        navigator.clipboard.writeText(shareData.url);
+        navigator.clipboard.writeText(shareUrl);
         toast({
           title: 'Link Copied',
           description: 'Referral link has been copied to your clipboard.',

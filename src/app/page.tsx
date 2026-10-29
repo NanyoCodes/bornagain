@@ -208,9 +208,9 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
                   PROCLAIMING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-2xl sm:text-3xl md:text-5xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
+                <h1 className="text-xl sm:text-3xl md:text-5xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
-                  <span className="text-primary text-xl sm:text-2xl md:text-3xl block mt-4 uppercase"> The App to care for family, friends, souls, and the Kingdom.</span>
+                  <span className="text-primary text-base sm:text-2xl md:text-3xl block mt-4 uppercase"> The App to care for family, friends, souls, and the Kingdom.</span>
                 </h1>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
@@ -246,7 +246,7 @@ export default function LandingPage() {
                             Nurture the Harvest.<br/>
                             <span className="text-primary">With Love.</span>
                         </h2>
-                        <div className="space-y-6">
+                        <div className="space-y-6 text-center">
                             <p className="text-lg sm:text-2xl text-muted-foreground font-medium leading-relaxed italic border-x-4 border-primary/20 px-8 text-center text-balance">
                                 We are here to help you look after those you lead to Christ. Testify provides the heartbeat of care for your family, your friends, and the souls God places in your path. 
                                 We offer men the tools for spiritual legacy. We provide women a community of radiant restoration. We guard the dreams of our children through intentional spiritual follow-up.
@@ -424,9 +424,11 @@ export default function LandingPage() {
                   </p>
                 </div>
                 
-                <Button asChild size="lg" variant="outline" className="h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-10 w-full sm:w-auto uppercase tracking-widest mx-auto lg:mx-0 flex items-center justify-center">
-                  <Link href="/testimonies">VIEW FEED</Link>
-                </Button>
+                <div className="flex justify-center lg:justify-start">
+                    <Button asChild size="lg" variant="outline" className="h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-10 w-full sm:w-auto uppercase tracking-widest flex items-center justify-center">
+                        <Link href="/testimonies">VIEW FEED</Link>
+                    </Button>
+                </div>
               </div>
 
               <div className="space-y-6 text-left text-left">
