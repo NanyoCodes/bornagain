@@ -122,6 +122,12 @@ const features = [
 
 const historicalFacts = [
   {
+    title: "Ebenezer Stones",
+    description: "Thus far the Lord has helped us. We record every miracle as a monument to God's faithful hand in our journey.",
+    icon: Award,
+    ref: "1 Samuel 7:12"
+  },
+  {
     title: "The Care Protocol",
     description: "Early believers established patterns of deep care—ensuring no one was left behind in their spiritual journey.",
     icon: History,
@@ -132,12 +138,6 @@ const historicalFacts = [
     description: "The 1st-century church exploded because believers didn't just preach; they cared for the souls they won.",
     icon: Globe,
     ref: "1 Thess 2:8"
-  },
-  {
-    title: "Kingdom Nurturing",
-    description: "Nurturing a new convert with patience and love is the highest form of Kingdom productivity.",
-    icon: Zap,
-    ref: "Colossians 1:28"
   }
 ];
 
