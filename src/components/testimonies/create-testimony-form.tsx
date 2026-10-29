@@ -216,7 +216,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
-        // CRITICAL FIX: Explicitly set contentType metadata so mobile browsers (iOS/Android) identify the stream correctly
         const actualMimeType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
         const metadata = { contentType: actualMimeType };
         
@@ -266,7 +265,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
-        // Ensure content type is set from the file
         const metadata = { contentType: fileToUpload.type || file.type };
         const uploadResult = await uploadBytes(fileRef, fileToUpload, metadata);
         const url = await getDownloadURL(uploadResult.ref);

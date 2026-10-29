@@ -113,7 +113,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                       <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left text-left">
                           <div className="relative shrink-0 text-left text-left text-left">
                               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner text-left text-left text-left">
-                                  <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary text-left text-left text-left" />
+                                  <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                               </div>
                               <motion.div 
                                 className="absolute -top-1 -right-1 text-left text-left text-left"
@@ -152,7 +152,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                           <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl text-left text-left text-left text-left">
                               <div className="relative text-center text-left text-left text-left">
                                   <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto text-left text-left text-left text-left">
-                                      <Mic className="h-16 w-16 text-primary text-left text-left text-left text-left" />
+                                      <Mic className="h-16 w-16 text-primary" />
                                   </div>
                                   <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse text-left text-left text-left text-left" />
                               </div>
@@ -197,7 +197,7 @@ export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { user
                 </div>
             </DialogTrigger>
             {photoURL && (
-                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left text-left">
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left text-left text-left">
                     <DialogHeader className="sr-only text-center text-left text-left"><DialogTitle className="text-left text-left">Profile Photo</DialogTitle></DialogHeader>
                     <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left">
                         <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">

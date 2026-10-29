@@ -225,7 +225,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
-        // CRITICAL FIX: Explicitly set contentType metadata so mobile browsers correctly handle headers
         const actualMimeType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
         const metadata = { contentType: actualMimeType };
 
@@ -274,7 +273,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${file.name}`);
-        // Ensure content type is set correctly
         const metadata = { contentType: fileToUpload.type || file.type };
         const uploadResult = await uploadBytes(fileRef, fileToUpload, metadata);
         const url = await getDownloadURL(uploadResult.ref);
@@ -309,7 +307,24 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const maxDimension = 1920; let width = img.width; let height = img.height; if (width > height) { if (width > maxDimension) { height *= maxDimension / width; width = maxDimension; } } else { if (height > maxDimension) { width *= maxDimension / height; height = maxDimension; } } canvas.width = width; canvas.height = height; ctx?.drawImage(img, 0, 0, width, height); canvas.toBlob((blob) => { if (blob) resolve(blob); else reject(new Error('Canvas compression failed')); }, 'image/jpeg', 0.7); };
+        const maxDimension = 1920;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxDimension) { height *= maxDimension / width; width = maxDimension; }
+        } else {
+          if (height > maxDimension) { width *= maxDimension / height; height = maxDimension; }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas compression failed'));
+        }, 'image/jpeg', 0.7);
+      };
       img.onerror = reject;
     });
   };
@@ -483,7 +498,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <FormItem className="text-left">
                 <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                    <FormControl className="text-left">
+                    <FormControl>
                         <SelectTrigger className="h-12 rounded-2xl border-2 text-left">
                             <SelectValue placeholder="What is the nature of this miracle?" />
                         </SelectTrigger>
@@ -575,7 +590,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                             </div>
                             <div className="space-y-4 text-left text-left text-left text-left">
                                 <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left text-left text-left text-left text-left">
-                                    <motion.div className="h-full bg-primary text-left text-left text-left text-left text-left" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
+                                    <motion.div className="h-full bg-primary text-left text-left text-left text-left text-left text-left" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
                                 </div>
                                 <div className="flex justify-center pointer-events-auto text-left text-left text-left text-left text-left text-center">
                                     {!isRecording ? (<Button onClick={startRecording} size="lg" className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-left text-left text-left text-left text-center"><div className="h-8 w-8 rounded-full bg-white shadow-inner text-left text-left text-left text-left text-left" /></Button>) : (<Button onClick={stopRecording} size="lg" className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-left text-left text-left text-left text-center"><Square className="h-8 w-8 fill-current text-left text-left text-left text-left text-left" /></Button>)}

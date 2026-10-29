@@ -209,7 +209,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   if (loading || !mounted) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center text-left">
+      <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center text-left text-left">
         <div className="relative mb-8 mx-auto text-left text-left">
             <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
             <div className="absolute inset-0 flex items-center justify-center text-left text-left">
@@ -223,11 +223,11 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   if (!userProfile) {
     return (
-      <div className="text-center py-24 px-4 space-y-6 text-left">
+      <div className="text-center py-24 px-4 space-y-6 text-left text-left">
         <div className="bg-muted/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-inner text-left text-left">
             <Globe className="h-10 w-10 text-muted-foreground/30 text-left text-left" />
         </div>
-        <div className="space-y-2 text-left">
+        <div className="space-y-2 text-left text-left">
             <h3 className="text-2xl font-bold font-headline text-center text-balance text-left text-left">Profile Not Found</h3>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto text-center text-balance text-left text-left">This profile might have been set to private or the believer has moved to a new station.</p>
         </div>
@@ -294,7 +294,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </DialogTrigger>
                 {photoURL && (
                   <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left text-left text-left">
-                      <div className="sr-only text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">Identity Preview</DialogTitle></DialogHeader></div>
+                      <div className="sr-only text-left text-left text-left text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">Identity Preview</DialogTitle></DialogHeader></div>
                       <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left text-left">
                           <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left">
                               <Image 
@@ -479,7 +479,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left text-left">
+                    <div className="text-center py-20 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left text-left text-left">
                         <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4 text-left text-left text-left text-left" />
                         <p className="text-sm sm:text-base text-muted-foreground italic font-medium text-balance px-8 text-center text-left text-left text-left text-left">This folder is currently empty. No shared testimonies recorded.</p>
                     </div>

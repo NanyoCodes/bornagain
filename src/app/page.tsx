@@ -208,7 +208,7 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
                   PROCLAIMING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-2xl sm:text-3xl md:text-5xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
+                <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
                   <span className="text-primary text-sm sm:text-lg md:text-xl block mt-4 uppercase"> The App to care for family, friends, souls, and the Kingdom.</span>
                 </h1>
@@ -217,11 +217,11 @@ export default function LandingPage() {
                 </p>
               </motion.div>
 
-              <div className="flex flex-row gap-4 justify-center items-center">
-                <Button asChild size="lg" className="h-11 px-8 text-[10px] font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center text-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button asChild size="sm" className="h-9 px-6 text-[10px] font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center text-center">
                   <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-11 px-8 text-[10px] font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 flex items-center justify-center text-center">
+                <Button asChild variant="outline" size="sm" className="h-9 px-6 text-[10px] font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 flex items-center justify-center text-center">
                   <Link href="/about">THE COMPASSION VISION</Link>
                 </Button>
               </div>
@@ -402,7 +402,7 @@ export default function LandingPage() {
                         </p>
                     </div>
                     <div className="flex justify-center relative z-10 items-center">
-                        <Button asChild size="lg" className="rounded-full h-12 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center">
+                        <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center">
                             <Link href="/signup" className="text-center">JOIN THE MISSION OF LOVE</Link>
                         </Button>
                     </div>
@@ -487,7 +487,7 @@ export default function LandingPage() {
                 Follow up on those you love and record the greatness of God together.
               </p>
               <div className="flex justify-center pt-4 items-center">
-                <Button asChild size="lg" className="h-14 px-12 text-sm font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center">
+                <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center">
                   <Link href="/signup" className="text-center">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6" /></Link>
                 </Button>
               </div>
