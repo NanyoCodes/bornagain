@@ -19,11 +19,11 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Camera, Video, X, FileUp, Sparkles, Mic, Square, Info, Newspaper, HandHeart } from "lucide-react";
+import { Loader2, Camera, Video, X, FileUp, Sparkles, Mic, Square, Info, Newspaper, HandHeart, ExternalLink } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
@@ -74,8 +74,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState<number | null>(null);
-  const [mediaPreview1, setMediaPreview1] = useState<{ url: string, type: 'image' | 'video' | 'audio' } | null>(null);
-  const [mediaPreview2, setMediaPreview2] = useState<{ url: string, type: 'image' | 'video' | 'audio' } | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [mediaPreview1, setMediaPreview1] = useState<{ url: string, localUrl?: string, type: 'image' | 'video' | 'audio' } | null>(null);
+  const [mediaPreview2, setMediaPreview2] = useState<{ url: string, localUrl?: string, type: 'image' | 'video' | 'audio' } | null>(null);
   
   const [isRecorderOpen, setIsRecorderOpen] = useState(false);
   const [recorderMode, setRecorderMode] = useState<'video' | 'audio'>('video');
@@ -108,6 +109,23 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       form.reset({ category: 'Salvation', content: "" });
     }
   }, [prayerRequest, campaign, form]);
+
+  // Clean up object URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (mediaPreview1?.localUrl) URL.revokeObjectURL(mediaPreview1.localUrl);
+      if (mediaPreview2?.localUrl) URL.revokeObjectURL(mediaPreview2.localUrl);
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (stream) stream.getTracks().forEach(track => track.stop());
+    };
+  }, [mediaPreview1, mediaPreview2, stream]);
+
+  // Live camera preview effect
+  useEffect(() => {
+    if (isRecorderOpen && recorderMode === 'video' && stream && videoPreviewRef.current) {
+        videoPreviewRef.current.srcObject = stream;
+    }
+  }, [isRecorderOpen, recorderMode, stream]);
 
   const getSupportedMimeType = (mode: 'video' | 'audio') => {
     if (typeof MediaRecorder === 'undefined') return '';
@@ -161,14 +179,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
           setStream(mediaStream);
           setIsRecorderOpen(true);
-          
-          if (mode === 'video') {
-            setTimeout(() => {
-                if (videoPreviewRef.current) {
-                    videoPreviewRef.current.srcObject = mediaStream;
-                }
-            }, 100);
-          }
       } catch (err) {
           console.error("Media access error:", err);
           toast({ variant: 'destructive', title: 'Access Blocked', description: `Please enable ${mode} permissions to record live.` });
@@ -200,7 +210,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
       recorder.onstop = async () => {
           const actualMimeType = mediaRecorderRef.current?.mimeType || getSupportedMimeType(recorderMode);
-          const baseType = actualMimeType.split(';')[0]; // Strip codecs for Storage metadata and Blob construction
+          const baseType = actualMimeType.split(';')[0]; 
           
           let extension = 'webm';
           if (baseType.includes('mp4')) extension = 'mp4';
@@ -217,7 +227,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           closeRecorder();
       };
 
-      recorder.start();
+      recorder.start(1000); // Capture data in 1s slices for safer recovery and duration headers
       setIsRecording(true);
       
       timerRef.current = setInterval(() => {
@@ -232,21 +242,35 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   };
 
   const stopRecording = () => {
-      if (mediaRecorderRef.current && isRecording) {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
           mediaRecorderRef.current.stop();
           setIsRecording(false);
-          if (timerRef.current) clearInterval(timerRef.current);
+          if (timerRef.current) {
+              clearInterval(timerRef.current);
+              timerRef.current = null;
+          }
       }
   };
 
   const handleUploadProcessedFile = async (file: File | Blob, slot: 1 | 2, type: 'video' | 'audio' | 'image') => {
     if (!user || !storage) return;
+    
+    if (file.size > 100 * 1024 * 1024) {
+        toast({ variant: 'destructive', title: 'File Too Large', description: 'Maximum file size is 100MB.' });
+        return;
+    }
+
     setIsUploadingMedia(slot);
+    setUploadProgress(0);
+
+    const localUrl = URL.createObjectURL(file);
+
     try {
-        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
+        const fileName = (file as File).name || `recorded_${Date.now()}.${type === 'image' ? 'jpg' : type === 'video' ? 'mp4' : 'm4a'}`;
+        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${fileName}`);
         
         const fallbackType = type === 'audio' ? 'audio/mp4' : (type === 'video' ? 'video/mp4' : 'image/jpeg');
-        const contentType = (file.type || fallbackType).split(';')[0]; // Ensure stripped codec metadata
+        const contentType = (file.type || fallbackType).split(';')[0];
         
         const metadata = { 
             contentType,
@@ -256,23 +280,39 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             }
         };
         
-        const uploadResult = await uploadBytes(fileRef, file, metadata);
-        const url = await getDownloadURL(uploadResult.ref);
+        const uploadTask = uploadBytesResumable(fileRef, file, metadata);
 
-        if (slot === 1) {
-            setMediaPreview1({ url, type: type as any });
-            form.setValue('mediaUrl', url);
-            form.setValue('mediaType', type as any);
-        } else {
-            setMediaPreview2({ url, type: type as any });
-            form.setValue('mediaUrl2', url);
-            form.setValue('mediaType2', type as any);
-        }
-        toast({ title: 'Proof Captured', description: `Evidence for slot ${slot} has been optimized.` });
+        uploadTask.on('state_changed', 
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setUploadProgress(progress);
+            },
+            (error) => {
+                console.error("Upload failed", error);
+                toast({ variant: 'destructive', title: 'Upload Failed', description: 'Connection lost or unauthorized access.' });
+                setIsUploadingMedia(null);
+            },
+            async () => {
+                const url = await getDownloadURL(uploadTask.snapshot.ref);
+                if (slot === 1) {
+                    if (mediaPreview1?.localUrl) URL.revokeObjectURL(mediaPreview1.localUrl);
+                    setMediaPreview1({ url, localUrl, type: type as any });
+                    form.setValue('mediaUrl', url);
+                    form.setValue('mediaType', type as any);
+                } else {
+                    if (mediaPreview2?.localUrl) URL.revokeObjectURL(mediaPreview2.localUrl);
+                    setMediaPreview2({ url, localUrl, type: type as any });
+                    form.setValue('mediaUrl2', url);
+                    form.setValue('mediaType2', type as any);
+                }
+                toast({ title: 'Proof Captured', description: `Evidence for slot ${slot} has been optimized.` });
+                setIsUploadingMedia(null);
+            }
+        );
+
     } catch (err) {
-        console.error("Upload error:", err);
+        console.error("Upload setup error:", err);
         toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not transmit media to Kingdom Storage.' });
-    } finally {
         setIsUploadingMedia(null);
     }
   };
@@ -281,16 +321,30 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     const file = e.target.files?.[0];
     if (!file || !user || !storage) return;
 
-    const isImage = file.type.startsWith('image/');
-    const isVideo = file.type.startsWith('video/');
-    const isAudio = file.type.startsWith('audio/');
+    if (file.size > 100 * 1024 * 1024) {
+        toast({ variant: 'destructive', title: 'File Too Large', description: 'Maximum file size is 100MB.' });
+        return;
+    }
+
+    let fileType = file.type;
+    if (!fileType) {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        const typeMap: Record<string, string> = {
+            'mp4': 'video/mp4', 'mov': 'video/quicktime', 'webm': 'video/webm',
+            'm4a': 'audio/mp4', 'mp3': 'audio/mpeg', 'aac': 'audio/aac', 'wav': 'audio/wav',
+            'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png'
+        };
+        fileType = typeMap[ext || ''] || '';
+    }
+
+    const isImage = fileType.startsWith('image/');
+    const isVideo = fileType.startsWith('video/');
+    const isAudio = fileType.startsWith('audio/');
 
     if (!isImage && !isVideo && !isAudio) {
       toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select an image, video, or audio file.' });
       return;
     }
-
-    setIsUploadingMedia(slot);
 
     const processAndUpload = async () => {
       try {
@@ -301,39 +355,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           fileToUpload = await compressImage(file);
         }
 
-        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
-        
-        const fallbackType = isImage ? 'image/jpeg' : isVideo ? 'video/mp4' : 'audio/mp4';
-        const contentType = (fileToUpload.type || file.type || fallbackType).split(';')[0];
-        
-        const metadata = { 
-            contentType,
-            customMetadata: {
-                testimonyId: testimonyId,
-                slot: slot.toString()
-            }
-        };
-
-        const uploadResult = await uploadBytes(fileRef, fileToUpload, metadata);
-        const url = await getDownloadURL(uploadResult.ref);
-
         const type = isImage ? 'image' : isVideo ? 'video' : 'audio';
-        if (slot === 1) {
-            setMediaPreview1({ url, type: type as any });
-            form.setValue('mediaUrl', url);
-            form.setValue('mediaType', type as any);
-        } else {
-            setMediaPreview2({ url, type: type as any });
-            form.setValue('mediaUrl2', url);
-            form.setValue('mediaType2', type as any);
-        }
+        await handleUploadProcessedFile(fileToUpload, slot, type as any);
         
-        toast({ title: 'Media Ready', description: `Proof ${slot} optimized for the harvest.` });
       } catch (err: any) {
-        console.error("Media upload error:", err);
-        toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not transmit media.' });
-      } finally {
-        setIsUploadingMedia(null);
+        console.error("Media processing error:", err);
+        toast({ variant: 'destructive', title: 'Processing Failed', description: 'Could not prepare file for upload.' });
       }
     };
 
@@ -453,7 +480,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       {isUploadingMedia === slot ? (
                           <div className="flex flex-col items-center gap-2">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                              <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
+                              <div className="space-y-1 text-center">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p>
+                                <p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p>
+                              </div>
                           </div>
                       ) : (
                           <div className="flex flex-col items-center">
@@ -492,37 +522,68 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                   </div>
               </div>
           ) : (
-              <div className={cn(
-                "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group",
-                isAudio ? "h-auto min-h-[100px]" : "aspect-square"
-              )}>
-                  {preview.type === 'image' ? (
-                      <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
-                  ) : preview.type === 'video' ? (
-                      <video src={preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls />
-                  ) : (
-                      <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
-                          <div className="relative shrink-0">
-                              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                                  <Mic className="h-5 w-5 text-primary" />
-                              </div>
-                              <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                              <p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice of Thanksgiving</p>
-                              <audio src={preview.url} className="w-full" controls preload="metadata" />
-                          </div>
-                      </div>
-                  )}
-                  <Button 
-                      type="button" 
-                      variant="destructive" 
-                      size="icon" 
-                      className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" 
-                      onClick={() => { setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}
-                  >
-                      <X className="h-3.5 w-3.5" />
-                  </Button>
+              <div className="space-y-2">
+                <div className={cn(
+                  "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group",
+                  isAudio ? "h-auto min-h-[100px]" : "aspect-square"
+                )}>
+                    {preview.type === 'image' ? (
+                        <Image src={preview.localUrl || preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
+                    ) : preview.type === 'video' ? (
+                        <video 
+                            src={preview.localUrl || preview.url} 
+                            className="w-full h-full object-cover bg-zinc-950" 
+                            playsInline 
+                            controls 
+                            preload="metadata"
+                            onError={(e) => {
+                                console.error("Playback failed", e.currentTarget.error);
+                                toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` });
+                            }}
+                        />
+                    ) : (
+                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
+                            <div className="relative shrink-0">
+                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <Mic className="h-5 w-5 text-primary" />
+                                </div>
+                                <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice of Thanksgiving</p>
+                                <audio 
+                                    src={preview.localUrl || preview.url} 
+                                    className="w-full" 
+                                    controls 
+                                    preload="metadata"
+                                    onError={(e) => {
+                                        console.error("Playback failed", e.currentTarget.error);
+                                        toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` });
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    <Button 
+                        type="button" 
+                        variant="destructive" 
+                        size="icon" 
+                        className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" 
+                        onClick={() => { 
+                            if (preview.localUrl) URL.revokeObjectURL(preview.localUrl);
+                            setPreview(null); 
+                            form.setValue(urlField, undefined); 
+                            form.setValue(typeField, undefined); 
+                        }}
+                    >
+                        <X className="h-3.5 w-3.5" />
+                    </Button>
+                </div>
+                <Button asChild variant="link" className="h-auto p-0 text-[9px] font-bold uppercase tracking-tighter text-muted-foreground hover:text-primary">
+                    <a href={preview.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-1 h-2 w-2" /> Open proof in new tab
+                    </a>
+                </Button>
               </div>
           )}
           <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*,audio/*" onChange={(e) => handleFileSelect(e, slot)} />
@@ -630,7 +691,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
       <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
           <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left">
-              <div className="sr-only text-left">
+              <div className="sr-only">
                   <DialogHeader>
                       <DialogTitle>Miracle Recorder</DialogTitle>
                       <DialogDescription>Capture live proof of God's goodness.</DialogDescription>

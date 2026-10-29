@@ -30,12 +30,13 @@ import {
   Sparkles,
   Info,
   Newspaper,
-  HandHeart
+  HandHeart,
+  ExternalLink
 } from "lucide-react";
 import { Testimony, TestimonyCategory } from "@/lib/types";
 import { useFirestore, useUser, useStorage } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -75,13 +76,18 @@ type EditTestimonyFormProps = {
 
 export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimonyFormProps) {
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const storage = useStorage();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState<number | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   
-  const [mediaPreview1, setMediaPreview1] = useState<{ url: string, type: 'image' | 'video' | 'audio' } | null>(
+  const [mediaPreview1, setMediaPreview1] = useState<{ url: string, localUrl?: string, type: 'image' | 'video' | 'audio' } | null>(
     testimony.mediaUrl ? { url: testimony.mediaUrl, type: testimony.mediaType as any } : null
   );
-  const [mediaPreview2, setMediaPreview2] = useState<{ url: string, type: 'image' | 'video' | 'audio' } | null>(
+  const [mediaPreview2, setMediaPreview2] = useState<{ url: string, localUrl?: string, type: 'image' | 'video' | 'audio' } | null>(
     testimony.mediaUrl2 ? { url: testimony.mediaUrl2, type: testimony.mediaType2 as any } : null
   );
 
@@ -101,10 +107,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
 
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const storage = useStorage();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -116,6 +118,23 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       mediaType2: testimony.mediaType2 || null,
     },
   });
+
+  // Clean up object URLs
+  useEffect(() => {
+    return () => {
+      if (mediaPreview1?.localUrl) URL.revokeObjectURL(mediaPreview1.localUrl);
+      if (mediaPreview2?.localUrl) URL.revokeObjectURL(mediaPreview2.localUrl);
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (stream) stream.getTracks().forEach(track => track.stop());
+    };
+  }, [mediaPreview1, mediaPreview2, stream]);
+
+  // Live camera preview effect
+  useEffect(() => {
+    if (isRecorderOpen && recorderMode === 'video' && stream && videoPreviewRef.current) {
+        videoPreviewRef.current.srcObject = stream;
+    }
+  }, [isRecorderOpen, recorderMode, stream]);
 
   const getSupportedMimeType = (mode: 'video' | 'audio') => {
     if (typeof MediaRecorder === 'undefined') return '';
@@ -169,14 +188,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
           const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
           setStream(mediaStream);
           setIsRecorderOpen(true);
-          
-          if (mode === 'video') {
-            setTimeout(() => {
-                if (videoPreviewRef.current) {
-                    videoPreviewRef.current.srcObject = mediaStream;
-                }
-            }, 100);
-          }
       } catch (err) {
           toast({ variant: 'destructive', title: 'Access Blocked', description: `Please enable ${mode} permissions to record live.` });
       }
@@ -207,7 +218,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
       recorder.onstop = async () => {
           const actualMimeType = mediaRecorderRef.current?.mimeType || getSupportedMimeType(recorderMode);
-          const baseType = actualMimeType.split(';')[0]; // Strip codecs
+          const baseType = actualMimeType.split(';')[0]; 
           
           let extension = 'webm';
           if (baseType.includes('mp4')) extension = 'mp4';
@@ -224,7 +235,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
           closeRecorder();
       };
 
-      recorder.start();
+      recorder.start(1000); 
       setIsRecording(true);
       
       timerRef.current = setInterval(() => {
@@ -239,18 +250,32 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   };
 
   const stopRecording = () => {
-      if (mediaRecorderRef.current && isRecording) {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
           mediaRecorderRef.current.stop();
           setIsRecording(false);
-          if (timerRef.current) clearInterval(timerRef.current);
+          if (timerRef.current) {
+              clearInterval(timerRef.current);
+              timerRef.current = null;
+          }
       }
   };
 
   const handleUploadProcessedFile = async (file: File | Blob, slot: 1 | 2, type: 'video' | 'audio' | 'image') => {
     if (!user || !storage) return;
+
+    if (file.size > 100 * 1024 * 1024) {
+        toast({ variant: 'destructive', title: 'File Too Large', description: 'Maximum file size is 100MB.' });
+        return;
+    }
+
     setIsUploadingMedia(slot);
+    setUploadProgress(0);
+
+    const localUrl = URL.createObjectURL(file);
+
     try {
-        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
+        const fileName = (file as File).name || `edit_recorded_${Date.now()}.${type === 'image' ? 'jpg' : type === 'video' ? 'mp4' : 'm4a'}`;
+        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${fileName}`);
         
         const fallbackType = type === 'audio' ? 'audio/mp4' : (type === 'video' ? 'video/mp4' : 'image/jpeg');
         const contentType = (file.type || fallbackType).split(';')[0];
@@ -263,22 +288,38 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
             }
         };
 
-        const uploadResult = await uploadBytes(fileRef, file, metadata);
-        const url = await getDownloadURL(uploadResult.ref);
+        const uploadTask = uploadBytesResumable(fileRef, file, metadata);
 
-        if (slot === 1) {
-            setMediaPreview1({ url, type: type as any });
-            form.setValue('mediaUrl', url);
-            form.setValue('mediaType', type as any);
-        } else {
-            setMediaPreview2({ url, type: type as any });
-            form.setValue('mediaUrl2', url);
-            form.setValue('mediaType2', type as any);
-        }
-        toast({ title: 'Miracle Updated', description: `Proof ${slot} successfully captured.` });
+        uploadTask.on('state_changed', 
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setUploadProgress(progress);
+            },
+            (error) => {
+                console.error("Upload failed", error);
+                toast({ variant: 'destructive', title: 'Upload Failed', description: 'Connection lost or unauthorized access.' });
+                setIsUploadingMedia(null);
+            },
+            async () => {
+                const url = await getDownloadURL(uploadTask.snapshot.ref);
+                if (slot === 1) {
+                    if (mediaPreview1?.localUrl) URL.revokeObjectURL(mediaPreview1.localUrl);
+                    setMediaPreview1({ url, localUrl, type: type as any });
+                    form.setValue('mediaUrl', url);
+                    form.setValue('mediaType', type as any);
+                } else {
+                    if (mediaPreview2?.localUrl) URL.revokeObjectURL(mediaPreview2.localUrl);
+                    setMediaPreview2({ url, localUrl, type: type as any });
+                    form.setValue('mediaUrl2', url);
+                    form.setValue('mediaType2', type as any);
+                }
+                toast({ title: 'Miracle Updated', description: `Proof ${slot} successfully captured.` });
+                setIsUploadingMedia(null);
+            }
+        );
+
     } catch (err) {
         toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not update the recording.' });
-    } finally {
         setIsUploadingMedia(null);
     }
   };
@@ -287,16 +328,30 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     const file = e.target.files?.[0];
     if (!file || !user || !storage) return;
 
-    const isImage = file.type.startsWith('image/');
-    const isVideo = file.type.startsWith('video/');
-    const isAudio = file.type.startsWith('audio/');
+    if (file.size > 100 * 1024 * 1024) {
+        toast({ variant: 'destructive', title: 'File Too Large', description: 'Maximum file size is 100MB.' });
+        return;
+    }
+
+    let fileType = file.type;
+    if (!fileType) {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        const typeMap: Record<string, string> = {
+            'mp4': 'video/mp4', 'mov': 'video/quicktime', 'webm': 'video/webm',
+            'm4a': 'audio/mp4', 'mp3': 'audio/mpeg', 'aac': 'audio/aac', 'wav': 'audio/wav',
+            'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png'
+        };
+        fileType = typeMap[ext || ''] || '';
+    }
+
+    const isImage = fileType.startsWith('image/');
+    const isVideo = fileType.startsWith('video/');
+    const isAudio = fileType.startsWith('audio/');
 
     if (!isImage && !isVideo && !isAudio) {
       toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select an image, video, or audio file.' });
       return;
     }
-
-    setIsUploadingMedia(slot);
 
     const processAndUpload = async () => {
       try {
@@ -307,39 +362,12 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
           fileToUpload = await compressImage(file);
         }
 
-        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${file.name}`);
-        
-        const fallbackType = isImage ? 'image/jpeg' : isVideo ? 'video/mp4' : 'audio/mp4';
-        const contentType = (fileToUpload.type || file.type || fallbackType).split(';')[0];
-        
-        const metadata = { 
-            contentType,
-            customMetadata: {
-                testimonyId: testimony.id,
-                slot: slot.toString()
-            }
-        };
-
-        const uploadResult = await uploadBytes(fileRef, fileToUpload, metadata);
-        const url = await getDownloadURL(uploadResult.ref);
-
         const type = isImage ? 'image' : isVideo ? 'video' : 'audio';
-        if (slot === 1) {
-            setMediaPreview1({ url, type: type as any });
-            form.setValue('mediaUrl', url);
-            form.setValue('mediaType', type as any);
-        } else {
-            setMediaPreview2({ url, type: type as any });
-            form.setValue('mediaUrl2', url);
-            form.setValue('mediaType2', type as any);
-        }
+        await handleUploadProcessedFile(fileToUpload, slot, type as any);
         
-        toast({ title: 'Evidence Updated', description: `Proof ${slot} has been successfully replaced.` });
       } catch (err: any) {
         console.error("Media upload error:", err);
         toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not transmit media.' });
-      } finally {
-        setIsUploadingMedia(null);
       }
     };
 
@@ -439,9 +467,12 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                       onClick={() => inputRef.current?.click()}
                   >
                       {isUploadingMedia === slot ? (
-                          <div className="flex flex-col items-center gap-2 text-left">
+                          <div className="flex flex-col items-center gap-2">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                              <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
+                              <div className="space-y-1 text-center">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p>
+                                <p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p>
+                              </div>
                           </div>
                       ) : (
                           <div className="flex flex-col items-center text-left">
@@ -479,43 +510,74 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                   </div>
               </div>
           ) : (
-              <div className={cn(
-                  "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group text-left",
-                  isAudio ? "h-auto min-h-[100px]" : "aspect-square"
-              )}>
-                  {preview.type === 'image' ? (
-                      <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
-                  ) : preview.type === 'video' ? (
-                      <video src={preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls />
-                  ) : (
-                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
-                            <div className="relative shrink-0 text-left">
-                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                                    <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+              <div className="space-y-2">
+                <div className={cn(
+                    "relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group text-left",
+                    isAudio ? "h-auto min-h-[100px]" : "aspect-square"
+                )}>
+                    {preview.type === 'image' ? (
+                        <Image src={preview.localUrl || preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
+                    ) : preview.type === 'video' ? (
+                        <video 
+                            src={preview.localUrl || preview.url} 
+                            className="w-full h-full object-cover bg-zinc-950" 
+                            playsInline 
+                            controls 
+                            preload="metadata"
+                            onError={(e) => {
+                                console.error("Playback failed", e.currentTarget.error);
+                                toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` });
+                            }}
+                        />
+                    ) : (
+                            <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
+                                <div className="relative shrink-0 text-left">
+                                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                                    </div>
+                                    <motion.div 
+                                        className="absolute -top-1 -right-1"
+                                        animate={{ opacity: [0.4, 1, 0.4] }}
+                                        transition={{ repeat: Infinity, duration: 2 }}
+                                    >
+                                        <Sparkles className="h-3 w-3 text-primary animate-pulse" />
+                                    </motion.div>
                                 </div>
-                                <motion.div 
-                                    className="absolute -top-1 -right-1"
-                                    animate={{ opacity: [0.4, 1, 0.4] }}
-                                    transition={{ repeat: Infinity, duration: 2 }}
-                                >
-                                    <Sparkles className="h-3 w-3 text-primary animate-pulse" />
-                                </motion.div>
+                                <div className="min-w-0 flex-1 text-left">
+                                    <p className="text-[10px] font-black uppercase text-primary tracking-widest mb-4">Voice of Thanksgiving</p>
+                                    <audio 
+                                        src={preview.localUrl || preview.url} 
+                                        className="w-full" 
+                                        controls 
+                                        preload="metadata"
+                                        onError={(e) => {
+                                            console.error("Playback failed", e.currentTarget.error);
+                                            toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` });
+                                        }}
+                                    />
+                                </div>
                             </div>
-                            <div className="min-w-0 flex-1 text-left">
-                                <p className="text-[10px] font-black uppercase text-primary tracking-widest mb-4">Voice of Thanksgiving</p>
-                                <audio src={preview.url} className="w-full" controls preload="metadata" />
-                            </div>
-                        </div>
-                  )}
-                  <Button 
-                      type="button" 
-                      variant="destructive" 
-                      size="icon" 
-                      className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" 
-                      onClick={() => { setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}
-                  >
-                      <X className="h-3.5 w-3.5" />
-                  </Button>
+                    )}
+                    <Button 
+                        type="button" 
+                        variant="destructive" 
+                        size="icon" 
+                        className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" 
+                        onClick={() => { 
+                            if (preview.localUrl) URL.revokeObjectURL(preview.localUrl);
+                            setPreview(null); 
+                            form.setValue(urlField, null); 
+                            form.setValue(typeField, null); 
+                        }}
+                    >
+                        <X className="h-3.5 w-3.5" />
+                    </Button>
+                </div>
+                <Button asChild variant="link" className="h-auto p-0 text-[9px] font-bold uppercase tracking-tighter text-muted-foreground hover:text-primary">
+                    <a href={preview.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-1 h-2 w-2" /> Open proof in new tab
+                    </a>
+                </Button>
               </div>
           )}
           <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*,audio/*" onChange={(e) => handleFileSelect(e, slot)} />
@@ -610,8 +672,8 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 <div className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
                   <div className="flex items-center justify-between gap-4 text-left">
                     <div className="min-w-0 text-left">
-                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left text-left text-left text-left">Miracle Recorder</div>
-                        <p className="text-sm font-medium text-zinc-400 mt-1 text-left text-left text-left text-left">Capture your {recorderMode} proof.</p>
+                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</div>
+                        <p className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</p>
                     </div>
                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10 text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left" /></Button>
                   </div>
@@ -621,7 +683,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                     <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden text-left">
                         <video ref={videoPreviewRef} autoPlay muted playsInline className="w-full h-full object-cover mirror scale-x-[-1] text-left" />
                         <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none text-left">
-                            <div className="flex justify-between items-start text-left text-left">
+                            <div className="flex justify-between items-start text-left text-left text-left">
                                 <div className="flex items-center gap-3 text-left">
                                     {isRecording && (
                                         <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left">
