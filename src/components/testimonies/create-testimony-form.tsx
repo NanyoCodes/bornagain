@@ -26,10 +26,8 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Image from "next/image";
-import { cn, safeToDate } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const testimonyCategories: TestimonyCategory[] = [
   'Healing', 

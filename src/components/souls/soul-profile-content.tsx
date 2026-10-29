@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from "react";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { 
   BookOpen, 
@@ -349,15 +349,15 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
     </div>
   );
 
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">{header}<ScrollArea className="flex-grow">{contentBody}</ScrollArea></SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">{header}<ScrollArea className="flex-1 min-h-0">{contentBody}</ScrollArea></DialogContent></Dialog>;
+  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow text-left">{contentBody}</ScrollArea></SheetContent></Sheet>;
+  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">{header}<ScrollArea className="flex-1 min-h-0 text-left">{contentBody}</ScrollArea></DialogContent></Dialog>;
 }
 
 export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }: { isOpen: boolean; onOpenChange: (open: boolean) => void; soul: Soul | null; onChannelSelect: (channel: 'whatsapp' | 'sms') => void; }) {
   const isMobile = useIsMobile();
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4">
-        <div className="min-w-0">
+        <div className="min-w-0 text-left">
             <div className="flex items-center gap-2 mb-1">
                 <MessageSquare className="h-4 w-4 text-primary" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
@@ -427,17 +427,17 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
   };
 
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4">
+    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
       <div className="min-w-0 text-left">
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-center gap-3 mb-2 text-left">
           {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4" /></Button>}
           <Target className="h-5 w-5 text-primary" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
         </div>
         <div>
-            <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                 {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}
             </h2>
-            <p className="text-xs sm:text-sm font-medium">
+            <p className="text-xs sm:text-sm font-medium text-left">
                 {view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBook || 'Bible'}...`}
             </p>
         </div>
@@ -757,3 +757,4 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
     </React.Fragment>
   );
 }
+

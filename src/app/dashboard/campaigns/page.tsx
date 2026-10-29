@@ -91,7 +91,7 @@ const getStatus = (campaign: { _startDate: Date | null, _endDate: Date | null, s
     return 1; // Ongoing
 };
 
-function CampaignsPageContent() {
+function CampaignsDashboardContent() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -298,7 +298,7 @@ function CampaignsPageContent() {
                 <AlertDialogHeader className="text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left">Delete Mission?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">This will permanently remove the campaign.</AlertDialogDescription></AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 text-left text-left">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}Confirm Deletion</AlertDialogAction>
+                    <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Deletion</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
             </AlertDialog>
@@ -360,7 +360,7 @@ export default function CampaignsDashboardPage() {
   return (
     <AppShell>
       <Suspense fallback={<div className="flex justify-center p-20 text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" /></div>}>
-        <CampaignsPageContent />
+        <CampaignsDashboardContent />
       </Suspense>
     </AppShell>
   );

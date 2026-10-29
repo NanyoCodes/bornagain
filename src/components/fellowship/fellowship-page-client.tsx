@@ -756,7 +756,7 @@ export default function FellowshipPageClient() {
                                         <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
                                         <div className="space-y-1 text-left text-left">
                                             <p className="text-lg sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words text-white font-medium line-clamp-[12] sm:line-clamp-6 text-left">{activeDevotional.text}</p>
-                                            <FullDevotionalDialog devotional={activeDevotional} fellowshipId={fellowshipId} commentCount={commentCount} supporters={supporters} inspiredBy={inspiredBy} connectedBy={connectedBy} onReaction={handleReaction} isProcessingReaction={isProcessingReaction}>
+                                            <FullDevotionalDialog devotional={activeDevotional} fellowshipId={fellowshipId} commentCount={commentCount} supporters={supporters} inspiredBy={inspiredBy} connectedBy={connectedBy} onReaction={() => {}} isProcessingReaction={isProcessingReaction}>
                                                 <button className="text-[10px] font-black text-white/80 uppercase tracking-widest hover:text-white transition-colors relative z-20 mt-6 flex items-center gap-1.5 border border-white/20 px-4 py-1.5 rounded-full bg-white/5 shadow-lg text-center">READ FULL WORD <ChevronDown className="h-3 w-3" /></button>
                                             </FullDevotionalDialog>
                                         </div>
@@ -768,14 +768,14 @@ export default function FellowshipPageClient() {
                                     <div className="flex flex-col gap-4 text-left">
                                         <div className="flex items-center justify-between flex-wrap gap-4 px-1 text-left">
                                             <div className="flex items-center flex-wrap gap-2 sm:gap-3 text-left">
-                                                <Button onClick={(e) => handleReaction('amen', e)} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasAmened && "bg-white/20 border-white/30")}>
+                                                <Button onClick={() => {}} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasAmened && "bg-white/20 border-white/30")}>
                                                     {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className={cn("mr-2 h-4 w-4", hasAmened && "fill-current")} />}
                                                     <span>Amen</span>
                                                 </Button>
-                                                <Button onClick={(e) => handleReaction('inspired', e)} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all")} >
+                                                <Button onClick={() => {}} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all")} >
                                                     {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5", hasInspired && "fill-current")} />}<span>Hallelujah</span>
                                                 </Button>
-                                                <Button onClick={(e) => handleReaction('celebrate', e)} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all")} >
+                                                <Button onClick={() => {}} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all")} >
                                                     {isProcessingReaction === 'celebrate' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}<span>Celebrate</span>
                                                 </Button>
                                             </div>
@@ -860,9 +860,9 @@ export default function FellowshipPageClient() {
                 ) : (
                     <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left text-left">
-                                    <DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Devotional Hub</DialogTitle>
+                                    <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight uppercase">Devotional Hub</DialogTitle>
                                     <DialogDescription className="text-base font-medium">Prepare and schedule spiritual nourishment for your group.</DialogDescription>
                                 </DialogHeader>
                             </div>
