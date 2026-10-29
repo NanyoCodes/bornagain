@@ -215,7 +215,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
-        const uploadResult = await uploadBytes(fileRef, file);
+        // CRITICAL FIX: Explicitly set contentType metadata so mobile browsers (iOS/Android) identify the stream correctly
+        const actualMimeType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
+        const metadata = { contentType: actualMimeType };
+        
+        const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
 
         if (slot === 1) {
@@ -227,7 +231,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             form.setValue('mediaUrl2', url);
             form.setValue('mediaType2', type as any);
         }
-        toast({ title: 'Proof Captured', description: `Evidence for slot ${slot} has been uploaded.` });
+        toast({ title: 'Proof Captured', description: `Evidence for slot ${slot} has been optimized.` });
     } catch (err) {
         console.error("Upload error:", err);
         toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not transmit media to Kingdom Storage.' });
@@ -261,7 +265,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
-        const uploadResult = await uploadBytes(fileRef, fileToUpload);
+        // Ensure content type is set from the file
+        const metadata = { contentType: fileToUpload.type || file.type };
+        const uploadResult = await uploadBytes(fileRef, fileToUpload, metadata);
         const url = await getDownloadURL(uploadResult.ref);
 
         const type = isImage ? 'image' : isVideo ? 'video' : 'audio';
@@ -275,7 +281,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             form.setValue('mediaType2', type as any);
         }
         
-        toast({ title: 'Media Ready', description: `Proof ${slot} uploaded for the harvest.` });
+        toast({ title: 'Media Ready', description: `Proof ${slot} optimized for the harvest.` });
       } catch (err: any) {
         console.error("Media upload error:", err);
         toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not transmit media.' });
@@ -400,7 +406,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       {isUploadingMedia === slot ? (
                           <div className="flex flex-col items-center gap-2">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                              <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Uploading...</p>
+                              <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
                           </div>
                       ) : (
                           <div className="flex flex-col items-center">

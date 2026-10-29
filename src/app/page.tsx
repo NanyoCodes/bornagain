@@ -210,7 +210,7 @@ export default function LandingPage() {
                 </Badge>
                 <h1 className="text-2xl sm:text-3xl md:text-5xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
-                  <span className="text-primary text-base sm:text-2xl md:text-3xl block mt-4 uppercase"> The App to care for family, friends, souls, and the Kingdom.</span>
+                  <span className="text-primary text-sm sm:text-lg md:text-xl block mt-4 uppercase"> The App to care for family, friends, souls, and the Kingdom.</span>
                 </h1>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
@@ -402,7 +402,7 @@ export default function LandingPage() {
                         </p>
                     </div>
                     <div className="flex justify-center relative z-10 items-center">
-                        <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center">
+                        <Button asChild size="lg" className="rounded-full h-12 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center">
                             <Link href="/signup" className="text-center">JOIN THE MISSION OF LOVE</Link>
                         </Button>
                     </div>
@@ -550,4 +550,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
