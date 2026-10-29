@@ -119,6 +119,7 @@ import Link from 'next/link';
 import type { Soul, FollowUpStatus, UserProfile, DailyDevotional, TestimonyComment } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
+import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -133,16 +134,6 @@ const iconMap: Record<string, any> = {
     'invited_to_event': Calendar,
     'matchmaking': HeartHandshake,
 };
-
-export function getYouTubeEmbedUrl(url: string | undefined | null) {
-  if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  if (match && match[2].length === 11) {
-    return `https://www.youtube.com/embed/${match[2]}`;
-  }
-  return null;
-}
 
 export function getStatusClasses(status: FollowUpStatus | undefined): string {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -178,10 +169,6 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                     controls 
                     autoPlay 
                     preload="metadata" 
-                    onError={(e) => {
-                        console.error("Playback failed", e.currentTarget.error);
-                        toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` });
-                    }}
                   />
               ) : (
                   <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl">
@@ -202,15 +189,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         controls 
                         preload="metadata" 
                         autoPlay
-                        onError={(e) => {
-                            console.error("Playback failed", e.currentTarget.error);
-                            toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` });
-                        }}
                       />
-                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary/60 text-center">
-                          <HandHeart className="h-3 w-3" />
-                          Glory to God
-                      </div>
                   </div>
               )}
           </div>
@@ -250,8 +229,6 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                   </div>
               </div>
           )}
-          <div className="absolute inset-0 bg-black/5 group-hover/media:bg-transparent transition-colors duration-500" />
-          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 opacity-0 group-hover/media:opacity-100 transition-opacity shadow-2xl" />
       </div>
   );
 
@@ -271,6 +248,9 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <X className="h-6 w-6" />
                     </Button>
                     {mediaContent}
+                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4">
+                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest"><a href={url} target="_blank" rel="noopener noreferrer">Open in new tab</a></Button>
+                    </div>
                 </DrawerContent>
             </Drawer>
           </>
@@ -339,10 +319,10 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
         <div className="min-w-0">
-            <DialogHeader className="p-0 text-left text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
-            </DialogHeader>
+            <div className="text-left">
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</h2>
+                <p className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</p>
+            </div>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -361,7 +341,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
             </div>
         </div>
         <div className="space-y-2 text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Your Prayer</Label>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label>
             <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" />
         </div>
         <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">SEND</Button>
@@ -447,19 +427,19 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
 
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
-      <div className="min-w-0 text-left text-left">
+      <div className="min-w-0 text-left">
         <div className="flex items-center gap-3 mb-2 text-left">
           {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4" /></Button>}
           <Target className="h-5 w-5 text-primary" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
         </div>
-        <DialogHeader className="p-0 text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+        <div className="text-left">
+            <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                 {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}
-            </DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm font-medium text-left">
+            </h2>
+            <p className="text-xs sm:text-sm font-medium text-left">
                 {view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBook || 'Bible'}...`}
-            </DialogDescription>
-        </DialogHeader>
+            </p>
+        </div>
       </div>
       {view !== 'hub' && <Button variant="outline" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}><X className="h-5 w-5 sm:h-6 sm:w-6" /></Button>}
     </div>
@@ -471,13 +451,24 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
             <div className="space-y-8 text-left">
                 <div className="relative text-left"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
                 {searchResults.map((res, idx) => (<Button key={idx} variant="outline" className="w-full h-auto p-4 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left border-2 border-dashed" onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary">{res.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-4">"{res.text.trim()}"</p></Button>))}
-                <div className="grid grid-cols-2 gap-4 text-left"><Button onClick={() => setView('books')} variant="outline" className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center"><BookOpen className="h-6 w-6 mb-1" /><span className="text-[10px] font-black uppercase text-center">Browse Bible</span></Button><Button variant="outline" asChild className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center"><Link href="/dashboard/bible"><BookMarked className="h-6 w-6 mb-1" /><span className="text-[10px] font-black uppercase text-center">Open Reader</span></Link></Button></div>
+                <div className="grid grid-cols-2 gap-4 text-left">
+                    <Button onClick={() => setView('books')} variant="outline" className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center">
+                        <BookOpen className="h-6 w-6 mb-1" />
+                        <span className="text-[10px] font-black uppercase text-center">Browse Bible</span>
+                    </Button>
+                    <Button variant="outline" asChild className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center">
+                        <Link href="/dashboard/bible">
+                            <BookMarked className="h-6 w-6 mb-1" />
+                            <span className="text-[10px] font-black uppercase text-center">Open Reader</span>
+                        </Link>
+                    </Button>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">{kingdomVerses.map((v, idx) => (<Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:bg-primary/10 transition-all text-left block" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary">{v.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-2">"{v.text}"</p></Button>))}</div>
             </div>
         )}
         {view === 'books' && <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2">{bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[9px]" onClick={() => { setSelectedBook(book.name); setView('chapters'); }}>{book.name}</Button>))}</div>}
         {view === 'chapters' && <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2">{selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (<Button key={ch.chapter} variant="outline" className="h-9 w-9 p-0 rounded-lg font-black text-xs" onClick={() => handleSelectChapter(ch.chapter)}>{ch.chapter}</Button>))}</div>}
-        {view === 'verses' && <div className="space-y-4 pb-12 text-left text-left"><div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left text-left"><p className="text-[10px] font-black uppercase text-primary mb-1 text-left text-left">SELECTED</p><p className="text-xs font-bold text-muted-foreground text-left text-left">{selectedVerses.length > 0 ? `${selectedBook} ${selectedChapter}:${selectedVerses.join(', ')}` : 'Select verses below...'}</p></div><div className="space-y-1 font-serif text-left text-left">{loadingVerses ? <div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div> : chapterContent?.verses.map(v => (<div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2 text-left", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => setSelectedVerses(prev => prev.includes(v.verse) ? prev.filter(vs => vs !== v.verse) : [...prev, v.verse].sort((a,b)=>a-b))}><sup className="text-[10px] font-black mr-2 opacity-40">{v.verse}</sup><span className="text-sm leading-relaxed">{v.text}</span></div>))}</div></div>}
+        {view === 'verses' && <div className="space-y-4 pb-12 text-left"><div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left"><p className="text-[10px] font-black uppercase text-primary mb-1 text-left">SELECTED</p><p className="text-xs font-bold text-muted-foreground text-left">{selectedVerses.length > 0 ? `${selectedBook} ${selectedChapter}:${selectedVerses.join(', ')}` : 'Select verses below...'}</p></div><div className="space-y-1 font-serif text-left">{loadingVerses ? <div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div> : chapterContent?.verses.map(v => (<div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2 text-left", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => setSelectedVerses(prev => prev.includes(v.verse) ? prev.filter(vs => vs !== v.verse) : [...prev, v.verse].sort((a,b)=>a-b))}><sup className="text-[10px] font-black mr-2 opacity-40">{v.verse}</sup><span className="text-sm leading-relaxed">{v.text}</span></div>))}</div></div>}
     </div>
   );
 

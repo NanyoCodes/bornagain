@@ -16,10 +16,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Camera, X, FileUp, Sparkles, Info, Newspaper, ExternalLink } from "lucide-react";
+import { Loader2, Camera, X, FileUp, Sparkles, Info, Newspaper } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
@@ -115,6 +114,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         const originalName = (file as File).name || `upload_${Date.now()}`;
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${originalName}`);
         
+        // Strip codec parameters from MIME type to prevent playback issues on mobile browsers
         const contentType = (file.type || (type === 'audio' ? 'audio/mp4' : type === 'video' ? 'video/mp4' : 'image/jpeg')).split(';')[0];
         const metadata = { contentType, customMetadata: { testimonyId, slot: slot.toString() } };
         
@@ -229,7 +229,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                               <div className="space-y-1 text-center"><p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p><p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p></div>
                           </div>
                       ) : (
-                          <div className="flex flex-col items-center text-left">
+                          <div className="flex flex-col items-center">
                               <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><FileUp className="h-4 w-4 text-primary" /></div>
                               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select File</p>
                               <p className="text-[8px] text-muted-foreground/40 mt-1 uppercase">Image, Video, Audio</p>
@@ -257,7 +257,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                             <div className="min-w-0 flex-1 text-left"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" /></div>
                         </div>
                     )}
-                    <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 transition-opacity" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}><X className="h-3.5 w-3.5" /></Button>
+                    <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 transition-opacity">
+                      <Button type="button" variant="destructive" size="icon" className="h-7 w-7 rounded-full shadow-lg" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}><X className="h-3.5 w-3.5" /></Button>
+                    </div>
                 </div>
               </div>
           )}
@@ -269,7 +271,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   return (
     <div className="space-y-10 text-left">
       <div className="space-y-4 text-left">
-        <div className="flex items-center gap-3 px-1 text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1 text-left"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Proclaim Victory</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Sharing God's manifest power</p></div></div>
+        <div className="flex items-center gap-3 px-1 text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1 text-left"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Proclaim Victory</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Sharing God's manifest power</p></div></div>
         {prayerRequest && (
             <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left"><CardHeader className="p-5 pb-2 relative z-10 text-left"><div className="flex items-center gap-2 mb-1 text-left"><HandHeart className="h-3.5 w-3.5 text-amber-600" /><span className="text-[9px] font-black uppercase text-amber-700 tracking-widest">Answering Prayer Altar</span></div><CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3">&ldquo;{prayerRequest.content}&rdquo;</CardDescription></CardHeader></Card>
         )}
@@ -310,11 +312,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             />
 
             <div className="space-y-4 text-left">
-                <div className="flex flex-col sm:flex-row gap-6 text-left">
+                <div className="flex flex-col sm:flex-row gap-6 text-left text-left">
                     {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
                     {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
                 </div>
-                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
+                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left text-left">
                     <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
                         Providing proof (photos/videos/audio) strengthens faith. Maximum file size is 100MB.
@@ -345,4 +347,3 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
-
