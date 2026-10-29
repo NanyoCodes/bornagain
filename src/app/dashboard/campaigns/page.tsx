@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Target, Loader2 } from "lucide-react";
+import { Target, Loader2, ChevronDown } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -18,6 +18,13 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+} from "@/components/ui/drawer";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -446,7 +453,7 @@ export default function CampaignsPage() {
             {!loading && sortedAndFilteredCampaigns?.length === 0 && (
                 <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left text-left text-left">
                 <Target className="h-16 w-16 text-muted-foreground opacity-10 mb-6 text-left text-left text-left" />
-                <h3 className="text-xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">{noResultsMessage}</h3>
+                <h3 className="text-xl font-bold font-headline uppercase tracking-tight text-left text-left text-left text-left">{noResultsMessage}</h3>
                 <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-pretty text-left text-left text-left">
                     {filter === 'created'
                     ? 'Why not start a new one to reach your community?'
@@ -465,8 +472,8 @@ export default function CampaignsPage() {
       
       {/* Creation Modal */}
       {mounted && isMobile ? (
-        <Sheet open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if(!open) router.refresh(); }}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+        <Drawer open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if(!open) router.refresh(); }}>
+          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
               <SheetHeader className="text-left text-left text-left text-left text-left">
                 <div className="flex items-center gap-2 mb-4 text-left text-left text-left">
@@ -477,13 +484,13 @@ export default function CampaignsPage() {
                 <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Mobilize for the harvest by setting clear mission goals.</SheetDescription>
               </SheetHeader>
             </div>
-            <ScrollArea className="flex-grow text-left text-left text-left">
+            <div className="flex-1 overflow-y-auto no-scrollbar">
               <div className="p-8 text-left text-left text-left">
                 {formContent}
               </div>
-            </ScrollArea>
-          </SheetContent>
-        </Sheet>
+            </div>
+          </DrawerContent>
+        </Drawer>
       ) : (
         <Dialog open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if(!open) router.refresh(); }}>
           <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left rounded-3xl">
@@ -495,11 +502,11 @@ export default function CampaignsPage() {
                     </DialogDescription>
                 </DialogHeader>
             </div>
-            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
+            <div className="flex-1 overflow-y-auto no-scrollbar">
                 <div className="p-8 text-left text-left text-left text-left">
                     {formContent}
                 </div>
-            </ScrollArea>
+            </div>
           </DialogContent>
         </Dialog>
       )}
@@ -518,7 +525,7 @@ export default function CampaignsPage() {
                 <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update mission progress and logistical details.</SheetDescription>
               </SheetHeader>
             </div>
-            <ScrollArea className="flex-grow text-left text-left text-left">
+            <div className="flex-1 overflow-y-auto no-scrollbar">
               <div className="p-8 text-left text-left text-left text-left">
                 {campaignToManage && (
                   <ManageCampaignForm 
@@ -532,7 +539,7 @@ export default function CampaignsPage() {
                   />
                 )}
               </div>
-            </ScrollArea>
+            </div>
           </SheetContent>
         </Sheet>
       ) : (
@@ -540,13 +547,13 @@ export default function CampaignsPage() {
           <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left rounded-3xl">
              <div className="p-8 border-b bg-muted/10 text-left text-left text-left shrink-0">
                 <DialogHeader className="text-left text-left text-left text-left text-left">
-                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">Manage Mission</DialogTitle>
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Manage Mission</DialogTitle>
                     <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">
                         Update the details or status of your campaign.
                     </DialogDescription>
                 </DialogHeader>
             </div>
-            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
+            <div className="flex-1 overflow-y-auto no-scrollbar">
                 <div className="p-8 text-left text-left text-left text-left">
                     {campaignToManage && (
                         <ManageCampaignForm 
@@ -560,7 +567,7 @@ export default function CampaignsPage() {
                         />
                     )}
                 </div>
-            </ScrollArea>
+            </div>
           </DialogContent>
         </Dialog>
       )}
@@ -598,7 +605,7 @@ export default function CampaignsPage() {
                 <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">What has God done during "{campaignForTestimony?.title}"?</SheetDescription>
               </SheetHeader>
             </div>
-            <ScrollArea className="flex-grow text-left text-left text-left">
+            <div className="flex-1 overflow-y-auto no-scrollbar">
               <div className="p-8 text-left text-left text-left text-left">
                  {campaignForTestimony && userProfile && (
                     <CreateTestimonyForm
@@ -608,7 +615,7 @@ export default function CampaignsPage() {
                       />
                   )}
               </div>
-            </ScrollArea>
+            </div>
           </SheetContent>
         </Sheet>
       ) : (
@@ -622,7 +629,7 @@ export default function CampaignsPage() {
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
+                <div className="flex-1 overflow-y-auto no-scrollbar">
                     <div className="p-8 text-left text-left text-left text-left">
                         {campaignForTestimony && userProfile && (
                         <CreateTestimonyForm
@@ -632,7 +639,7 @@ export default function CampaignsPage() {
                             />
                         )}
                     </div>
-                </ScrollArea>
+                </div>
             </DialogContent>
         </Dialog>
       )}
@@ -650,7 +657,7 @@ export default function CampaignsPage() {
                 <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Record a soul won in "{campaignForSoul?.title}".</SheetDescription>
               </SheetHeader>
             </div>
-            <ScrollArea className="flex-grow text-left text-left text-left">
+            <div className="flex-1 overflow-y-auto no-scrollbar">
               <div className="p-8 text-left text-left text-left text-left">
                 {campaignForSoul && (
                   <LogSoulForm
@@ -661,7 +668,7 @@ export default function CampaignsPage() {
                     />
                 )}
               </div>
-            </ScrollArea>
+            </div>
           </SheetContent>
         </Sheet>
       ) : (
@@ -675,7 +682,7 @@ export default function CampaignsPage() {
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
+                <div className="flex-1 overflow-y-auto no-scrollbar">
                     <div className="p-8 text-left text-left text-left text-left">
                         {campaignForSoul && (
                         <LogSoulForm
@@ -686,7 +693,7 @@ export default function CampaignsPage() {
                             />
                         )}
                     </div>
-                </ScrollArea>
+                </div>
             </DialogContent>
         </Dialog>
       )}
@@ -694,3 +701,12 @@ export default function CampaignsPage() {
   );
 }
 
+export default function CampaignsStandalonePage() {
+  return (
+    <AppShell>
+      <Suspense fallback={<div className="flex justify-center p-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary text-left" /></div>}>
+        <CampaignsPageContent />
+      </Suspense>
+    </AppShell>
+  );
+}

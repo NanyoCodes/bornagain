@@ -1,5 +1,4 @@
-
-"use client";
+'use client';
 
 import { useMemo, useState, useEffect, Suspense } from "react";
 import { Button } from "@/components/ui/button";
@@ -340,21 +339,29 @@ function CampaignsPageContent() {
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
               <DrawerHeader className="text-left text-left text-left">
                 <div className="flex items-center gap-2 mb-4 text-left text-left">
-                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">SWIPE DOWN TO CLOSE</span>
                 </div>
-                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Launch New Mission</DrawerTitle>
-                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Mobilize for the harvest.</DrawerDescription>
+                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Launch New Mission</DrawerTitle>
+                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Mobilize for the harvest.</DrawerDescription>
               </DrawerHeader>
             </div>
-            <ScrollArea className="flex-grow text-left"><div className="p-8 text-left">{formContent}</div></ScrollArea>
+            <div className="flex-1 overflow-y-auto no-scrollbar">
+              <div className="p-8 text-left">
+                {formContent}
+              </div>
+            </div>
           </DrawerContent>
         </Drawer>
       ) : (
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl rounded-3xl text-left">
-            <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Create a New Mission</DialogTitle><DialogDescription className="text-sm font-medium text-left">Fill in the details below.</DialogDescription></DialogHeader></div>
-            <ScrollArea className="flex-1 min-h-0 text-left"><div className="p-8 text-left">{formContent}</div></ScrollArea>
+            <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Create a New Mission</DialogTitle><DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Fill in the details below.</DialogDescription></DialogHeader></div>
+            <div className="flex-1 overflow-y-auto no-scrollbar">
+              <div className="p-8 text-left">
+                {formContent}
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       )}
@@ -377,14 +384,14 @@ function CampaignsPageContent() {
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
               <DrawerHeader className="text-left text-left text-left">
                 <div className="flex items-center gap-2 mb-4 text-left text-left">
-                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">SWIPE DOWN TO CLOSE</span>
                 </div>
                 <DrawerTitle className="text-2xl font-black font-headline text-left">Share Victory</DrawerTitle>
                 <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">What has God done during "{campaignForTestimony?.title}"?</DrawerDescription>
               </DrawerHeader>
             </div>
-            <ScrollArea className="flex-grow text-left">
+            <div className="flex-1 overflow-y-auto no-scrollbar">
               <div className="p-8 text-left">
                  {campaignForTestimony && userProfile && (
                     <CreateTestimonyForm
@@ -394,7 +401,7 @@ function CampaignsPageContent() {
                       />
                   )}
               </div>
-            </ScrollArea>
+            </div>
           </DrawerContent>
         </Drawer>
       ) : (
@@ -408,7 +415,7 @@ function CampaignsPageContent() {
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="flex-1 min-h-0 text-left">
+                <div className="flex-1 overflow-y-auto no-scrollbar">
                     <div className="p-8 text-left">
                         {campaignForTestimony && userProfile && (
                         <CreateTestimonyForm
@@ -418,7 +425,7 @@ function CampaignsPageContent() {
                             />
                         )}
                     </div>
-                </ScrollArea>
+                </div>
             </DialogContent>
         </Dialog>
       )}
@@ -429,14 +436,14 @@ function CampaignsPageContent() {
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
               <DrawerHeader className="text-left text-left text-left">
                 <div className="flex items-center gap-2 mb-4 text-left text-left">
-                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">SWIPE DOWN TO CLOSE</span>
                 </div>
                 <DrawerTitle className="text-2xl font-black font-headline text-left">Log Harvest</DrawerTitle>
                 <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a soul won in "{campaignForSoul?.title}".</DrawerDescription>
               </DrawerHeader>
             </div>
-            <ScrollArea className="flex-grow text-left">
+            <div className="flex-1 overflow-y-auto no-scrollbar">
               <div className="p-8 text-left text-left">
                 {campaignForSoul && (
                   <LogSoulForm
@@ -447,7 +454,7 @@ function CampaignsPageContent() {
                     />
                 )}
               </div>
-            </ScrollArea>
+            </div>
           </DrawerContent>
         </Drawer>
       ) : (
@@ -461,7 +468,7 @@ function CampaignsPageContent() {
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="flex-1 min-h-0 text-left">
+                <div className="flex-1 overflow-y-auto no-scrollbar">
                     <div className="p-8 text-left">
                         {campaignForSoul && (
                         <LogSoulForm
@@ -472,7 +479,7 @@ function CampaignsPageContent() {
                             />
                         )}
                     </div>
-                </ScrollArea>
+                </div>
             </DialogContent>
         </Dialog>
       )}

@@ -271,7 +271,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                             <Users className="h-3.5 w-3.5 text-left" /> Gender Distribution
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="p-6 pt-0 space-y-4 text-left text-left">
+                                    <CardContent className="p-6 pt-0 space-y-4 text-left text-left text-left">
                                         {[
                                             { label: 'Male', count: demographics.gender.male, color: 'bg-blue-500' },
                                             { label: 'Female', count: demographics.gender.female, color: 'bg-rose-500' }
@@ -289,11 +289,11 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
                                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10 text-left text-left">
                                     <CardHeader className="p-6 pb-3 text-left text-left text-left">
-                                        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left text-left text-left">
+                                        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left text-left text-left text-left">
                                             <Activity className="h-3.5 w-3.5 text-left text-left" /> Age Groups
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="p-6 pt-0 space-y-4 text-left text-left">
+                                    <CardContent className="p-6 pt-0 space-y-4 text-left text-left text-left">
                                         {[
                                             { label: 'Young Adults', count: demographics.age.youngAdults, color: 'bg-primary' },
                                             { label: 'Adults', count: demographics.age.adults, color: 'bg-indigo-600' },
@@ -411,7 +411,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
                     <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-primary text-primary-foreground text-left text-left">
                         <CardHeader className="pb-4 text-left"><CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80 text-left">Mission Hub</CardTitle></CardHeader>
-                        <CardContent className="flex flex-col gap-3 text-left">
+                        <CardContent className="flex flex-col gap-3 text-left text-left">
                             {isJoined && status === 'Ongoing' && (
                                 <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20 text-left" onClick={() => setIsLogSoulOpen(true)}>
                                     <UserPlus className="mr-2 h-5 w-5 text-left" /> LOG SOUL WON
@@ -455,9 +455,11 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <DrawerTitle className="text-2xl font-black font-headline text-left">Log Harvest</DrawerTitle>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-grow p-8 text-left">
-                        <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultCampaign={campaign} />
-                    </ScrollArea>
+                    <div className="flex-1 overflow-y-auto no-scrollbar">
+                        <div className="p-8 text-left">
+                            <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultCampaign={campaign} />
+                        </div>
+                    </div>
                 </DrawerContent>
             </Drawer>
 
@@ -468,9 +470,11 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <DrawerTitle className="text-2xl font-black font-headline text-left">Share Victory</DrawerTitle>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-grow p-8 text-left">
-                        {userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyOpen(false)} campaign={campaign} />}
-                    </ScrollArea>
+                    <div className="flex-1 overflow-y-auto no-scrollbar">
+                        <div className="p-8 text-left">
+                            {userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyOpen(false)} campaign={campaign} />}
+                        </div>
+                    </div>
                 </DrawerContent>
             </Drawer>
 
@@ -481,16 +485,18 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Mission</DrawerTitle>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-grow p-8 text-left">
-                        <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { }} />
-                    </ScrollArea>
+                    <div className="flex-1 overflow-y-auto no-scrollbar">
+                        <div className="p-8 text-left">
+                            <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { }} />
+                        </div>
+                    </div>
                 </DrawerContent>
             </Drawer>
 
             <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
                 <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
                     <AlertDialogHeader className="text-left text-left">
-                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Mission?</AlertDialogTitle>
+                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left">Delete Mission?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">
                             This will permanently remove the mission from the global record. This action cannot be undone.
                         </AlertDialogDescription>
