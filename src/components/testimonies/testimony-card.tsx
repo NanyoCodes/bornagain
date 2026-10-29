@@ -117,7 +117,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                     preload="metadata" 
                     onError={(e) => {
                         console.error("Playback failed", e.currentTarget.error);
-                        toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` });
+                        toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` });
                     }}
                   />
               ) : (
@@ -141,7 +141,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         autoPlay
                         onError={(e) => {
                             console.error("Playback failed", e.currentTarget.error);
-                            toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` });
+                            toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` });
                         }}
                       />
                       <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.4em] text-primary/60 text-center">
