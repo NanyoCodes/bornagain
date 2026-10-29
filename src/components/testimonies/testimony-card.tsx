@@ -168,7 +168,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           ) : type === 'video' ? (
               <video key={url} src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
           ) : (
-              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left text-left">
+              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
                   <div className="relative shrink-0 text-left">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
                           <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
