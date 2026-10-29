@@ -320,7 +320,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
         <div className="min-w-0 text-left">
-            <div className="text-left text-left">
+            <div className="text-left text-left text-left">
                 <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Kingdom Intercession</h2>
                 <p className="text-sm font-medium mt-1 text-left text-left text-left">Draft a powerful prayer for {soul?.firstName}.</p>
             </div>
@@ -358,7 +358,7 @@ export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
         <div className="min-w-0 text-left">
-            <div className="flex items-center gap-2 mb-1 text-left">
+            <div className="flex items-center gap-2 mb-2 text-left">
                 <MessageSquare className="h-4 w-4 text-primary text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Channel Select</span>
             </div>

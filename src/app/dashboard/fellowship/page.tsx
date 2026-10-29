@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, serverTimestamp, doc, runTransaction, updateDoc, writeBatch, where, getDocs, deleteField } from "firebase/firestore";
+import { collection, query, orderBy, serverTimestamp, doc, runTransaction, updateDoc, writeBatch, where, getDocs, deleteField, increment } from "firebase/firestore";
 import type { UserProfile, Fellowship, FellowshipMember, JoinedFellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -835,7 +835,7 @@ export default function FellowshipPage() {
             {mounted && isMobile ? (
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <SheetHeader className="text-left p-0">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Create a space for community and growth.</SheetDescription>
@@ -880,7 +880,7 @@ export default function FellowshipPage() {
                 mounted && isMobile ? (
                     <Sheet open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left p-0">
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</SheetTitle>
                                     <SheetDescription className="text-sm font-medium mt-1">Update your group's details.</SheetDescription>
