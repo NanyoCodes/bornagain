@@ -182,7 +182,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                       </motion.div>
                   </div>
                   <div className="min-w-0 flex-1 text-left">
-                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice of Thanksgiving</p>
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
                     <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
                   </div>
               </div>
@@ -268,20 +268,6 @@ function LiveAuthorName({ userId, fallbackName }: { userId: string, fallbackName
     return <span className="capitalize">{name}</span>;
 }
 
-export function getStatusClasses(status: FollowUpStatus | undefined): string {
-    if (!status) return 'bg-secondary text-secondary-foreground border-border';
-    switch (status) {
-        case 'New':
-            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
-        case 'Contacted':
-            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
-        case 'Established':
-            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
-        default:
-            return 'bg-secondary text-secondary-foreground border-border';
-    }
-}
-
 export const TestimonyCard = memo(function TestimonyCard({ 
   testimony, 
   onDelete, 
@@ -301,7 +287,6 @@ export const TestimonyCard = memo(function TestimonyCard({
   const firestore = useFirestore();
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
   const [isProcessingReaction, setIsProcessingReaction] = useState<string | null>(null);
@@ -441,7 +426,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 ) : (
                     <LiveAuthorAvatar userId={testimony.authorId} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
                 )}
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 text-left">
                     <div className="flex items-center gap-2 flex-wrap">
                         <Link href={profileLink} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
                              <h3 className="text-base sm:text-lg font-bold capitalize leading-none"> 

@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Camera, Video, X, FileUp, Sparkles, Mic, Square, Info, Newspaper, HandHeart, ExternalLink } from "lucide-react";
+import { Loader2, Camera, X, FileUp, Sparkles, Info, Newspaper, ExternalLink } from "lucide-react";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
@@ -27,10 +27,8 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Image from "next/image";
-import { cn, safeToDate } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 
 const testimonyCategories: TestimonyCategory[] = [
@@ -79,19 +77,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const [mediaPreview1, setMediaPreview1] = useState<{ url: string, localUrl?: string, type: 'image' | 'video' | 'audio' } | null>(null);
   const [mediaPreview2, setMediaPreview2] = useState<{ url: string, localUrl?: string, type: 'image' | 'video' | 'audio' } | null>(null);
   
-  const [isRecorderOpen, setIsRecorderOpen] = useState(false);
-  const [recorderMode, setRecorderMode] = useState<'video' | 'audio'>('video');
-  const [activeSlot, setActiveSlot] = useState<1 | 2>(1);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const videoPreviewRef = useRef<HTMLVideoElement>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  const MAX_RECORDING_SECONDS = 120; 
-
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
 
@@ -115,109 +100,33 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     return () => {
       if (mediaPreview1?.localUrl) URL.revokeObjectURL(mediaPreview1.localUrl);
       if (mediaPreview2?.localUrl) URL.revokeObjectURL(mediaPreview2.localUrl);
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (stream) stream.getTracks().forEach(track => track.stop());
     };
-  }, [mediaPreview1, mediaPreview2, stream]);
-
-  useEffect(() => {
-    if (isRecorderOpen && recorderMode === 'video' && stream && videoPreviewRef.current) {
-        videoPreviewRef.current.srcObject = stream;
-    }
-  }, [isRecorderOpen, recorderMode, stream]);
-
-  const getSupportedMimeType = (mode: 'video' | 'audio') => {
-    if (typeof MediaRecorder === 'undefined') return '';
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    let types: string[];
-    if (mode === 'video') {
-        types = isAndroid 
-            ? ['video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4']
-            : ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'];
-    } else {
-        types = isAndroid
-            ? ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4']
-            : ['audio/mp4', 'audio/aac', 'audio/mpeg', 'audio/webm;codecs=opus', 'audio/webm'];
-    }
-    for (const type of types) {
-        if (MediaRecorder.isTypeSupported(type)) return type;
-    }
-    return mode === 'video' ? 'video/webm' : 'audio/webm';
-  };
-
-  const startRecorder = async (slot: 1 | 2, mode: 'video' | 'audio') => {
-      setActiveSlot(slot);
-      setRecorderMode(mode);
-      try {
-          const constraints = mode === 'video' 
-            ? { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true }
-            : { audio: true };
-          const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-          setStream(mediaStream);
-          setIsRecorderOpen(true);
-      } catch (err) {
-          toast({ variant: 'destructive', title: 'Access Blocked', description: `Please enable ${mode} permissions.` });
-      }
-  };
-
-  const closeRecorder = () => {
-      if (stream) stream.getTracks().forEach(track => track.stop());
-      setStream(null);
-      setIsRecording(false);
-      setRecordingTime(0);
-      setIsRecorderOpen(false);
-      if (timerRef.current) clearInterval(timerRef.current);
-  };
-
-  const startRecording = () => {
-      if (!stream) return;
-      chunksRef.current = [];
-      const mimeType = getSupportedMimeType(recorderMode);
-      const recorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorderRef.current = recorder;
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      recorder.onstop = async () => {
-          const actualMimeType = mediaRecorderRef.current?.mimeType || getSupportedMimeType(recorderMode);
-          const baseType = actualMimeType.split(';')[0];
-          let extension = baseType.includes('mp4') ? 'mp4' : baseType.includes('webm') ? 'webm' : baseType.includes('aac') ? 'aac' : baseType.includes('mpeg') ? 'mp3' : (recorderMode === 'video' ? 'webm' : 'm4a');
-          const blob = new Blob(chunksRef.current, { type: baseType });
-          const file = new File([blob], `recorded_${Date.now()}.${extension}`, { type: baseType });
-          await handleUploadProcessedFile(file, activeSlot, recorderMode);
-          closeRecorder();
-      };
-      recorder.start(1000);
-      setIsRecording(true);
-      timerRef.current = setInterval(() => {
-          setRecordingTime(prev => {
-              if (prev >= MAX_RECORDING_SECONDS - 1) { stopRecording(); return MAX_RECORDING_SECONDS; }
-              return prev + 1;
-          });
-      }, 1000);
-  };
-
-  const stopRecording = () => {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-          mediaRecorderRef.current.stop();
-          setIsRecording(false);
-          if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
-      }
-  };
+  }, [mediaPreview1, mediaPreview2]);
 
   const handleUploadProcessedFile = async (file: File | Blob, slot: 1 | 2, type: 'video' | 'audio' | 'image') => {
     if (!user || !storage) return;
-    if (file.size > 100 * 1024 * 1024) { toast({ variant: 'destructive', title: 'File Too Large', description: 'Maximum size is 100MB.' }); return; }
+    if (file.size > 100 * 1024 * 1024) { 
+      toast({ variant: 'destructive', title: 'File Too Large', description: 'Maximum size is 100MB.' }); 
+      return; 
+    }
     setIsUploadingMedia(slot);
     setUploadProgress(0);
     const localUrl = URL.createObjectURL(file);
     try {
-        const fileName = (file as File).name || `recorded_${Date.now()}.${type === 'image' ? 'jpg' : type === 'video' ? 'mp4' : 'm4a'}`;
-        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${fileName}`);
+        const originalName = (file as File).name || `upload_${Date.now()}`;
+        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${originalName}`);
+        
+        // Sanitize MIME type by stripping codecs
         const contentType = (file.type || (type === 'audio' ? 'audio/mp4' : type === 'video' ? 'video/mp4' : 'image/jpeg')).split(';')[0];
         const metadata = { contentType, customMetadata: { testimonyId, slot: slot.toString() } };
+        
         const uploadTask = uploadBytesResumable(fileRef, file, metadata);
         uploadTask.on('state_changed', 
             (snapshot) => setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
-            (error) => { toast({ variant: 'destructive', title: 'Upload Failed' }); setIsUploadingMedia(null); },
+            (error) => { 
+              toast({ variant: 'destructive', title: 'Upload Failed' }); 
+              setIsUploadingMedia(null); 
+            },
             async () => {
                 const url = await getDownloadURL(uploadTask.snapshot.ref);
                 if (slot === 1) {
@@ -231,25 +140,34 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     form.setValue('mediaUrl2', url);
                     form.setValue('mediaType2', type as any);
                 }
-                toast({ title: 'Proof Captured' });
+                toast({ title: 'Media Ready' });
                 setIsUploadingMedia(null);
             }
         );
-    } catch (err) { setIsUploadingMedia(null); }
+    } catch (err) { 
+      setIsUploadingMedia(null); 
+    }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, slot: 1 | 2) => {
     const file = e.target.files?.[0];
     if (!file || !user || !storage) return;
-    if (file.size > 100 * 1024 * 1024) { toast({ variant: 'destructive', title: 'File Too Large' }); return; }
+    
     let fileType = file.type;
     if (!fileType) {
         const ext = file.name.split('.').pop()?.toLowerCase();
-        const typeMap: Record<string, string> = { 'mp4': 'video/mp4', 'mov': 'video/quicktime', 'webm': 'video/webm', 'm4a': 'audio/mp4', 'mp3': 'audio/mpeg', 'aac': 'audio/aac', 'wav': 'audio/wav', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png' };
+        const typeMap: Record<string, string> = { 
+          'mp4': 'video/mp4', 'mov': 'video/quicktime', 'webm': 'video/webm', 
+          'm4a': 'audio/mp4', 'mp3': 'audio/mpeg', 'aac': 'audio/aac', 'wav': 'audio/wav', 
+          'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png' 
+        };
         fileType = typeMap[ext || ''] || '';
     }
     const type = fileType.startsWith('image/') ? 'image' : fileType.startsWith('video/') ? 'video' : fileType.startsWith('audio/') ? 'audio' : null;
-    if (!type) { toast({ variant: 'destructive', title: 'Invalid File' }); return; }
+    if (!type) { 
+      toast({ variant: 'destructive', title: 'Invalid File', description: 'Please select an image, video, or audio file.' }); 
+      return; 
+    }
     handleUploadProcessedFile(file, slot, type as any);
   };
 
@@ -257,7 +175,28 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     if (!user || !firestore || !userProfile) return;
     setIsSubmitting(true);
     try {
-      const testimonyData: any = { authorId: user.uid, authorFirstName: userProfile.firstName, authorLastName: userProfile.lastName, authorAvatarUrl: userProfile.photoURL || null, authorLocation: userProfile.location ? { city: userProfile.location.city || null, country: userProfile.location.country || null, latitude: userProfile.location.latitude ?? null, longitude: userProfile.location.longitude ?? null } : null, content: values.content, createdAt: serverTimestamp(), category: values.category as TestimonyCategory, supporters: [], inspiredBy: [], connectedBy: [], mediaUrl: values.mediaUrl || null, mediaType: values.mediaType || null, mediaUrl2: values.mediaUrl2 || null, mediaType2: values.mediaType2 || null };
+      const testimonyData: any = { 
+        authorId: user.uid, 
+        authorFirstName: userProfile.firstName, 
+        authorLastName: userProfile.lastName, 
+        authorAvatarUrl: userProfile.photoURL || null, 
+        authorLocation: userProfile.location ? { 
+          city: userProfile.location.city || null, 
+          country: userProfile.location.country || null, 
+          latitude: userProfile.location.latitude ?? null, 
+          longitude: userProfile.location.longitude ?? null 
+        } : null, 
+        content: values.content, 
+        createdAt: serverTimestamp(), 
+        category: values.category as TestimonyCategory, 
+        supporters: [], 
+        inspiredBy: [], 
+        connectedBy: [], 
+        mediaUrl: values.mediaUrl || null, 
+        mediaType: values.mediaType || null, 
+        mediaUrl2: values.mediaUrl2 || null, 
+        mediaType2: values.mediaType2 || null 
+      };
       if (campaign) { testimonyData.campaignId = campaign.id; testimonyData.campaignTitle = campaign.title; }
       if (prayerRequest) { testimonyData.answeredPrayerId = prayerRequest.id; testimonyData.answeredPrayerContent = prayerRequest.content; }
       const result = await runTransaction(firestore, async (transaction) => {
@@ -295,10 +234,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                           <div className="flex flex-col items-center"><div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><FileUp className="h-4 w-4 text-primary" /></div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select File</p><p className="text-[8px] text-muted-foreground/40 mt-1 uppercase">Image, Video, Audio</p></div>
                       )}
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                      <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1 text-center" onClick={() => startRecorder(slot, 'video')} disabled={isUploadingMedia !== null}><Video className="h-3 w-3 mb-0.5" />RECORD VIDEO</Button>
-                      <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1 text-center" onClick={() => startRecorder(slot, 'audio')} disabled={isUploadingMedia !== null}><Mic className="h-3 w-3 mb-0.5" />RECORD AUDIO</Button>
-                  </div>
               </div>
           ) : (
               <div className="space-y-2">
@@ -306,14 +241,22 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                     {preview.type === 'image' ? (
                         <Image src={preview.localUrl || preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
                     ) : preview.type === 'video' ? (
-                        <video key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` })} />
+                        <video 
+                          key={preview.localUrl || preview.url} 
+                          src={preview.localUrl || preview.url} 
+                          className="w-full h-full object-cover bg-zinc-950" 
+                          playsInline 
+                          controls 
+                          preload="metadata" 
+                          onError={(e) => toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` })} 
+                        />
                     ) : (
                         <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4">
-                            <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Mic className="h-5 w-5 text-primary" /></div><Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" /></div>
-                            <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice of Thanksgiving</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` })} /></div>
+                            <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Sparkles className="h-5 w-5 text-primary" /></div></div>
+                            <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` })} /></div>
                         </div>
                     )}
-                    <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}><X className="h-3.5 w-3.5" /></Button>
+                    <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 transition-opacity" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}><X className="h-3.5 w-3.5" /></Button>
                 </div>
                 <Button asChild variant="link" className="h-auto p-0 text-[9px] font-bold uppercase tracking-tighter text-muted-foreground hover:text-primary"><a href={preview.url} target="_blank" rel="noopener noreferrer"><ExternalLink className="mr-1 h-2 w-2" /> Open proof in new tab</a></Button>
               </div>
@@ -373,7 +316,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
                     <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
-                        Providing proof (photos/videos/audio) strengthens faith. Max recording length 2 minutes.
+                        Providing proof (photos/videos/audio) strengthens faith. Maximum file size is 100MB.
                     </p>
                 </div>
             </div>
@@ -398,19 +341,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               </p>
           </div>
         </form></Form>
-      <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}><DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left"><div className="sr-only text-left text-left"><DialogHeader><DialogTitle>Miracle Recorder</DialogTitle><DialogDescription>Capture live proof of God's goodness.</DialogDescription></DialogHeader></div><DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left"><div className="flex items-center justify-between gap-4"><div className="min-w-0"><div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white">Miracle Recorder</div><p className="text-sm font-medium text-zinc-400 mt-1">Capture your {recorderMode} proof.</p></div><Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10" onClick={closeRecorder}><X className="h-6 w-6" /></Button></div></DialogHeader>
-              {recorderMode === 'video' ? (<div className="relative aspect-video w-full bg-zinc-950 overflow-hidden text-left"><video ref={videoPreviewRef} autoPlay muted playsInline className="w-full h-full object-cover mirror scale-x-[-1]" />
-                      <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none text-left"><div className="flex justify-between items-start text-left"><div className="flex items-center gap-3 text-left">{isRecording && (<div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left"><div className="h-2 w-2 rounded-full bg-white" /><span className="text-[10px] font-black text-white uppercase tracking-widest">REC</span></div>)}<Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px]">{Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00</Badge></div></div>
-                          <div className="space-y-4 text-left"><div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left"><motion.div className="h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} /></div><div className="flex justify-center pointer-events-auto text-left">{!isRecording ? (<Button type="button" onClick={startRecording} size="lg" className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left"><div className="h-8 w-8 rounded-full bg-white shadow-inner" /></Button>) : (<Button type="button" onClick={stopRecording} size="lg" className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left"><Square className="h-8 w-8 fill-current" /></Button>)}</div></div></div></div>) : (
-                  <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10 text-left"><div className="relative text-left"><div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.1)]"><Mic className={cn("h-16 w-16 text-primary transition-all", isRecording && "scale-110")} /></div>{isRecording && (<div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20" />)}</div>
-                       <div className="space-y-4 w-full text-left"><div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center">Voice of Thanksgiving</div><p className="text-zinc-500 text-sm font-medium text-center">Record your vocal proclamation (max 2 minutes).</p><div className="flex items-center justify-center gap-3 text-left">
-                               {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />}
-                               <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums">
-                                    {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
-                               </span>
-                           </div><div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden text-left"><motion.div className="h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} /></div></div>
-                       <div className="flex gap-4 w-full text-left">{!isRecording ? (<Button type="button" onClick={startRecording} className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center"> START</Button>) : (<Button type="button" onClick={stopRecording} variant="destructive" className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center"><Square className="mr-3 h-6 w-6 fill-current" /> STOP</Button>)}</div></div>
-              )}</DialogContent></Dialog>
     </div>
   );
 }
