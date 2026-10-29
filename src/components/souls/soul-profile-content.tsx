@@ -321,8 +321,8 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4">
         <div className="min-w-0">
             <div className="text-left">
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</h2>
-                <p className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</p>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Intercession</h2>
+                <p className="text-sm font-medium mt-1 text-left text-left">Draft a powerful prayer for {soul?.firstName}.</p>
             </div>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
@@ -433,7 +433,7 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
           {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4" /></Button>}
           <Target className="h-5 w-5 text-primary" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
         </div>
-        <div>
+        <div className="text-left">
             <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                 {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}
             </h2>
@@ -595,7 +595,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild><Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10"><Download className="h-4 w-4" /></Button></DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
-                                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Select Format</DropdownMenuLabel>
+                                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Select Format</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>CSV Export</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
@@ -731,43 +731,45 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                         </Button>
                     </div>
                     {needs ? (
-                        <div className="space-y-4 text-left">
-                            {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-                                {needs.emotionalNeeds && (
-                                    <div className="space-y-1 text-left">
-                                        <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge>
-                                        <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.emotionalNeeds}</p>
-                                    </div>
-                                )}
-                                {needs.physicalNeeds && (
-                                    <div className="space-y-1 text-left">
-                                        <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge>
-                                        <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.physicalNeeds}</p>
-                                    </div>
-                                )}
-                                {needs.financialNeeds && (
-                                    <div className="space-y-1 text-left">
-                                        <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge>
-                                        <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.financialNeeds}</p>
-                                    </div>
-                                )}
-                                {needs.socialNeeds && (
-                                    <div className="space-y-1 text-left">
-                                        <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge>
-                                        <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.socialNeeds}</p>
+                        <React.Fragment>
+                            <div className="space-y-4 text-left">
+                                {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                                    {needs.emotionalNeeds && (
+                                        <div className="space-y-1 text-left">
+                                            <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge>
+                                            <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.emotionalNeeds}</p>
+                                        </div>
+                                    )}
+                                    {needs.physicalNeeds && (
+                                        <div className="space-y-1 text-left">
+                                            <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge>
+                                            <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.physicalNeeds}</p>
+                                        </div>
+                                    )}
+                                    {needs.financialNeeds && (
+                                        <div className="space-y-1 text-left">
+                                            <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge>
+                                            <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.financialNeeds}</p>
+                                        </div>
+                                    )}
+                                    {needs.socialNeeds && (
+                                        <div className="space-y-1 text-left">
+                                            <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge>
+                                            <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.socialNeeds}</p>
+                                        </div>
+                                    )}
+                                </div>
+                                {needs.followUpPlan && (
+                                    <div className="pt-2 border-t border-primary/10 text-left">
+                                        <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left">
+                                            <Target className="h-2.5 w-2.5 text-left" /> Strategy
+                                        </p>
+                                        <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p>
                                     </div>
                                 )}
                             </div>
-                            {needs.followUpPlan && (
-                                <div className="pt-2 border-t border-primary/10 text-left">
-                                    <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left">
-                                        <Target className="h-2.5 w-2.5 text-left" /> Strategy
-                                    </p>
-                                    <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p>
-                                </div>
-                            )}
-                        </div>
+                        </React.Fragment>
                     ) : (
                         <div className="py-4 text-center text-left">
                             <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-center text-left text-left" onClick={() => onAssess(soul)}>BEGIN ASSESSMENT</Button>
