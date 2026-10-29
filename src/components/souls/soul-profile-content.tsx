@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -157,8 +156,8 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
   const { toast } = useToast();
 
   const mediaContent = (
-      <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left">
-          <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left">
+      <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+          <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
               {type === 'image' ? (
                   <Image src={url} alt="Proof Full" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
               ) : type === 'video' ? (
@@ -172,21 +171,21 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                     preload="metadata" 
                   />
               ) : (
-                  <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl text-left">
-                      <div className="relative text-center text-left">
-                          <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto text-left text-left">
-                              <Mic className="h-16 w-16 text-primary text-left text-left" />
+                  <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl">
+                      <div className="relative text-center">
+                          <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto">
+                              <Mic className="h-16 w-16 text-primary" />
                           </div>
-                          <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse text-left text-left" />
+                          <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse" />
                       </div>
-                      <div className="space-y-2 text-center text-left">
-                          <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white text-center text-left">Voice Proclamation</h4>
-                          <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic text-center text-left">A testimony of God's goodness</p>
+                      <div className="space-y-2 text-center">
+                          <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white text-center">Voice Proclamation</h4>
+                          <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic text-center">A testimony of God's goodness</p>
                       </div>
                       <audio 
                         key={url} 
                         src={url} 
-                        className="w-full text-left" 
+                        className="w-full" 
                         controls 
                         preload="metadata" 
                         autoPlay
@@ -200,7 +199,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
   const trigger = (
       <div 
         className={cn(
-            "relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted group/media cursor-pointer text-left",
+            "relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted group/media cursor-pointer",
             isAudio ? "h-auto min-h-[100px]" : "aspect-square",
             isFull && !isAudio && "h-full w-full"
         )}
@@ -212,8 +211,8 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
               <video key={url} src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
           ) : (
               <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
-                  <div className="relative shrink-0 text-left">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner text-left">
+                  <div className="relative shrink-0">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
                           <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
                       <motion.div 
@@ -221,12 +220,12 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         animate={{ opacity: [0.4, 1, 0.4] }}
                         transition={{ repeat: Infinity, duration: 2 }}
                       >
-                        <Sparkles className="h-3 w-3 text-primary animate-pulse text-left" />
+                        <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                       </motion.div>
                   </div>
                   <div className="min-w-0 flex-1 text-left">
-                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left">Voice Proclamation</p>
-                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left">Tap to Hear Miracle</p>
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice of Thanksgiving</p>
+                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
                   </div>
               </div>
           )}
@@ -238,20 +237,20 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           <>
             {trigger}
             <Drawer open={isOpen} onOpenChange={setIsOpen}>
-                <DrawerContent className="p-0 bg-black/95 border-0 h-dvh rounded-none flex items-center justify-center text-center text-left">
-                    <div className="sr-only text-left">
-                        <DrawerHeader className="text-left">
-                            <DrawerTitle className="text-left">Media View</DrawerTitle>
-                            <DrawerDescription className="text-left">Full screen media preview.</DrawerDescription>
+                <DrawerContent className="p-0 bg-black/95 border-0 h-dvh rounded-none flex items-center justify-center text-center">
+                    <div className="sr-only">
+                        <DrawerHeader>
+                            <DrawerTitle>Media View</DrawerTitle>
+                            <DrawerDescription>Full screen media preview.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 z-50 rounded-full bg-white/10 text-white hover:bg-white/20 text-left" onClick={() => setIsOpen(false)}>
-                        <X className="h-6 w-6 text-left" />
+                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 z-50 rounded-full bg-white/10 text-white hover:bg-white/20" onClick={() => setIsOpen(false)}>
+                        <X className="h-6 w-6" />
                     </Button>
                     {mediaContent}
-                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4 text-center">
-                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest text-center">
-                          <a href={url} target="_blank" rel="noopener noreferrer" className="text-center">Open in new tab</a>
+                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4">
+                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest">
+                          <a href={url} target="_blank" rel="noopener noreferrer">Open in new tab</a>
                         </Button>
                     </div>
                 </DrawerContent>
@@ -263,11 +262,11 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
   return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
           {trigger}
-          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
-              <div className="sr-only text-left">
-                  <DialogHeader className="text-left">
-                    <DialogTitle className="text-left">Full View</DialogTitle>
-                    <DialogDescription className="text-left">Full miracle proof preview.</DialogDescription>
+          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+              <div className="sr-only">
+                  <DialogHeader>
+                    <DialogTitle>Full View</DialogTitle>
+                    <DialogDescription>Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
               {mediaContent}
@@ -320,11 +319,11 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
   useEffect(() => { if(isOpen && soul) { setText(prayerTemplates[0].text.replace(/{name}/g, soul.firstName)); } }, [isOpen, soul]);
   
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
+    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4">
         <div className="min-w-0">
             <div className="text-left">
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</h2>
-                <p className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</p>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</h2>
+                <p className="text-sm font-medium mt-1">Draft a powerful prayer for {soul?.firstName}.</p>
             </div>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
@@ -334,38 +333,38 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
   );
 
   const contentBody = (
-    <div className="p-8 space-y-6 text-left">
-        <div className="space-y-3 text-left">
+    <div className="p-8 space-y-6">
+        <div className="space-y-3">
             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Prayer Focus</label>
-            <div className="flex flex-wrap gap-2 text-left">
+            <div className="flex flex-wrap gap-2">
                 {prayerTemplates.map(t => (
-                    <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-primary text-left" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
+                    <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-primary" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
                 ))}
             </div>
         </div>
-        <div className="space-y-2 text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Your Prayer</Label>
-            <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" />
+        <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label>
+            <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" />
         </div>
         <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">SEND</Button>
     </div>
   );
 
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow text-left">{contentBody}</ScrollArea></SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">{header}<ScrollArea className="flex-1 min-h-0 text-left">{contentBody}</ScrollArea></DialogContent></Dialog>;
+  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">{header}<ScrollArea className="flex-grow">{contentBody}</ScrollArea></SheetContent></Sheet>;
+  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">{header}<ScrollArea className="flex-1 min-h-0">{contentBody}</ScrollArea></DialogContent></Dialog>;
 }
 
 export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }: { isOpen: boolean; onOpenChange: (open: boolean) => void; soul: Soul | null; onChannelSelect: (channel: 'whatsapp' | 'sms') => void; }) {
   const isMobile = useIsMobile();
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
-        <div className="min-w-0 text-left">
-            <div className="flex items-center gap-2 mb-1 text-left">
-                <MessageSquare className="h-4 w-4 text-primary text-left" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Channel Select</span>
+    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4">
+        <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+                <MessageSquare className="h-4 w-4 text-primary" />
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
             </div>
-            <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</h2>
-            <p className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</p>
+            <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Message Hub</h2>
+            <p className="text-sm font-medium">Encourage {soul?.firstName} via mobile.</p>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -373,13 +372,13 @@ export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }
     </div>
   );
   const contentBody = (
-    <div className="flex flex-col gap-3 p-8 text-left">
-        <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg text-center">WhatsApp External</Button>
-        <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary text-center">Standard SMS</Button>
+    <div className="flex flex-col gap-3 p-8">
+        <Button onClick={() => onChannelSelect('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg">WhatsApp External</Button>
+        <Button onClick={() => onChannelSelect('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary">Standard SMS</Button>
     </div>
   );
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">{header}{contentBody}</SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">{header}{contentBody}</DialogContent></Dialog>;
+  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="p-0 rounded-t-[2.5rem] h-auto pb-12">{header}{contentBody}</SheetContent></Sheet>;
+  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">{header}{contentBody}</DialogContent></Dialog>;
 }
 
 export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: { isOpen: boolean; onOpenChange: (open: boolean) => void; soul: Soul | null; onSelectVerse: (verse: string) => void; }) {
@@ -429,17 +428,17 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
   };
 
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
-      <div className="min-w-0 text-left">
-        <div className="flex items-center gap-3 mb-2 text-left">
+    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4">
+      <div className="min-w-0">
+        <div className="flex items-center gap-3 mb-2">
           {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4" /></Button>}
           <Target className="h-5 w-5 text-primary" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
         </div>
-        <div className="text-left">
-            <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+        <div>
+            <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
                 {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}
             </h2>
-            <p className="text-xs sm:text-sm font-medium text-left">
+            <p className="text-xs sm:text-sm font-medium">
                 {view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBook || 'Bible'}...`}
             </p>
         </div>
@@ -449,12 +448,12 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
   );
 
   const contentBody = (
-    <div className="p-4 sm:p-10 text-left">
+    <div className="p-4 sm:p-10">
         {view === 'hub' && (
-            <div className="space-y-8 text-left">
-                <div className="relative text-left"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
+            <div className="space-y-8">
+                <div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
                 {searchResults.map((res, idx) => (<Button key={idx} variant="outline" className="w-full h-auto p-4 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left border-2 border-dashed" onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary">{res.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-4">"{res.text.trim()}"</p></Button>))}
-                <div className="grid grid-cols-2 gap-4 text-left">
+                <div className="grid grid-cols-2 gap-4">
                     <Button onClick={() => setView('books')} variant="outline" className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center">
                         <BookOpen className="h-6 w-6 mb-1" />
                         <span className="text-[10px] font-black uppercase text-center">Browse Bible</span>
@@ -466,19 +465,19 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
                         </Link>
                     </Button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">{kingdomVerses.map((v, idx) => (<Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:bg-primary/10 transition-all text-left block" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary">{v.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-2">"{v.text}"</p></Button>))}</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{kingdomVerses.map((v, idx) => (<Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:bg-primary/10 transition-all text-left block" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary">{v.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-2">"{v.text}"</p></Button>))}</div>
             </div>
         )}
         {view === 'books' && <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2">{bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[9px]" onClick={() => { setSelectedBook(book.name); setView('chapters'); }}>{book.name}</Button>))}</div>}
         {view === 'chapters' && <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2">{selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (<Button key={ch.chapter} variant="outline" className="h-9 w-9 p-0 rounded-lg font-black text-xs" onClick={() => handleSelectChapter(ch.chapter)}>{ch.chapter}</Button>))}</div>}
-        {view === 'verses' && <div className="space-y-4 pb-12 text-left"><div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left"><p className="text-[10px] font-black uppercase text-primary mb-1 text-left">SELECTED</p><p className="text-xs font-bold text-muted-foreground text-left">{selectedVerses.length > 0 ? `${selectedBook} ${selectedChapter}:${selectedVerses.join(', ')}` : 'Select verses below...'}</p></div><div className="space-y-1 font-serif text-left">{loadingVerses ? <div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div> : chapterContent?.verses.map(v => (<div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2 text-left", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => setSelectedVerses(prev => prev.includes(v.verse) ? prev.filter(vs => vs !== v.verse) : [...prev, v.verse].sort((a,b)=>a-b))}><sup className="text-[10px] font-black mr-2 opacity-40">{v.verse}</sup><span className="text-sm leading-relaxed">{v.text}</span></div>))}</div></div>}
+        {view === 'verses' && <div className="space-y-4 pb-12"><div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6"><p className="text-[10px] font-black uppercase text-primary mb-1">SELECTED</p><p className="text-xs font-bold text-muted-foreground">{selectedVerses.length > 0 ? `${selectedBook} ${selectedChapter}:${selectedVerses.join(', ')}` : 'Select verses below...'}</p></div><div className="space-y-1 font-serif">{loadingVerses ? <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div> : chapterContent?.verses.map(v => (<div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => setSelectedVerses(prev => prev.includes(v.verse) ? prev.filter(vs => vs !== v.verse) : [...prev, v.verse].sort((a,b)=>a-b))}><sup className="text-[10px] font-black mr-2 opacity-40">{v.verse}</sup><span className="text-sm leading-relaxed">{v.text}</span></div>))}</div></div>}
     </div>
   );
 
   const footer = view === 'verses' && <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0"><Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold">Clear</Button><Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-[2] font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center">SHARE SELECTED ({selectedVerses.length})</Button></div>;
 
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow text-left">{contentBody}</ScrollArea>{footer}</SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">{header}<ScrollArea className="flex-1 min-h-0 text-left">{contentBody}</ScrollArea>{footer}</DialogContent></Dialog>;
+  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">{header}<ScrollArea className="flex-grow">{contentBody}</ScrollArea>{footer}</SheetContent></Sheet>;
+  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col">{header}<ScrollArea className="flex-1 min-h-0">{contentBody}</ScrollArea>{footer}</DialogContent></Dialog>;
 }
 
 export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, onAssess, onOpenAssignDialog, onExportSingle, onDelete }: { soul: Soul; onFollowUp: (s: Soul) => void; onViewHistory: (s: Soul) => void; onEdit: (s: Soul) => void; onAssess: (s: Soul) => void; onOpenAssignDialog: (s: Soul) => void; onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void; onDelete: (s: Soul) => void; }) {
@@ -581,8 +580,8 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
   return (
     <React.Fragment>
         <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
-            <CardHeader className="p-8 pb-4 text-center text-left">
-                <div className="relative inline-block mx-auto mb-4 text-left">
+            <CardHeader className="p-8 pb-4 text-center">
+                <div className="relative inline-block mx-auto mb-4">
                     <Dialog><DialogTrigger asChild disabled={!soul.photoURL}><div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-105", soul.photoURL && "cursor-pointer hover:scale-105")}><Avatar className="h-full w-full border shadow-sm"><AvatarImage src={soul.photoURL || undefined} className="object-cover" /><AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl"> {soul.firstName?.charAt(0)}</AvatarFallback></Avatar></div></DialogTrigger>{soul.photoURL && (<DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center"><DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader><div className="relative h-full w-full flex items-center justify-center p-4 text-center"><div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center"><Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized /></div></div></DialogContent>)}</Dialog>
                     {address && (<Button size="icon" className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background" onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')} title="View Map"><MapPin className="h-5 w-5" /></Button>)}
                 </div>
@@ -590,54 +589,165 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
             </CardHeader>
             <CardContent className="p-8 pt-0 space-y-6 text-left">
                 <Separator className="opacity-50" />
-                <div className="space-y-4 text-left"><div className="flex items-center justify-between"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Identity</p><div className="flex items-center gap-1 text-left"><DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10"><Download className="h-4 w-4" /></Button></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl"><DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Select Format</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')} className="text-left">CSV Export</DropdownMenuItem><DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="text-left">PDF Report</DropdownMenuItem></DropdownMenuContent></DropdownMenu><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}><Edit className="h-4 w-4" /></Button></div></div><div className="grid grid-cols-2 gap-4 text-left"><div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Full Name</p><p className="text-[11px] sm:text-xs font-bold text-left">{soul.firstName} {soul.lastName}</p></div><div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p><p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p></div><div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.relationship || 'N/A'}</p></div><div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.workStatus || 'N/A'}</p></div><div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Rel. Status</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.maritalStatus || 'N/A'}</p></div><div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nickname</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.nickname || 'N/A'}</p></div></div></div>
-                <Separator className="opacity-20" />
-                <div className="space-y-3 text-left"><div className="flex items-center justify-between text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Contact Identity</p><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}><Edit className="h-4 w-4" /></Button></div><div className="space-y-2 text-left">{soul.phone ? (<div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left"><Phone className="h-3.5 w-3.5 text-primary shrink-0 text-left" />{soul.phone}</div>) : (<p className="text-[9px] text-muted-foreground/40 italic text-left">No phone recorded</p>)}{soul.email && (<div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left"><Mail className="h-3.5 w-3.5 text-primary shrink-0 text-left" />{soul.email}</div>)}</div></div>
-                <Separator className="opacity-20" />
-                <div className="space-y-4 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Relational Actions</p><div className="flex flex-col gap-2 text-left">{actionItems.map(action => { 
-                    const Icon = iconMap[action.id] || Heart; 
-                    const isThisProcessing = clickedActionId === action.id && isActionSubmitting; 
-                    if (action.id === 'matchmaking' && (soul.maritalStatus === 'Married' || isRestrictedForMatchmaking)) return null; 
-                    return (<Button key={action.id} variant="outline" className="flex items-center justify-start gap-3 h-12 px-4 rounded-xl border-2 border-transparent bg-muted/20 hover:bg-primary/5 hover:border-primary/10 transition-all text-left group" onClick={() => handleActionClick(action.id)} disabled={isActionSubmitting}><div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors text-left">{isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left" /> : <Icon className="h-4 w-4 text-left" />}</div><span className="text-xs font-bold uppercase tracking-tight truncate flex-1 text-left">{action.label}</span><ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity text-left" /></Button>) })}</div></div>
-                <Separator className="opacity-20" />
-                <div className="space-y-4 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Harvest Context</p><div className="space-y-1 text-left"><p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 text-left"><Target className="h-3 w-3 text-primary text-left" />Source: {soul.source}</p></div></div>
-                <Separator className="opacity-20" />
-                <div className="space-y-4 text-left"><div className="flex items-center justify-between text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onOpenAssignDialog(soul)}><Edit className="h-4 w-4" /></Button></div><div className="space-y-3 text-left"><div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left"><HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left" /><div className="min-w-0 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p></div></div><div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left"><Users className="h-4 w-4 text-blue-500 shrink-0 text-left" /><div className="min-w-0 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p><p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p></div></div></div></div>
-                <Separator className="opacity-20" />
-                <div className="space-y-4 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Milestones</p><div className="grid grid-cols-2 gap-2 text-left">{[{ label: 'Church', val: soul.attendingChurch, icon: Church }, { label: 'Word Study', val: soul.inBibleStudy, icon: BookOpen }, { label: 'Prayer', val: soul.attendingPrayer, icon: Zap }, { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck }].map(milestone => (
-                  <div key={milestone.label} className={cn("flex items-center gap-2 p-2 rounded-xl border transition-all text-left", milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40")}>
-                      <milestone.icon className="h-3 w-3 text-left" />
-                      <span className="text-[10px] font-black uppercase tracking-tight text-left">{milestone.label}</span>
-                  </div>))}</div></div>
-                <Separator className="opacity-20" />
-                <div className="space-y-4 text-left"><div className="flex items-center justify-between text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left"><History className="h-3.5 w-3.5 text-left" /> Interaction History</p><Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5 text-left" onClick={() => onViewHistory(soul)}>View All</Button></div><div className="space-y-4 pl-1 text-left">{sortedHistory.length > 0 ? sortedHistory.slice(0, 3).map((log, index) => { const logDate = safeToDate(log.date); return (<div key={index} className="relative text-left"><div className="pl-4 border-l-4 border-primary/20 text-left"><p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left">{logDate ? format(logDate, "MMM d, yyyy") : 'Date not available'}{log.memberName && <span className="ml-2 text-primary/40 text-left">• By {log.memberName}</span>}</p><p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left">&ldquo;{log.note || 'Interaction logged.'}&rdquo;</p></div></div>); }) : (<div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left"><p className="text-sm text-muted-foreground/40 italic text-center text-left">No interactions recorded.</p></div>)}</div></div>
-                <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left">
-                  <div className="flex items-center justify-between text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left"> 
-                      <ClipboardList className="h-4 w-4 text-left" /> Assessed Needs
-                    </p>
-                    <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onAssess(soul)}>
-                      <Edit className="h-4 w-4 text-left" />
-                    </Button>
-                  </div>
-                  {needs ? (
-                    <div className="space-y-4 text-left">
-                      {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-                        {needs.emotionalNeeds && (<div className="space-y-1 text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.emotionalNeeds}</p></div>)}
-                        {needs.physicalNeeds && (<div className="space-y-1 text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.physicalNeeds}</p></div>)}
-                        {needs.financialNeeds && (<div className="space-y-1 text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.financialNeeds}</p></div>)}
-                        {needs.socialNeeds && (<div className="space-y-1 text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.socialNeeds}</p></div>)}
-                      </div>
-                      {needs.followUpPlan && (<div className="pt-2 border-t border-primary/10 text-left"><p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left"><Target className="h-2.5 w-2.5 text-left" /> Strategy</p><p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p></div>)}
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Identity</p>
+                        <div className="flex items-center gap-1">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild><Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10"><Download className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
+                                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Select Format</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>CSV Export</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}><Edit className="h-4 w-4" /></Button>
+                        </div>
                     </div>
-                  ) : (
-                    <div className="py-4 text-center text-left">
-                      <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-center text-left" onClick={() => onAssess(soul)}>BEGIN ASSESSMENT</Button>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Full Name</p>
+                            <p className="text-[11px] sm:text-xs font-bold text-left">{soul.firstName} {soul.lastName}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Gender/Age</p>
+                            <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Relationship</p>
+                            <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.relationship || 'N/A'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Work Status</p>
+                            <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.workStatus || 'N/A'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Rel. Status</p>
+                            <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.maritalStatus || 'N/A'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Nickname</p>
+                            <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.nickname || 'N/A'}</p>
+                        </div>
                     </div>
-                  )}
                 </div>
-                <div className="pt-2 space-y-3 text-left"><Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-center text-left" onClick={() => onFollowUp(soul)}>LOG FOLLOW-UP</Button><Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px] text-center text-left" onClick={() => onDelete(soul)}><Trash2 className="mr-2 h-4 w-4 text-left" /> DELETE RECORD</Button></div>
+                <Separator className="opacity-20" />
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Contact Identity</p>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}><Edit className="h-4 w-4" /></Button>
+                    </div>
+                    <div className="space-y-2">
+                        {soul.phone ? (<div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground"><Phone className="h-3.5 w-3.5 text-primary shrink-0" />{soul.phone}</div>) : (<p className="text-[9px] text-muted-foreground/40 italic">No phone recorded</p>)}
+                        {soul.email && (<div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground"><Mail className="h-3.5 w-3.5 text-primary shrink-0" />{soul.email}</div>)}
+                    </div>
+                </div>
+                <Separator className="opacity-20" />
+                <div className="space-y-4">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Relational Actions</p>
+                    <div className="flex flex-col gap-2">
+                        {actionItems.map(action => { 
+                            const Icon = iconMap[action.id] || Heart; 
+                            const isThisProcessing = clickedActionId === action.id && isActionSubmitting; 
+                            if (action.id === 'matchmaking' && (soul.maritalStatus === 'Married' || isRestrictedForMatchmaking)) return null; 
+                            return (<Button key={action.id} variant="outline" className="flex items-center justify-start gap-3 h-12 px-4 rounded-xl border-2 border-transparent bg-muted/20 hover:bg-primary/5 hover:border-primary/10 transition-all text-left group" onClick={() => handleActionClick(action.id)} disabled={isActionSubmitting}><div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">{isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Icon className="h-4 w-4" />}</div><span className="text-xs font-bold uppercase tracking-tight truncate flex-1">{action.label}</span><ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity" /></Button>) 
+                        })}
+                    </div>
+                </div>
+                <Separator className="opacity-20" />
+                <div className="space-y-4">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Harvest Context</p>
+                    <div className="space-y-1">
+                        <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5"><Target className="h-3 w-3 text-primary" />Source: {soul.source}</p>
+                    </div>
+                </div>
+                <Separator className="opacity-20" />
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onOpenAssignDialog(soul)}><Edit className="h-4 w-4" /></Button>
+                    </div>
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10">
+                            <HeartHandshake className="h-4 w-4 text-primary shrink-0" />
+                            <div className="min-w-0">
+                                <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Fellowship</p>
+                                <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.fellowshipName || 'No Fellowship'}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10">
+                            <Users className="h-4 w-4 text-blue-500 shrink-0" />
+                            <div className="min-w-0">
+                                <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Association</p>
+                                <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.associationName || 'No Association'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <Separator className="opacity-20" />
+                <div className="space-y-4">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Milestones</p>
+                    <div className="grid grid-cols-2 gap-2">
+                        {[{ label: 'Church', val: soul.attendingChurch, icon: Church }, { label: 'Word Study', val: soul.inBibleStudy, icon: BookOpen }, { label: 'Prayer', val: soul.attendingPrayer, icon: Zap }, { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck }].map(milestone => (
+                        <div key={milestone.label} className={cn("flex items-center gap-2 p-2 rounded-xl border transition-all", milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40")}>
+                            <milestone.icon className="h-3 w-3" />
+                            <span className="text-[10px] font-black uppercase tracking-tight">{milestone.label}</span>
+                        </div>))}
+                    </div>
+                </div>
+                <Separator className="opacity-20" />
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2">
+                            <History className="h-3.5 w-3.5" /> Interaction History
+                        </p>
+                        <Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5" onClick={() => onViewHistory(soul)}>View All</Button>
+                    </div>
+                    <div className="space-y-4 pl-1">
+                        {sortedHistory.length > 0 ? sortedHistory.slice(0, 3).map((log, index) => { 
+                            const logDate = safeToDate(log.date); 
+                            return (
+                                <div key={index} className="relative">
+                                    <div className="pl-4 border-l-4 border-primary/20">
+                                        <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">{logDate ? format(logDate, "MMM d, yyyy") : 'Date not available'}{log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName}</span>}</p>
+                                        <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic">&ldquo;{log.note || 'Interaction logged.'}&rdquo;</p>
+                                    </div>
+                                </div>
+                            ); 
+                        }) : (
+                            <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5"><p className="text-sm text-muted-foreground/40 italic text-center">No interactions recorded.</p></div>
+                        )}
+                    </div>
+                </div>
+                
+                <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner">
+                    <div className="flex items-center justify-between">
+                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1"> 
+                            <ClipboardList className="h-4 w-4" /> Assessed Needs
+                        </p>
+                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full text-primary hover:bg-primary/10" onClick={() => onAssess(soul)}>
+                            <Edit className="h-4 w-4" />
+                        </Button>
+                    </div>
+                    {needs ? (
+                        <div className="space-y-4">
+                            {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance">&ldquo;{needs.generalImpression}&rdquo;</p>}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {needs.emotionalNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black">Emotional</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.emotionalNeeds}</p></div>)}
+                                {needs.physicalNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black">Physical</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.physicalNeeds}</p></div>)}
+                                {needs.financialNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black">Financial</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.financialNeeds}</p></div>)}
+                                {needs.socialNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black">Social</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.socialNeeds}</p></div>)}
+                            </div>
+                            {needs.followUpPlan && (<div className="pt-2 border-t border-primary/10"><p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5"><Target className="h-2.5 w-2.5" /> Strategy</p><p className="text-[10px] text-muted-foreground leading-relaxed italic">{needs.followUpPlan}</p></div>)}
+                        </div>
+                    ) : (
+                        <div className="py-4 text-center">
+                            <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-center" onClick={() => onAssess(soul)}>BEGIN ASSESSMENT</Button>
+                        </div>
+                    )}
+                </div>
+                <div className="pt-2 space-y-3"><Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-center" onClick={() => onFollowUp(soul)}>LOG FOLLOW-UP</Button><Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px] text-center" onClick={() => onDelete(soul)}><Trash2 className="mr-2 h-4 w-4" /> DELETE RECORD</Button></div>
             </CardContent>
         </Card>
         
