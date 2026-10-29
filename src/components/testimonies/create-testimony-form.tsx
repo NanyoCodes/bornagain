@@ -111,21 +111,38 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
   const getSupportedMimeType = (mode: 'video' | 'audio') => {
     if (typeof MediaRecorder === 'undefined') return '';
-    const types = mode === 'video' 
-        ? [
-            'video/mp4;codecs=avc1,mp4a.40.2',
-            'video/mp4',
-            'video/webm;codecs=vp9,opus',
-            'video/webm'
-          ]
-        : [
-            'audio/mp4;codecs=mp4a.40.2',
-            'audio/mp4',
-            'audio/aac',
-            'audio/mpeg',
-            'audio/webm;codecs=opus',
-            'audio/webm'
-          ];
+    
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    
+    let types: string[];
+    if (mode === 'video') {
+        types = isAndroid 
+            ? [
+                'video/webm;codecs=vp8,opus',
+                'video/webm',
+                'video/mp4'
+              ]
+            : [
+                'video/mp4;codecs=avc1',
+                'video/mp4',
+                'video/webm;codecs=vp9,opus',
+                'video/webm'
+              ];
+    } else {
+        types = isAndroid
+            ? [
+                'audio/webm;codecs=opus',
+                'audio/webm',
+                'audio/mp4'
+              ]
+            : [
+                'audio/mp4',
+                'audio/aac',
+                'audio/mpeg',
+                'audio/webm;codecs=opus',
+                'audio/webm'
+              ];
+    }
           
     for (const type of types) {
         if (MediaRecorder.isTypeSupported(type)) return type;
@@ -183,9 +200,19 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
       recorder.onstop = async () => {
           const actualMimeType = mediaRecorderRef.current?.mimeType || getSupportedMimeType(recorderMode);
-          const extension = actualMimeType.includes('mp4') ? 'mp4' : actualMimeType.includes('webm') ? 'webm' : 'bin';
-          const blob = new Blob(chunksRef.current, { type: actualMimeType });
-          const file = new File([blob], `recorded_testimony_${Date.now()}.${extension}`, { type: actualMimeType });
+          const baseType = actualMimeType.split(';')[0]; // Strip codecs for Storage metadata and Blob construction
+          
+          let extension = 'webm';
+          if (baseType.includes('mp4')) extension = 'mp4';
+          else if (baseType.includes('webm')) extension = 'webm';
+          else if (baseType.includes('aac')) extension = 'aac';
+          else if (baseType.includes('mpeg')) extension = 'mp3';
+          else {
+              extension = recorderMode === 'video' ? 'webm' : 'm4a';
+          }
+
+          const blob = new Blob(chunksRef.current, { type: baseType });
+          const file = new File([blob], `recorded_testimony_${Date.now()}.${extension}`, { type: baseType });
           await handleUploadProcessedFile(file, activeSlot, recorderMode);
           closeRecorder();
       };
@@ -217,10 +244,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     setIsUploadingMedia(slot);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
-        const actualMimeType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
+        
+        const fallbackType = type === 'audio' ? 'audio/mp4' : (type === 'video' ? 'video/mp4' : 'image/jpeg');
+        const contentType = (file.type || fallbackType).split(';')[0]; // Ensure stripped codec metadata
         
         const metadata = { 
-            contentType: actualMimeType,
+            contentType,
             customMetadata: {
                 testimonyId: testimonyId,
                 slot: slot.toString()
@@ -273,10 +302,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
-        const actualMimeType = fileToUpload.type || file.type;
+        
+        const fallbackType = isImage ? 'image/jpeg' : isVideo ? 'video/mp4' : 'audio/mp4';
+        const contentType = (fileToUpload.type || file.type || fallbackType).split(';')[0];
         
         const metadata = { 
-            contentType: actualMimeType,
+            contentType,
             customMetadata: {
                 testimonyId: testimonyId,
                 slot: slot.toString()
@@ -580,7 +611,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95" disabled={isSubmitting || isUploadingMedia !== null}>
                 {isSubmitting ? (
                     <div className="flex items-center justify-center gap-3">
-                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                        <Loader2 className="h-6 w-6 animate-spin" />
                         <span>PROCLAIMING...</span>
                     </div>
                 ) : (
