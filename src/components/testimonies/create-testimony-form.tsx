@@ -66,6 +66,13 @@ type CreateTestimonyFormProps = {
 
 export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign, prayerRequest }: CreateTestimonyFormProps) {
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const storage = useStorage();
+
+  // Generate the testimony ID on mount so it's ready for storage metadata
+  const [testimonyId] = useState(() => doc(collection(firestore, "testimonies")).id);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState<number | null>(null);
   const [mediaPreview1, setMediaPreview1] = useState<{ url: string, type: 'image' | 'video' | 'audio' } | null>(null);
@@ -86,10 +93,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
-  
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const storage = useStorage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -216,7 +219,16 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
         const actualMimeType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
-        const metadata = { contentType: actualMimeType };
+        
+        // Pass metadata to trigger Cloud Function transcoding
+        const metadata = { 
+            contentType: actualMimeType,
+            customMetadata: {
+                testimonyId: testimonyId,
+                slot: slot.toString()
+            }
+        };
+        
         const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -264,7 +276,15 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
         const actualMimeType = fileToUpload.type || file.type;
-        const metadata = { contentType: actualMimeType };
+        
+        const metadata = { 
+            contentType: actualMimeType,
+            customMetadata: {
+                testimonyId: testimonyId,
+                slot: slot.toString()
+            }
+        };
+
         const uploadResult = await uploadBytes(fileRef, fileToUpload, metadata);
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -352,7 +372,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       if (prayerRequest) { testimonyData.answeredPrayerId = prayerRequest.id; testimonyData.answeredPrayerContent = prayerRequest.content; }
       
       const result = await runTransaction(firestore, async (transaction) => {
-          const newDocRef = doc(collection(firestore, "testimonies"));
+          const newDocRef = doc(firestore, "testimonies", testimonyId);
           if (prayerRequest) {
             const prayerRef = doc(firestore, 'prayerRequests', prayerRequest.id);
             const prayerDoc = await transaction.get(prayerRef);
@@ -562,7 +582,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95" disabled={isSubmitting || isUploadingMedia !== null}>
                 {isSubmitting ? (
                     <div className="flex items-center justify-center gap-3">
-                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
                         <span>PROCLAIMING...</span>
                     </div>
                 ) : (

@@ -123,7 +123,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         ? [
             'video/mp4;codecs=avc1,mp4a.40.2',
             'video/mp4',
-            'video/quicktime',
             'video/webm;codecs=vp9,opus',
             'video/webm'
           ]
@@ -226,7 +225,14 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
         const actualMimeType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
-        const metadata = { contentType: actualMimeType };
+        
+        const metadata = { 
+            contentType: actualMimeType,
+            customMetadata: {
+                testimonyId: testimony.id,
+                slot: slot.toString()
+            }
+        };
 
         const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
@@ -274,7 +280,15 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${file.name}`);
         const actualMimeType = fileToUpload.type || file.type;
-        const metadata = { contentType: actualMimeType };
+        
+        const metadata = { 
+            contentType: actualMimeType,
+            customMetadata: {
+                testimonyId: testimony.id,
+                slot: slot.toString()
+            }
+        };
+
         const uploadResult = await uploadBytes(fileRef, fileToUpload, metadata);
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -629,3 +643,4 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     </div>
   );
 }
+
