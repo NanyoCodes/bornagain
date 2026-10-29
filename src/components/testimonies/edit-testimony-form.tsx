@@ -188,10 +188,10 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       };
 
       recorder.onstop = async () => {
-          const finalMimeType = getSupportedMimeType(recorderMode);
-          const extension = finalMimeType.includes('mp4') ? 'mp4' : finalMimeType.includes('webm') ? 'webm' : 'bin';
-          const blob = new Blob(chunksRef.current, { type: finalMimeType });
-          const file = new File([blob], `recorded_testimony_edit_${Date.now()}.${extension}`, { type: finalMimeType });
+          const actualMimeType = mediaRecorderRef.current?.mimeType || getSupportedMimeType(recorderMode);
+          const extension = actualMimeType.includes('mp4') ? 'mp4' : actualMimeType.includes('webm') ? 'webm' : 'bin';
+          const blob = new Blob(chunksRef.current, { type: actualMimeType });
+          const file = new File([blob], `recorded_testimony_edit_${Date.now()}.${extension}`, { type: actualMimeType });
           await handleUploadProcessedFile(file, activeSlot, recorderMode);
           closeRecorder();
       };
@@ -224,6 +224,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${(file as File).name || 'recorded'}`);
         // Ensure accurate contentType metadata for cross-platform playback (iOS/Android)
+        // Critical: Passing the exact mimeType from recording
         const contentType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
         const metadata = { contentType };
         const uploadResult = await uploadBytes(fileRef, file, metadata);

@@ -180,10 +180,10 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       };
 
       recorder.onstop = async () => {
-          const finalMimeType = getSupportedMimeType(recorderMode);
-          const extension = finalMimeType.includes('mp4') ? 'mp4' : finalMimeType.includes('webm') ? 'webm' : 'bin';
-          const blob = new Blob(chunksRef.current, { type: finalMimeType });
-          const file = new File([blob], `recorded_testimony_${Date.now()}.${extension}`, { type: finalMimeType });
+          const actualMimeType = mediaRecorderRef.current?.mimeType || getSupportedMimeType(recorderMode);
+          const extension = actualMimeType.includes('mp4') ? 'mp4' : actualMimeType.includes('webm') ? 'webm' : 'bin';
+          const blob = new Blob(chunksRef.current, { type: actualMimeType });
+          const file = new File([blob], `recorded_testimony_${Date.now()}.${extension}`, { type: actualMimeType });
           await handleUploadProcessedFile(file, activeSlot, recorderMode);
           closeRecorder();
       };
@@ -216,6 +216,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
         // Ensure accurate contentType metadata for cross-platform playback (iOS/Android)
+        // Critical: Set the exact mimeType captured during recording
         const contentType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
         const metadata = { contentType };
         const uploadResult = await uploadBytes(fileRef, file, metadata);
@@ -402,7 +403,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       onClick={() => inputRef.current?.click()}
                   >
                       {isUploadingMedia === slot ? (
-                          <div className="flex flex-col items-center gap-2 text-left">
+                          <div className="flex flex-col items-center gap-2 text-left text-left">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
                               <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
                           </div>
@@ -483,96 +484,96 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
   return (
     <div className="space-y-10 text-left">
-      <div className="space-y-4 text-left">
-        <div className="flex items-center gap-3 px-1 text-left">
-            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
-                <Newspaper className="h-5 w-5 text-primary text-left" />
+      <div className="space-y-4 text-left text-left">
+        <div className="flex items-center gap-3 px-1 text-left text-left">
+            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left text-left">
+                <Newspaper className="h-5 w-5 text-primary text-left text-left" />
             </div>
-            <div className="min-w-0 flex-1 text-left">
-                <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Proclaim Victory</h3>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Sharing God's manifest power</p>
+            <div className="min-w-0 flex-1 text-left text-left">
+                <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left text-left">Proclaim Victory</h3>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Sharing God's manifest power</p>
             </div>
         </div>
 
         {prayerRequest && (
-            <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left">
-                <div className="absolute -top-4 -right-4 h-16 w-16 bg-amber-500/5 rounded-full blur-xl text-left" />
-                <CardHeader className="p-5 pb-2 relative z-10 text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left">
-                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left" />
-                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left">Answering Prayer Altar</span>
+            <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left text-left">
+                <div className="absolute -top-4 -right-4 h-16 w-16 bg-amber-500/5 rounded-full blur-xl text-left text-left text-left" />
+                <CardHeader className="p-5 pb-2 relative z-10 text-left text-left">
+                    <div className="flex items-center gap-2 mb-1 text-left text-left">
+                        <HandHeart className="h-3.5 w-3.5 text-amber-600 text-left text-left" />
+                        <span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left text-left">Answering Prayer Altar</span>
                     </div>
-                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
+                    <CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription>
                 </CardHeader>
             </Card>
         )}
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
-          <div className="space-y-6 text-left">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left text-left">
+          <div className="space-y-6 text-left text-left">
             <FormField control={form.control} name="category" render={({ field }) => (
-                <FormItem className="text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Theme</FormLabel>
+                <FormItem className="text-left text-left">
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Theme</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl className="text-left">
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base text-left">
-                            <SelectValue placeholder="What is the nature of this miracle?" className="text-left" />
+                        <FormControl className="text-left text-left">
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base text-left text-left">
+                            <SelectValue placeholder="What is the nature of this miracle?" className="text-left text-left" />
                         </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
-                        {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl text-left">{cat}</SelectItem>))}
+                        <SelectContent className="rounded-2xl border-none shadow-2xl text-left text-left">
+                        {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl text-left text-left">{cat}</SelectItem>))}
                         </SelectContent>
                     </Select>
-                    <FormMessage className="text-left" />
+                    <FormMessage className="text-left text-left" />
                 </FormItem>
                 )}
             />
 
             <FormField control={form.control} name="content" render={({ field }) => (
-                <FormItem className="text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Full Story</FormLabel>
-                    <FormControl className="text-left">
+                <FormItem className="text-left text-left">
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Full Story</FormLabel>
+                    <FormControl className="text-left text-left">
                     <Textarea 
                         placeholder="Detail the greatness of God in this situation..." 
-                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left" 
+                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left text-left" 
                         {...field} 
                     />
                     </FormControl>
-                    <FormMessage className="text-left" />
+                    <FormMessage className="text-left text-left" />
                 </FormItem>
                 )}
             />
 
-            <div className="space-y-4 text-left">
-                <div className="flex flex-col sm:flex-row gap-6 text-left">
+            <div className="space-y-4 text-left text-left">
+                <div className="flex flex-col sm:flex-row gap-6 text-left text-left">
                     {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
                     {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
                 </div>
-                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
-                    <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
-                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left">
+                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left text-left">
+                    <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left text-left text-left" />
+                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left text-left">
                         Providing proof (photos/videos/audio) strengthens the community's faith and serves as an irrefutable weapon against the enemy. Maximum recording length is 2 minutes.
                     </p>
                 </div>
             </div>
           </div>
 
-          <div className="pt-4 text-left">
-              <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95 text-center text-left" disabled={isSubmitting || isUploadingMedia !== null}>
+          <div className="pt-4 text-left text-left">
+              <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95 text-center text-left text-left" disabled={isSubmitting || isUploadingMedia !== null}>
                 {isSubmitting ? (
-                    <div className="flex items-center justify-center gap-3 text-left">
-                        <Loader2 className="h-6 w-6 animate-spin text-left" />
-                        <span className="text-left">PROCLAIMING...</span>
+                    <div className="flex items-center justify-center gap-3 text-left text-left">
+                        <Loader2 className="h-6 w-6 animate-spin text-left text-left" />
+                        <span className="text-left text-left text-left">PROCLAIMING...</span>
                     </div>
                 ) : (
-                    <div className="flex items-center justify-center gap-3 text-left">
-                        <Sparkles className="h-6 w-6 text-left" />
-                        <span className="text-left">PUBLISH TESTIMONY</span>
+                    <div className="flex items-center justify-center gap-3 text-left text-left">
+                        <Sparkles className="h-6 w-6 text-left text-left" />
+                        <span className="text-left text-left text-left">PUBLISH TESTIMONY</span>
                     </div>
                 )}
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center text-left">
+              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center text-left text-left">
                 TO THE GLORY OF JESUS CHRIST
               </p>
           </div>
@@ -580,72 +581,72 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       </Form>
 
       <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
-          <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left">
-              <div className="sr-only text-left">
-                  <DialogHeader className="text-left">
-                      <DialogTitle className="text-left">Miracle Recorder</DialogTitle>
-                      <DialogDescription className="text-left">Capture live proof of God's goodness.</DialogDescription>
+          <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left text-left">
+              <div className="sr-only text-left text-left">
+                  <DialogHeader className="text-left text-left">
+                      <DialogTitle className="text-left text-left text-left">Miracle Recorder</DialogTitle>
+                      <DialogDescription className="text-left text-left text-left">Capture live proof of God's goodness.</DialogDescription>
                   </DialogHeader>
               </div>
-              <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
-                  <div className="flex items-center justify-between gap-4 text-left">
-                    <div className="min-w-0 text-left">
-                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left">Miracle Recorder</div>
-                        <p className="text-sm font-medium text-zinc-400 mt-1 text-left">Capture your {recorderMode} proof.</p>
+              <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left text-left text-left">
+                  <div className="flex items-center justify-between gap-4 text-left text-left text-left">
+                    <div className="min-w-0 text-left text-left text-left">
+                        <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white text-left text-left text-left">Miracle Recorder</div>
+                        <p className="text-sm font-medium text-zinc-400 mt-1 text-left text-left text-left">Capture your {recorderMode} proof.</p>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10 text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left" /></Button>
+                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10 text-left text-left text-left" onClick={closeRecorder}><X className="h-6 w-6 text-left text-left text-left" /></Button>
                   </div>
               </DialogHeader>
               
               {recorderMode === 'video' ? (
-                  <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden text-left">
+                  <div className="relative aspect-video w-full bg-zinc-950 overflow-hidden text-left text-left text-left">
                       <video 
                         ref={videoPreviewRef} 
                         autoPlay 
                         muted 
                         playsInline 
-                        className="w-full h-full object-cover mirror scale-x-[-1] text-left"
+                        className="w-full h-full object-cover mirror scale-x-[-1] text-left text-left text-left"
                       />
                       
-                      <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none text-left">
-                          <div className="flex justify-between items-start text-left">
-                              <div className="flex items-center gap-3 text-left">
+                      <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none text-left text-left text-left">
+                          <div className="flex justify-between items-start text-left text-left text-left text-left">
+                              <div className="flex items-center gap-3 text-left text-left text-left text-left">
                                   {isRecording && (
-                                      <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left text-left">
-                                          <div className="h-2 w-2 rounded-full bg-white text-left" />
-                                          <span className="text-[10px] font-black text-white uppercase tracking-widest text-left">REC</span>
+                                      <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left text-left text-left text-left">
+                                          <div className="h-2 w-2 rounded-full bg-white text-left text-left text-left text-left" />
+                                          <span className="text-[10px] font-black text-white uppercase tracking-widest text-left text-left text-left text-left">REC</span>
                                       </div>
                                   )}
-                                  <Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px] text-left">
+                                  <Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px] text-left text-left text-left text-left">
                                       {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00
                                   </Badge>
                               </div>
                           </div>
 
-                          <div className="space-y-4 text-left">
-                            <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left">
+                          <div className="space-y-4 text-left text-left text-left text-left">
+                            <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left text-left text-left text-left">
                                 <motion.div 
-                                    className="h-full bg-primary text-left"
+                                    className="h-full bg-primary text-left text-left text-left text-left"
                                     initial={{ width: 0 }}
                                     animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }}
                                 />
                             </div>
-                            <div className="flex justify-center pointer-events-auto text-left">
+                            <div className="flex justify-center pointer-events-auto text-left text-left text-left text-left">
                                 {!isRecording ? (
                                     <Button 
                                         onClick={startRecording}
                                         size="lg"
-                                        className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left"
+                                        className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-left text-left text-left"
                                     >
-                                        <div className="h-8 w-8 rounded-full bg-white shadow-inner text-left" />
+                                        <div className="h-8 w-8 rounded-full bg-white shadow-inner text-left text-left text-left text-left" />
                                     </Button>
                                 ) : (
                                     <Button 
                                         onClick={stopRecording} 
                                         size="lg"
-                                        className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left"
+                                        className="h-20 w-20 rounded-full bg-white text-red-600 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95 text-left text-left text-left text-left"
                                     >
-                                        <Square className="h-8 w-8 fill-current text-left" />
+                                        <Square className="h-8 w-8 fill-current text-left text-left text-left text-left" />
                                     </Button>
                                 )}
                             </div>
@@ -653,51 +654,51 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       </div>
                   </div>
               ) : (
-                  <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10 text-left">
-                       <div className="relative text-left">
-                            <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.1)] text-left">
-                                <Mic className={cn("h-16 w-16 text-primary transition-all text-left", isRecording && "scale-110")} />
+                  <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10 text-left text-left text-left">
+                       <div className="relative text-left text-left text-left text-left">
+                            <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.1)] text-left text-left text-left text-left">
+                                <Mic className={cn("h-16 w-16 text-primary transition-all text-left text-left text-left text-left", isRecording && "scale-110")} />
                             </div>
                             {isRecording && (
-                                <div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20 text-left" />
+                                <div className="absolute -inset-4 border-4 border-primary/40 rounded-full animate-ping opacity-20 text-left text-left text-left text-left" />
                             )}
                        </div>
 
-                       <div className="space-y-4 w-full text-left text-left">
-                           <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left">Voice of Thanksgiving</div>
-                           <p className="text-zinc-500 text-sm font-medium text-center text-left">Record your vocal proclamation (max 2 minutes).</p>
+                       <div className="space-y-4 w-full text-left text-left text-left text-left">
+                           <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center text-left text-left text-left text-left">Voice of Thanksgiving</div>
+                           <p className="text-zinc-500 text-sm font-medium text-center text-left text-left text-left text-left">Record your vocal proclamation (max 2 minutes).</p>
                            
-                           <div className="flex items-center justify-center gap-3 text-left">
-                               {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse text-left" />}
-                               <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums text-left">
+                           <div className="flex items-center justify-center gap-3 text-left text-left text-left text-left">
+                               {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse text-left text-left text-left text-left" />}
+                               <span className="text-3xl font-black font-mono text-zinc-100 tabular-nums text-left text-left text-left text-left">
                                     {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
                                </span>
                            </div>
 
-                            <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden text-left">
+                            <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden text-left text-left text-left text-left">
                                 <motion.div 
-                                    className="h-full bg-primary text-left"
+                                    className="h-full bg-primary text-left text-left text-left text-left"
                                     initial={{ width: 0 }}
                                     animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }}
                                 />
                             </div>
                        </div>
 
-                       <div className="flex gap-4 w-full text-left">
+                       <div className="flex gap-4 w-full text-left text-left text-left text-left">
                             {!isRecording ? (
                                 <Button 
                                     onClick={startRecording} 
-                                    className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center text-left"
+                                    className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center text-left text-left text-left text-left"
                                 >
-                                    <Mic className="mr-3 h-6 w-6 text-left" /> START
+                                    <Mic className="mr-3 h-6 w-6 text-left text-left text-left text-left text-left" /> START
                                 </Button>
                             ) : (
                                 <Button 
                                     onClick={stopRecording} 
                                     variant="destructive"
-                                    className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center text-left"
+                                    className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center text-left text-left text-left text-left"
                                 >
-                                    <Square className="mr-3 h-6 w-6 fill-current text-left" /> STOP
+                                    <Square className="mr-3 h-6 w-6 fill-current text-left text-left text-left text-left text-left" /> STOP
                                 </Button>
                             )}
                        </div>
