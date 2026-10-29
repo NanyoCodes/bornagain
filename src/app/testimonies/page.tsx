@@ -362,7 +362,6 @@ function TestimoniesContent() {
   );
 
   return (
-    <AppShell>
     <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
       <Script 
         async 
@@ -379,7 +378,7 @@ function TestimoniesContent() {
           >
             <Avatar className="h-9 w-9 border shadow-sm shrink-0">
               <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left" />
-              <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px]">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px] text-left">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-[12px] font-bold text-foreground/80 leading-tight">Share God's goodness today...</p>
@@ -519,7 +518,7 @@ function TestimoniesContent() {
               </div>
 
               <TabsContent value="testimonies" className="outline-none">
-                <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
+                <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full text-left">
                   {loading ? (
                     [...Array(3)].map((_, i) => (
                       <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
@@ -557,10 +556,10 @@ function TestimoniesContent() {
                 </div>
               </TabsContent>
               <TabsContent value="prayers" className="outline-none">
-                <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
+                <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full text-left">
                   {loading ? (
                     [...Array(3)].map((_, i) => (
-                      <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
+                      <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
                     ))
                   ) : (
                     interleavedPrayers.map((item) => (
@@ -583,8 +582,8 @@ function TestimoniesContent() {
                   )}
                   {!loading && filteredPrayerRequests?.length === 0 && (
                     <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
-                      <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                      <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-center">United in Faith</h3>
+                      <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
+                      <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">United in Faith</h3>
                       <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center">
                         No one should walk through a trial alone. Share your request with the global community.
                       </p>
@@ -725,14 +724,15 @@ function TestimoniesContent() {
         </>
       )}
     </div>
-    </AppShell>
   );
 }
 
-export default function TestimoniesStandalonePage() {
+export default function TestimoniesPage() {
     return (
-        <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left text-left" /></div>}>
-            <TestimoniesContent />
-        </Suspense>
+        <AppShell>
+            <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left text-left" /></div>}>
+                <TestimoniesContent />
+            </Suspense>
+        </AppShell>
     );
 }

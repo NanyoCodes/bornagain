@@ -734,12 +734,39 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                         <div className="space-y-4 text-left">
                             {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-                                {needs.emotionalNeeds && (<div className="space-y-1 text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.emotionalNeeds}</p></div>)}
-                                {needs.physicalNeeds && (<div className="space-y-1 text-left text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left text-left">Physical</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left text-left">{needs.physicalNeeds}</p></div>)}
-                                {needs.financialNeeds && (<div className="space-y-1 text-left text-left text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left text-left text-left">Financial</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left text-left text-left">{needs.financialNeeds}</p></div>)}
-                                {needs.socialNeeds && (<div className="space-y-1 text-left text-left text-left text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left text-left text-left text-left">Social</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left text-left text-left text-left">{needs.socialNeeds}</p></div>)}
+                                {needs.emotionalNeeds && (
+                                    <div className="space-y-1 text-left">
+                                        <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge>
+                                        <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.emotionalNeeds}</p>
+                                    </div>
+                                )}
+                                {needs.physicalNeeds && (
+                                    <div className="space-y-1 text-left">
+                                        <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge>
+                                        <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.physicalNeeds}</p>
+                                    </div>
+                                )}
+                                {needs.financialNeeds && (
+                                    <div className="space-y-1 text-left">
+                                        <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge>
+                                        <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.financialNeeds}</p>
+                                    </div>
+                                )}
+                                {needs.socialNeeds && (
+                                    <div className="space-y-1 text-left">
+                                        <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge>
+                                        <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.socialNeeds}</p>
+                                    </div>
+                                )}
                             </div>
-                            {needs.followUpPlan && (<div className="pt-2 border-t border-primary/10 text-left text-left text-left"><p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left text-left text-left"><Target className="h-2.5 w-2.5 text-left text-left text-left" /> Strategy</p><p className="text-[10px] text-muted-foreground leading-relaxed italic text-left text-left text-left">{needs.followUpPlan}</p></div>)}
+                            {needs.followUpPlan && (
+                                <div className="pt-2 border-t border-primary/10 text-left">
+                                    <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left">
+                                        <Target className="h-2.5 w-2.5 text-left" /> Strategy
+                                    </p>
+                                    <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="py-4 text-center text-left">
