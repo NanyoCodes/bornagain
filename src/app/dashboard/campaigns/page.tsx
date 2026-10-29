@@ -187,21 +187,21 @@ export default function CampaignsPage() {
   }, [campaigns, now, userProfile]);
 
   const sortedAndFilteredCampaigns = useMemo(() => {
-    const activeList = processedCampaigns.filter(c => c.status !== 'deleted');
-    const tabFiltered = activeList.filter(c => {
+    const activeCampaigns = processedCampaigns.filter(c => c.status !== 'deleted');
+    const tabFilteredCampaigns = activeCampaigns.filter(c => {
         if (!user?.uid) return true;
         if (filter === 'created') return c.organizerId === user.uid;
         if (filter === 'joined') return joinedCampaignIds.has(c.id) && c.organizerId !== user.uid;
         return true; // 'all'
     });
-    const statusFiltered = tabFiltered.filter(c => {
+    const statusFilteredCampaigns = tabFilteredCampaigns.filter(c => {
         if (statusFilter === 'all') return true;
         if (statusFilter === 'ongoing') return c._status === 1;
         if (statusFilter === 'upcoming') return c._status === 2;
         if (statusFilter === 'past') return c._status === 3;
         return true;
     });
-    return statusFiltered.filter((c) => {
+    return statusFilteredCampaigns.filter((c) => {
       if (!searchTerm) return true;
       const term = searchTerm.toLowerCase();
       return c.title.toLowerCase().includes(term) || c.description.toLowerCase().includes(term) || c.goal.toLowerCase().includes(term);
@@ -212,36 +212,36 @@ export default function CampaignsPage() {
 
   return (
     <div className="w-full max-w-7xl mx-auto text-left">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 space-y-8 pb-32">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 text-left">
+        <div className="lg:col-span-8 space-y-8 pb-32 text-left">
             <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-3xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm overflow-hidden text-left">
                 <CardContent className="p-3 sm:p-6 text-left">
-                <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
-                <Button variant="outline" className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base border-dashed" onClick={() => setIsCreateOpen(true)} disabled={!user || profileLoading}>
-                    <span className="truncate">{profileLoading ? "Preparing..." : "Launch a mission?"}</span>
+                <div className="flex flex-row items-center gap-2 sm:gap-4 w-full text-left">
+                <Button variant="outline" className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base border-dashed text-left" onClick={() => setIsCreateOpen(true)} disabled={!user || profileLoading}>
+                    <span className="truncate text-left">{profileLoading ? "Preparing..." : "Launch a mission?"}</span>
                 </Button>
-                <Button variant="secondary" size="icon" className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg" onClick={() => setIsCreateOpen(true)} disabled={!user || profileLoading}><Target className="h-4 w-4" /></Button>
+                <Button variant="secondary" size="icon" className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg text-left" onClick={() => setIsCreateOpen(true)} disabled={!user || profileLoading}><Target className="h-4 w-4 text-left" /></Button>
                 </div>
                 </CardContent>
             </Card>
 
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
-                <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
-                    <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/40 p-1 rounded-2xl">
-                        <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">All</TabsTrigger>
-                        <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Mine</TabsTrigger>
-                        <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Joined</TabsTrigger>
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left">
+                <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto text-left">
+                    <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/40 p-1 rounded-2xl text-left">
+                        <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left">All</TabsTrigger>
+                        <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left">Mine</TabsTrigger>
+                        <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left">Joined</TabsTrigger>
                     </TabsList>
                 </Tabs>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="w-full sm:w-[150px] h-12 rounded-2xl border-2 font-bold uppercase tracking-widest text-[10px] text-left">
-                        <SelectValue placeholder="Status" />
+                        <SelectValue placeholder="Status" className="text-left" />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl shadow-xl text-left">
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="ongoing">Ongoing</SelectItem>
-                        <SelectItem value="upcoming">Upcoming</SelectItem>
-                        <SelectItem value="past">Past</SelectItem>
+                        <SelectItem value="all" className="text-left">All Status</SelectItem>
+                        <SelectItem value="ongoing" className="text-left">Ongoing</SelectItem>
+                        <SelectItem value="upcoming" className="text-left">Upcoming</SelectItem>
+                        <SelectItem value="past" className="text-left">Past</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -260,17 +260,17 @@ export default function CampaignsPage() {
             {isMobile ? (
                 <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                    <DrawerHeader className="text-left p-0">
-                        <div className="flex items-center gap-2 mb-4">
-                            <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce" />
-                            <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">SWIPE DOWN TO CLOSE</span>
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <DrawerHeader className="text-left p-0 text-left">
+                        <div className="flex items-center gap-2 mb-4 text-left">
+                            <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left" />
+                            <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left">SWIPE DOWN TO CLOSE</span>
                         </div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Launch Mission</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left">Mobilize for the harvest.</DrawerDescription>
                     </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1">
+                    <ScrollArea className="flex-1 text-left">
                         <div className="p-8 text-left">{formContent}</div>
                     </ScrollArea>
                 </DrawerContent>
@@ -293,10 +293,10 @@ export default function CampaignsPage() {
 
             <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
             <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                <AlertDialogHeader className="text-left"><AlertDialogTitle className="text-2xl font-black font-headline leading-tight">Delete Mission?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed">This will permanently remove the campaign.</AlertDialogDescription></AlertDialogHeader>
+                <AlertDialogHeader className="text-left"><AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Mission?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">This will permanently remove the campaign.</AlertDialogDescription></AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Deletion</AlertDialogAction>
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Deletion</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
             </AlertDialog>

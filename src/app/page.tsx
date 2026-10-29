@@ -210,7 +210,7 @@ export default function LandingPage() {
                 </Badge>
                 <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
-                  <span className="text-primary text-sm sm:text-lg md:text-xl block mt-4 uppercase"> The App to care for family, friends, souls, and the Kingdom.</span>
+                  <span className="text-primary text-sm sm:text-lg md:text-xl block mt-4 uppercase"> THE #1 APP TO CARE FOR FAMILY, FRIENDS, SOULS, AND THE KINGDOM.</span>
                 </h1>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11

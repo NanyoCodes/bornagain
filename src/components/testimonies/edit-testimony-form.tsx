@@ -118,8 +118,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     try {
         const originalName = (file as File).name || `edit_${Date.now()}`;
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${originalName}`);
-        
-        // Mobile-native fix: Stripping codecs string from content type
         const contentType = (file.type || (type === 'audio' ? 'audio/mp4' : type === 'video' ? 'video/mp4' : 'image/jpeg')).split(';')[0];
         const metadata = { contentType, customMetadata: { testimonyId: testimony.id, slot: slot.toString() } };
         
@@ -155,17 +153,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, slot: 1 | 2) => {
     const file = e.target.files?.[0];
     if (!file || !user || !storage) return;
-    
     let fileType = file.type;
-    if (!fileType) {
-        const ext = file.name.split('.').pop()?.toLowerCase();
-        const typeMap: Record<string, string> = { 
-          'mp4': 'video/mp4', 'mov': 'video/quicktime', 'webm': 'video/webm', 
-          'm4a': 'audio/mp4', 'mp3': 'audio/mpeg', 'aac': 'audio/aac', 'wav': 'audio/wav', 
-          'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png' 
-        };
-        fileType = typeMap[ext || ''] || '';
-    }
     const type = fileType.startsWith('image/') ? 'image' : fileType.startsWith('video/') ? 'video' : fileType.startsWith('audio/') ? 'audio' : null;
     if (!type) { 
       toast({ variant: 'destructive', title: 'Invalid File' }); 
@@ -199,52 +187,52 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const renderMediaSlot = (slot: 1 | 2, preview: any, setPreview: any, inputRef: React.RefObject<HTMLInputElement | null>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
     const isAudio = preview?.type === 'audio';
     return (
-      <div className="space-y-4 flex-1 text-left">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2"><Camera className="h-3.5 w-3.5 text-primary" /> Evidence {slot}</Label>
+      <div className="space-y-4 flex-1 text-left text-left">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left"><Camera className="h-3.5 w-3.5 text-primary text-left" /> Evidence {slot}</Label>
           {!preview ? (
               <div className="space-y-3 text-left">
-                  <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px]", isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
+                  <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left", isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
                       {isUploadingMedia === slot ? (
                           <div className="flex flex-col items-center gap-2 text-left">
-                              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                              <div className="space-y-1 text-center"><p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p><p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p></div>
+                              <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
+                              <div className="space-y-1 text-center"><p className="text-[9px] font-black uppercase tracking-widest text-primary text-left">Uploading...</p><p className="text-[8px] font-bold text-primary/60 text-left">{Math.round(uploadProgress)}%</p></div>
                           </div>
                       ) : (
-                          <div className="flex flex-col items-center">
-                              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><FileUp className="h-4 w-4 text-primary" /></div>
+                          <div className="flex flex-col items-center text-left">
+                              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform text-left"><FileUp className="h-4 w-4 text-primary text-left" /></div>
                               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select File</p>
                           </div>
                       )}
                   </div>
               </div>
           ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 text-left">
                 <div className={cn("relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group text-left", isAudio ? "h-auto min-h-[100px]" : "aspect-square")}>
                     {preview.type === 'image' ? (
-                        <Image src={preview.localUrl || preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
+                        <Image src={preview.localUrl || preview.url} alt={`Evidence ${slot}`} fill className="object-cover text-left" unoptimized />
                     ) : preview.type === 'video' ? (
                         <video 
                           key={preview.localUrl || preview.url} 
                           src={preview.localUrl || preview.url} 
-                          className="w-full h-full object-cover bg-zinc-950" 
+                          className="w-full h-full object-cover bg-zinc-950 text-left" 
                           playsInline 
                           controls 
                           preload="metadata" 
                         />
                     ) : (
-                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
+                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left text-left">
                             <div className="relative shrink-0 text-left">
-                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                                    <Sparkles className="h-5 w-5 text-primary" />
+                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-left">
+                                    <Sparkles className="h-5 w-5 text-primary text-left" />
                                 </div>
                             </div>
-                            <div className="min-w-0 flex-1 text-left">
-                                <p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p>
-                                <audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" />
+                            <div className="min-w-0 flex-1 text-left text-left">
+                                <p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3 text-left">Voice Proclamation</p>
+                                <audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full text-left" controls preload="metadata" />
                             </div>
                         </div>
                     )}
-                    <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 transition-opacity" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}><X className="h-3.5 w-3.5" /></Button>
+                    <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 transition-opacity text-left" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}><X className="h-3.5 w-3.5 text-left" /></Button>
                 </div>
               </div>
           )}
@@ -254,19 +242,19 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   };
 
   return (
-    <div className="space-y-8 text-left">
-        <div className="flex items-center gap-3 px-1 text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1 text-left"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Edit Testimony</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Refine your shared miracle</p></div></div>
-        <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left"><FormField control={form.control} name="category" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl border-2 text-left"><SelectValue placeholder="What is the nature of this miracle?" /></SelectTrigger></FormControl><SelectContent className="rounded-2xl">{testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /><FormField control={form.control} name="content" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Testimony</FormLabel><FormControl><Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} /></FormControl><FormMessage /></FormItem>)} />
-            <div className="space-y-4 text-left"><div className="flex flex-col sm:flex-row gap-6 text-left">{renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}{renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}</div><div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left"><Info className="h-4 w-4 text-primary shrink-0 mt-0.5" /><p className="text-[10px] text-muted-foreground font-medium leading-relaxed">Updating your miracle proof strengthens the record.</p></div></div>
-            <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia !== null}>{isSubmitting ? (
-                    <div className="flex items-center justify-center gap-3">
-                        <Loader2 className="h-6 w-6 animate-spin" />
-                        <span>SAVING...</span>
+    <div className="space-y-8 text-left text-left">
+        <div className="flex items-center gap-3 px-1 text-left text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left"><Newspaper className="h-5 w-5 text-primary text-left" /></div><div className="min-w-0 flex-1 text-left"><h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Refine your shared miracle</p></div></div>
+        <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left text-left"><FormField control={form.control} name="category" render={({ field }) => (<FormItem className="text-left text-left"><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl className="text-left"><SelectTrigger className="h-12 rounded-2xl border-2 text-left"><SelectValue placeholder="What is the nature of this miracle?" /></SelectTrigger></FormControl><SelectContent className="rounded-2xl text-left">{testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl text-left">{cat}</SelectItem>)}</SelectContent></Select><FormMessage className="text-left" /></FormItem>)} /><FormField control={form.control} name="content" render={({ field }) => (<FormItem className="text-left text-left"><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Your Testimony</FormLabel><FormControl className="text-left"><Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed text-left" {...field} /></FormControl><FormMessage className="text-left" /></FormItem>)} />
+            <div className="space-y-4 text-left text-left text-left"><div className="flex flex-col sm:flex-row gap-6 text-left text-left text-left">{renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}{renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}</div><div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left text-left text-left"><Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" /><p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left">Updating your miracle proof strengthens the record.</p></div></div>
+            <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-center text-left" disabled={isSubmitting || isUploadingMedia !== null}>{isSubmitting ? (
+                    <div className="flex items-center justify-center gap-3 text-left">
+                        <Loader2 className="h-6 w-6 animate-spin text-left" />
+                        <span className="text-left">SAVING...</span>
                     </div>
                 ) : (
-                    <div className="flex items-center justify-center gap-3">
-                        <Sparkles className="h-6 w-6" />
-                        <span>SAVE CHANGES</span>
+                    <div className="flex items-center justify-center gap-3 text-left">
+                        <Sparkles className="h-6 w-6 text-left" />
+                        <span className="text-left">SAVE CHANGES</span>
                     </div>
                 )}</Button>
         </form></Form>
