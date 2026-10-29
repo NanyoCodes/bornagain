@@ -29,7 +29,6 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { cn, safeToDate } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 const testimonyCategories: TestimonyCategory[] = [
   'Healing', 
@@ -116,6 +115,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         const originalName = (file as File).name || `upload_${Date.now()}`;
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${originalName}`);
         
+        // Mobile-native playback fix: Strip complex codec metadata which confuses strict players (especially Safari)
         const contentType = (file.type || (type === 'audio' ? 'audio/mp4' : type === 'video' ? 'video/mp4' : 'image/jpeg')).split(';')[0];
         const metadata = { contentType, customMetadata: { testimonyId, slot: slot.toString() } };
         
@@ -247,17 +247,16 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                           playsInline 
                           controls 
                           preload="metadata" 
-                          onError={(e) => toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` })} 
+                          onError={(e) => toast({ variant: 'destructive', title: `Playback failed` })} 
                         />
                     ) : (
                         <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4">
                             <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Sparkles className="h-5 w-5 text-primary" /></div></div>
-                            <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` })} /></div>
+                            <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: `Playback failed` })} /></div>
                         </div>
                     )}
                     <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 transition-opacity" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}><X className="h-3.5 w-3.5" /></Button>
                 </div>
-                <Button asChild variant="link" className="h-auto p-0 text-[9px] font-bold uppercase tracking-tighter text-muted-foreground hover:text-primary"><a href={preview.url} target="_blank" rel="noopener noreferrer"><ExternalLink className="mr-1 h-2 w-2" /> Open in new tab</a></Button>
               </div>
           )}
           <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*,audio/*" onChange={(e) => handleFileSelect(e, slot)} />

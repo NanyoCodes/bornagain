@@ -109,7 +109,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const handleUploadProcessedFile = async (file: File | Blob, slot: 1 | 2, type: 'video' | 'audio' | 'image') => {
     if (!user || !storage) return;
     if (file.size > 100 * 1024 * 1024) { 
-      toast({ variant: 'destructive', title: 'File Too Large', description: 'Maximum size is 100MB.' }); 
+      toast({ variant: 'destructive', title: 'File Too Large' }); 
       return; 
     }
     setIsUploadingMedia(slot);
@@ -119,6 +119,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         const originalName = (file as File).name || `edit_${Date.now()}`;
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${originalName}`);
         
+        // Mobile-native fix: Stripping codecs string from content type
         const contentType = (file.type || (type === 'audio' ? 'audio/mp4' : type === 'video' ? 'video/mp4' : 'image/jpeg')).split(';')[0];
         const metadata = { contentType, customMetadata: { testimonyId: testimony.id, slot: slot.toString() } };
         
@@ -226,17 +227,15 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                           playsInline 
                           controls 
                           preload="metadata" 
-                          onError={(e) => toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` })} 
                         />
                     ) : (
                         <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4">
                             <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Sparkles className="h-5 w-5 text-primary" /></div></div>
-                            <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: `Playback failed (code ${e.currentTarget.error?.code})` })} /></div>
+                            <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" /></div>
                         </div>
                     )}
                     <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 transition-opacity" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}><X className="h-3.5 w-3.5" /></Button>
                 </div>
-                <Button asChild variant="link" className="h-auto p-0 text-[9px] font-bold uppercase tracking-tighter text-muted-foreground hover:text-primary"><a href={preview.url} target="_blank" rel="noopener noreferrer">Open in new tab</a></Button>
               </div>
           )}
           <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*,audio/*" onChange={(e) => handleFileSelect(e, slot)} />
@@ -246,7 +245,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
 
   return (
     <div className="space-y-8 text-left">
-        <div className="flex items-center gap-3 px-1 text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Edit Testimony</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Refine your shared miracle</p></div></div>
+        <div className="flex items-center gap-3 px-1 text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1 text-left"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Edit Testimony</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Refine your shared miracle</p></div></div>
         <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left"><FormField control={form.control} name="category" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl border-2 text-left"><SelectValue placeholder="What is the nature of this miracle?" /></SelectTrigger></FormControl><SelectContent className="rounded-2xl">{testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /><FormField control={form.control} name="content" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Testimony</FormLabel><FormControl><Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} /></FormControl><FormMessage /></FormItem>)} />
             <div className="space-y-4 text-left"><div className="flex flex-col sm:flex-row gap-6">{renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}{renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}</div><div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4"><Info className="h-4 w-4 text-primary shrink-0 mt-0.5" /><p className="text-[10px] text-muted-foreground font-medium leading-relaxed">Updating your miracle proof strengthens the record.</p></div></div>
             <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia !== null}>{isSubmitting ? (
