@@ -167,7 +167,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           ) : type === 'video' ? (
               <video src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
           ) : (
-              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
+              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left text-left">
                   <div className="relative shrink-0 text-left">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
                           <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
@@ -238,7 +238,7 @@ export function LiveAuthorAvatar({ userId, fallbackInitials, className }: { user
     return (
         <Dialog>
             <DialogTrigger asChild disabled={!photoURL}>
-                <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105 text-left")}>
+                <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
                     <Avatar className="h-full w-full border shadow-sm">
                         <AvatarImage src={photoURL} className="object-cover" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary font-bold text-center flex items-center justify-center h-full w-full">{fallbackInitials || 'U'}</AvatarFallback>
@@ -265,6 +265,20 @@ function LiveAuthorName({ userId, fallbackName }: { userId: string, fallbackName
     const { data: profile } = useDoc<UserProfile>(userRef);
     const name = profile ? `${profile.firstName} ${profile.lastName}` : fallbackName;
     return <span className="capitalize">{name}</span>;
+}
+
+export function getStatusClasses(status: FollowUpStatus | undefined): string {
+    if (!status) return 'bg-secondary text-secondary-foreground border-border';
+    switch (status) {
+        case 'New':
+            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
+        case 'Contacted':
+            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
+        case 'Established':
+            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
+        default:
+            return 'bg-secondary text-secondary-foreground border-border';
+    }
 }
 
 export const TestimonyCard = memo(function TestimonyCard({ 
@@ -307,6 +321,8 @@ export const TestimonyCard = memo(function TestimonyCard({
   const isAuthor = user?.uid === testimony.authorId;
   const authorName = testimony.isAnonymous ? 'Confidential Request' : ([testimony.authorFirstName, testimony.authorLastName].filter(Boolean).join(' ') || 'Kingdom Believer');
   const initials = (testimony.authorFirstName?.charAt(0) || '') + (testimony.authorLastName?.charAt(0) || '');
+
+  const profileLink = isAuthor ? "/profile" : `/profile/${testimony.authorId}`;
 
   const supporters = testimony.supporters || [];
   const inspiredBy = testimony.inspiredBy || [];
@@ -426,7 +442,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                        <Link href={isAuthor ? "/profile" : `/profile/${testimony.authorId}`} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
+                        <Link href={profileLink} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
                              <h3 className="text-base sm:text-lg font-bold capitalize leading-none"> 
                                 <LiveAuthorName userId={testimony.authorId} fallbackName={authorName} />
                              </h3>

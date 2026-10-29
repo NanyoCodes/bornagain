@@ -31,6 +31,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import Image from "next/image";
 import { cn, safeToDate } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { Progress } from "@/components/ui/progress";
 
 const testimonyCategories: TestimonyCategory[] = [
   'Healing', 
@@ -331,9 +332,71 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         )}
       </div>
       <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
-          <div className="space-y-6 text-left"><FormField control={form.control} name="category" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Theme</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base text-left"><SelectValue placeholder="What is the nature of this miracle?" /></SelectTrigger></FormControl><SelectContent className="rounded-2xl border-none shadow-2xl">{testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>)} /><FormField control={form.control} name="content" render={({ field }) => (<FormItem><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Story</FormLabel><FormControl><Textarea placeholder="Detail the greatness of God in this situation..." className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0" {...field} /></FormControl><FormMessage /></FormItem>)} />
-            <div className="space-y-4 text-left"><div className="flex flex-col sm:flex-row gap-6 text-left">{renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}{renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}</div><div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4"><Info className="h-4 w-4 text-primary shrink-0 mt-0.5" /><p className="text-[10px] text-muted-foreground font-medium leading-relaxed">Providing proof strengthens faith. Max length 2 minutes.</p></div></div></div>
-          <div className="pt-4 text-left"><Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95" disabled={isSubmitting || isUploadingMedia !== null}>{isSubmitting ? (<div className="flex items-center justify-center gap-3"><Loader2 className="h-6 w-6 animate-spin" /><span>PROCLAIMING...</span></div>) : (<div className="flex items-center justify-center gap-3"><Sparkles className="h-6 w-6" /><span>PUBLISH TESTIMONY</span></div>)}</Button><p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6">TO THE GLORY OF JESUS CHRIST</p></div>
+          <div className="space-y-6 text-left"><FormField control={form.control} name="category" render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Theme</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base">
+                            <SelectValue placeholder="What is the nature of this miracle?" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-2xl border-none shadow-2xl">
+                        {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>))}
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+
+            <FormField control={form.control} name="content" render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Story</FormLabel>
+                    <FormControl>
+                    <Textarea 
+                        placeholder="Detail the greatness of God in this situation..." 
+                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0" 
+                        {...field} 
+                    />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+
+            <div className="space-y-4 text-left">
+                <div className="flex flex-col sm:flex-row gap-6 text-left">
+                    {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
+                    {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
+                </div>
+                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
+                    <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                        Providing proof (photos/videos/audio) strengthens faith. Max recording length 2 minutes.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <div className="pt-4 text-left">
+              <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95" disabled={isSubmitting || isUploadingMedia !== null}>
+                {isSubmitting ? (
+                    <div className="flex items-center justify-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span>PROCLAIMING...</span>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center gap-3">
+                        <Sparkles className="h-6 w-6" />
+                        <span>PUBLISH TESTIMONY</span>
+                    </div>
+                )}
+              </Button>
+              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6">
+                TO THE GLORY OF JESUS CHRIST
+              </p>
+          </div>
         </form></Form>
       <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}><DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left"><div className="sr-only text-left"><DialogHeader><DialogTitle>Miracle Recorder</DialogTitle><DialogDescription>Capture live proof of God's goodness.</DialogDescription></DialogHeader></div><DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left"><div className="flex items-center justify-between gap-4"><div className="min-w-0"><div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white">Miracle Recorder</div><p className="text-sm font-medium text-zinc-400 mt-1">Capture your {recorderMode} proof.</p></div><Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10" onClick={closeRecorder}><X className="h-6 w-6" /></Button></div></DialogHeader>
               {recorderMode === 'video' ? (<div className="relative aspect-video w-full bg-zinc-950 overflow-hidden text-left"><video ref={videoPreviewRef} autoPlay muted playsInline className="w-full h-full object-cover mirror scale-x-[-1]" />

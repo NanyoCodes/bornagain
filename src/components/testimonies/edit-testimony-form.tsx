@@ -43,6 +43,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import Image from "next/image";
 import { cn, safeToDate } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { Progress } from "@/components/ui/progress";
 
 const testimonyCategories: TestimonyCategory[] = [
   'Healing', 
@@ -303,7 +304,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                         <video src={preview.localUrl || preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` })} />
                     ) : (
                             <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4">
-                                <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" /></div><Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" /></div>
+                                <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Mic className="h-5 w-5 text-primary" /></div><Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" /></div>
                                 <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-4">Voice of Thanksgiving</p><audio src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` })} /></div>
                             </div>
                     )}
@@ -322,7 +323,17 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         <div className="flex items-center gap-3 px-1 text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Edit Testimony</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Refine your shared miracle</p></div></div>
         <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left"><FormField control={form.control} name="category" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl border-2 text-left"><SelectValue placeholder="What is the nature of this miracle?" /></SelectTrigger></FormControl><SelectContent className="rounded-2xl">{testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /><FormField control={form.control} name="content" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Testimony</FormLabel><FormControl><Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} /></FormControl><FormMessage /></FormItem>)} />
             <div className="space-y-4 text-left"><div className="flex flex-col sm:flex-row gap-6">{renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}{renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}</div><div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4"><Info className="h-4 w-4 text-primary shrink-0 mt-0.5" /><p className="text-[10px] text-muted-foreground font-medium leading-relaxed">Updating your miracle proof strengthens the record.</p></div></div>
-            <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia !== null}>{isSubmitting ? (<div className="flex items-center justify-center gap-3"><Loader2 className="h-6 w-6 animate-spin" /><span>SAVING...</span></div>) : (<div className="flex items-center justify-center gap-3"><Sparkles className="h-6 w-6" /><span>SAVE CHANGES</span></div>)}</Button>
+            <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia !== null}>{isSubmitting ? (
+                    <div className="flex items-center justify-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span>SAVING...</span>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center gap-3">
+                        <Sparkles className="h-6 w-6" />
+                        <span>SAVE CHANGES</span>
+                    </div>
+                )}</Button>
         </form></Form>
         <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}><DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left"><div className="sr-only text-left"><DialogHeader><DialogTitle>Recorder</DialogTitle></DialogHeader></div><div className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left"><div className="flex items-center justify-between gap-4"><div className="min-w-0"><div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white">Miracle Recorder</div><p className="text-sm font-medium text-zinc-400 mt-1">Capture your {recorderMode} proof.</p></div><Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10" onClick={closeRecorder}><X className="h-6 w-6" /></Button></div></div>
                 {recorderMode === 'video' ? (<div className="relative aspect-video w-full bg-zinc-950 overflow-hidden"><video ref={videoPreviewRef} autoPlay muted playsInline className="w-full h-full object-cover mirror scale-x-[-1]" />
