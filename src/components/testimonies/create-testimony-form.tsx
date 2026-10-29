@@ -113,7 +113,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         ? [
             'video/mp4;codecs=avc1,mp4a.40.2',
             'video/mp4',
-            'video/quicktime',
             'video/webm;codecs=vp9,opus',
             'video/webm'
           ]
@@ -218,7 +217,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${(file as File).name || 'recorded'}`);
         const actualMimeType = file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4');
         const metadata = { contentType: actualMimeType };
-        
         const uploadResult = await uploadBytes(fileRef, file, metadata);
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -265,7 +263,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
-        const metadata = { contentType: fileToUpload.type || file.type };
+        const actualMimeType = fileToUpload.type || file.type;
+        const metadata = { contentType: actualMimeType };
         const uploadResult = await uploadBytes(fileRef, fileToUpload, metadata);
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -462,7 +461,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                           </div>
                           <div className="min-w-0 flex-1">
                               <p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice of Thanksgiving</p>
-                              <audio src={preview.url} className="w-full" controls />
+                              <audio src={preview.url} className="w-full" controls preload="metadata" />
                           </div>
                       </div>
                   )}

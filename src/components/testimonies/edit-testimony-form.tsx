@@ -273,7 +273,8 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${file.name}`);
-        const metadata = { contentType: fileToUpload.type || file.type };
+        const actualMimeType = fileToUpload.type || file.type;
+        const metadata = { contentType: actualMimeType };
         const uploadResult = await uploadBytes(fileRef, fileToUpload, metadata);
         const url = await getDownloadURL(uploadResult.ref);
 
@@ -457,7 +458,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                             </div>
                             <div className="min-w-0 flex-1 text-left">
                                 <p className="text-[10px] font-black uppercase text-primary tracking-widest mb-4">Voice of Thanksgiving</p>
-                                <audio src={preview.url} className="w-full" controls />
+                                <audio src={preview.url} className="w-full" controls preload="metadata" />
                             </div>
                         </div>
                   )}

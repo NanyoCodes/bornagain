@@ -208,7 +208,7 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
                   PROCLAIMING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
                   <span className="text-primary text-sm sm:text-lg md:text-xl block mt-4 uppercase"> The App to care for family, friends, souls, and the Kingdom.</span>
                 </h1>
