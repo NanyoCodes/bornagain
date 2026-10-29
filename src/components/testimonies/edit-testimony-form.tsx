@@ -190,7 +190,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
           const baseType = actualMimeType.split(';')[0];
           let extension = baseType.includes('mp4') ? 'mp4' : baseType.includes('webm') ? 'webm' : baseType.includes('aac') ? 'aac' : baseType.includes('mpeg') ? 'mp3' : (recorderMode === 'video' ? 'webm' : 'm4a');
           const blob = new Blob(chunksRef.current, { type: baseType });
-          const file = new File([blob], `edit_recorded_${Date.now()}.${extension}`, { type: baseType });
+          const file = new File([blob], `recorded_${Date.now()}.${extension}`, { type: baseType });
           await handleUploadProcessedFile(file, activeSlot, recorderMode);
           closeRecorder();
       };
@@ -219,7 +219,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     setUploadProgress(0);
     const localUrl = URL.createObjectURL(file);
     try {
-        const fileName = (file as File).name || `edit_recorded_${Date.now()}.${type === 'image' ? 'jpg' : type === 'video' ? 'mp4' : 'm4a'}`;
+        const fileName = (file as File).name || `recorded_${Date.now()}.${type === 'image' ? 'jpg' : type === 'video' ? 'mp4' : 'm4a'}`;
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${fileName}`);
         const contentType = (file.type || (type === 'audio' ? 'audio/mp4' : type === 'video' ? 'video/mp4' : 'image/jpeg')).split(';')[0];
         const metadata = { contentType, customMetadata: { testimonyId: testimony.id, slot: slot.toString() } };
@@ -301,11 +301,11 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                     {preview.type === 'image' ? (
                         <Image src={preview.localUrl || preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
                     ) : preview.type === 'video' ? (
-                        <video src={preview.localUrl || preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` })} />
+                        <video key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` })} />
                     ) : (
                             <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4">
                                 <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Mic className="h-5 w-5 text-primary" /></div><Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-primary animate-pulse" /></div>
-                                <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-4">Voice of Thanksgiving</p><audio src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` })} /></div>
+                                <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-4">Voice of Thanksgiving</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: 'Playback failed', description: `Error code: ${e.currentTarget.error?.code}` })} /></div>
                             </div>
                     )}
                     <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}><X className="h-3.5 w-3.5" /></Button>

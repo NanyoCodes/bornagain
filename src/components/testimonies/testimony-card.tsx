@@ -108,6 +108,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                   <Image src={url} alt="Proof Full" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
               ) : type === 'video' ? (
                   <video 
+                    key={url}
                     src={url} 
                     className="w-full h-full object-contain" 
                     playsInline 
@@ -165,7 +166,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           {type === 'image' ? (
               <Image src={url} alt="Proof" fill className="object-cover transition-transform group-hover/media:scale-105" unoptimized />
           ) : type === 'video' ? (
-              <video src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
+              <video key={url} src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
           ) : (
               <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left text-left">
                   <div className="relative shrink-0 text-left">
