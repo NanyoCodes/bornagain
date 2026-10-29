@@ -362,6 +362,7 @@ function TestimoniesContent() {
   );
 
   return (
+    <AppShell>
     <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
       <Script 
         async 
@@ -377,7 +378,7 @@ function TestimoniesContent() {
             onClick={() => setIsTestimonyDialogOpen(true)}
           >
             <Avatar className="h-9 w-9 border shadow-sm shrink-0">
-              <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
+              <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left" />
               <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px]">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
@@ -628,7 +629,7 @@ function TestimoniesContent() {
                             <DrawerDescription className="text-sm font-medium mt-1">Refine your story for the Body.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <div className="flex-1 overflow-y-auto"><div className="p-8">{testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}</div></div>
+                    <ScrollArea className="flex-1 overflow-y-auto"><div className="p-8">{testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}</div></ScrollArea>
                 </DrawerContent>
               </Drawer>
 
@@ -724,15 +725,14 @@ function TestimoniesContent() {
         </>
       )}
     </div>
+    </AppShell>
   );
 }
 
-export default function TestimoniesPage() {
+export default function TestimoniesStandalonePage() {
     return (
-        <AppShell>
-            <Suspense fallback={<div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
-                <TestimoniesContent />
-            </Suspense>
-        </AppShell>
+        <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left text-left" /></div>}>
+            <TestimoniesContent />
+        </Suspense>
     );
 }
