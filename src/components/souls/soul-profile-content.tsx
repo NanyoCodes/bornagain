@@ -153,11 +153,10 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
   const isAudio = type === 'audio';
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
-  const { toast } = useToast();
 
   const mediaContent = (
-      <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left">
-          <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left">
+      <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+          <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
               {type === 'image' ? (
                   <Image src={url} alt="Proof Full" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
               ) : type === 'video' ? (
@@ -171,21 +170,21 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                     preload="metadata" 
                   />
               ) : (
-                  <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl text-left">
-                      <div className="relative text-center text-left">
-                          <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto text-left text-left">
-                              <Mic className="h-16 w-16 text-primary text-left text-left" />
+                  <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl">
+                      <div className="relative text-center">
+                          <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto">
+                              <Mic className="h-16 w-16 text-primary" />
                           </div>
-                          <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse text-left text-left" />
+                          <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse" />
                       </div>
-                      <div className="space-y-2 text-center text-left">
-                          <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white text-center text-left">Voice Proclamation</h4>
-                          <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic text-center text-left">A testimony of God's goodness</p>
+                      <div className="space-y-2 text-center">
+                          <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white text-center">Voice Proclamation</h4>
+                          <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic text-center">A testimony of God's goodness</p>
                       </div>
                       <audio 
                         key={url} 
                         src={url} 
-                        className="w-full text-left" 
+                        className="w-full" 
                         controls 
                         preload="metadata" 
                         autoPlay
@@ -199,7 +198,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
   const trigger = (
       <div 
         className={cn(
-            "relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted group/media cursor-pointer text-left",
+            "relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted group/media cursor-pointer",
             isAudio ? "h-auto min-h-[100px]" : "aspect-square",
             isFull && !isAudio && "h-full w-full"
         )}
@@ -211,9 +210,9 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
               <video key={url} src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
           ) : (
               <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
-                  <div className="relative shrink-0 text-left">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner text-left">
-                          <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary text-left" />
+                  <div className="relative shrink-0">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
+                          <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
                       <motion.div 
                         className="absolute -top-1 -right-1"
@@ -224,8 +223,8 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                       </motion.div>
                   </div>
                   <div className="min-w-0 flex-1 text-left">
-                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left">Voice Proclamation</p>
-                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left">Tap to Hear Miracle</p>
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
+                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
                   </div>
               </div>
           )}
@@ -248,9 +247,9 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <X className="h-6 w-6" />
                     </Button>
                     {mediaContent}
-                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4 text-center">
-                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest text-center">
-                          <a href={url} target="_blank" rel="noopener noreferrer" className="text-center">Open in new tab</a>
+                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4">
+                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest">
+                          <a href={url} target="_blank" rel="noopener noreferrer">Open in new tab</a>
                         </Button>
                     </div>
                 </DrawerContent>
@@ -448,12 +447,12 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
   );
 
   const contentBody = (
-    <div className="p-4 sm:p-10">
+    <div className="p-4 sm:p-10 text-left">
         {view === 'hub' && (
-            <div className="space-y-8">
-                <div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
+            <div className="space-y-8 text-left">
+                <div className="relative text-left"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
                 {searchResults.map((res, idx) => (<Button key={idx} variant="outline" className="w-full h-auto p-4 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left border-2 border-dashed" onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary">{res.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-4">"{res.text.trim()}"</p></Button>))}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 text-left">
                     <Button onClick={() => setView('books')} variant="outline" className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center">
                         <BookOpen className="h-6 w-6 mb-1" />
                         <span className="text-[10px] font-black uppercase text-center">Browse Bible</span>
@@ -465,7 +464,7 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
                         </Link>
                     </Button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{kingdomVerses.map((v, idx) => (<Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:bg-primary/10 transition-all text-left block" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary">{v.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-2">"{v.text}"</p></Button>))}</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">{kingdomVerses.map((v, idx) => (<Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:bg-primary/10 transition-all text-left block" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary">{v.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-2">"{v.text}"</p></Button>))}</div>
             </div>
         )}
         {view === 'books' && <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2">{bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[9px]" onClick={() => { setSelectedBook(book.name); setView('chapters'); }}>{book.name}</Button>))}</div>}
@@ -474,10 +473,10 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
     </div>
   );
 
-  const footer = view === 'verses' && <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0"><Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold">Clear</Button><Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-[2] font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center">SHARE SELECTED ({selectedVerses.length})</Button></div>;
+  const footer = view === 'verses' && <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0"><Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold text-left">Clear</Button><Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-[2] font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center">SHARE SELECTED ({selectedVerses.length})</Button></div>;
 
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">{header}<ScrollArea className="flex-grow">{contentBody}</ScrollArea>{footer}</SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col">{header}<ScrollArea className="flex-1 min-h-0">{contentBody}</ScrollArea>{footer}</DialogContent></Dialog>;
+  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow text-left">{contentBody}</ScrollArea>{footer}</SheetContent></Sheet>;
+  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">{header}<ScrollArea className="flex-1 min-h-0 text-left">{contentBody}</ScrollArea>{footer}</DialogContent></Dialog>;
 }
 
 export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, onAssess, onOpenAssignDialog, onExportSingle, onDelete }: { soul: Soul; onFollowUp: (s: Soul) => void; onViewHistory: (s: Soul) => void; onEdit: (s: Soul) => void; onAssess: (s: Soul) => void; onOpenAssignDialog: (s: Soul) => void; onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void; onDelete: (s: Soul) => void; }) {
@@ -722,29 +721,29 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                 </div>
                 
                 <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          <ClipboardList className="h-4 w-4 text-primary" />
-                          <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Assessed Needs</p>
+                    <div className="flex items-center justify-between text-left">
+                        <div className="flex items-center gap-1 text-left">
+                          <ClipboardList className="h-4 w-4 text-primary text-left" />
+                          <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Assessed Needs</p>
                         </div>
-                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full text-primary hover:bg-primary/10" onClick={() => onAssess(soul)}>
-                            <Edit className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onAssess(soul)}>
+                            <Edit className="h-4 w-4 text-left" />
                         </Button>
                     </div>
                     {needs ? (
-                        <div className="space-y-4">
-                            {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance">&ldquo;{needs.generalImpression}&rdquo;</p>}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {needs.emotionalNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black">Emotional</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.emotionalNeeds}</p></div>)}
-                                {needs.physicalNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black">Physical</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.physicalNeeds}</p></div>)}
-                                {needs.financialNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black">Financial</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.financialNeeds}</p></div>)}
-                                {needs.socialNeeds && (<div className="space-y-1"><Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black">Social</Badge><p className="text-[10px] text-muted-foreground line-clamp-2">{needs.socialNeeds}</p></div>)}
+                        <div className="space-y-4 text-left">
+                            {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                                {needs.emotionalNeeds && (<div className="space-y-1 text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.emotionalNeeds}</p></div>)}
+                                {needs.physicalNeeds && (<div className="space-y-1 text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.physicalNeeds}</p></div>)}
+                                {needs.financialNeeds && (<div className="space-y-1 text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.financialNeeds}</p></div>)}
+                                {needs.socialNeeds && (<div className="space-y-1 text-left"><Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge><p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.socialNeeds}</p></div>)}
                             </div>
-                            {needs.followUpPlan && (<div className="pt-2 border-t border-primary/10"><p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5"><Target className="h-2.5 w-2.5" /> Strategy</p><p className="text-[10px] text-muted-foreground leading-relaxed italic">{needs.followUpPlan}</p></div>)}
+                            {needs.followUpPlan && (<div className="pt-2 border-t border-primary/10 text-left"><p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left"><Target className="h-2.5 w-2.5 text-left" /> Strategy</p><p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p></div>)}
                         </div>
                     ) : (
-                        <div className="py-4 text-center">
-                            <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-center" onClick={() => onAssess(soul)}>BEGIN ASSESSMENT</Button>
+                        <div className="py-4 text-center text-left">
+                            <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-center text-left" onClick={() => onAssess(soul)}>BEGIN ASSESSMENT</Button>
                         </div>
                     )}
                 </div>

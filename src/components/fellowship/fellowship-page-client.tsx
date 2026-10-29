@@ -269,12 +269,12 @@ function FullDevotionalDialog({
                         <Target className="h-5 w-5 text-primary text-left" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
-                    <DialogHeader className="text-left p-0 text-left">
+                    <DialogHeader className="text-left p-0 text-left text-left text-left">
                         <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight break-words flex items-center gap-3 text-balance text-left">
                             <MessageSquare className="h-6 w-6 text-primary shrink-0 text-left" />
                             {devotional.title}
                         </DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
                 <div className="flex-1 min-h-0 text-left">
@@ -284,8 +284,8 @@ function FullDevotionalDialog({
                       </div>
                   </ScrollArea>
                 </div>
-                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left">
-                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold text-left">Close Word</Button>
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left text-left">
+                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold text-left text-left">Close Word</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -472,25 +472,6 @@ export default function FellowshipPageClient() {
             })
             .finally(() => { setIsSavingDevotional(false); });
     };
-
-    const handleReaction = (type: 'amen' | 'inspired' | 'celebrate', e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (!user || !firestore || !activeDevotional) return;
-        
-        const hasReacted = (type === 'amen' && hasAmened) || (type === 'inspired' && hasInspired) || (type === 'celebrate' && hasCelebrated);
-        setIsProcessingReaction(type);
-        
-        const devoRef = doc(firestore, 'fellowships', fellowship.id, 'devotionals', viewDateStr);
-        const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
-        const updatePayload = { [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) };
-        
-        updateDoc(devoRef, updatePayload)
-            .catch(() => {
-                const permissionError = new FirestorePermissionError({ path: devoRef.path, operation: 'update', requestResourceData: updatePayload }, user);
-                errorEmitter.emit('permission-error', permissionError);
-            })
-            .finally(() => setIsProcessingReaction(null));
-    }
 
     const handleDeleteMember = async () => {
         if (!user || !firestore || !fellowship || !isOrganizer || !memberToRemove) return;
@@ -690,7 +671,7 @@ export default function FellowshipPageClient() {
             <div className="flex flex-col gap-5 px-4 sm:px-0 text-left">
                 <div className="flex items-center gap-3 sm:gap-4 w-full text-left">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm text-left">
-                        <ArrowLeft className="h-5 w-5 text-left"/>
+                        <ArrowLeft className="h-4 w-4 text-left"/>
                         <span className="sr-only">Back</span>
                     </Button>
                     <div className="min-w-0 flex-1 text-left">

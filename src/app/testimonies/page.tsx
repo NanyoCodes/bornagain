@@ -54,7 +54,6 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { EditTestimonyForm } from '@/components/testimonies/edit-testimony-form';
 import { EditPrayerRequestForm } from '@/components/prayer/EditPrayerRequestForm';
 import { FeedSidebar } from '@/components/layout/feed-sidebar';
-import { AppShell } from '@/components/layout/app-shell';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -469,7 +468,7 @@ function TestimoniesContent() {
             </div>
           </div>
 
-          <div className="px-4 sm:px-0 text-left">
+          <div className="px-4 sm:px-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
               <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8">
                 <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">
