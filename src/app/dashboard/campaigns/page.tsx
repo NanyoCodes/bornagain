@@ -286,9 +286,11 @@ function CampaignsDashboardContent() {
                             <DialogDescription className="text-sm font-medium text-left text-left">Fill in the details below.</DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left text-left">
-                        <div className="p-8 text-left text-left">{formContent}</div>
-                    </ScrollArea>
+                    <div className="flex-1 overflow-y-auto">
+                    <div className="p-8 text-left text-left">
+                        {formContent}
+                    </div>
+                    </div>
                 </DialogContent>
                 </Dialog>
             )}

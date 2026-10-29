@@ -321,8 +321,8 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4">
         <div className="min-w-0">
             <div className="text-left">
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</h2>
-                <p className="text-sm font-medium mt-1">Draft a powerful prayer for {soul?.firstName}.</p>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</h2>
+                <p className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</p>
             </div>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>

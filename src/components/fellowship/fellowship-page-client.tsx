@@ -473,60 +473,6 @@ export default function FellowshipPageClient() {
             .finally(() => { setIsSavingDevotional(false); });
     };
 
-    const handleDeleteMember = async () => {
-        if (!user || !firestore || !fellowship || !isOrganizer || !memberToRemove) return;
-        setIsProcessingRemoval(true);
-        
-        const memberId = memberToRemove.userId;
-        const batch = writeBatch(firestore);
-        
-        batch.delete(doc(firestore, 'fellowships', fellowshipId, 'members', memberId));
-        batch.update(doc(firestore, 'fellowships', fellowshipId), {
-            memberIds: arrayRemove(memberId),
-            memberCount: increment(-1)
-        });
-        batch.delete(doc(firestore, 'users', memberId, 'joinedFellowships', fellowshipId));
-
-        try {
-            await batch.commit();
-            setMemberToRemove(null);
-            toast({ title: "Member Removed" });
-        } catch (e) {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `fellowships/${fellowshipId}/members/${memberId}`, operation: 'delete' }, user));
-        } finally {
-            setIsProcessingRemoval(false);
-        }
-    };
-
-    const handleRemoveSoul = async () => {
-        if (!user || !firestore || !fellowship || !isOrganizer || !soulToUnassign) return;
-        setIsProcessingRemoval(true);
-
-        const soul = soulToUnassign;
-        const batch = writeBatch(firestore);
-        const groupTypeField = fellowship?.groupType === 'Association' ? 'associationId' : 'fellowshipId';
-        const groupTypeNameField = fellowship?.groupType === 'Association' ? 'associationName' : 'fellowshipName';
-
-        const update = {
-            [groupTypeField]: deleteField(),
-            [groupTypeNameField]: deleteField(),
-            updatedAt: serverTimestamp()
-        };
-
-        batch.update(doc(firestore, 'souls', soul.id), update);
-        batch.update(doc(firestore, 'users', soul.userId, 'souls', soul.id), update);
-
-        try {
-            await batch.commit();
-            setSoulToUnassign(null);
-            toast({ title: "Convert Unassigned" });
-        } catch (e) {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
-        } finally {
-            setIsProcessingRemoval(false);
-        }
-    };
-
     const handleOpenGroupChat = async (e: React.MouseEvent) => {
         e.stopPropagation();
         if (!user || !firestore || !userProfile || !fellowship) return;
@@ -748,7 +694,7 @@ export default function FellowshipPageClient() {
                                 {isOrganizer && <Button variant="outline" size="icon" className="h-10 w-10 sm:h-14 sm:w-14 rounded-[1.25rem] bg-white/10 border-white/20 hover:bg-white/20 text-white shadow-xl text-left" onClick={() => { if (activeDevotional) handleEditDevotional(activeDevotional); else form.reset({ title: '', scripture: '', text: '', prayer: '', scheduledDate: viewDateStr }); setIsDevotionalDialogOpen(true); }}><Edit className="h-5 w-5 sm:h-6 sm:w-6" /></Button>}
                             </div>
                         </CardHeader>
-                        <CardContent className="px-6 sm:p-10 pt-0 pb-8 sm:pb-12 space-y-8 text-left text-left">
+                        <CardContent className="px-6 sm:px-10 pt-0 pb-8 sm:pb-12 space-y-8 text-left text-left">
                             {devoLoading ? <div className="py-20 flex flex-col items-center gap-4 text-center"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" /><p className="text-[10px] font-black uppercase tracking-widest opacity-20 text-center">Accessing Records...</p></div> : activeDevotional ? (
                                 <div className="space-y-8 text-left text-left">
                                     <div className="bg-black/60 rounded-[2rem] p-6 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden text-left">
@@ -843,7 +789,7 @@ export default function FellowshipPageClient() {
             {isDevotionalDialogOpen && (
                 isMobile ? (
                     <Drawer open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                               <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                                 <div className="flex items-center gap-2 mb-4 text-left">
@@ -878,7 +824,7 @@ export default function FellowshipPageClient() {
 
             {isScheduleViewOpen && (
                 isMobile ? (
-                    <Drawer open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left flex-shrink-0 p-0 text-left"><div className="flex items-center gap-2 mb-2 text-left"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-widest text-primary">Spiritual Schedule</span></div><DrawerTitle className="text-2xl font-black font-headline text-left">Planned Word</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">Browse scheduled meditations for this group.</DrawerDescription></DrawerHeader></div><ScrollArea className="flex-grow px-8 pt-6 text-left">{ScheduleList}</ScrollArea></DrawerContent>
+                    <Drawer open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left flex-shrink-0 p-0 text-left"><div className="flex items-center gap-2 mb-2 text-left"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-widest text-primary">Spiritual Schedule</span></div><DrawerTitle className="text-2xl font-black font-headline text-left">Planned Word</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">Browse scheduled meditations for this group.</DrawerDescription></DrawerHeader></div><ScrollArea className="flex-grow px-8 pt-6 text-left">{ScheduleList}</ScrollArea></DrawerContent></Drawer>
                 ) : (
                     <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left"><div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="p-0 text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Spiritual Schedule</DialogTitle><DialogDescription className="text-sm font-medium text-left">Peek ahead at scheduled meditations.</DialogDescription></DialogHeader></div><ScrollArea className="max-h-[60vh] p-6 text-left">{ScheduleList}</ScrollArea></DialogContent></Dialog>
                 )
@@ -943,3 +889,4 @@ export default function FellowshipPageClient() {
         </div>
     );
 }
+
