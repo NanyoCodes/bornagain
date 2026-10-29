@@ -115,7 +115,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         const originalName = (file as File).name || `upload_${Date.now()}`;
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${originalName}`);
         
-        // Mobile-native playback fix: Strip complex codec metadata which confuses strict players (especially Safari)
         const contentType = (file.type || (type === 'audio' ? 'audio/mp4' : type === 'video' ? 'video/mp4' : 'image/jpeg')).split(';')[0];
         const metadata = { contentType, customMetadata: { testimonyId, slot: slot.toString() } };
         
@@ -225,17 +224,21 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               <div className="space-y-3 text-left">
                   <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px]", isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
                       {isUploadingMedia === slot ? (
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-2 text-left">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
                               <div className="space-y-1 text-center"><p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p><p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p></div>
                           </div>
                       ) : (
-                          <div className="flex flex-col items-center"><div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><FileUp className="h-4 w-4 text-primary" /></div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select File</p><p className="text-[8px] text-muted-foreground/40 mt-1 uppercase">Image, Video, Audio</p></div>
+                          <div className="flex flex-col items-center text-left">
+                              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><FileUp className="h-4 w-4 text-primary" /></div>
+                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select File</p>
+                              <p className="text-[8px] text-muted-foreground/40 mt-1 uppercase">Image, Video, Audio</p>
+                          </div>
                       )}
                   </div>
               </div>
           ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 text-left">
                 <div className={cn("relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group", isAudio ? "h-auto min-h-[100px]" : "aspect-square")}>
                     {preview.type === 'image' ? (
                         <Image src={preview.localUrl || preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
@@ -247,12 +250,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                           playsInline 
                           controls 
                           preload="metadata" 
-                          onError={(e) => toast({ variant: 'destructive', title: `Playback failed` })} 
                         />
                     ) : (
-                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4">
-                            <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Sparkles className="h-5 w-5 text-primary" /></div></div>
-                            <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" onError={(e) => toast({ variant: 'destructive', title: `Playback failed` })} /></div>
+                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
+                            <div className="relative shrink-0 text-left"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Sparkles className="h-5 w-5 text-primary" /></div></div>
+                            <div className="min-w-0 flex-1 text-left"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" /></div>
                         </div>
                     )}
                     <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 transition-opacity" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}><X className="h-3.5 w-3.5" /></Button>
@@ -266,15 +268,16 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
   return (
     <div className="space-y-10 text-left">
-      <div className="space-y-4">
+      <div className="space-y-4 text-left">
         <div className="flex items-center gap-3 px-1 text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1 text-left"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Proclaim Victory</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Sharing God's manifest power</p></div></div>
         {prayerRequest && (
-            <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left"><div className="absolute -top-4 -right-4 h-16 w-16 bg-amber-500/5 rounded-full blur-xl" /><CardHeader className="p-5 pb-2 relative z-10"><div className="flex items-center gap-2 mb-1"><HandHeart className="h-3.5 w-3.5 text-amber-600" /><span className="text-[9px] font-black uppercase text-amber-700 tracking-widest">Answering Prayer Altar</span></div><CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3">&ldquo;{prayerRequest.content}&rdquo;</CardDescription></CardHeader></Card>
+            <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left"><CardHeader className="p-5 pb-2 relative z-10 text-left"><div className="flex items-center gap-2 mb-1 text-left"><HandHeart className="h-3.5 w-3.5 text-amber-600" /><span className="text-[9px] font-black uppercase text-amber-700 tracking-widest">Answering Prayer Altar</span></div><CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3">&ldquo;{prayerRequest.content}&rdquo;</CardDescription></CardHeader></Card>
         )}
       </div>
       <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
-          <div className="space-y-6 text-left"><FormField control={form.control} name="category" render={({ field }) => (
-                <FormItem>
+          <div className="space-y-6 text-left">
+            <FormField control={form.control} name="category" render={({ field }) => (
+                <FormItem className="text-left">
                     <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Theme</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
@@ -292,7 +295,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             />
 
             <FormField control={form.control} name="content" render={({ field }) => (
-                <FormItem>
+                <FormItem className="text-left">
                     <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Story</FormLabel>
                     <FormControl>
                     <Textarea 
@@ -321,7 +324,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           </div>
 
           <div className="pt-4 text-left">
-              <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95" disabled={isSubmitting || isUploadingMedia !== null}>
+              <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95 text-center" disabled={isSubmitting || isUploadingMedia !== null}>
                 {isSubmitting ? (
                     <div className="flex items-center justify-center gap-3">
                         <Loader2 className="h-6 w-6 animate-spin" />
@@ -342,3 +345,4 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
+

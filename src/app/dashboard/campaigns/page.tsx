@@ -192,7 +192,7 @@ export default function CampaignsPage() {
         if (!user?.uid) return true;
         if (filter === 'created') return c.organizerId === user.uid;
         if (filter === 'joined') return joinedCampaignIds.has(c.id) && c.organizerId !== user.uid;
-        return true;
+        return true; // 'all'
     });
     const statusFiltered = tabFiltered.filter(c => {
         if (statusFilter === 'all') return true;
@@ -279,12 +279,12 @@ export default function CampaignsPage() {
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                 <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl rounded-3xl text-left">
                     <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="text-left p-0">
-                            <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Create a New Mission</DialogTitle>
-                            <DialogDescription className="text-sm font-medium">Fill in the details below.</DialogDescription>
+                        <DialogHeader className="text-left p-0 text-left">
+                            <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Create a New Mission</DialogTitle>
+                            <DialogDescription className="text-sm font-medium text-left">Fill in the details below.</DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1">
+                    <ScrollArea className="flex-1 text-left">
                         <div className="p-8 text-left">{formContent}</div>
                     </ScrollArea>
                 </DialogContent>
@@ -304,12 +304,12 @@ export default function CampaignsPage() {
             <Drawer open={!!campaignForTestimony} onOpenChange={(open) => { if (!open) setCampaignForTestimony(null); }}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left p-0">
-                            <DrawerTitle className="text-2xl font-black font-headline">Share Victory</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1">What has God done during "{campaignForTestimony?.title}"?</DrawerDescription>
+                        <DrawerHeader className="text-left p-0 text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left">Share Victory</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left">What has God done during "{campaignForTestimony?.title}"?</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1">
+                    <ScrollArea className="flex-1 text-left">
                         <div className="p-8 text-left">
                             {campaignForTestimony && userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={handleTestimonyCreated} campaign={campaignForTestimony} />}
                         </div>
@@ -320,12 +320,12 @@ export default function CampaignsPage() {
             <Drawer open={!!campaignForSoul} onOpenChange={(open) => { if (!open) setCampaignForSoul(null); }}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left p-0">
-                            <DrawerTitle className="text-2xl font-black font-headline">Log Harvest</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1">Record a soul won in "{campaignForSoul?.title}".</DrawerDescription>
+                        <DrawerHeader className="text-left p-0 text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left">Log Harvest</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a soul won in "{campaignForSoul?.title}".</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1">
+                    <ScrollArea className="flex-1 text-left">
                         <div className="p-8 text-left">
                             {campaignForSoul && <LogSoulForm onSoulLogged={handleSoulLogged} defaultCampaign={campaignForSoul} fellowships={[]} campaigns={[]} />}
                         </div>
@@ -336,12 +336,12 @@ export default function CampaignsPage() {
             <Drawer open={!!campaignToManage} onOpenChange={(open) => { if (!open) setCampaignToManage(null); }}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left p-0">
-                            <DrawerTitle className="text-2xl font-black font-headline">Manage Mission</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1">Update mission progress and details.</DrawerDescription>
+                        <DrawerHeader className="text-left p-0 text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left">Manage Mission</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Update mission progress and details.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1">
+                    <ScrollArea className="flex-1 text-left">
                         <div className="p-8 text-left">
                             {campaignToManage && <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => setCampaignToManage(null)} onDelete={() => { const c = campaignToManage; setCampaignToManage(null); setTimeout(() => setCampaignToDelete(c), 150); }} />}
                         </div>
