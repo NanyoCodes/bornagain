@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Newspaper, HandHeart, Loader2, Trash2, Edit, Camera, Flame, Sparkles, X, ChevronDown, Send, Globe, Hourglass, UserPlus, Filter } from 'lucide-react';
+import { Newspaper, HandHeart, Loader2, Edit, Camera, Flame, Sparkles, X, ChevronDown, Send, Globe, Hourglass, UserPlus, Filter } from 'lucide-react';
 import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
 import { PrayerRequestCard } from '@/components/prayer/PrayerRequestCard';
@@ -11,6 +11,7 @@ import { CreatePrayerRequestForm } from '@/components/prayer/CreatePrayerRequest
 import { KingdomAdSpot } from '@/components/testimonies/kingdom-ad-spot';
 import { AdsenseAd } from '@/components/common/adsense-ad';
 import { BibleGameCard } from "@/components/testimonies/bible-game-card";
+import { AppShell } from "@/components/layout/app-shell";
 import Script from 'next/script';
 import {
   Dialog,
@@ -30,11 +31,11 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
 } from '@/components/ui/drawer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -43,7 +44,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Testimony, PrayerRequest, UserProfile, AccountabilityRequest, TestimonyCategory } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCollection, useFirestore, useUser, useDoc, useStorage } from '@/firebase';
+import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where, getDocs } from 'firebase/firestore';
 import { useSearch } from '@/context/search-context';
 import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';

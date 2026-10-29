@@ -261,44 +261,44 @@ function CampaignsPageContent() {
         <Suspense>
             {isMobile ? (
                 <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <DrawerHeader className="text-left p-0 text-left">
-                        <div className="flex items-center gap-2 mb-4 text-left">
-                            <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left" />
-                            <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left">SWIPE DOWN TO CLOSE</span>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                    <DrawerHeader className="text-left p-0 text-left text-left">
+                        <div className="flex items-center gap-2 mb-4 text-left text-left">
+                            <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
+                            <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
                         </div>
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Launch Mission</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Mobilize for the harvest.</DrawerDescription>
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Launch Mission</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Mobilize for the harvest.</DrawerDescription>
                     </DrawerHeader>
                     </div>
                     <ScrollArea className="flex-1 text-left">
-                        <div className="p-8 text-left">{formContent}</div>
+                        <div className="p-8 text-left text-left">{formContent}</div>
                     </ScrollArea>
                 </DrawerContent>
                 </Drawer>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl rounded-3xl text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="text-left p-0 text-left">
-                            <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Create a New Mission</DialogTitle>
-                            <DialogDescription className="text-sm font-medium text-left">Fill in the details below.</DialogDescription>
+                <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl rounded-3xl text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+                        <DialogHeader className="text-left p-0 text-left text-left">
+                            <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">Create a New Mission</DialogTitle>
+                            <DialogDescription className="text-sm font-medium text-left text-left">Fill in the details below.</DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left">
-                        <div className="p-8 text-left">{formContent}</div>
+                    <ScrollArea className="flex-1 min-h-0 text-left text-left">
+                        <div className="p-8 text-left text-left">{formContent}</div>
                     </ScrollArea>
                 </DialogContent>
                 </Dialog>
             )}
 
             <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
-            <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                <AlertDialogHeader className="text-left"><AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Mission?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">This will permanently remove the campaign.</AlertDialogDescription></AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6 text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 text-left">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Deletion</AlertDialogAction>
+            <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+                <AlertDialogHeader className="text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left">Delete Mission?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">This will permanently remove the campaign.</AlertDialogDescription></AlertDialogHeader>
+                <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 text-left text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}Confirm Deletion</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
             </AlertDialog>
@@ -311,7 +311,7 @@ function CampaignsPageContent() {
                             <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">What has God done during "{campaignForTestimony?.title}"?</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left">
+                    <ScrollArea className="flex-1 min-h-0 text-left text-left">
                         <div className="p-8 text-left text-left">
                             {campaignForTestimony && userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={handleTestimonyCreated} campaign={campaignForTestimony} />}
                         </div>
@@ -327,7 +327,7 @@ function CampaignsPageContent() {
                             <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a soul won in "{campaignForSoul?.title}".</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left">
+                    <ScrollArea className="flex-1 min-h-0 text-left text-left">
                         <div className="p-8 text-left text-left">
                             {campaignForSoul && <LogSoulForm onSoulLogged={handleSoulLogged} defaultCampaign={campaignForSoul} fellowships={[]} campaigns={[]} />}
                         </div>
@@ -343,7 +343,7 @@ function CampaignsPageContent() {
                             <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Update mission progress and details.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left">
+                    <ScrollArea className="flex-1 min-h-0 text-left text-left">
                         <div className="p-8 text-left text-left">
                             {campaignToManage && <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => setCampaignToManage(null)} onDelete={() => { const c = campaignToManage; setCampaignToManage(null); setTimeout(() => setCampaignToDelete(c), 150); }} />}
                         </div>
@@ -356,10 +356,10 @@ function CampaignsPageContent() {
   );
 }
 
-export default function CampaignsStandalonePage() {
+export default function CampaignsDashboardPage() {
   return (
     <AppShell>
-      <Suspense fallback={<div className="flex justify-center p-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary text-left" /></div>}>
+      <Suspense fallback={<div className="flex justify-center p-20 text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" /></div>}>
         <CampaignsPageContent />
       </Suspense>
     </AppShell>

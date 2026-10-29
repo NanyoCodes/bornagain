@@ -428,7 +428,7 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
 
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4">
-      <div className="min-w-0">
+      <div className="min-w-0 text-left">
         <div className="flex items-center gap-3 mb-2">
           {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4" /></Button>}
           <Target className="h-5 w-5 text-primary" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
@@ -605,27 +605,27 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
+                        <div className="space-y-1 text-left">
                             <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Full Name</p>
                             <p className="text-[11px] sm:text-xs font-bold text-left">{soul.firstName} {soul.lastName}</p>
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-1 text-left">
                             <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Gender/Age</p>
                             <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-1 text-left">
                             <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Relationship</p>
                             <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.relationship || 'N/A'}</p>
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-1 text-left">
                             <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Work Status</p>
                             <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.workStatus || 'N/A'}</p>
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-1 text-left">
                             <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Rel. Status</p>
                             <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.maritalStatus || 'N/A'}</p>
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-1 text-left">
                             <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Nickname</p>
                             <p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.nickname || 'N/A'}</p>
                         </div>

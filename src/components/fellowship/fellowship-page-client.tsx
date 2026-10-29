@@ -264,7 +264,7 @@ function FullDevotionalDialog({
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
                     <div className="flex items-center gap-3 mb-2 text-left">
                         <Target className="h-5 w-5 text-primary text-left" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
@@ -861,7 +861,7 @@ export default function FellowshipPageClient() {
                     <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <DialogHeader className="text-left p-0 text-left text-left">
+                                <DialogHeader className="text-left p-0 text-left text-left text-left">
                                     <DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Devotional Hub</DialogTitle>
                                     <DialogDescription className="text-base font-medium">Prepare and schedule spiritual nourishment for your group.</DialogDescription>
                                 </DialogHeader>
