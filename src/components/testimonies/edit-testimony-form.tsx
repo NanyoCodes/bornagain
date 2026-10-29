@@ -118,7 +118,6 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         const originalName = (file as File).name || `edit_${Date.now()}`;
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}_${originalName}`);
         
-        // Sanitize MIME type
         const contentType = (file.type || (type === 'audio' ? 'audio/mp4' : type === 'video' ? 'video/mp4' : 'image/jpeg')).split(';')[0];
         const metadata = { contentType, customMetadata: { testimonyId: testimony.id, slot: slot.toString() } };
         
