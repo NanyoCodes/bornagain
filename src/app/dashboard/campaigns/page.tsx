@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect, Suspense } from "react";
@@ -69,7 +70,8 @@ function CampaignSkeletons() {
 
 const getStatus = (campaign: { _startDate: Date | null, _endDate: Date | null, startTime?: string, endTime?: string }, now: Date): number => {
     const { _startDate, _endDate } = campaign;
-    if (!_startDate || !_endDate) return 3; 
+    if (!_startDate || !_endDate) return 3; // Past
+    
     const endDateTime = new Date(_endDate);
     if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
         const [hours, minutes] = campaign.endTime.split(':').map(Number);
@@ -77,7 +79,7 @@ const getStatus = (campaign: { _startDate: Date | null, _endDate: Date | null, s
     } else {
         endDateTime.setHours(23, 59, 59, 999);
     }
-    if (endDateTime < now) return 3; 
+    if (endDateTime < now) return 3; // Past
     const startDateTime = new Date(_startDate);
     if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
         const [hours, minutes] = campaign.startTime.split(':').map(Number);
@@ -85,8 +87,8 @@ const getStatus = (campaign: { _startDate: Date | null, _endDate: Date | null, s
     } else {
         startDateTime.setHours(0, 0, 0, 0);
     }
-    if (startDateTime > now) return 2; 
-    return 1; 
+    if (startDateTime > now) return 2; // Upcoming
+    return 1; // Ongoing
 };
 
 export default function CampaignsPage() {
@@ -284,7 +286,7 @@ export default function CampaignsPage() {
                             <DialogDescription className="text-sm font-medium text-left">Fill in the details below.</DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 text-left">
+                    <ScrollArea className="flex-1 min-h-0 text-left">
                         <div className="p-8 text-left">{formContent}</div>
                     </ScrollArea>
                 </DialogContent>
@@ -302,15 +304,15 @@ export default function CampaignsPage() {
             </AlertDialog>
 
             <Drawer open={!!campaignForTestimony} onOpenChange={(open) => { if (!open) setCampaignForTestimony(null); }}>
-                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left p-0 text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline text-left">Share Victory</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1 text-left">What has God done during "{campaignForTestimony?.title}"?</DrawerDescription>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                        <DrawerHeader className="text-left p-0 text-left text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Share Victory</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">What has God done during "{campaignForTestimony?.title}"?</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1 text-left">
-                        <div className="p-8 text-left">
+                    <ScrollArea className="flex-1 min-h-0 text-left">
+                        <div className="p-8 text-left text-left">
                             {campaignForTestimony && userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={handleTestimonyCreated} campaign={campaignForTestimony} />}
                         </div>
                     </ScrollArea>
@@ -318,15 +320,15 @@ export default function CampaignsPage() {
             </Drawer>
 
             <Drawer open={!!campaignForSoul} onOpenChange={(open) => { if (!open) setCampaignForSoul(null); }}>
-                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left p-0 text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline text-left">Log Harvest</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a soul won in "{campaignForSoul?.title}".</DrawerDescription>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                        <DrawerHeader className="text-left p-0 text-left text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Log Harvest</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a soul won in "{campaignForSoul?.title}".</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1 text-left">
-                        <div className="p-8 text-left">
+                    <ScrollArea className="flex-1 min-h-0 text-left">
+                        <div className="p-8 text-left text-left">
                             {campaignForSoul && <LogSoulForm onSoulLogged={handleSoulLogged} defaultCampaign={campaignForSoul} fellowships={[]} campaigns={[]} />}
                         </div>
                     </ScrollArea>
@@ -334,15 +336,15 @@ export default function CampaignsPage() {
             </Drawer>
 
             <Drawer open={!!campaignToManage} onOpenChange={(open) => { if (!open) setCampaignToManage(null); }}>
-                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left p-0 text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline text-left">Manage Mission</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Update mission progress and details.</DrawerDescription>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                        <DrawerHeader className="text-left p-0 text-left text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Manage Mission</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Update mission progress and details.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1 text-left">
-                        <div className="p-8 text-left">
+                    <ScrollArea className="flex-1 min-h-0 text-left">
+                        <div className="p-8 text-left text-left">
                             {campaignToManage && <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => setCampaignToManage(null)} onDelete={() => { const c = campaignToManage; setCampaignToManage(null); setTimeout(() => setCampaignToDelete(c), 150); }} />}
                         </div>
                     </ScrollArea>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -121,7 +122,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 
-const iconMap: Record<string, any> = {
+export const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
     'studied_bible': BookOpen,
     'shared_meal': Utensils,
@@ -156,8 +157,8 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
   const { toast } = useToast();
 
   const mediaContent = (
-      <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-          <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+      <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left">
+          <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left">
               {type === 'image' ? (
                   <Image src={url} alt="Proof Full" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
               ) : type === 'video' ? (
@@ -171,21 +172,21 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                     preload="metadata" 
                   />
               ) : (
-                  <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl">
-                      <div className="relative text-center">
-                          <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto">
-                              <Mic className="h-16 w-16 text-primary" />
+                  <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl text-left">
+                      <div className="relative text-center text-left">
+                          <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto text-left text-left">
+                              <Mic className="h-16 w-16 text-primary text-left text-left" />
                           </div>
-                          <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse" />
+                          <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse text-left text-left" />
                       </div>
-                      <div className="space-y-2 text-center">
-                          <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white">Voice Proclamation</h4>
-                          <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic">A testimony of God's goodness</p>
+                      <div className="space-y-2 text-center text-left">
+                          <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white text-center text-left">Voice Proclamation</h4>
+                          <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic text-center text-left">A testimony of God's goodness</p>
                       </div>
                       <audio 
                         key={url} 
                         src={url} 
-                        className="w-full" 
+                        className="w-full text-left" 
                         controls 
                         preload="metadata" 
                         autoPlay
@@ -212,7 +213,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           ) : (
               <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
                   <div className="relative shrink-0 text-left">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner text-left">
                           <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
                       <motion.div 
@@ -220,12 +221,12 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         animate={{ opacity: [0.4, 1, 0.4] }}
                         transition={{ repeat: Infinity, duration: 2 }}
                       >
-                        <Sparkles className="h-3 w-3 text-primary animate-pulse" />
+                        <Sparkles className="h-3 w-3 text-primary animate-pulse text-left" />
                       </motion.div>
                   </div>
                   <div className="min-w-0 flex-1 text-left">
-                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
-                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left">Voice Proclamation</p>
+                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left">Tap to Hear Miracle</p>
                   </div>
               </div>
           )}
@@ -237,19 +238,21 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           <>
             {trigger}
             <Drawer open={isOpen} onOpenChange={setIsOpen}>
-                <DrawerContent className="p-0 bg-black/95 border-0 h-dvh rounded-none flex items-center justify-center text-center">
-                    <div className="sr-only">
-                        <DrawerHeader>
-                            <DrawerTitle>Media View</DrawerTitle>
-                            <DrawerDescription>Full screen media preview.</DrawerDescription>
+                <DrawerContent className="p-0 bg-black/95 border-0 h-dvh rounded-none flex items-center justify-center text-center text-left">
+                    <div className="sr-only text-left">
+                        <DrawerHeader className="text-left">
+                            <DrawerTitle className="text-left">Media View</DrawerTitle>
+                            <DrawerDescription className="text-left">Full screen media preview.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 z-50 rounded-full bg-white/10 text-white hover:bg-white/20" onClick={() => setIsOpen(false)}>
-                        <X className="h-6 w-6" />
+                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 z-50 rounded-full bg-white/10 text-white hover:bg-white/20 text-left" onClick={() => setIsOpen(false)}>
+                        <X className="h-6 w-6 text-left" />
                     </Button>
                     {mediaContent}
-                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4">
-                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest"><a href={url} target="_blank" rel="noopener noreferrer">Open in new tab</a></Button>
+                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4 text-center">
+                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest text-center">
+                          <a href={url} target="_blank" rel="noopener noreferrer" className="text-center">Open in new tab</a>
+                        </Button>
                     </div>
                 </DrawerContent>
             </Drawer>
@@ -260,11 +263,11 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
   return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
           {trigger}
-          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-              <div className="sr-only">
-                  <DialogHeader>
-                    <DialogTitle>Full View</DialogTitle>
-                    <DialogDescription>Full miracle proof preview.</DialogDescription>
+          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
+              <div className="sr-only text-left">
+                  <DialogHeader className="text-left">
+                    <DialogTitle className="text-left">Full View</DialogTitle>
+                    <DialogDescription className="text-left">Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
               {mediaContent}

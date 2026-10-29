@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -210,7 +211,9 @@ export default function LandingPage() {
                 </Badge>
                 <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.<br className="hidden sm:block" />
-                  <span className="text-primary text-sm sm:text-lg md:text-xl block mt-4 uppercase"> THE #1 APP TO CARE FOR FAMILY, FRIENDS, SOULS, AND THE KINGDOM.</span>
+                  <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider"> 
+                    The #1 App to care for family, friends, souls, and the Kingdom.
+                  </span>
                 </h1>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
@@ -222,7 +225,7 @@ export default function LandingPage() {
                   <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
                 <Button asChild variant="outline" size="sm" className="h-9 px-6 text-[10px] font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 flex items-center justify-center text-center">
-                  <Link href="/about">THE COMPASSION VISION</Link>
+                  <Link href="/about">THE VISION</Link>
                 </Button>
               </div>
             </div>
