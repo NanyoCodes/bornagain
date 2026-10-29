@@ -325,7 +325,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
                 <p className="text-sm font-medium mt-1 text-left text-left text-left">Draft a powerful prayer for {soul?.firstName}.</p>
             </div>
         </div>
-        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => onOpenChange(false)}>
+        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5 text-left" />
         </Button>
     </div>
@@ -334,7 +334,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
   const contentBody = (
     <div className="p-8 space-y-6 text-left">
         <div className="space-y-3 text-left">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Prayer Focus</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Prayer Focus</label>
             <div className="flex flex-wrap gap-2 text-left">
                 {prayerTemplates.map(t => (
                     <Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-primary text-left" onClick={() => soul && setText(t.text.replace(/{name}/g, soul.firstName))}>{t.label}</Button>
@@ -342,7 +342,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
             </div>
         </div>
         <div className="space-y-2 text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label>
             <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" />
         </div>
         <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">SEND</Button>
@@ -365,7 +365,7 @@ export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }
             <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</h2>
             <p className="text-sm font-medium text-left">Encourage {soul?.firstName} via mobile.</p>
         </div>
-        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => onOpenChange(false)}>
+        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5 text-left" />
         </Button>
     </div>
@@ -634,7 +634,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                 <Separator className="opacity-20 text-left" />
                 <div className="space-y-3 text-left">
                     <div className="flex items-center justify-between text-left">
-                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Contact Identity</p>
+                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left">Contact Identity</p>
                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onEdit(soul)}><Edit className="h-4 w-4 text-left" /></Button>
                     </div>
                     <div className="space-y-2 text-left">
@@ -731,7 +731,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                         </Button>
                     </div>
                     {needs ? (
-                        <>
+                        <React.Fragment>
                             <div className="space-y-4 text-left">
                                 {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
@@ -769,7 +769,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                                     </div>
                                 )}
                             </div>
-                        </>
+                        </React.Fragment>
                     ) : (
                         <div className="py-4 text-center text-left">
                             <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-center text-left" onClick={() => onAssess(soul)}>BEGIN ASSESSMENT</Button>

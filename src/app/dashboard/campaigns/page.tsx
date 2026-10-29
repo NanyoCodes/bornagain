@@ -308,7 +308,7 @@ function CampaignsDashboardContent() {
             <Drawer open={!!campaignForTestimony} onOpenChange={(open) => { if (!open) setCampaignForTestimony(null); }}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left p-0 text-left">
+                        <DrawerHeader className="text-left p-0 text-left text-left">
                             <DrawerTitle className="text-2xl font-black font-headline text-left">Share Victory</DrawerTitle>
                             <DrawerDescription className="text-sm font-medium mt-1 text-left">What has God done during "{campaignForTestimony?.title}"?</DrawerDescription>
                         </DrawerHeader>
