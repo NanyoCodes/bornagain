@@ -48,6 +48,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
+import { AppShell } from "@/components/layout/app-shell";
 
 function CampaignSkeletons() {
   return (
@@ -90,7 +91,7 @@ const getStatus = (campaign: { _startDate: Date | null, _endDate: Date | null, s
     return 1; // Ongoing
 };
 
-export default function CampaignsPage() {
+function CampaignsPageContent() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -235,7 +236,7 @@ export default function CampaignsPage() {
                     </TabsList>
                 </Tabs>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-full sm:w-[150px] h-12 rounded-2xl border-2 font-bold uppercase tracking-widest text-[10px] text-left">
+                    <SelectTrigger className="w-full sm:w-[150px] h-12 sm:h-14 rounded-2xl border-2 font-bold uppercase tracking-widest text-[10px] text-left">
                         <SelectValue placeholder="Status" className="text-left" />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl shadow-xl text-left">
@@ -352,5 +353,15 @@ export default function CampaignsPage() {
         </Suspense>
       )}
     </div>
+  );
+}
+
+export default function CampaignsStandalonePage() {
+  return (
+    <AppShell>
+      <Suspense fallback={<div className="flex justify-center p-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary text-left" /></div>}>
+        <CampaignsPageContent />
+      </Suspense>
+    </AppShell>
   );
 }

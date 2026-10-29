@@ -10,6 +10,7 @@ import { PrayerRequestCard } from '@/components/prayer/PrayerRequestCard';
 import { CreatePrayerRequestForm } from '@/components/prayer/CreatePrayerRequestForm';
 import { KingdomAdSpot } from '@/components/testimonies/kingdom-ad-spot';
 import { AdsenseAd } from '@/components/common/adsense-ad';
+import { BibleGameCard } from "@/components/testimonies/bible-game-card";
 import Script from 'next/script';
 import {
   Dialog,
@@ -276,7 +277,7 @@ function TestimoniesContent() {
   }, [prayerRequests, searchTerm, activeTab, filterCategory]);
 
   const interleavedPrayers = useMemo(() => {
-    const list: (PrayerRequest & { isAd?: boolean; adType?: 'business' | 'event' | 'adsense' })[] = [];
+    const list: (PrayerRequest & { isAd?: boolean; isGame?: boolean; adType?: 'business' | 'event' | 'adsense' })[] = [];
     filteredPrayerRequests.forEach((p, i) => {
       list.push(p);
       if ((i + 1) % 5 === 0) {
@@ -468,7 +469,7 @@ function TestimoniesContent() {
             </div>
           </div>
 
-          <div className="px-4 sm:px-0">
+          <div className="px-4 sm:px-0 text-left">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
               <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8">
                 <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">

@@ -208,19 +208,19 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   const renderMediaSlot = (slot: 1 | 2, preview: any, setPreview: any, inputRef: React.RefObject<HTMLInputElement | null>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
     const isAudio = preview?.type === 'audio';
     return (
-      <div className="space-y-4 flex-1 text-left text-left">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left"><Camera className="h-3.5 w-3.5 text-primary text-left" /> Evidence {slot} {slot === 2 && "(Optional)"}</Label>
+      <div className="space-y-4 flex-1 text-left">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2"><Camera className="h-3.5 w-3.5 text-primary" /> Evidence {slot} {slot === 2 && "(Optional)"}</Label>
           {!preview ? (
               <div className="space-y-3 text-left">
                   <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left", isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
                       {isUploadingMedia === slot ? (
-                          <div className="flex flex-col items-center gap-2 text-left">
-                              <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
-                              <div className="space-y-1 text-center"><p className="text-[9px] font-black uppercase tracking-widest text-primary text-left">Uploading...</p><p className="text-[8px] font-bold text-primary/60 text-left">{Math.round(uploadProgress)}%</p></div>
+                          <div className="flex flex-col items-center gap-2">
+                              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                              <div className="space-y-1 text-center"><p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p><p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p></div>
                           </div>
                       ) : (
-                          <div className="flex flex-col items-center text-left">
-                              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform text-left"><FileUp className="h-4 w-4 text-primary text-left" /></div>
+                          <div className="flex flex-col items-center">
+                              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><FileUp className="h-4 w-4 text-primary" /></div>
                               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select File</p>
                               <p className="text-[8px] text-muted-foreground/40 mt-1 uppercase text-center">Image, Video, Audio</p>
                           </div>
@@ -228,27 +228,27 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                   </div>
               </div>
           ) : (
-              <div className="space-y-2 text-left text-left">
-                <div className={cn("relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group text-left", isAudio ? "h-auto min-h-[100px]" : "aspect-square")}>
+              <div className="space-y-2">
+                <div className={cn("relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group", isAudio ? "h-auto min-h-[100px]" : "aspect-square")}>
                     {preview.type === 'image' ? (
-                        <Image src={preview.localUrl || preview.url} alt={`Evidence ${slot}`} fill className="object-cover text-left" unoptimized />
+                        <Image src={preview.localUrl || preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
                     ) : preview.type === 'video' ? (
                         <video 
                           key={preview.localUrl || preview.url} 
                           src={preview.localUrl || preview.url} 
-                          className="w-full h-full object-cover bg-zinc-950 text-left" 
+                          className="w-full h-full object-cover bg-zinc-950" 
                           playsInline 
                           controls 
                           preload="metadata" 
                         />
                     ) : (
-                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left text-left">
-                            <div className="relative shrink-0 text-left"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-left"><Sparkles className="h-5 w-5 text-primary text-left" /></div></div>
-                            <div className="min-w-0 flex-1 text-left"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3 text-left">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full text-left" controls preload="metadata" /></div>
+                        <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
+                            <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Sparkles className="h-5 w-5 text-primary" /></div></div>
+                            <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" /></div>
                         </div>
                     )}
-                    <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 transition-opacity text-left">
-                      <Button type="button" variant="destructive" size="icon" className="h-7 w-7 rounded-full shadow-lg text-left" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}><X className="h-3.5 w-3.5 text-left" /></Button>
+                    <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 transition-opacity">
+                      <Button type="button" variant="destructive" size="icon" className="h-7 w-7 rounded-full shadow-lg" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}><X className="h-3.5 w-3.5" /></Button>
                     </div>
                 </div>
               </div>
@@ -259,77 +259,77 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
   };
 
   return (
-    <div className="space-y-10 text-left text-left">
-      <div className="space-y-4 text-left text-left">
-        <div className="flex items-center gap-3 px-1 text-left text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left"><Newspaper className="h-5 w-5 text-primary text-left" /></div><div className="min-w-0 flex-1 text-left"><h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Proclaim Victory</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Sharing God's manifest power</p></div></div>
+    <div className="space-y-10 text-left">
+      <div className="space-y-4 text-left">
+        <div className="flex items-center gap-3 px-1"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Proclaim Victory</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Sharing God's manifest power</p></div></div>
         {prayerRequest && (
-            <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left"><CardHeader className="p-5 pb-2 relative z-10 text-left"><div className="flex items-center gap-2 mb-1 text-left"><HandHeart className="h-3.5 w-3.5 text-amber-600 text-left" /><span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left">Answering Prayer Altar</span></div><CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription></CardHeader></Card>
+            <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left"><CardHeader className="p-5 pb-2 relative z-10"><div className="flex items-center gap-2 mb-1"><HandHeart className="h-3.5 w-3.5 text-amber-600" /><span className="text-[9px] font-black uppercase text-amber-700 tracking-widest">Answering Prayer Altar</span></div><CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3">&ldquo;{prayerRequest.content}&rdquo;</CardDescription></CardHeader></Card>
         )}
       </div>
-      <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left text-left">
-          <div className="space-y-6 text-left text-left text-left">
+      <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
+          <div className="space-y-6">
             <FormField control={form.control} name="category" render={({ field }) => (
-                <FormItem className="text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Theme</FormLabel>
+                <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Theme</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl className="text-left">
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base text-left">
-                            <SelectValue placeholder="What is the nature of this miracle?" className="text-left" />
+                        <FormControl>
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-y border-x-0 sm:border-x-2 border-border shadow-inner font-bold text-base">
+                            <SelectValue placeholder="What is the nature of this miracle?" />
                         </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
-                        {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl text-left">{cat}</SelectItem>))}
+                        <SelectContent className="rounded-2xl border-none shadow-2xl">
+                        {testimonyCategories.map(cat => (<SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>))}
                         </SelectContent>
                     </Select>
-                    <FormMessage className="text-left" />
+                    <FormMessage />
                 </FormItem>
                 )}
             />
 
             <FormField control={form.control} name="content" render={({ field }) => (
-                <FormItem className="text-left">
-                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Full Story</FormLabel>
-                    <FormControl className="text-left">
+                <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Story</FormLabel>
+                    <FormControl>
                     <Textarea 
                         placeholder="Detail the greatness of God in this situation..." 
-                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0 text-left" 
+                        className="min-h-[160px] rounded-none sm:rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-y border-x-0 sm:border-x-2 border-solid transition-all focus:border-primary/40 focus:bg-muted/20 focus:ring-0" 
                         {...field} 
                     />
                     </FormControl>
-                    <FormMessage className="text-left" />
+                    <FormMessage />
                 </FormItem>
                 )}
             />
 
-            <div className="space-y-4 text-left text-left">
-                <div className="flex flex-col sm:flex-row gap-6 text-left text-left text-left">
+            <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-6">
                     {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
                     {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
                 </div>
-                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left text-left text-left text-left">
-                    <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
-                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left">
+                <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
+                    <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
                         Providing proof (photos/videos/audio) strengthens faith. Maximum file size is 100MB.
                     </p>
                 </div>
             </div>
           </div>
 
-          <div className="pt-4 text-left">
-              <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95 text-center text-left" disabled={isSubmitting || isUploadingMedia !== null}>
+          <div className="pt-4">
+              <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95" disabled={isSubmitting || isUploadingMedia !== null}>
                 {isSubmitting ? (
-                    <div className="flex items-center justify-center gap-3 text-left">
-                        <Loader2 className="h-6 w-6 animate-spin text-left" />
-                        <span className="text-left">PROCLAIMING...</span>
+                    <div className="flex items-center justify-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span>PROCLAIMING...</span>
                     </div>
                 ) : (
-                    <div className="flex items-center justify-center gap-3 text-left">
-                        <Sparkles className="h-6 w-6 text-left" />
-                        <span className="text-left">PUBLISH TESTIMONY</span>
+                    <div className="flex items-center justify-center gap-3">
+                        <Sparkles className="h-6 w-6" />
+                        <span>PUBLISH TESTIMONY</span>
                     </div>
                 )}
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6 text-center text-left">
+              <p className="text-[8px] text-center text-muted-foreground/60 font-black uppercase tracking-[0.4em] mt-6">
                 TO THE GLORY OF JESUS CHRIST
               </p>
           </div>

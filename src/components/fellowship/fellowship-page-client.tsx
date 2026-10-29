@@ -249,7 +249,7 @@ function FullDevotionalDialog({
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left">
-                        <div className="p-8 pb-32 text-left">
+                        <div className="p-8 pb-32">
                             {content}
                         </div>
                     </ScrollArea>
