@@ -860,7 +860,7 @@ export default function FellowshipPageClient() {
                 ) : (
                     <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b bg-muted/10 text-left">
                                 <DialogHeader className="text-left p-0 text-left text-left text-left">
                                     <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight">Devotional Hub</DialogTitle>
                                     <DialogDescription className="text-base font-medium">Prepare and schedule spiritual nourishment for your group.</DialogDescription>
@@ -943,4 +943,3 @@ export default function FellowshipPageClient() {
         </div>
     );
 }
-
