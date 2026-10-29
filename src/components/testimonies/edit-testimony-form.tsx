@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -573,8 +572,8 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
             <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left">
                 <div className="sr-only text-left">
-                    <DialogHeader className="text-left text-left">
-                        <DialogTitle className="text-left text-left text-left text-left">Recorder</DialogTitle>
+                    <DialogHeader className="text-left">
+                        <DialogTitle className="text-left">Recorder</DialogTitle>
                     </DialogHeader>
                 </div>
                 <div className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
