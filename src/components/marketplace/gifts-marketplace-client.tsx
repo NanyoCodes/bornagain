@@ -69,6 +69,7 @@ import { Country, State } from 'country-state-city';
 import { ImageUpload } from '@/components/common/image-upload';
 import NextImage from 'next/image';
 import Link from 'next/link';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const currencyOptions = [
     { value: 'NGN', label: 'Naira (₦)', symbol: '₦' },
@@ -238,7 +239,7 @@ export default function GiftsMarketplaceClient() {
             .then(() => {
                 toast({ title: 'Welcome, Partner!', description: 'Your gift storefront is now active.' });
                 setIsRegisterOpen(false);
-                router.push(`/dashboard/marketplace/vendors/${newVendorRef.id}`);
+                router.push(`/marketplace/vendors/${newVendorRef.id}`);
             })
             .catch(async (serverError) => {
                 const permissionError = new FirestorePermissionError({
@@ -255,8 +256,8 @@ export default function GiftsMarketplaceClient() {
 
     const registrationForm = (
         <form onSubmit={handleRegisterVendor}>
-            <div className="p-8 space-y-6 text-left text-left">
-                <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex items-center gap-3">
+            <div className="p-8 space-y-6 text-left">
+                <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex items-center gap-3 text-left">
                     <Gift className="h-5 w-5 text-primary text-left" />
                     <p className="text-xs font-bold text-primary uppercase tracking-widest text-left">Registering for Kindness Center</p>
                 </div>
@@ -279,7 +280,7 @@ export default function GiftsMarketplaceClient() {
                 <div className="space-y-2 text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Store Category</Label>
                     <Select onValueChange={setSelectedRegCategory} value={selectedRegCategory}>
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                             <SelectValue placeholder="What do you provide?" className="text-left" />
                         </SelectTrigger>
                         <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
@@ -296,7 +297,7 @@ export default function GiftsMarketplaceClient() {
                     <div className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Base Currency</Label>
                         <Select onValueChange={setSelectedCurrency} value={selectedCurrency}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                 <SelectValue placeholder="Select Currency" className="text-left" />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
@@ -319,7 +320,7 @@ export default function GiftsMarketplaceClient() {
                     <div className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Country</Label>
                         <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                 <SelectValue placeholder="Select Country" className="text-left" />
                             </SelectTrigger>
                             <SelectContent className="max-h-[300px] text-left">
@@ -332,7 +333,7 @@ export default function GiftsMarketplaceClient() {
                         <div className="space-y-2 text-left">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">State</Label>
                             <Select onValueChange={setRegState} value={regState} disabled={!regCountry || regStatesList.length === 0}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                     <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "Select State"} className="text-left" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px] text-left">
@@ -349,13 +350,13 @@ export default function GiftsMarketplaceClient() {
 
                 <div className="space-y-2 text-left">
                     <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">About Your Service</Label>
-                    <Textarea id="description" name="description" placeholder="Describe your products..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
+                    <Textarea id="description" name="description" placeholder="Describe your products..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" />
                 </div>
                 <div className="space-y-2 text-left">
                     <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left text-left">
                         <CreditCard className="h-3 w-3 text-left" /> Payment Details
                     </Label>
-                    <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank details or payment instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
+                    <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank details or payment instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" required />
                 </div>
             </div>
             <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 text-left">
@@ -370,31 +371,38 @@ export default function GiftsMarketplaceClient() {
     return (
         <div className="space-y-6 sm:space-y-10 max-w-4xl mx-auto pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
-                    <div className="flex items-center gap-4 text-left">
+                <div className="flex items-center justify-between gap-4 text-left text-left">
+                    <div className="flex items-center gap-4 min-w-0 flex-1 text-left">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
-                        <div className="min-w-0 text-left">
+                        <div className="min-w-0 flex-1 text-left">
                             <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate text-left">Kindness Center</h1>
                             <p className="text-[10px] sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
                                 <Gift className="h-3.5 w-3.5 text-primary text-left" /> Products Hub
                             </p>
                         </div>
                     </div>
-                    <div className="flex gap-2 w-full sm:w-auto text-left">
-                        {myVendorProfile ? (
-                            <Button onClick={() => router.push(`/dashboard/marketplace/vendors/${myVendorProfile.id}`)} variant="outline" className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-md text-[10px] sm:text-xs text-left">
-                                <Store className="mr-2 h-4 w-4 text-primary text-left" /> My Storefront
-                            </Button>
-                        ) : (
-                            <Button onClick={() => setIsRegisterOpen(true)} className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 text-[10px] sm:text-xs text-left">
-                                <PlusCircle className="mr-2 h-4 w-4 text-left" /> Become a Provider
-                            </Button>
-                        )}
+                    <div className="flex gap-2 shrink-0 text-left">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    {myVendorProfile ? (
+                                        <Button onClick={() => router.push(`/marketplace/vendors/${myVendorProfile.id}`)} variant="outline" size="icon" className="rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background h-10 w-10 sm:h-12 sm:w-12 text-left">
+                                            <Store className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
+                                        </Button>
+                                    ) : (
+                                        <Button onClick={() => setIsRegisterOpen(true)} size="icon" className="rounded-full shadow-xl shadow-primary/20 h-10 w-10 sm:h-12 sm:w-12 text-left">
+                                            <PlusCircle className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
+                                        </Button>
+                                    )}
+                                </TooltipTrigger>
+                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left"><p className="text-[10px] font-black uppercase text-left">{myVendorProfile ? "My Storefront" : "Become a Provider"}</p></TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
                 </div>
 
                 {soulName && (
-                    <div className="bg-primary/10 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[2rem] flex items-center justify-between group shadow-inner text-left">
+                    <div className="bg-primary/10 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[2rem] flex items-center justify-between group shadow-inner text-left text-left">
                         <div className="flex items-center gap-4 text-left">
                             <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shrink-0 text-left">
                                 <Gift className="h-5 w-5 sm:h-6 sm:w-6 text-white animate-pulse text-left" />
@@ -421,17 +429,17 @@ export default function GiftsMarketplaceClient() {
                         
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="icon" className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-[1.5rem] border-2 border-primary/20 text-primary hover:bg-primary/5 shadow-sm shrink-0 text-left">
+                                <Button variant="outline" size="icon" className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-[1.5rem] border-2 border-primary/20 text-primary hover:bg-primary/5 shadow-sm shrink-0 text-left text-left">
                                     <Filter className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
                                     <span className="sr-only text-left">Filter Category</span>
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-2xl border-none p-2 text-left">
-                                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2 text-left">Select Category</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onSelect={() => setFilterCategory('all')} className="rounded-xl py-2.5 text-left">All Products</DropdownMenuItem>
+                            <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-2xl border-none p-2 text-left text-left">
+                                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2 text-left text-left">Select Category</DropdownMenuLabel>
+                                <DropdownMenuSeparator className="text-left text-left" />
+                                <DropdownMenuItem onSelect={() => setFilterCategory('all')} className="rounded-xl py-2.5 text-left text-left">All Products</DropdownMenuItem>
                                 {giftStoreCategories.map(cat => (
-                                    <DropdownMenuItem key={cat} onSelect={() => setFilterCategory(cat)} className="rounded-xl py-2.5 text-left">{cat}</DropdownMenuItem>
+                                    <DropdownMenuItem key={cat} onSelect={() => setFilterCategory(cat)} className="rounded-xl py-2.5 text-left text-left">{cat}</DropdownMenuItem>
                                 ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -447,22 +455,22 @@ export default function GiftsMarketplaceClient() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 text-left">
-                        <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar text-left">
+                        <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar text-left text-left">
                             <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
-                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left">
+                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
                                     <SelectValue placeholder="Country" className="text-left" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left">
+                                <SelectContent className="max-h-[300px] text-left text-left">
                                     <SelectItem value="all" className="text-left">All Countries</SelectItem>
                                     {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
 
                             <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
-                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left">
+                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
                                     <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "State/Region"} className="text-left" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left">
+                                <SelectContent className="max-h-[300px] text-left text-left">
                                     <SelectItem value="all" className="text-left">All States</SelectItem>
                                     {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
                                 </SelectContent>
@@ -475,7 +483,7 @@ export default function GiftsMarketplaceClient() {
                                 size="sm" 
                                 onClick={() => setFilterBySoulLoc(!filterBySoulLoc)}
                                 className={cn(
-                                    "h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] gap-2 transition-all text-left",
+                                    "h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] gap-2 transition-all text-left text-left",
                                     filterBySoulLoc ? "bg-primary text-white border-none shadow-lg ring-2 ring-primary/20" : "border-primary/20 text-primary hover:bg-primary/5"
                                 )}
                             >
@@ -487,7 +495,7 @@ export default function GiftsMarketplaceClient() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0 text-left text-left">
                 {loading ? (
                     [...Array(4)].map((_, i) => (
                         <Card key={i} className="rounded-[2rem] border-none shadow-sm animate-pulse h-48 bg-muted/30 text-left" />
@@ -496,8 +504,8 @@ export default function GiftsMarketplaceClient() {
                     filteredVendors.map(vendor => (
                         <Card 
                             key={vendor.id} 
-                            className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group cursor-pointer bg-card/50 backdrop-blur-sm flex flex-col h-full text-left"
-                            onClick={() => router.push(`/dashboard/marketplace/vendors/${vendor.id}${soulId ? `?soulId=${soulId}&soulName=${soulName}&actionId=${actionId}` : ''}`)}
+                            className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group cursor-pointer bg-card/50 backdrop-blur-sm flex flex-col h-full text-left text-left"
+                            onClick={() => router.push(`/marketplace/vendors/${vendor.id}${soulId ? `?soulId=${soulId}&soulName=${soulName}&actionId=${actionId}` : ''}`)}
                         >
                             <div className="aspect-[2/1] relative bg-muted text-left">
                                 {vendor.photoURL ? (
@@ -516,13 +524,13 @@ export default function GiftsMarketplaceClient() {
                                 </div>
                                 <div className="absolute top-4 left-4 text-left">
                                     {vendor.category && (
-                                        <Badge className="bg-primary text-white font-black uppercase text-[7px] px-2 h-5 border-none shadow-sm text-left">
+                                        <Badge className="bg-primary text-white font-black uppercase text-[7px] px-2 h-5 border-none shadow-sm text-left text-left">
                                             {vendor.category}
                                         </Badge>
                                     )}
                                 </div>
                                 {vendor.currency && (
-                                    <Badge className="absolute top-4 right-4 bg-background/80 backdrop-blur-md text-primary font-black uppercase text-[8px] px-2 h-6 border-none shadow-sm text-left">
+                                    <Badge className="absolute top-4 right-4 bg-background/80 backdrop-blur-md text-primary font-black uppercase text-[8px] px-2 h-6 border-none shadow-sm text-left text-left">
                                         {vendor.currency}
                                     </Badge>
                                 )}
@@ -531,7 +539,7 @@ export default function GiftsMarketplaceClient() {
                                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 font-medium leading-relaxed italic mb-4 text-left">
                                     &ldquo;{vendor.description || 'Verified Kingdom gift partner.'}&rdquo;
                                 </p>
-                                <Button className="w-full h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center text-left">
+                                <Button className="w-full h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center text-left text-left">
                                     <span className="flex-1 text-left">EXPLORE OFFERINGS</span>
                                     <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 text-left" />
                                 </Button>
@@ -539,7 +547,7 @@ export default function GiftsMarketplaceClient() {
                         </Card>
                     ))
                 ) : (
-                    <div className="col-span-full py-32 text-center flex flex-col items-center text-left">
+                    <div className="col-span-full py-32 text-center flex flex-col items-center text-left text-left">
                         <Gift className="h-16 w-16 text-muted-foreground opacity-10 mb-6 text-left" />
                         <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-center text-left">No Services Found</h3>
                         <p className="text-xs text-muted-foreground italic mt-2 text-center text-left">Kingdom product vendors will appear here.</p>
@@ -548,14 +556,14 @@ export default function GiftsMarketplaceClient() {
             </div>
 
             {cartCount > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left">
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left text-left">
                     <Link href="/marketplace/checkout" className="block group text-left">
                         <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left">
                             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left" />
                             
-                            <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left text-left text-left">
-                                <div className="relative text-left text-left">
-                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left text-left">
+                            <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left text-left text-left text-left">
+                                <div className="relative text-left">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left">
                                         <ShoppingBag className="h-5 w-5 text-white/80 text-left" />
                                     </div>
                                     <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center text-left">
@@ -595,7 +603,7 @@ export default function GiftsMarketplaceClient() {
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                                <DialogHeader className="p-0 text-left text-left text-left">
+                                <DialogHeader className="p-0 text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Register your gift storefront and start providing physical tokens of kindness.</DialogDescription>
                                 </DialogHeader>
