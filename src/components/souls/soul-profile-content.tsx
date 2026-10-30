@@ -116,10 +116,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
-import type { Soul, FollowUpStatus, UserProfile, DailyDevotional, TestimonyComment } from "@/lib/types";
+import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
-import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 
 export function getStatusClasses(status: FollowUpStatus | undefined): string {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -247,8 +246,8 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <X className="h-6 w-6" />
                     </Button>
                     {mediaContent}
-                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4 text-center">
-                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest text-center">
+                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4 text-center text-left text-left">
+                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest text-center text-left text-left">
                           <a href={url} target="_blank" rel="noopener noreferrer">Open in new tab</a>
                         </Button>
                     </div>
@@ -318,8 +317,8 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
   useEffect(() => { if(isOpen && soul) { setText(prayerTemplates[0].text.replace(/{name}/g, soul.firstName)); } }, [isOpen, soul]);
   
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
-        <div className="min-w-0">
+    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left text-left">
+        <div className="min-w-0 text-left text-left">
             <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</h2>
             <p className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</p>
         </div>
@@ -609,10 +608,10 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                     <div className="grid grid-cols-2 gap-4 text-left">
                         <div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Full Name</p><p className="text-[11px] sm:text-xs font-bold text-left">{soul.firstName} {soul.lastName}</p></div>
                         <div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p><p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p></div>
-                        <div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.relationship || 'N/A'}</p></div>
-                        <div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.workStatus || 'N/A'}</p></div>
-                        <div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Rel. Status</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.maritalStatus || 'N/A'}</p></div>
-                        <div className="space-y-1 text-left"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nickname</p><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.nickname || 'N/A'}</p></div>
+                        <div className="space-y-1 text-left"><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.relationship || 'N/A'}</p></div>
+                        <div className="space-y-1 text-left"><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.workStatus || 'N/A'}</p></div>
+                        <div className="space-y-1 text-left"><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.maritalStatus || 'N/A'}</p></div>
+                        <div className="space-y-1 text-left"><p className="text-[11px] sm:text-xs font-bold capitalize text-left">{soul.nickname || 'N/A'}</p></div>
                     </div>
                 </div>
                 <Separator className="opacity-20 text-left" />

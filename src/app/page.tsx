@@ -306,11 +306,11 @@ export default function LandingPage() {
                             <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto block w-fit text-left">Kingdom Arena</Badge>
                             <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center text-left">Empower Your Loved Ones</h2>
                             <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center text-left">
-                                Use the Word Arena to challenge and sharpen those you care about. Bible study becomes a collaborative act of love.
+                                Explore how believers around the world witness what God is doing in their lives daily.
                             </p>
                         </div>
                         <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center text-center mx-auto text-left">
-                            <Link href="/signup" className="text-center text-left">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4 text-left" /></Link>
+                            <Link href="/signup" className="text-center text-left text-left">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4 text-left" /></Link>
                         </Button>
                     </div>
                     <div className="w-full max-w-2xl mx-auto text-left text-left">
@@ -385,7 +385,7 @@ export default function LandingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center text-left text-left">
                     {historicalFacts.map((fact, i) => (
                         <div key={i} className="space-y-6 flex flex-col items-center text-center text-left text-left">
-                            <div className="h-16 w-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl text-left text-left">
+                            <div className="h-16 w-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl text-left text-left text-left">
                                 <fact.icon className="h-8 w-8 text-primary text-left text-left text-left" />
                             </div>
                             <div className="space-y-3 text-center text-left text-left">
@@ -410,7 +410,7 @@ export default function LandingPage() {
                     </div>
                     <div className="flex justify-center relative z-10 items-center text-left text-left text-left">
                         <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center text-left text-left">
-                            <Link href="/signup" className="text-center text-left text-left">JOIN THE MISSION OF LOVE</Link>
+                            <Link href="/signup" className="text-center text-left text-left text-left">JOIN THE MISSION OF LOVE</Link>
                         </Button>
                     </div>
                 </div>
@@ -427,7 +427,7 @@ export default function LandingPage() {
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left text-left">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left text-left">Witness the Care</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-left text-left">
-                    Explore how believers around the world witness what God is doing in their lives daily.
+                    Explore how believers around the world witness and record the manifest goodness of God in their daily lives.
                   </p>
                 </div>
                 
