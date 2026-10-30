@@ -55,7 +55,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { EditTestimonyForm } from '@/components/testimonies/edit-testimony-form';
 import { EditPrayerRequestForm } from '@/components/prayer/EditPrayerRequestForm';
 import { FeedSidebar } from '@/components/layout/feed-sidebar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@react-ui/tooltip';
 
 function TestimoniesContent() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -306,53 +306,27 @@ function TestimoniesContent() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
           <div
-            className="bg-card border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98]"
+            className="bg-card/50 border shadow-sm sm:shadow-md rounded-none sm:rounded-[2rem] border-x-0 sm:border-x -mx-4 sm:mx-0 p-3 sm:p-4 flex items-center gap-4 cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98] backdrop-blur-md"
             onClick={() => setIsTestimonyDialogOpen(true)}
           >
-            <Avatar className="h-9 w-9 border shadow-sm shrink-0 text-left">
-              <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left" />
-              <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px] text-left">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0">
+              <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0 text-left text-left">
-              <p className="text-[12px] font-bold text-foreground/80 leading-tight text-left">Share God's goodness today...</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm sm:text-base font-bold text-foreground/80 leading-tight">Share what God has done today</p>
+              <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mt-0.5 uppercase tracking-widest opacity-60">Visible to Global Community</p>
             </div>
-            <div className="flex items-center gap-2 text-left">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsTestimonyDialogOpen(true);
-                      }}
-                    >
-                      <Newspaper className="h-3.5 w-3.5 text-left" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent className="text-left">
-                    <p className="text-[10px] font-black uppercase text-left">Share Testimony</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsPrayerDialogOpen(true);
-                      }}
-                    >
-                      <HandHeart className="h-3.5 w-3.5 text-left" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent className="text-left">
-                    <p className="text-[10px] font-black uppercase text-left">Request Prayer</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <div className="flex items-center gap-2">
+                <button
+                    className="h-10 w-10 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                    onClick={(e) => {
+                    e.stopPropagation();
+                    setIsTestimonyDialogOpen(true);
+                    }}
+                >
+                    <Camera className="h-4 w-4" />
+                </button>
             </div>
           </div>
           <div className="px-4 sm:px-0 text-left">
@@ -521,7 +495,9 @@ function TestimoniesContent() {
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Share your need with the global community.</DrawerDescription>
                     </DrawerHeader>
                   </div>
-                  <ScrollArea className="flex-grow text-left text-left">{prayerFormContent}</ScrollArea>
+                  <ScrollArea className="flex-grow text-left text-left">
+                    <div className="p-8 text-left text-left">{prayerFormContent}</div>
+                  </ScrollArea>
                 </DrawerContent>
               </Drawer>
             </>
