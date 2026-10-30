@@ -482,7 +482,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     {isOwner && (
                                         <div className="flex gap-2 text-left text-left text-left">
                                             <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left" /></Button>
-                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4 text-left" /></Button>
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="mr-2 h-4 w-4 text-left" /></Button>
                                         </div>
                                     )}
                                     <div className="flex-1 min-w-0 text-left text-left text-left text-left">

@@ -146,9 +146,9 @@ function TestimoniesContent() {
                           )
                         : null;
         
-        const isPartnerMember = partnerIds.has(testimony.authorId);
+        const isPartner = partnerIds.has(testimony.authorId);
         
-        return { ...testimony, _distance: distance, _isPartner: isPartnerMember };
+        return { ...testimony, _distance: distance, _isPartner: isPartner };
     });
 
     const sorted = withMetadata.sort((a, b) => {
@@ -336,7 +336,7 @@ function TestimoniesContent() {
   );
 
   return (
-    <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
+    <div className="space-y-6 w-full max-w-7xl mx-auto pt-4 text-left">
       <Script 
         async 
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5186166468494737"
@@ -533,7 +533,7 @@ function TestimoniesContent() {
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
                       <div className="flex items-center gap-2 mb-4 text-left text-left">
-                        <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left">
+                        <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
                         <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
                       </div>
                       <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Edit Prayer Request</DrawerTitle>
@@ -550,7 +550,10 @@ function TestimoniesContent() {
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0 text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-4 text-left text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span></div>
+                        <div className="flex items-center gap-2 mb-4 text-left text-left">
+                          <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
+                          <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
+                        </div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
                           {prayerToAnswer ? 'Record Answer' : 'Share Testimony'}
                         </DrawerTitle>
@@ -569,7 +572,10 @@ function TestimoniesContent() {
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0 text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-4 text-left text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span></div>
+                        <div className="flex items-center gap-2 mb-4 text-left text-left">
+                          <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
+                          <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
+                        </div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Request Prayer</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Share your need with the global community.</DrawerDescription>
                     </DrawerHeader>
@@ -597,7 +603,7 @@ function TestimoniesContent() {
               </Dialog>
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Edit Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left">Update the details of your request.</DialogDescription>
@@ -608,7 +614,7 @@ function TestimoniesContent() {
               </Dialog>
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
                 <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left">
                           {prayerToAnswer ? 'Record Answer' : 'Share Testimony'}
@@ -638,7 +644,7 @@ function TestimoniesContent() {
   );
 }
 
-export default function TestimoniesPage() {
+export default function TestimoniesStandalonePage() {
     return (
         <AppShell>
             <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left text-left" /></div>}>
