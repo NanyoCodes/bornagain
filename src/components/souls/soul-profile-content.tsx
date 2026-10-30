@@ -247,6 +247,11 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <X className="h-6 w-6" />
                     </Button>
                     {mediaContent}
+                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4">
+                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest">
+                          <a href={url} target="_blank" rel="noopener noreferrer">Open in new tab</a>
+                        </Button>
+                    </div>
                 </DrawerContent>
             </Drawer>
           </React.Fragment>
@@ -457,7 +462,12 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
                         </Link>
                     </Button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{kingdomVerses.map((v, idx) => (<Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:bg-primary/10 transition-all text-left block" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary">{v.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-2">"{v.text}"</p></Button>))}</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{kingdomVerses.map((v, idx) => (
+                    <Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:bg-primary/10 transition-all text-left block" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}>
+                        <span className="font-black text-[9px] uppercase tracking-widest text-primary">{v.reference}</span>
+                        <p className="text-xs text-muted-foreground italic line-clamp-2">"{v.text}"</p>
+                    </Button>))}
+                </div>
             </div>
         )}
         {view === 'books' && <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2">{bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[9px]" onClick={() => { setSelectedBook(book.name); setView('chapters'); }}>{book.name}</Button>))}</div>}
@@ -569,6 +579,20 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
 
   const isRestrictedForMatchmaking = soul.age && soul.age < 20;
 
+  const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+    'matchmaking': HeartHandshake,
+};
+
   return (
     <React.Fragment>
         <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
@@ -577,7 +601,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                     <Dialog><DialogTrigger asChild disabled={!soul.photoURL}><div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-105", soul.photoURL && "cursor-pointer hover:scale-105")}><Avatar className="h-full w-full border shadow-sm"><AvatarImage src={soul.photoURL || undefined} className="object-cover" /><AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl"> {soul.firstName?.charAt(0)}</AvatarFallback></Avatar></div></DialogTrigger>{soul.photoURL && (<DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center"><div className="sr-only text-left"><DialogHeader><DialogTitle>Profile Photo</DialogTitle></DialogHeader></div><div className="relative h-full w-full flex items-center justify-center p-4 text-center"><div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center"><Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized /></div></div></DialogContent>)}</Dialog>
                     {address && (<Button size="icon" className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background" onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')} title="View Map"><MapPin className="h-5 w-5" /></Button>)}
                 </div>
-                <div className="flex flex-col items-center gap-2"><CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center w-full">{soul.firstName} {soul.lastName}</CardTitle><div className="flex gap-2 justify-center items-center"><Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge><MutualConnectBadge soul={soul} /></div></div>
+                <div className="flex flex-col items-center gap-2 text-left"><CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center w-full">{soul.firstName} {soul.lastName}</CardTitle><div className="flex gap-2 justify-center items-center"><Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge><MutualConnectBadge soul={soul} /></div></div>
             </CardHeader>
             <CardContent className="p-8 pt-0 space-y-6 text-left">
                 <Separator className="opacity-50" />
@@ -618,7 +642,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                     </div>
                 </div>
                 <Separator className="opacity-20" />
-                <div className="space-y-4">
+                <div className="space-y-4 text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Relational Actions</p>
                     <div className="flex flex-col gap-2">
                         {actionItems.map(action => { 

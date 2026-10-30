@@ -66,8 +66,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
-import { ImageUpload } from '@/components/common/image-upload';
 import NextImage from 'next/image';
+import { ImageUpload } from '@/components/common/image-upload';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -390,7 +390,7 @@ export default function GiftsMarketplaceClient() {
                                             <Store className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
                                         </Button>
                                     ) : (
-                                        <Button onClick={() => setIsRegisterOpen(true)} size="icon" className="rounded-full shadow-xl shadow-primary/20 h-10 w-10 sm:h-12 sm:w-12 text-left">
+                                        <Button onClick={() => setIsRegisterOpen(true)} variant="outline" size="icon" className="rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background h-10 w-10 sm:h-12 sm:w-12 text-left">
                                             <PlusCircle className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
                                         </Button>
                                     )}
@@ -455,7 +455,7 @@ export default function GiftsMarketplaceClient() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 text-left">
-                        <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar text-left text-left">
+                        <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar text-left text-left text-left">
                             <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
                                 <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
                                     <SelectValue placeholder="Country" className="text-left" />
@@ -470,7 +470,7 @@ export default function GiftsMarketplaceClient() {
                                 <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
                                     <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "State/Region"} className="text-left" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left text-left">
+                                <SelectContent className="max-h-[300px] text-left text-left text-left">
                                     <SelectItem value="all" className="text-left">All States</SelectItem>
                                     {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
                                 </SelectContent>
@@ -530,7 +530,7 @@ export default function GiftsMarketplaceClient() {
                                     )}
                                 </div>
                                 {vendor.currency && (
-                                    <Badge className="absolute top-4 right-4 bg-background/80 backdrop-blur-md text-primary font-black uppercase text-[8px] px-2 h-6 border-none shadow-sm text-left text-left">
+                                    <Badge className="absolute top-4 right-4 bg-background/80 backdrop-blur-md text-primary font-black uppercase text-[8px] px-2 h-6 border-none shadow-sm text-center text-left">
                                         {vendor.currency}
                                     </Badge>
                                 )}
@@ -601,7 +601,7 @@ export default function GiftsMarketplaceClient() {
                     </Sheet>
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                                 <DialogHeader className="p-0 text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>

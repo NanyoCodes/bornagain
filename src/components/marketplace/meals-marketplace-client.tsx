@@ -312,12 +312,12 @@ export default function MealsMarketplaceClient() {
                     <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
                         <CreditCard className="h-3 w-3 text-left" /> Payment Details
                     </Label>
-                    <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank details or payment instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" required />
+                    <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank details or payment instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" required />
                 </div>
             </div>
             <div className="p-6 sm:p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 text-left">
-                <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1 font-bold text-left">Cancel</Button>
-                <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">
+                <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
+                <Button type="submit" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : 'Launch Storefront'}
                 </Button>
             </div>
@@ -327,27 +327,27 @@ export default function MealsMarketplaceClient() {
     return (
         <div className="space-y-6 sm:space-y-10 max-w-4xl mx-auto pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
-                <div className="flex items-center justify-between gap-4 text-left">
-                    <div className="flex items-center gap-4 min-w-0 flex-1 text-left">
+                <div className="flex items-center justify-between gap-4 text-left text-left text-left">
+                    <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
-                        <div className="space-y-1 min-w-0 text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase truncate text-left">Meals Center</h1>
-                            <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
-                            <Utensils className="h-4 w-4 text-primary text-left" /> Provision Hub
+                        <div className="space-y-1 min-w-0 text-left text-left">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase truncate text-left text-left">Meals Center</h1>
+                            <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left">
+                            <Utensils className="h-4 w-4 text-primary text-left text-left" /> Provision Hub
                             </p>
                         </div>
                     </div>
-                    <div className="flex gap-2 shrink-0 text-left">
+                    <div className="flex gap-2 shrink-0 text-left text-left text-left text-left">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     {myVendorProfile ? (
-                                        <Button onClick={() => router.push(`/marketplace/vendors/${myVendorProfile.id}`)} variant="outline" size="icon" className="rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background h-10 w-10 sm:h-12 sm:w-12 text-left">
-                                            <Store className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
+                                        <Button onClick={() => router.push(`/marketplace/vendors/${myVendorProfile.id}`)} variant="outline" size="icon" className="rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background h-10 w-10 sm:h-12 sm:w-12 text-left text-left">
+                                            <Store className="h-5 w-5 sm:h-6 sm:w-6 text-left text-left" />
                                         </Button>
                                     ) : (
-                                        <Button onClick={() => setIsRegisterOpen(true)} size="icon" className="rounded-full shadow-xl shadow-primary/20 h-10 w-10 sm:h-12 sm:w-12 text-left">
-                                            <PlusCircle className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
+                                        <Button onClick={() => setIsRegisterOpen(true)} variant="outline" size="icon" className="rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background h-10 w-10 sm:h-12 sm:w-12 text-left text-left">
+                                            <PlusCircle className="h-5 w-5 sm:h-6 sm:w-6 text-left text-left" />
                                         </Button>
                                     )}
                                 </TooltipTrigger>
@@ -423,7 +423,7 @@ export default function MealsMarketplaceClient() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0 text-left text-left">
                 {loading ? (
                     [...Array(4)].map((_, i) => (
                         <Card key={i} className="rounded-[2rem] border-none shadow-sm animate-pulse h-48 bg-muted/30 text-left text-left" />
@@ -480,7 +480,7 @@ export default function MealsMarketplaceClient() {
                 <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left text-left">
                     <Link href="/marketplace/checkout" className="block group text-left">
                         <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left text-left">
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left text-left" />
                             
                             <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left text-left text-left">
                                 <div className="relative text-left">
@@ -497,8 +497,8 @@ export default function MealsMarketplaceClient() {
                                 </div>
                             </div>
 
-                            <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left">
-                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left" />
+                            <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left text-left">
+                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left text-left" />
                             </div>
                         </div>
                     </Link>
@@ -515,15 +515,15 @@ export default function MealsMarketplaceClient() {
                                     <SheetDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</SheetDescription>
                                 </SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow text-left">
+                            <ScrollArea className="flex-grow text-left text-left">
                                 {registrationForm}
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                                 <DialogHeader className="p-0 text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</DialogDescription>
