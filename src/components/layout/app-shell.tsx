@@ -76,7 +76,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn, safeToDate } from "@/lib/utils";
-import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
+import { useUser, useAuth, useDoc, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
@@ -292,7 +292,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4 text-left">
+    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-3 sm:px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-2 sm:gap-4 text-left">
       <div className="flex shrink-0 w-auto text-left">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
@@ -332,10 +332,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left">
+      <div className="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left">
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full transition-transform active:scale-95 text-left" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-6 w-6 text-left" />
+          <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-11 sm:w-11 rounded-full transition-transform active:scale-95 text-left" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
             <span className="sr-only text-left">Search</span>
           </Button>
         )}
@@ -345,10 +345,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             <CartButton />
             <Link href="/chats" className="text-left">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="text-left">
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
-                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-11 sm:w-11 rounded-full text-left">
+                      <MessagesSquare className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
+                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadChatCount}
                         </div>
                       )}
@@ -357,10 +357,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Link>
             <Link href="/notifications" className="text-left">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="text-left">
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
-                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-11 sm:w-11 rounded-full text-left">
+                      <Bell className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
+                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadNotifCount}
                         </div>
                       )}
@@ -369,15 +369,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 shrink-0 text-left">
-                  <Avatar className="h-10 w-10 border shadow-sm">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 sm:h-11 sm:w-11 shrink-0 text-left">
+                  <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
                     <AvatarFallback className="text-xs font-bold"> {user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
-                    <span className="absolute top-0 right-0 flex h-3 w-3 text-left">
+                    <span className="absolute top-0.5 right-0.5 flex h-2.5 w-2.5 text-left">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 text-left"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background text-left"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600 border-2 border-background text-left"></span>
                     </span>
                   )}
                 </Button>
