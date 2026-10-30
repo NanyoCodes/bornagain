@@ -529,7 +529,7 @@ export default function LandingPage() {
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left">Witness the Care</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-left">
-                    Read how believers are looking after their harvest and following up on those they love with miracles.
+                    Explore how believers around the world witness and record the manifest goodness of God in their daily lives.
                   </p>
                 </div>
                 
@@ -592,7 +592,7 @@ export default function LandingPage() {
               <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance text-center text-left">
                 Ready to Look After Your Own?
               </h2>
-              <p className="text-lg sm:text-2xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-center text-left">
+              <p className="text-lg sm:text-2xl text-primary-foreground/90 font-medium leading-relaxed italic text-balance text-center text-left">
                 Join the app dedicated to caring for family, friends, souls, and the Kingdom.
                 Follow up on those you love and record the greatness of God together.
               </p>

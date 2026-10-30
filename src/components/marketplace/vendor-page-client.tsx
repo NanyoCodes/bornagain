@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
-import type { VendorProfile, Meal, UserProfile, MealGift, MealGiftStatus, Soul, Chat } from '@/lib/types';
+import type { VendorProfile, Meal, UserProfile, Soul } from '@/lib/types';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc, limit } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -366,7 +366,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
                 <Button type="button" variant="outline" onClick={() => setIsEditVendorOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
                 <Button type="submit" disabled={isUpdatingVendor} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">
-                    {isUpdatingVendor && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />} SAVE STOREFRONT
+                    {isUpdatingVendor && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />} SAVE STOREFRONT
                 </Button>
             </div>
         </form>
@@ -561,3 +561,4 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
+
