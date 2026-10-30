@@ -176,6 +176,25 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     const loading = userLoading || loadingVendor || loadingMeals || cartLoading;
 
+    if (loading) return <div className="flex h-full w-full items-center justify-center py-20 text-left"><Loader2 className="animate-spin text-primary" /></div>;
+
+    if (!vendor) {
+        return (
+            <div className="flex h-full w-full flex-col items-center justify-center py-32 text-center px-8 text-left">
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                    <Store className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
+                </div>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center">Storefront Not Found</h2>
+                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center">This Kingdom partner may have moved their station or closed their doors.</p>
+                <Button variant="outline" className="mt-8 rounded-xl h-11 px-8 font-bold mx-auto block" onClick={() => router.back()}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
+                </Button>
+            </div>
+        );
+    }
+
+    const cartCountTotal = Object.values(cart).reduce((acc, c) => acc + c.quantity, 0);
+
     const addToCart = async (item: Meal) => {
         if (!user?.uid || !firestore || !vendor) return;
         const itemRef = doc(firestore, 'users', user.uid, 'cart', item.id);
@@ -281,25 +300,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         deleteDoc(doc(firestore, 'vendors', vendorId, 'meals', itemToDelete.id)).then(() => { toast({ title: 'Item Removed' }); setItemToDelete(null); }).finally(() => setIsDeletingItem(false));
     };
 
-    if (loading) return <div className="flex h-full w-full items-center justify-center py-20 text-left"><Loader2 className="animate-spin text-primary" /></div>;
-
-    if (!vendor) {
-        return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-32 text-center px-8 text-left">
-                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
-                    <Store className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
-                </div>
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center">Storefront Not Found</h2>
-                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center">This Kingdom partner may have moved their station or closed their doors.</p>
-                <Button variant="outline" className="mt-8 rounded-xl h-11 px-8 font-bold mx-auto block" onClick={() => router.back()}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
-                </Button>
-            </div>
-        );
-    }
-
-    const cartCountTotal = Object.values(cart).reduce((acc, c) => acc + c.quantity, 0);
-
     const vendorEditForm = (
         <form onSubmit={handleUpdateVendor}>
             <div className="p-8 space-y-6 text-left">
@@ -398,6 +398,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </form>
     );
 
+    const itemSymbol = getCurrencySymbol(vendor.currency);
+
     return (
         <div className="w-full text-left">
             <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left">
@@ -462,7 +464,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
                     {filteredMeals.map(meal => {
                         const cartItem = cart[meal.id];
-                        const itemSymbol = getCurrencySymbol(meal.currency);
                         return (
                             <Card key={meal.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
                                 <CardContent className="p-0 text-left">
@@ -553,7 +554,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
                         <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left text-left">
-                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left" />}
+                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -563,7 +564,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             {cartCountTotal > 0 && (
                 <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left text-left">
                     <Link href="/marketplace/checkout" className="block group text-left">
-                        <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left">
+                        <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left text-left">
                             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left text-left" />
                             
                             <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left text-left text-left">

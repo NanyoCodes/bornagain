@@ -309,10 +309,10 @@ function TestimoniesContent() {
               <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left" />
               <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px] text-left">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0 text-left text-left">
-              <p className="text-[12px] font-bold text-foreground/80 leading-tight text-left">Share God's goodness today...</p>
+            <div className="flex-1 min-w-0 text-left text-left text-left">
+              <p className="text-[12px] font-bold text-foreground/80 leading-tight text-left text-left">Share God's goodness today...</p>
             </div>
-            <div className="flex items-center gap-2 text-left">
+            <div className="flex items-center gap-2 text-left text-left">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -323,11 +323,11 @@ function TestimoniesContent() {
                         setIsTestimonyDialogOpen(true);
                       }}
                     >
-                      <Newspaper className="h-3.5 w-3.5 text-left" />
+                      <Newspaper className="h-3.5 w-3.5 text-left text-left" />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent className="text-left">
-                    <p className="text-[10px] font-black uppercase text-left">Share Testimony</p>
+                  <TooltipContent className="text-left text-left">
+                    <p className="text-[10px] font-black uppercase text-left text-left">Share Testimony</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -341,11 +341,11 @@ function TestimoniesContent() {
                         setIsPrayerDialogOpen(true);
                       }}
                     >
-                      <HandHeart className="h-3.5 w-3.5 text-left" />
+                      <HandHeart className="h-3.5 w-3.5 text-left text-left" />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent className="text-left">
-                    <p className="text-[10px] font-black uppercase text-left">Request Prayer</p>
+                  <TooltipContent className="text-left text-left">
+                    <p className="text-[10px] font-black uppercase text-left text-left">Request Prayer</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -477,7 +477,7 @@ function TestimoniesContent() {
               </Drawer>
               <Drawer open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
                       <div className="flex items-center gap-2 mb-4 text-left text-left text-left">
                         <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left text-left" />
@@ -548,7 +548,7 @@ function TestimoniesContent() {
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left text-left">{prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}</div></ScrollArea>
+                  <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left text-left">{prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}</div></ScrollArea>
                 </DialogContent>
               </Dialog>
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
@@ -569,7 +569,7 @@ function TestimoniesContent() {
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Share your request with the Body of Christ.</DialogDescription>
+                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left text-left text-left text-left">{prayerFormContent}</div></ScrollArea>

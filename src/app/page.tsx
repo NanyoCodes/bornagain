@@ -295,7 +295,7 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left text-left">
+        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left text-left text-left">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center text-left text-left">
                 <Gamepad2 className="h-[40rem] w-[40rem] text-primary text-left text-left" />
             </div>
@@ -409,7 +409,7 @@ export default function LandingPage() {
                         </p>
                     </div>
                     <div className="flex justify-center relative z-10 items-center text-left text-left text-left">
-                        <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center text-left text-left">
+                        <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center text-left text-left text-left">
                             <Link href="/signup" className="text-center text-left text-left text-left">JOIN THE MISSION OF LOVE</Link>
                         </Button>
                     </div>
@@ -427,7 +427,7 @@ export default function LandingPage() {
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left text-left">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left text-left">Witness the Care</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-left text-left">
-                    Explore how believers around the world witness and record the manifest goodness of God in their daily lives.
+                    Explore how believers around the world witness what God is doing in their lives daily.
                   </p>
                 </div>
                 
