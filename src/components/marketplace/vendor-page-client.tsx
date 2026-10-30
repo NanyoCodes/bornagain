@@ -26,7 +26,8 @@ import {
     Package,
     ArrowRight,
     CreditCard,
-    X
+    X,
+    Share2
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -67,7 +68,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import Image from 'next/image';
-import { ImageUpload } from '@/components/common/image-upload';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from 'next/link';
 
 const currencyOptions = [
@@ -189,6 +190,24 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         else updateDoc(itemRef, { quantity: newQty, updatedAt: serverTimestamp() });
     };
 
+    const handleShare = async () => {
+        const shareUrl = window.location.href;
+        const shareData = {
+            title: vendor?.businessName,
+            text: `Check out ${vendor?.businessName} on Testify!`,
+            url: shareUrl,
+        };
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                await navigator.clipboard.writeText(shareUrl);
+                toast({ title: 'Link Copied' });
+            }
+        } catch (e) {}
+    };
+
     const handleUpdateVendor = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!user || !firestore || !vendor) return;
@@ -237,7 +256,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         if (!name || isNaN(price)) return;
         setIsSubmittingMeal(true);
         const mRef = collection(firestore, 'vendors', vendorId, 'meals');
-        addDoc(mRef, { vendorId, name, price, deliveryFee, description, category, currency: vendor?.currency || 'NGN', photoURL: itemPhotoURL || null, createdAt: serverTimestamp() }).then(() => { toast({ title: 'Item Added' }); setIsAddMealOpen(false); }).finally(() => setIsSubmittingMeal(false));
+        addDoc(mRef, { vendorId, name, price, deliveryFee, description, category, currency: vendor?.currency || 'NGN', photoURL: itemPhotoURL || null, createdAt: serverTimestamp() }).then(() => { toast({ title: 'Item Added' }); setIsAddMealOpen(false); setItemPhotoURL(''); }).finally(() => setIsSubmittingMeal(false));
     };
 
     const handleUpdateItem = (e: React.FormEvent<HTMLFormElement>) => {
@@ -251,7 +270,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const category = formData.get('category') as string;
         if (!name || isNaN(price)) return;
         setIsUpdatingItem(true);
-        updateDoc(doc(firestore, 'vendors', vendorId, 'meals', itemToEdit.id), { name, price, deliveryFee, description, category, photoURL: itemPhotoURL || null, updatedAt: serverTimestamp() }).then(() => { toast({ title: 'Item Updated' }); setItemToEdit(null); }).finally(() => setIsUpdatingItem(false));
+        updateDoc(doc(firestore, 'vendors', vendorId, 'meals', itemToEdit.id), { name, price, deliveryFee, description, category, photoURL: itemPhotoURL || null, updatedAt: serverTimestamp() }).then(() => { toast({ title: 'Item Updated' }); setItemToEdit(null); setItemPhotoURL(''); }).finally(() => setIsUpdatingItem(false));
     };
 
     const handleDeleteItem = async () => {
@@ -353,22 +372,22 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const itemForm = (item?: Meal | null, isEdit = false) => (
         <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal}>
             <div className="p-8 space-y-6 text-left text-left">
-                <div className="space-y-4 text-left text-left">
+                <div className="space-y-4 text-left text-left text-left text-left text-left">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left"> {itemLabel} Visual</Label>
                   <ImageUpload initialImageUrl={itemPhotoURL} onUploadComplete={setItemPhotoURL} storagePath="marketplace-items" cropAspect={4/3} />
                 </div>
-                <div className="space-y-2 text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left"> {itemLabel} Name</Label><Input name="name" defaultValue={item?.name || ''} placeholder={`e.g. ${isGiftVendor ? 'Study Bible' : 'Full Platter'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" required /></div>
-                <div className="grid grid-cols-2 gap-4 text-left text-left text-left">
+                <div className="space-y-2 text-left text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left"> {itemLabel} Name</Label><Input name="name" defaultValue={item?.name || ''} placeholder={`e.g. ${isGiftVendor ? 'Study Bible' : 'Full Platter'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" required /></div>
+                <div className="grid grid-cols-2 gap-4 text-left text-left text-left text-left text-left">
                     <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Price ({getCurrencySymbol(vendor?.currency)})</Label><Input name="price" type="number" step="0.01" defaultValue={item?.price || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" required /></div>
                     <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Delivery Fee</Label><Input name="deliveryFee" type="number" step="0.01" defaultValue={item?.deliveryFee || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" /></div>
                 </div>
-                <div className="space-y-2 text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" /></div>
-                <div className="space-y-2 text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" /></div>
+                <div className="space-y-2 text-left text-left text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left" /></div>
+                <div className="space-y-2 text-left text-left text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left text-left" /></div>
             </div>
-            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left text-left">
-                <Button type="button" variant="outline" onClick={() => { setIsAddMealOpen(false); setItemToEdit(null); }} className="flex-1 rounded-xl h-12 font-bold text-left text-left">Cancel</Button>
-                <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest text-center text-left text-left">
-                    {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left text-left text-left">
+                <Button type="button" variant="outline" onClick={() => { setIsAddMealOpen(false); setItemToEdit(null); setItemPhotoURL(''); }} className="flex-1 rounded-xl h-12 font-bold text-left text-left">Cancel</Button>
+                <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest text-center text-left text-left text-left">
+                    {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
                     {isEdit ? 'SAVE CHANGES' : 'ADD TO CATALOG'}
                 </Button>
             </div>
@@ -380,25 +399,34 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left text-left">
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left text-left">
                     <div className="flex items-center justify-between gap-4 text-left text-left">
-                        <div className="flex items-center gap-4 min-w-0 text-left text-left">
+                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left">
                             <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left"><ArrowLeft className="h-6 w-6 text-left text-left" /></Button>
+                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0">
+                                <AvatarImage src={vendor.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary uppercase"> {vendor.businessName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
                             <div className="min-w-0 flex-1 text-left text-left">
                                 <div className="flex items-center gap-2 mb-1 text-left text-left">
                                     {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left text-left" />}
                                     <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left text-left">{centerLabel}</span>
                                 </div>
-                                <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase truncate leading-tight text-left text-left text-left">{vendor.businessName}</h1>
+                                <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase leading-tight text-left text-left text-left">{vendor.businessName}</h1>
                             </div>
                         </div>
-                        {isOwner && (
-                            <Button variant="outline" size="sm" onClick={() => setIsEditVendorOpen(true)} className="rounded-xl h-10 px-4 font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background text-left text-left">
-                                <Edit className="mr-2 h-3.5 w-3.5 text-left text-left text-left" /> MANAGE STORE
+                        <div className="flex items-center gap-2 shrink-0">
+                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary/60 hover:text-primary" onClick={handleShare}>
+                                <Share2 className="h-5 w-5" />
                             </Button>
-                        )}
+                            {isOwner && (
+                                <Button variant="outline" size="sm" onClick={() => setIsEditVendorOpen(true)} className="rounded-xl h-10 px-4 font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background text-left text-left">
+                                    <Edit className="mr-2 h-3.5 w-3.5 text-left text-left text-left" /> MANAGE STORE
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left text-left">
-                        {vendor.photoURL ? <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left text-left" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left text-left text-left"><Store className="h-16 w-16 text-primary opacity-10 text-left text-left text-left text-left" /></div>}
+                        {vendor.photoURL ? <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left text-left" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left text-left text-left text-left"><Store className="h-16 w-16 text-primary opacity-10 text-left text-left text-left text-left" /></div>}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left" />
                         <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left text-left">
                             <div className="flex items-center gap-2 opacity-80 mb-2 text-left text-left">
@@ -429,34 +457,34 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <Card key={meal.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left text-left">
                                 <CardContent className="p-0 text-left text-left">
                                     <div className="aspect-[4/3] relative bg-muted text-left text-left">
-                                        {meal.photoURL ? <Image src={meal.photoURL} alt={meal.name} fill className="object-cover text-left text-left" unoptimized /> : <div className="w-full h-full flex items-center justify-center text-left text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left text-left text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left text-left text-left" />}</div>}
+                                        {meal.photoURL ? <Image src={meal.photoURL} alt={meal.name} fill className="object-cover text-left text-left" unoptimized /> : <div className="w-full h-full flex items-center justify-center text-left text-left text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left text-left text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left text-left text-left" />}</div>}
                                         <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left text-left">
-                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-center text-left"> {itemSymbol}{meal.price.toLocaleString()}</Badge>
-                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-center text-left text-left">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
+                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-center text-left text-left"> {itemSymbol}{meal.price.toLocaleString()}</Badge>
+                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-center text-left text-left text-left text-left">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
                                         </div>
-                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-center text-left"> {cartItem.quantity}</div>}
+                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-center text-left text-left"> {cartItem.quantity}</div>}
                                     </div>
                                     <div className="p-6 sm:p-8 space-y-4 flex-grow text-left text-left">
                                         <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight mb-1 text-left text-left">{meal.name}</h3>
-                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left text-left">{meal.description || `Verified Kingdom service item.`}</p>
+                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left text-left text-left">{meal.description || `Verified Kingdom service item.`}</p>
                                     </div>
                                 </CardContent>
                                 <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left text-left">
                                     {isOwner && (
                                         <div className="flex gap-2 text-left text-left">
-                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left text-left" /></Button>
-                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4 text-left text-left" /></Button>
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left text-left text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left text-left text-left" /></Button>
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left text-left text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4 text-left text-left text-left" /></Button>
                                         </div>
                                     )}
                                     <div className="flex-1 min-w-0 text-left text-left">
                                         {cartItem ? (
                                             <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left text-left">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left text-left"/></Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left text-left text-left"/></Button>
                                                 <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-center text-left">IN PACKAGE</span>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left text-left"/></Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left text-left text-left"/></Button>
                                             </div>
                                         ) : (
-                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-90 text-center text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
+                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-90 text-center text-left text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
                                         )}
                                     </div>
                                 </CardFooter>
