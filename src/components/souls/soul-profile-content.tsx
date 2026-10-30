@@ -247,11 +247,6 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <X className="h-6 w-6" />
                     </Button>
                     {mediaContent}
-                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4">
-                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest">
-                          <a href={url} target="_blank" rel="noopener noreferrer">Open in new tab</a>
-                        </Button>
-                    </div>
                 </DrawerContent>
             </Drawer>
           </React.Fragment>
@@ -579,20 +574,6 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
 
   const isRestrictedForMatchmaking = soul.age && soul.age < 20;
 
-  const iconMap: Record<string, any> = {
-    'prayed_together': Sparkles,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
-    'matchmaking': HeartHandshake,
-};
-
   return (
     <React.Fragment>
         <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
@@ -672,7 +653,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p>
-                        <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full text-primary hover:bg-primary/10" onClick={() => onOpenAssignDialog(soul)}><Edit className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onOpenAssignDialog(soul)}><Edit className="h-4 w-4" /></Button>
                     </div>
                     <div className="space-y-3">
                         <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10">
