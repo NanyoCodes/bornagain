@@ -565,7 +565,7 @@ function TestimoniesContent() {
                     <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
                       <div className="flex items-center gap-2 mb-4 text-left text-left">
                         <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
-                        <span className="text-[8px) font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
                       </div>
                       <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Edit Prayer Request</DrawerTitle>
                       <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Update your request for the Body of Christ.</DrawerDescription>

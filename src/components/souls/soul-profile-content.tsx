@@ -222,9 +222,9 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                       </motion.div>
                   </div>
-                  <div className="min-w-0 flex-1 text-left">
-                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
-                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
+                  <div className="min-w-0 flex-1 text-left text-left text-left">
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left">Voice Proclamation</p>
+                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left">Tap to Hear Miracle</p>
                   </div>
               </div>
           )}
@@ -262,10 +262,10 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
           {trigger}
           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
-              <div className="sr-only text-left">
-                  <DialogHeader className="text-left">
-                    <DialogTitle className="text-left">Full View</DialogTitle>
-                    <DialogDescription className="text-left">Full miracle proof preview.</DialogDescription>
+              <div className="sr-only text-left text-left text-left">
+                  <DialogHeader className="text-left text-left text-left">
+                    <DialogTitle className="text-left text-left text-left">Full View</DialogTitle>
+                    <DialogDescription className="text-left text-left text-left">Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
               {mediaContent}
@@ -581,7 +581,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
         <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
             <CardHeader className="p-8 pb-4 text-center">
                 <div className="relative inline-block mx-auto mb-4 text-left">
-                    <Dialog><DialogTrigger asChild disabled={!soul.photoURL}><div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-105", soul.photoURL && "cursor-pointer hover:scale-105")}><Avatar className="h-full w-full border shadow-sm text-left"><AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" /><AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl text-left"> {soul.firstName?.charAt(0)}</AvatarFallback></Avatar></div></DialogTrigger>{soul.photoURL && (<DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left"><div className="sr-only text-left text-left"><DialogHeader className="text-left text-left"><DialogTitle className="text-left text-left">Profile Photo</DialogTitle></DialogHeader></div><div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left"><div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left"><Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left" unoptimized /></div></div></DialogContent>)}</Dialog>
+                    <Dialog><DialogTrigger asChild disabled={!soul.photoURL}><div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-105", soul.photoURL && "cursor-pointer hover:scale-105")}><Avatar className="h-full w-full border shadow-sm text-left"><AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" /><AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl text-left"> {soul.firstName?.charAt(0)}</AvatarFallback></Avatar></div></DialogTrigger>{soul.photoURL && (<DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left"><div className="sr-only text-left text-left"><DialogHeader className="text-left text-left"><DialogTitle className="text-left text-left">Profile Photo</DialogTitle></DialogHeader></div><div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left"><div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left" unoptimized><Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left" /></div></div></DialogContent>)}</Dialog>
                     {address && (<Button size="icon" className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background text-left" onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')} title="View Map"><MapPin className="h-5 w-5 text-left" /></Button>)}
                 </div>
                 <div className="flex flex-col items-center gap-2 text-left"><CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center w-full text-left">{soul.firstName} {soul.lastName}</CardTitle><div className="flex gap-2 justify-center items-center text-left text-left"><Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge><MutualConnectBadge soul={soul} /></div></div>
@@ -739,7 +739,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                         </Button>
                     </div>
                     {needs ? (
-                        <div className="space-y-4 text-left">
+                        <React.Fragment>
                             {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                                 {needs.emotionalNeeds && (
@@ -775,7 +775,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                                     <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p>
                                 </div>
                             )}
-                        </div>
+                        </React.Fragment>
                     ) : (
                         <div className="py-4 text-center text-left">
                             <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-center text-left" onClick={() => onAssess(soul)}>BEGIN ASSESSMENT</Button>

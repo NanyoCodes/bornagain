@@ -536,6 +536,7 @@ export type VendorProfile = {
   paymentDetails?: string;
   vendorType?: 'meal' | 'gift';
   currency?: string;
+  category?: string;
 };
 
 export type Meal = {
