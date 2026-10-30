@@ -222,9 +222,9 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                       </motion.div>
                   </div>
-                  <div className="min-w-0 flex-1 text-left">
-                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
-                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
+                  <div className="min-w-0 flex-1 text-left text-left text-left">
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left">Voice Proclamation</p>
+                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left">Tap to Hear Miracle</p>
                   </div>
               </div>
           )}
@@ -262,10 +262,10 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
           {trigger}
           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
-              <div className="sr-only text-left">
-                  <DialogHeader className="text-left">
-                    <DialogTitle className="text-left">Full View</DialogTitle>
-                    <DialogDescription className="text-left">Full miracle proof preview.</DialogDescription>
+              <div className="sr-only text-left text-left text-left">
+                  <DialogHeader className="text-left text-left text-left">
+                    <DialogTitle className="text-left text-left text-left">Full View</DialogTitle>
+                    <DialogDescription className="text-left text-left text-left">Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
               {mediaContent}
@@ -754,4 +754,3 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
     </React.Fragment>
   );
 }
-
