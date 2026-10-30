@@ -15,6 +15,7 @@ import {
     Utensils, 
     Loader2, 
     Plus,
+    Minus,
     MapPin, 
     ChevronRight,
     ShoppingBag,
@@ -24,7 +25,8 @@ import {
     Gift,
     Package,
     ArrowRight,
-    CreditCard
+    CreditCard,
+    X
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -66,6 +68,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import Image from 'next/image';
 import { ImageUpload } from '@/components/common/image-upload';
+import Link from 'next/link';
 
 const currencyOptions = [
     { value: 'NGN', label: 'Naira (₦)', symbol: '₦' },
@@ -98,10 +101,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const actionId = searchParams?.get('actionId') || null;
     
     const { user, loading: userLoading } = useUser();
-    const { userProfile } = useUserProfile();
     const firestore = useFirestore();
-    const router = useRouter();
     const { toast } = useToast();
+    const router = useRouter();
     const isMobile = useIsMobile();
     const [mounted, setMounted] = useState(false);
 
@@ -145,7 +147,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     }, [vendor]);
 
     const isOwner = useMemo(() => !!(user?.uid && vendor?.userId && user.uid === vendor.userId), [user, vendor]);
-
     const isGiftVendor = useMemo(() => vendor?.vendorType === 'gift', [vendor]);
     const centerLabel = useMemo(() => isGiftVendor ? 'Kindness Center' : 'Meals Center', [isGiftVendor]);
     const itemLabel = useMemo(() => isGiftVendor ? 'Product' : 'Meal', [isGiftVendor]);
@@ -261,7 +262,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const vendorEditForm = (
         <form onSubmit={handleUpdateVendor}>
             <div className="p-8 space-y-6 text-left">
-                <div className="space-y-4">
+                <div className="space-y-4 text-left">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Store Branding</Label>
                   <ImageUpload 
                       initialImageUrl={vendorUpdatePhotoURL} 
@@ -271,13 +272,13 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 text-left">
                     <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
                     <Input id="businessName" name="businessName" defaultValue={vendor?.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                    <div className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
                         <Select name="category" defaultValue={vendor?.category || 'Miscellaneous'}>
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
@@ -290,7 +291,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Base Currency</Label>
                         <Select name="currency" defaultValue={vendor?.currency || 'NGN'}>
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
@@ -305,17 +306,17 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 text-left">
                     <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Store Location</Label>
                     <Input id="location" name="location" defaultValue={vendor?.location || ''} placeholder="City, State, Country" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 text-left">
                     <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About Your Service</Label>
                     <Textarea id="description" name="description" defaultValue={vendor?.description || ''} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 text-left">
                     <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
                         <CreditCard className="h-3 w-3" /> Payment & Coordinate Info
                     </Label>
@@ -334,7 +335,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const itemForm = (item?: Meal | null, isEdit = false) => (
         <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal}>
             <div className="p-8 space-y-6 text-left">
-                <div className="space-y-4">
+                <div className="space-y-4 text-left">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1"> {itemLabel} Visual</Label>
                   <ImageUpload initialImageUrl={itemPhotoURL} onUploadComplete={setItemPhotoURL} storagePath="marketplace-items" cropAspect={4/3} />
                 </div>
@@ -379,44 +380,44 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
                     <div className="flex items-center justify-between gap-4 text-left">
                         <div className="flex items-center gap-4 min-w-0 text-left">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
+                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
                             <div className="min-w-0 flex-1 text-left">
-                                <div className="flex items-center gap-2 mb-1 text-left">
-                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary" /> : <Utensils className="h-3.5 w-3.5 text-primary" />}
+                                <div className="flex items-center gap-2 mb-1 text-left text-left">
+                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left" />}
                                     <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">{centerLabel}</span>
                                 </div>
                                 <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase truncate leading-tight text-left">{vendor.businessName}</h1>
                             </div>
                         </div>
                         {isOwner && (
-                            <Button variant="outline" size="sm" onClick={() => setIsEditVendorOpen(true)} className="rounded-xl h-10 px-4 font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background text-left">
+                            <Button variant="outline" size="sm" onClick={() => setIsEditVendorOpen(true)} className="rounded-xl h-10 px-4 font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background text-left text-left">
                                 <Edit className="mr-2 h-3.5 w-3.5" /> MANAGE STORE
                             </Button>
                         )}
                     </div>
 
                     <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left">
-                        {vendor.photoURL ? <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left"><Store className="h-16 w-16 text-primary opacity-10" /></div>}
+                        {vendor.photoURL ? <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left"><Store className="h-16 w-16 text-primary opacity-10" /></div>}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
                         <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left">
                             <div className="flex items-center gap-2 opacity-80 mb-2 text-left">
-                                <MapPin className="h-3.5 w-3.5 text-primary" />
+                                <MapPin className="h-3.5 w-3.5 text-primary text-left" />
                                 <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate text-left">{vendor.location || 'Kingdom Network'}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="relative text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
-                        <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
+                        <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-left" />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
                     {isOwner && !itemSearchTerm && (
-                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left" onClick={() => setIsAddMealOpen(true)}>
+                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left text-left" onClick={() => setIsAddMealOpen(true)}>
                             <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left"><Plus className="h-6 w-6 text-primary" /></div>
-                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-center"> {addLabel}</h3>
+                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-center text-left"> {addLabel}</h3>
                         </Card>
                     )}
 
@@ -424,15 +425,15 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         const cartItem = cart[meal.id];
                         const itemSymbol = getCurrencySymbol(meal.currency);
                         return (
-                            <Card key={meal.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
+                            <Card key={meal.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left text-left">
                                 <CardContent className="p-0 text-left">
                                     <div className="aspect-[4/3] relative bg-muted text-left">
-                                        {meal.photoURL ? <Image src={meal.photoURL} alt={meal.name} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex items-center justify-center text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10" />}</div>}
+                                        {meal.photoURL ? <Image src={meal.photoURL} alt={meal.name} fill className="object-cover text-left" unoptimized /> : <div className="w-full h-full flex items-center justify-center text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10" />}</div>}
                                         <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left">
-                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-center"> {itemSymbol}{meal.price.toLocaleString()}</Badge>
-                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-center">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
+                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-center text-left"> {itemSymbol}{meal.price.toLocaleString()}</Badge>
+                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-center text-left">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
                                         </div>
-                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-center"> {cartItem.quantity}</div>}
+                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-center text-left"> {cartItem.quantity}</div>}
                                     </div>
                                     <div className="p-6 sm:p-8 space-y-4 flex-grow text-left">
                                         <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight mb-1 text-left">{meal.name}</h3>
@@ -482,7 +483,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate text-left">View My Offering</span>
                                     </div>
                                 </div>
-                                <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left">
+                                <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left text-left">
                                     <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left" />
                                 </div>
                             </div>
@@ -523,7 +524,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
                 <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
                         <DialogHeader className="text-left">
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Offering</DialogTitle>
                         </DialogHeader>
@@ -533,7 +534,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             </Dialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
                     <AlertDialogHeader className="text-left">
                         <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
@@ -547,3 +548,4 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
+
