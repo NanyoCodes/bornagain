@@ -180,10 +180,7 @@ function TestimoniesContent() {
     const list: (Testimony & { isAd?: boolean; isGame?: boolean; adType?: 'business' | 'event' | 'adsense' })[] = [];
     filteredTestimonies.forEach((t, i) => {
       list.push(t);
-      if ((i + 1) % 5 === 0) {
-        list.push({ id: `game-${i}`, isGame: true } as any);
-      }
-      if ((i + 1) % 4 === 0 && (i + 1) % 5 !== 0) {
+      if ((i + 1) % 4 === 0) {
         const adIdx = (i + 1) / 4;
         if (adIdx % 3 === 0) {
            list.push({ id: `adsense-${i}`, isAd: true, adType: 'adsense' } as any);
@@ -424,8 +421,6 @@ function TestimoniesContent() {
                         item.adType === 'adsense' 
                             ? <AdsenseAd key={item.id} adSlot="5186166468" />
                             : <KingdomAdSpot key={item.id} type={item.adType as any} />
-                      ) : item.isGame ? (
-                        <BibleGameCard key={item.id} />
                       ) : (
                         <TestimonyCard
                           key={item.id}
@@ -538,7 +533,7 @@ function TestimoniesContent() {
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
                       <div className="flex items-center gap-2 mb-4 text-left text-left">
-                        <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
+                        <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left">
                         <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
                       </div>
                       <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Edit Prayer Request</DrawerTitle>
@@ -643,7 +638,7 @@ function TestimoniesContent() {
   );
 }
 
-export default function TestimoniesStandalonePage() {
+export default function TestimoniesPage() {
     return (
         <AppShell>
             <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left text-left" /></div>}>

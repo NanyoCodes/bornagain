@@ -832,48 +832,50 @@ export default function FellowshipPage() {
                 </div>
             </div>
 
-            {mounted && isMobile ? (
-                <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                            <SheetHeader className="text-left p-0">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Create a space for community and growth.</SheetDescription>
-                            </SheetHeader>
-                        </div>
-                        <ScrollArea className="flex-grow">
-                            <div className="p-8">
-                                <FellowshipForm 
-                                    userProfile={userProfile ?? null} 
-                                    onFormSubmit={handleCreateFellowship} 
-                                    isSubmitting={isSubmitting} 
-                                    defaultType={createType}
-                                />
+            {mounted && (
+                isMobile ? (
+                    <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                                <SheetHeader className="text-left p-0">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1">Create a space for community and growth.</SheetDescription>
+                                </SheetHeader>
                             </div>
-                        </ScrollArea>
-                    </SheetContent>
-                </Sheet>
-            ) : (
-                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
-                        <div className="p-8 border-b shrink-0 bg-muted/10">
-                            <DialogHeader className="text-left p-0">
-                                <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">New Community Group</DialogTitle>
-                                <DialogDescription className="text-sm font-medium">Create a space for community and growth.</DialogDescription>
-                            </DialogHeader>
-                        </div>
-                        <ScrollArea className="flex-1 min-h-0">
-                            <div className="p-8">
-                                <FellowshipForm 
-                                    userProfile={userProfile ?? null} 
-                                    onFormSubmit={handleCreateFellowship} 
-                                    isSubmitting={isSubmitting} 
-                                    defaultType={createType}
-                                />
+                            <ScrollArea className="flex-grow">
+                                <div className="p-8">
+                                    <FellowshipForm 
+                                        userProfile={userProfile ?? null} 
+                                        onFormSubmit={handleCreateFellowship} 
+                                        isSubmitting={isSubmitting} 
+                                        defaultType={createType}
+                                    />
+                                </div>
+                            </ScrollArea>
+                        </SheetContent>
+                    </Sheet>
+                ) : (
+                    <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <DialogHeader className="text-left p-0">
+                                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">New Community Group</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium">Create a space for community and growth.</DialogDescription>
+                                </DialogHeader>
                             </div>
-                        </ScrollArea>
-                    </DialogContent>
-                </Dialog>
+                            <ScrollArea className="flex-1 min-h-0">
+                                <div className="p-8">
+                                    <FellowshipForm 
+                                        userProfile={userProfile ?? null} 
+                                        onFormSubmit={handleCreateFellowship} 
+                                        isSubmitting={isSubmitting} 
+                                        defaultType={createType}
+                                    />
+                                </div>
+                            </ScrollArea>
+                        </DialogContent>
+                    </Dialog>
+                )
             )}
 
             {fellowshipToManage && (
