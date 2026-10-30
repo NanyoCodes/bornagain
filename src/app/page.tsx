@@ -179,7 +179,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
             {logo && (
-              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 text-left">
+              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95">
                 <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
                 <AvatarFallback>T</AvatarFallback>
               </Avatar>
@@ -202,8 +202,8 @@ export default function LandingPage() {
              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-zinc-950 to-zinc-950" />
              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.4),transparent_50%)]" />
           </div>
-          <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-center text-left">
-            <div className="max-w-4xl mx-auto space-y-8 text-left">
+          <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-center">
+            <div className="max-w-4xl mx-auto space-y-8">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center">
                 <Badge className="bg-primary text-primary-foreground mb-4 px-6 py-2 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto shadow-lg shadow-primary/20 border-none">
                   PROCLAIMING GOD'S GOODNESS
@@ -241,7 +241,7 @@ export default function LandingPage() {
                         viewport={{ once: true }}
                         className="space-y-8 max-w-4xl text-center text-left"
                     >
-                        <Badge className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] text-left">
+                        <Badge className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] text-left mx-auto">
                             THE COMPASSIONATE NETWORK
                         </Badge>
                         <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-[0.9] tracking-tighter text-balance text-center text-left">
@@ -317,42 +317,43 @@ export default function LandingPage() {
         </section>
 
         {/* Redeeming the Scroll Section */}
-        <section className="py-24 bg-muted/20 relative overflow-hidden text-left">
-            <div className="max-w-7xl mx-auto px-6 text-left">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
-                    <div className="relative order-2 lg:order-1 text-left">
-                        <div className="relative aspect-[9/16] max-w-[300px] mx-auto rounded-[3rem] border-[8px] border-zinc-900 shadow-2xl overflow-hidden bg-zinc-950 ring-4 ring-primary/20 text-left">
-                            <div className="absolute inset-0 p-4 space-y-4 text-left">
-                                {[...Array(4)].map((_, i) => (
-                                    <div key={i} className="bg-white/5 rounded-2xl p-4 space-y-2 text-left">
-                                        <div className="flex gap-2 items-center text-left">
-                                            <div className="h-6 w-6 rounded-full bg-primary/20 text-left" />
-                                            <div className="h-2 w-20 bg-white/10 rounded text-left" />
-                                        </div>
-                                        <div className="h-10 w-full bg-white/5 rounded-lg text-left" />
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent flex items-end justify-center pb-12 text-left">
-                                <Sparkles className="h-12 w-12 text-white animate-pulse text-left" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-8 order-1 lg:order-2 text-center lg:text-left text-left">
-                        <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 text-left">Redeeming the Habit</Badge>
-                        <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-left">The Scroll with Soul</h2>
-                        <div className="space-y-6 text-lg text-muted-foreground font-medium italic leading-relaxed text-left">
-                            <p className="text-left">
+        <section className="py-24 bg-muted/20 relative overflow-hidden text-center">
+            <div className="max-w-7xl mx-auto px-6 text-center">
+                <div className="flex flex-col items-center gap-12 text-center">
+                    <div className="space-y-8 max-w-3xl mx-auto text-center">
+                        <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto">Redeeming the Habit</Badge>
+                        <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-center">The Scroll with Soul</h2>
+                        <div className="space-y-6 text-lg text-muted-foreground font-medium italic leading-relaxed text-center">
+                            <p className="text-center">
                                 Aimless scrolling is the modern reflex, but it often leaves the heart empty. We believe that while the habit has come to stay, the content must change.
                             </p>
-                            <p className="text-left">
+                            <p className="text-center">
                                 With Testify, every swipe is a spiritual deposit. As you scroll, you aren't just passing time; you are absorbing the manifest power of God and giving Him glory. We've replaced the noise with miracles, turning a mindless habit into a lifestyle of praise.
                             </p>
                         </div>
-                        <div className="pt-4 text-left">
-                            <Button asChild size="lg" className="rounded-full h-12 px-10 font-black uppercase tracking-widest text-[10px] shadow-xl text-center text-left">
-                                <Link href="/signup" className="text-left">JOIN THE FEED OF GLORY</Link>
+                        <div className="pt-4 text-center">
+                            <Button asChild size="lg" className="rounded-full h-12 px-10 font-black uppercase tracking-widest text-[10px] shadow-xl text-center">
+                                <Link href="/signup" className="text-center">JOIN THE FEED OF GLORY</Link>
                             </Button>
+                        </div>
+                    </div>
+                    
+                    <div className="relative w-full max-w-[300px] mx-auto text-center">
+                        <div className="relative aspect-[9/16] rounded-[3rem] border-[8px] border-zinc-900 shadow-2xl overflow-hidden bg-zinc-950 ring-4 ring-primary/20 text-center">
+                            <div className="absolute inset-0 p-4 space-y-4 text-center">
+                                {[...Array(4)].map((_, i) => (
+                                    <div key={i} className="bg-white/5 rounded-2xl p-4 space-y-2 text-center">
+                                        <div className="flex gap-2 items-center justify-center text-center">
+                                            <div className="h-6 w-6 rounded-full bg-primary/20 text-center" />
+                                            <div className="h-2 w-20 bg-white/10 rounded text-center" />
+                                        </div>
+                                        <div className="h-10 w-full bg-white/5 rounded-lg text-center" />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent flex items-end justify-center pb-12 text-center">
+                                <Sparkles className="h-12 w-12 text-white animate-pulse text-center" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -366,7 +367,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4 text-left"
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4 text-left mx-auto"
               >
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Mission Critical Care</span>
               </motion.div>

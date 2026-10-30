@@ -222,9 +222,9 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                       </motion.div>
                   </div>
-                  <div className="min-w-0 flex-1 text-left">
-                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
-                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
+                  <div className="min-w-0 flex-1 text-left text-left text-left">
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left">Voice Proclamation</p>
+                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left">Tap to Hear Miracle</p>
                   </div>
               </div>
           )}
@@ -342,7 +342,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
             </div>
         </div>
         <div className="space-y-2 text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Your Prayer</Label>
             <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" />
         </div>
         <Button onClick={() => onComplete(text)} disabled={!text.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">SEND</Button>
