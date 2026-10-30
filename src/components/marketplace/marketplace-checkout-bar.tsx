@@ -37,8 +37,7 @@ export function MarketplaceCheckoutBar({ category = 'provision' }: { category?: 
                             </div>
                         </div>
                         <div className="flex flex-col text-left leading-none min-w-0 text-left">
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1 text-left">{label}</span>
-                            <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate text-left">View My Offering</span>
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary text-left">{label}</span>
                         </div>
                     </div>
 

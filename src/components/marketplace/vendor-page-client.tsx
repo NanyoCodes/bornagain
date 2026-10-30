@@ -281,7 +281,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         deleteDoc(doc(firestore, 'vendors', vendorId, 'meals', itemToDelete.id)).then(() => { toast({ title: 'Item Removed' }); setItemToDelete(null); }).finally(() => setIsDeletingItem(false));
     };
 
-    if (!vendor && !loading) {
+    if (loading) return <div className="flex h-full w-full items-center justify-center py-20 text-left"><Loader2 className="animate-spin text-primary" /></div>;
+
+    if (!vendor) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-32 text-center px-8 text-left">
                 <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
@@ -295,8 +297,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             </div>
         );
     }
-
-    if (loading || !vendor) return <div className="flex h-full w-full items-center justify-center py-20 text-left"><Loader2 className="animate-spin text-primary" /></div>;
 
     const cartCountTotal = Object.values(cart).reduce((acc, c) => acc + c.quantity, 0);
 
@@ -348,7 +348,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label htmlFor="location" className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1">Store Location</Label>
+                    <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Store Location</Label>
                     <Input id="location" name="location" defaultValue={vendor.location || ''} placeholder="City, State, Country" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                 </div>
 
@@ -364,9 +364,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <Textarea id="paymentDetails" name="paymentDetails" defaultValue={vendor.paymentDetails || ''} placeholder="Bank details or pickup instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                 </div>
             </div>
-            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3">
-                <Button type="button" variant="outline" onClick={() => setIsEditVendorOpen(false)} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
-                <Button type="submit" disabled={isUpdatingVendor} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">
+            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
+                <Button type="button" variant="outline" onClick={() => setIsEditVendorOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
+                <Button type="submit" disabled={isUpdatingVendor} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">
                     {isUpdatingVendor && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} SAVE STOREFRONT
                 </Button>
             </div>
@@ -388,9 +388,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
                 <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
             </div>
-            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3">
-                <Button type="button" variant="outline" onClick={() => { setIsAddMealOpen(false); setItemToEdit(null); setItemPhotoURL(''); }} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
-                <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest text-center">
+            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
+                <Button type="button" variant="outline" onClick={() => { setIsAddMealOpen(false); setItemToEdit(null); setItemPhotoURL(''); }} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
+                <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest text-center text-left">
                     {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isEdit ? 'SAVE CHANGES' : 'ADD TO CATALOG'}
                 </Button>
@@ -403,11 +403,11 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left">
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
                     <div className="flex items-center justify-between gap-4 text-left">
-                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left">
+                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left">
                             <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
-                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left">
-                                <AvatarImage src={vendor.photoURL || undefined} className="object-cover text-left" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary uppercase text-left"> {vendor.businessName?.charAt(0)}</AvatarFallback>
+                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left text-left">
+                                <AvatarImage src={vendor.photoURL || undefined} className="object-cover text-left text-left" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary uppercase text-left text-left"> {vendor.businessName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex-1 text-left">
                                 <div className="flex items-center gap-2 mb-1 text-left">
@@ -420,7 +420,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         variant="outline" 
                                         size="icon" 
                                         onClick={() => setIsEditVendorOpen(true)} 
-                                        className="h-8 w-8 rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background mt-2"
+                                        className="h-8 w-8 rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background mt-2 text-left"
                                     >
                                         <Edit className="h-4 w-4 text-left" />
                                         <span className="sr-only text-left">Manage Store</span>
@@ -446,7 +446,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         </div>
                     </div>
 
-                    <div className="relative">
+                    <div className="relative text-left">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                         <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 sm:h-14 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-sm sm:text-lg text-left" />
                     </div>
@@ -456,7 +456,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     {isOwner && !itemSearchTerm && (
                         <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left" onClick={() => setIsAddMealOpen(true)}>
                             <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left"><Plus className="h-6 w-6 text-primary" /></div>
-                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-center text-left"> {addLabel}</h3>
+                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-center"> {addLabel}</h3>
                         </Card>
                     )}
 
@@ -486,7 +486,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                             <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="mr-2 h-4 w-4 text-left" /></Button>
                                         </div>
                                     )}
-                                    <div className="flex-1 min-w-0 text-left">
+                                    <div className="flex-1 min-w-0 text-left text-left">
                                         {cartItem ? (
                                             <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left">
                                                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left"/></Button>
@@ -525,7 +525,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                 <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
                     <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="p-0 text-left text-left">
+                        <DialogHeader className="p-0 text-left">
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left"> {addLabel}</DialogTitle>
                         </DialogHeader>
                     </div>
@@ -566,7 +566,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left">
                             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left" />
                             
-                            <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left text-left">
+                            <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left">
                                 <div className="relative text-left">
                                     <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left">
                                         <ShoppingBag className="h-5 w-5 text-white/80 text-left" />
@@ -576,8 +576,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     </div>
                                 </div>
                                 <div className="flex flex-col leading-none min-w-0 text-left">
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1 text-left">{centerLabel} Offering</span>
-                                    <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate text-left">View My Offering</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">{centerLabel} Offering</span>
                                 </div>
                             </div>
 

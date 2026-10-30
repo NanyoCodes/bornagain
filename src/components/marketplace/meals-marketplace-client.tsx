@@ -492,8 +492,7 @@ export default function MealsMarketplaceClient() {
                                     </div>
                                 </div>
                                 <div className="flex flex-col leading-none min-w-0 text-left text-left">
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1 text-left">Provision Package</span>
-                                    <span className="text-[13px] font-black uppercase tracking-tight text-zinc-100 truncate text-left">View My Offering</span>
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary text-left">Provision Package</span>
                                 </div>
                             </div>
 
