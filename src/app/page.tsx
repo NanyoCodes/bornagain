@@ -189,10 +189,10 @@ export default function LandingPage() {
           </Link>
           <div className="flex items-center gap-2 sm:gap-4 text-left">
             <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold">
-              <Link href="/login" className="text-left">Sign In</Link>
+              <Link href="/login" className="text-left text-left">Sign In</Link>
             </Button>
             <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9">
-              <Link href="/signup" className="text-left">Join Movement</Link>
+              <Link href="/signup" className="text-left text-left">Join Movement</Link>
             </Button>
           </div>
         </div>
@@ -285,39 +285,43 @@ export default function LandingPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                            <Card className="rounded-[2rem] bg-indigo-600 text-white overflow-hidden border-none shadow-2xl group hover:scale-[1.02] transition-transform">
-                                <CardHeader className="p-8 pb-4">
-                                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
-                                        <Store className="h-6 w-6 text-white" />
+                            <Card className="rounded-[2rem] bg-indigo-600 text-white overflow-hidden border-none shadow-2xl group hover:scale-[1.02] transition-transform text-left">
+                                <CardHeader className="p-8 pb-4 text-left">
+                                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4 text-left">
+                                        <Store className="h-6 w-6 text-white text-left" />
                                     </div>
-                                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Kindness Center</CardTitle>
-                                    <CardDescription className="text-indigo-100 text-sm font-medium">Create a store for any item—Bibles, tokens, or gifts.</CardDescription>
+                                    <CardTitle className="text-2xl font-black uppercase tracking-tight text-left text-left">Kindness Center</CardTitle>
+                                    <CardDescription className="text-indigo-100 text-sm font-medium text-left">Create a store for any item—Bibles, tokens, or gifts.</CardDescription>
                                 </CardHeader>
-                                <CardContent className="p-8 pt-0">
-                                    <p className="text-sm leading-relaxed font-medium text-indigo-50/80 italic">
+                                <CardContent className="p-8 pt-0 text-left">
+                                    <p className="text-sm leading-relaxed font-medium text-indigo-50/80 italic text-left">
                                         Empower your ministry by providing spiritual resources and tokens of love that can be gifted directly to new converts.
                                     </p>
                                 </CardContent>
-                                <CardFooter className="p-0 border-t border-white/10">
-                                    <Button variant="ghost" className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px]">REGISTER KINDNESS STORE</Button>
+                                <CardFooter className="p-0 border-t border-white/10 text-left">
+                                    <Button variant="ghost" asChild className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-left">
+                                        <Link href="/signup" className="text-left text-left">REGISTER KINDNESS STORE</Link>
+                                    </Button>
                                 </CardFooter>
                             </Card>
 
-                            <Card className="rounded-[2rem] bg-primary text-white overflow-hidden border-none shadow-2xl group hover:scale-[1.02] transition-transform">
-                                <CardHeader className="p-8 pb-4">
-                                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
-                                        <Utensils className="h-6 w-6 text-white" />
+                            <Card className="rounded-[2rem] bg-primary text-white overflow-hidden border-none shadow-2xl group hover:scale-[1.02] transition-transform text-left">
+                                <CardHeader className="p-8 pb-4 text-left">
+                                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4 text-left">
+                                        <Utensils className="h-6 w-6 text-white text-left" />
                                     </div>
-                                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Meals Center</CardTitle>
-                                    <CardDescription className="text-orange-50 text-sm font-medium">Become a physical provision provider.</CardDescription>
+                                    <CardTitle className="text-2xl font-black uppercase tracking-tight text-left">Meals Center</CardTitle>
+                                    <CardDescription className="text-orange-50 text-sm font-medium text-left">Become a physical provision provider.</CardDescription>
                                 </CardHeader>
-                                <CardContent className="p-8 pt-0">
-                                    <p className="text-sm leading-relaxed font-medium text-orange-50/80 italic">
+                                <CardContent className="p-8 pt-0 text-left">
+                                    <p className="text-sm leading-relaxed font-medium text-orange-50/80 italic text-left">
                                         Register your meal service to provide physical nourishment for the brethren and those in need within your community.
                                     </p>
                                 </CardContent>
-                                <CardFooter className="p-0 border-t border-white/10">
-                                    <Button variant="ghost" className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px]">REGISTER MEALS STORE</Button>
+                                <CardFooter className="p-0 border-t border-white/10 text-left">
+                                    <Button variant="ghost" asChild className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-left">
+                                        <Link href="/signup" className="text-left">REGISTER MEALS STORE</Link>
+                                    </Button>
                                 </CardFooter>
                             </Card>
                         </div>
@@ -350,10 +354,10 @@ export default function LandingPage() {
         </section>
 
         <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left">
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center text-left">
-                <Gamepad2 className="h-[40rem] w-[40rem] text-primary text-left" />
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center text-left text-left text-left">
+                <Gamepad2 className="h-[40rem] w-[40rem] text-primary text-left text-left text-left" />
             </div>
-            <div className="max-w-7xl mx-auto px-6 relative z-10 text-left">
+            <div className="max-w-7xl mx-auto px-6 relative z-10 text-left text-left">
                 <div className="flex flex-col items-center gap-12 text-left">
                     <div className="space-y-8 max-w-3xl mx-auto text-center text-left">
                         <div className="space-y-4 text-left">
@@ -364,7 +368,7 @@ export default function LandingPage() {
                             </p>
                         </div>
                         <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center text-center mx-auto text-left">
-                            <Link href="/signup" className="text-center text-left">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4" /></Link>
+                            <Link href="/signup" className="text-center text-left">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4 text-left text-left" /></Link>
                         </Button>
                     </div>
                     <div className="w-full max-w-2xl mx-auto text-left">
@@ -375,42 +379,42 @@ export default function LandingPage() {
         </section>
 
         {/* Redeeming the Scroll Section */}
-        <section className="py-24 bg-muted/20 relative overflow-hidden text-center">
-            <div className="max-w-7xl mx-auto px-6 text-center">
-                <div className="flex flex-col items-center gap-12 text-center">
-                    <div className="space-y-8 max-w-3xl mx-auto text-center">
-                        <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto">Redeeming the Habit</Badge>
-                        <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-center">The Scroll with Soul</h2>
-                        <div className="space-y-6 text-lg text-muted-foreground font-medium italic leading-relaxed text-center">
-                            <p className="text-center">
+        <section className="py-24 bg-muted/20 relative overflow-hidden text-center text-left">
+            <div className="max-w-7xl mx-auto px-6 text-center text-left">
+                <div className="flex flex-col items-center gap-12 text-center text-left">
+                    <div className="space-y-8 max-w-3xl mx-auto text-center text-left">
+                        <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto text-left">Redeeming the Habit</Badge>
+                        <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight tracking-tighter text-center text-left">The Scroll with Soul</h2>
+                        <div className="space-y-6 text-lg text-muted-foreground font-medium italic leading-relaxed text-center text-left">
+                            <p className="text-center text-balance">
                                 Aimless scrolling is the modern reflex, but it often leaves the heart empty. We believe that while the habit has come to stay, the content must change.
                             </p>
-                            <p className="text-center">
+                            <p className="text-center text-balance">
                                 With Testify, every swipe is a spiritual deposit. As you scroll, you aren't just passing time; you are absorbing the manifest power of God and giving Him glory. We've replaced the noise with miracles, turning a mindless habit into a lifestyle of praise.
                             </p>
                         </div>
-                        <div className="pt-4 text-center">
+                        <div className="pt-4 text-center text-left">
                             <Button asChild size="lg" className="rounded-full h-12 px-10 font-black uppercase tracking-widest text-[10px] shadow-xl text-center">
-                                <Link href="/signup" className="text-center">JOIN THE FEED OF GLORY</Link>
+                                <Link href="/signup" className="text-center text-left">JOIN THE FEED OF GLORY</Link>
                             </Button>
                         </div>
                     </div>
                     
-                    <div className="relative w-full max-w-[300px] mx-auto text-center">
-                        <div className="relative aspect-[9/16] rounded-[3rem] border-[8px] border-zinc-900 shadow-2xl overflow-hidden bg-zinc-950 ring-4 ring-primary/20 text-center">
-                            <div className="absolute inset-0 p-4 space-y-4 text-center">
+                    <div className="relative w-full max-w-[300px] mx-auto text-center text-left">
+                        <div className="relative aspect-[9/16] rounded-[3rem] border-[8px] border-zinc-900 shadow-2xl overflow-hidden bg-zinc-950 ring-4 ring-primary/20 text-center mx-auto text-left">
+                            <div className="absolute inset-0 p-4 space-y-4 text-center text-left text-left">
                                 {[...Array(4)].map((_, i) => (
-                                    <div key={i} className="bg-white/5 rounded-2xl p-4 space-y-2 text-center">
-                                        <div className="flex gap-2 items-center justify-center text-center">
-                                            <div className="h-6 w-6 rounded-full bg-primary/20 text-center" />
-                                            <div className="h-2 w-20 bg-white/10 rounded text-center" />
+                                    <div key={i} className="bg-white/5 rounded-2xl p-4 space-y-2 text-center text-left text-left">
+                                        <div className="flex gap-2 items-center justify-center text-center text-left text-left">
+                                            <div className="h-6 w-6 rounded-full bg-primary/20 text-center text-left text-left" />
+                                            <div className="h-2 w-20 bg-white/10 rounded text-center text-left text-left" />
                                         </div>
-                                        <div className="h-10 w-full bg-white/5 rounded-lg text-center" />
+                                        <div className="h-10 w-full bg-white/5 rounded-lg text-center text-left text-left" />
                                     </div>
                                 ))}
                             </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent flex items-end justify-center pb-12 text-center">
-                                <Sparkles className="h-12 w-12 text-white animate-pulse text-center" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent flex items-end justify-center pb-12 text-center text-left text-left">
+                                <Sparkles className="h-12 w-12 text-white animate-pulse text-center text-left text-left" />
                             </div>
                         </div>
                     </div>
@@ -418,24 +422,24 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section className="py-24 bg-muted/30 text-left">
+        <section className="py-24 bg-muted/30 text-left text-left">
           <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="text-center mb-20 space-y-4 text-left">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4 text-left mx-auto"
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4 text-left mx-auto text-left"
               >
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Mission Critical Care</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Mission Critical Care</span>
               </motion.div>
               <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center text-left">The Caretaker Toolkit</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium italic text-center text-left">
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium italic text-center text-left text-left">
                 Equipping you to follow up and look after your harvest with professional intentionality.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left text-left">
                 {features.map((feature, i) => {
                     return (
                         <motion.div
@@ -444,24 +448,24 @@ export default function LandingPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
-                            className="text-left"
+                            className="text-left text-left"
                         >
-                            <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group border-b-8 border-b-primary/5 text-left">
-                                <CardHeader className="p-8 pb-4 flex flex-col items-center text-center text-left">
-                                    <div className={cn("h-14 w-14 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 text-left", feature.bgColor)}>
+                            <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group border-b-8 border-b-primary/5 text-left text-left">
+                                <CardHeader className="p-8 pb-4 flex flex-col items-center text-center text-left text-left">
+                                    <div className={cn("h-14 w-14 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 text-left text-left", feature.bgColor)}>
                                         <feature.icon className={cn("h-7 w-7", feature.color)} />
                                     </div>
-                                    <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-6 group-hover:text-primary transition-colors text-center text-left">{feature.title}</h3>
+                                    <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-6 group-hover:text-primary transition-colors text-center text-left text-left">{feature.title}</h3>
                                 </CardHeader>
-                                <CardContent className="p-8 pb-8 flex-grow text-center text-left">
-                                    <p className="text-muted-foreground text-sm leading-relaxed font-medium text-left">
+                                <CardContent className="p-8 pb-8 flex-grow text-center text-left text-left text-left">
+                                    <p className="text-muted-foreground text-sm leading-relaxed font-medium text-left text-left text-left text-left">
                                         {feature.description}
                                     </p>
                                 </CardContent>
-                                <CardFooter className="px-8 pb-8 pt-0 mt-auto justify-center text-center text-left">
-                                    <Button variant="ghost" size="icon" asChild className="rounded-full text-primary hover:bg-primary/5 transition-all group/btn flex items-center justify-center text-center text-left">
-                                        <Link href={feature.link} className="text-left">
-                                            <ArrowRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
+                                <CardFooter className="px-8 pb-8 pt-0 mt-auto justify-center text-center text-left text-left text-left">
+                                    <Button variant="ghost" size="icon" asChild className="rounded-full text-primary hover:bg-primary/5 transition-all group/btn flex items-center justify-center text-center text-left text-left">
+                                        <Link href={feature.link} className="text-left text-left text-left">
+                                            <ArrowRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1 text-left text-left" />
                                         </Link>
                                     </Button>
                                 </CardFooter>
@@ -473,7 +477,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left">
+        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left text-left">
             <div className="max-w-7xl mx-auto px-6 text-left">
                 <div className="text-center mb-20 space-y-4 text-left">
                     <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter text-center text-left">Legacy of Compassion</h2>
@@ -484,7 +488,7 @@ export default function LandingPage() {
                     {historicalFacts.map((fact, i) => (
                         <div key={i} className="space-y-6 flex flex-col items-center text-center text-left">
                             <div className="h-16 w-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl text-left">
-                                <fact.icon className="h-8 w-8 text-primary text-left" />
+                                <fact.icon className="h-8 w-8 text-primary text-left text-left" />
                             </div>
                             <div className="space-y-3 text-center text-left">
                                 <h4 className="text-xl font-black uppercase tracking-tight text-center text-left">{fact.title}</h4>
@@ -497,8 +501,8 @@ export default function LandingPage() {
 
                 <div className="mt-24 p-8 sm:p-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden text-left">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.1),transparent_70%)] text-left" />
-                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl relative z-10 text-center text-left">
-                        <Heart className="h-8 w-8 text-white text-left" />
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl relative z-10 text-center text-left text-left">
+                        <Heart className="h-8 w-8 text-white text-left text-left" />
                     </div>
                     <div className="space-y-4 relative z-10 text-center text-left">
                         <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-center text-left">Caring for the One</h3>
@@ -506,7 +510,7 @@ export default function LandingPage() {
                             True spiritual success is measured by the depth of your care. Testify makes it easy to stay present in the lives of your family and friends, ensuring they grow deep in the Word and established in the Kingdom.
                         </p>
                     </div>
-                    <div className="flex justify-center relative z-10 items-center text-left">
+                    <div className="flex justify-center relative z-10 items-center text-left text-left">
                         <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center text-left">
                             <Link href="/signup" className="text-center text-left">JOIN THE MISSION OF LOVE</Link>
                         </Button>
@@ -515,12 +519,12 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section className="py-24 relative overflow-hidden bg-background text-left">
-          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left" />
+        <section className="py-24 relative overflow-hidden bg-background text-left text-left">
+          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left text-left" />
           
           <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
-              <div className="space-y-10 text-center lg:text-left text-left">
+              <div className="space-y-10 text-center lg:text-left text-left text-left">
                 <div className="space-y-6 text-center lg:text-left text-left">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left">Witness the Care</h2>
@@ -529,7 +533,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 
-                <div className="flex justify-center lg:justify-start text-left">
+                <div className="flex justify-center lg:justify-start text-left text-left">
                     <Button asChild size="sm" variant="outline" className="h-9 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-8 w-full sm:w-auto uppercase tracking-widest flex items-center justify-center text-center text-left">
                         <Link href="/testimonies" className="text-center text-left">VIEW FEED</Link>
                     </Button>
@@ -548,7 +552,7 @@ export default function LandingPage() {
                     transition={{ delay: idx * 0.1 }}
                     className="text-left"
                   >
-                    <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left">
+                    <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left text-left">
                       <CardContent className="p-8 flex gap-6 text-left">
                         <Quote className="h-10 w-10 text-primary opacity-20 shrink-0 mt-1 text-left" />
                         <div className="min-w-0 flex-1 text-left">
@@ -594,7 +598,7 @@ export default function LandingPage() {
               </p>
               <div className="flex justify-center pt-4 items-center text-left">
                 <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center text-left">
-                  <Link href="/signup" className="text-center text-left">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6" /></Link>
+                  <Link href="/signup" className="text-center text-left">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6 text-left" /></Link>
                 </Button>
               </div>
             </div>
@@ -622,10 +626,10 @@ export default function LandingPage() {
             <div className="space-y-6 text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Platform</h4>
               <ul className="space-y-4 text-left">
-                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Miracle Feed</Link></li>
-                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Care Missions</Link></li>
-                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Love Growth</Link></li>
-                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Community Hubs</Link></li>
+                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Miracle Feed</Link></li>
+                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Care Missions</Link></li>
+                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Love Growth</Link></li>
+                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Community Hubs</Link></li>
               </ul>
             </div>
 
@@ -647,8 +651,8 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left">
             <p className="text-center md:text-left uppercase text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Caring for the Harvest.</p>
             <div className="flex gap-8 text-left">
-              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
-              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left">Privacy</Link>
+              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left">Terms</Link>
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left">Privacy</Link>
             </div>
           </div>
         </div>
