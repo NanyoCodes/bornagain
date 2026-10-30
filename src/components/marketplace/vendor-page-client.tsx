@@ -301,9 +301,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     const vendorEditForm = (
         <form onSubmit={handleUpdateVendor}>
-            <div className="p-8 space-y-6 text-left">
-                <div className="space-y-4 text-left">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Store Branding</Label>
+            <div className="p-8 space-y-6 text-left text-left text-left">
+                <div className="space-y-4 text-left text-left text-left">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Store Branding</Label>
                   <ImageUpload 
                       initialImageUrl={vendorUpdatePhotoURL} 
                       onUploadComplete={setVendorUpdatePhotoURL} 
@@ -312,61 +312,61 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                   />
                 </div>
 
-                <div className="space-y-2 text-left">
-                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Business Name</Label>
-                    <Input id="businessName" name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
+                <div className="space-y-2 text-left text-left text-left">
+                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Business Name</Label>
+                    <Input id="businessName" name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left" required />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-                    <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left text-left">
+                    <div className="space-y-2 text-left text-left text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Category</Label>
                         <Select name="category" defaultValue={vendor.category || 'Miscellaneous'}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                <SelectValue placeholder="Select Category" className="text-left" />
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left">
+                                <SelectValue placeholder="Select Category" className="text-left text-left text-left" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
+                            <SelectContent className="rounded-2xl border-none shadow-2xl text-left text-left text-left">
                                 {(isGiftVendor ? giftStoreCategories : ['Local Delivery', 'Bakery', 'Restaurant', 'Healthy Options', 'Catering']).map(c => (
-                                    <SelectItem key={c} value={c} className="rounded-xl font-bold text-left">{c}</SelectItem>
+                                    <SelectItem key={c} value={c} className="rounded-xl font-bold text-left text-left text-left">{c}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Base Currency</Label>
+                    <div className="space-y-2 text-left text-left text-left text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Base Currency</Label>
                         <Select name="currency" defaultValue={vendor.currency || 'NGN'}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                <SelectValue placeholder="Select Currency" className="text-left" />
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left">
+                                <SelectValue placeholder="Select Currency" className="text-left text-left text-left" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
+                            <SelectContent className="rounded-2xl border-none shadow-2xl text-left text-left text-left">
                                 {currencyOptions.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold text-left">{opt.label}</SelectItem>
+                                    <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold text-left text-left text-left">{opt.label}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
                 </div>
 
-                <div className="space-y-2 text-left">
-                    <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Store Location</Label>
-                    <Input id="location" name="location" defaultValue={vendor.location || ''} placeholder="City, State, Country" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
+                <div className="space-y-2 text-left text-left text-left text-left">
+                    <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Store Location</Label>
+                    <Input id="location" name="location" defaultValue={vendor.location || ''} placeholder="City, State, Country" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left" />
                 </div>
 
-                <div className="space-y-2 text-left">
-                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">About Your Service</Label>
-                    <Textarea id="description" name="description" defaultValue={vendor.description || ''} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
+                <div className="space-y-2 text-left text-left text-left text-left">
+                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">About Your Service</Label>
+                    <Textarea id="description" name="description" defaultValue={vendor.description || ''} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left text-left" />
                 </div>
 
-                <div className="space-y-2 text-left">
-                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
-                        <CreditCard className="h-3 w-3 text-left" /> Payment & Coordinate Info
+                <div className="space-y-2 text-left text-left text-left text-left text-left">
+                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left text-left text-left">
+                        <CreditCard className="h-3 w-3 text-left text-left text-left text-left" /> Payment & Coordinate Info
                     </Label>
-                    <Textarea id="paymentDetails" name="paymentDetails" defaultValue={vendor.paymentDetails || ''} placeholder="Bank details or pickup instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
+                    <Textarea id="paymentDetails" name="paymentDetails" defaultValue={vendor.paymentDetails || ''} placeholder="Bank details or pickup instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left" required />
                 </div>
             </div>
-            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
-                <Button type="button" variant="outline" onClick={() => setIsEditVendorOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
-                <Button type="submit" disabled={isUpdatingVendor} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">
-                    {isUpdatingVendor && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />} SAVE STOREFRONT
+            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left text-left text-left text-left">
+                <Button type="button" variant="outline" onClick={() => setIsEditVendorOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left text-left text-left text-left">Cancel</Button>
+                <Button type="submit" disabled={isUpdatingVendor} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left text-left text-left">
+                    {isUpdatingVendor && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" />} SAVE STOREFRONT
                 </Button>
             </div>
         </form>
@@ -485,15 +485,15 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                             <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4 text-left" /></Button>
                                         </div>
                                     )}
-                                    <div className="flex-1 min-w-0 text-left text-left text-left">
+                                    <div className="flex-1 min-w-0 text-left text-left text-left text-left">
                                         {cartItem ? (
-                                            <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left text-left text-left">
+                                            <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left text-left text-left text-left">
                                                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left"/></Button>
                                                 <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-center">IN PACKAGE</span>
                                                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left"/></Button>
                                             </div>
                                         ) : (
-                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-90 text-center text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
+                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-90 text-center text-left text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
                                         )}
                                     </div>
                                 </CardFooter>
@@ -505,54 +505,54 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             
             {isOwner && (
                 <Drawer open={isEditVendorOpen} onOpenChange={setIsEditVendorOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
                             <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
-                                <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                    <Store className="h-5 w-5 text-primary text-left text-left text-left" />
-                                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Storefront Management</span>
+                                <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                                    <Store className="h-5 w-5 text-primary text-left text-left text-left text-left" />
+                                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Storefront Management</span>
                                 </div>
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Manage Store Details</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update your branding and coordination info.</DrawerDescription>
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Manage Store Details</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Update your branding and coordination info.</DrawerDescription>
                             </DrawerHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left text-left text-left">{vendorEditForm}</ScrollArea>
+                        <ScrollArea className="flex-grow text-left text-left text-left text-left">{vendorEditForm}</ScrollArea>
                     </DrawerContent>
                 </Drawer>
             )}
 
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
-                        <DialogHeader className="text-left p-0 text-left text-left text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left"> {addLabel}</DialogTitle>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
+                        <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left"> {addLabel}</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left text-left text-left">{itemForm()}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left">{itemForm()}</div>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
-                        <DialogHeader className="text-left p-0 text-left text-left text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Edit Offering</DialogTitle>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
+                        <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Edit Offering</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left text-left text-left">{itemForm(itemToEdit, true)}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left">{itemForm(itemToEdit, true)}</div>
                 </DialogContent>
             </Dialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left">
-                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left">Remove Offering?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left text-left">
+                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left text-left">Remove Offering?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left text-left">
-                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" />}
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left text-left text-left">
+                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left" />}
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -561,4 +561,3 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
-
