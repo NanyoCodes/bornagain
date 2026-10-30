@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -39,7 +40,9 @@ import {
   Search,
   CheckCircle2,
   Trophy,
-  Droplets
+  Droplets,
+  Store,
+  ShoppingBag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -205,9 +208,11 @@ export default function LandingPage() {
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-center">
             <div className="max-w-4xl mx-auto space-y-8">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center">
-                <Badge className="bg-primary text-primary-foreground mb-4 px-6 py-2 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto shadow-lg shadow-primary/20 border-none">
-                  PROCLAIMING GOD'S GOODNESS
-                </Badge>
+                <div className="flex justify-center mb-4">
+                  <Badge className="bg-primary text-primary-foreground px-6 py-2 rounded-full font-black uppercase tracking-[0.2em] text-[10px] shadow-lg shadow-primary/20 border-none">
+                    PROCLAIMING GOD'S GOODNESS
+                  </Badge>
+                </div>
                 <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.
                 </h1>
@@ -239,29 +244,83 @@ export default function LandingPage() {
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="space-y-8 max-w-4xl text-center text-left"
+                        className="space-y-8 max-w-4xl text-center"
                     >
-                        <Badge className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] text-left mx-auto">
+                        <Badge className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
                             THE COMPASSIONATE NETWORK
                         </Badge>
-                        <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-[0.9] tracking-tighter text-balance text-center text-left">
+                        <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-[0.9] tracking-tighter text-balance text-center">
                             Nurture the Harvest.<br/>
-                            <span className="text-primary text-left">With Love.</span>
+                            <span className="text-primary">With Love.</span>
                         </h2>
-                        <div className="space-y-6 text-center text-left">
-                            <p className="text-lg sm:text-2xl text-muted-foreground font-medium leading-relaxed italic border-x-4 border-primary/20 px-8 text-center text-balance text-left">
+                        <div className="space-y-6 text-center">
+                            <p className="text-lg sm:text-2xl text-muted-foreground font-medium leading-relaxed italic border-x-4 border-primary/20 px-8 text-center text-balance">
                                 We are here to help you look after those you lead to Christ. Testify provides the heartbeat of care for your family, your friends, and the souls God places in your path. 
                                 We offer men the tools for spiritual legacy. We provide women a community of radiant restoration. We guard the dreams of our children through intentional spiritual follow-up.
                             </p>
                         </div>
-                        <div className="group relative p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 transition-all hover:bg-muted/40 max-w-2xl mx-auto text-center text-left">
-                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center justify-center gap-3 mb-4 text-left">
-                                <Sparkles className="h-6 w-6 text-primary text-left" />
+                        <div className="group relative p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 transition-all hover:bg-muted/40 max-w-2xl mx-auto text-center">
+                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center justify-center gap-3 mb-4">
+                                <Sparkles className="h-6 w-6 text-primary" />
                                 Care Factor: Unmatched
                             </h3>
-                            <p className="text-muted-foreground leading-relaxed font-medium text-pretty text-center text-left">
+                            <p className="text-muted-foreground leading-relaxed font-medium text-pretty text-center">
                                 In this digital age, your care is your testimony. We provide the tools to ensure no one is forgotten. Follow up on the people you love with strategic compassion, logging every milestone of their journey into the light.
                             </p>
+                        </div>
+                    </motion.div>
+
+                    {/* Marketplace Teaser Section */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="w-full max-w-4xl space-y-10 text-center"
+                    >
+                        <div className="space-y-4">
+                            <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto">Kingdom Marketplace</Badge>
+                            <h2 className="text-3xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center">Physical Care & Provision</h2>
+                            <p className="text-muted-foreground text-lg italic font-medium leading-relaxed max-w-2xl mx-auto text-center">
+                                Nurturing a soul involves both spiritual and physical support. Testify connects you with providers dedicated to Kingdom care.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                            <Card className="rounded-[2rem] bg-indigo-600 text-white overflow-hidden border-none shadow-2xl group hover:scale-[1.02] transition-transform">
+                                <CardHeader className="p-8 pb-4">
+                                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
+                                        <Store className="h-6 w-6 text-white" />
+                                    </div>
+                                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Kindness Center</CardTitle>
+                                    <CardDescription className="text-indigo-100 text-sm font-medium">Create a store for any item—Bibles, tokens, or gifts.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-8 pt-0">
+                                    <p className="text-sm leading-relaxed font-medium text-indigo-50/80 italic">
+                                        Empower your ministry by providing spiritual resources and tokens of love that can be gifted directly to new converts.
+                                    </p>
+                                </CardContent>
+                                <CardFooter className="p-0 border-t border-white/10">
+                                    <Button variant="ghost" className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px]">REGISTER KINDNESS STORE</Button>
+                                </CardFooter>
+                            </Card>
+
+                            <Card className="rounded-[2rem] bg-primary text-white overflow-hidden border-none shadow-2xl group hover:scale-[1.02] transition-transform">
+                                <CardHeader className="p-8 pb-4">
+                                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
+                                        <Utensils className="h-6 w-6 text-white" />
+                                    </div>
+                                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Meals Center</CardTitle>
+                                    <CardDescription className="text-orange-50 text-sm font-medium">Become a physical provision provider.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-8 pt-0">
+                                    <p className="text-sm leading-relaxed font-medium text-orange-50/80 italic">
+                                        Register your meal service to provide physical nourishment for the brethren and those in need within your community.
+                                    </p>
+                                </CardContent>
+                                <CardFooter className="p-0 border-t border-white/10">
+                                    <Button variant="ghost" className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px]">REGISTER MEALS STORE</Button>
+                                </CardFooter>
+                            </Card>
                         </div>
                     </motion.div>
 
@@ -276,8 +335,8 @@ export default function LandingPage() {
                                     "p-8 rounded-[2.5rem] bg-card border shadow-xl flex flex-col items-center justify-center group hover:border-primary/40 transition-all h-[220px] text-left"
                                 )}
                             >
-                                <div className="space-y-4 text-center text-left">
-                                    <div className="flex items-center justify-center gap-2 text-left">
+                                <div className="space-y-4 text-center">
+                                    <div className="flex items-center justify-center gap-2">
                                         <stat.icon className="h-6 w-6 text-primary text-left" />
                                         <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em] text-left"> {stat.label}</h4>
                                     </div>
@@ -485,7 +544,7 @@ export default function LandingPage() {
                   <motion.div 
                     key={t.id}
                     initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
                     className="text-left"
