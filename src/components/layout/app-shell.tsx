@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -36,7 +35,8 @@ import {
   Utensils,
   Info,
   ChevronDown,
-  Gamepad2
+  Gamepad2,
+  Trash2
 } from "lucide-react";
 
 import {
@@ -80,7 +80,7 @@ import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
+import { collection, doc, query, where, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
 import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
@@ -147,6 +147,15 @@ function CartButton() {
     return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
   }, [cartItems]);
 
+  const handleDeleteItem = async (itemId: string) => {
+    if (!user?.uid || !firestore) return;
+    try {
+        await deleteDoc(doc(firestore, 'users', user.uid, 'cart', itemId));
+    } catch (e) {
+        console.error("Cart item deletion failed", e);
+    }
+  };
+
   const trigger = (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
         <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
@@ -165,15 +174,23 @@ function CartButton() {
         {cartItems && cartItems.length > 0 ? (
             <div className="space-y-3">
                 {cartItems.map((item: any) => (
-                    <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left">
-                        <Avatar className="h-10 w-10 border">
-                            <AvatarImage src={item.photoURL} />
+                    <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left group">
+                        <Avatar className="h-10 w-10 border shrink-0">
+                            <AvatarImage src={item.photoURL} className="object-cover" />
                             <AvatarFallback>P</AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1 text-left">
                             <p className="font-bold text-sm truncate uppercase tracking-tight">{item.name}</p>
                             <p className="text-[10px] font-black uppercase tracking-widest">{item.currency}{item.price.toLocaleString()} x {item.quantity}</p>
                         </div>
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity rounded-full hover:bg-destructive/10"
+                            onClick={() => handleDeleteItem(item.id)}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
                     </div>
                 ))}
                 <div className="pt-4 border-t border-dashed text-left">
@@ -634,7 +651,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
     }
   }, [userProfile, mounted]);
 
-  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events', '/marketplace', '/marketplace/gifts', '/marketplace/orders', '/victory-hub', '/strongholds', '/games'];
+  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events', '/marketplace', '/marketplace/gifts', '/marketplace/orders', '/victory-hub', '/strongholds', '/games', '/marketplace/checkout'];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
   const isTakeoverPage = useMemo(() => {
