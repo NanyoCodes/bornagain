@@ -259,7 +259,7 @@ export default function GiftsMarketplaceClient() {
 
     const registrationForm = (
         <form onSubmit={handleRegisterVendor}>
-            <div className="p-8 space-y-6 text-left">
+            <div className="p-8 space-y-6 text-left text-left text-left">
                 <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex items-center gap-3 text-left">
                     <Gift className="h-5 w-5 text-primary text-left" />
                     <p className="text-xs font-bold text-primary uppercase tracking-widest text-left">Registering for Kindness Center</p>
@@ -315,57 +315,57 @@ export default function GiftsMarketplaceClient() {
                 </div>
 
                 <div className="space-y-4 text-left">
-                    <div className="space-y-2 text-left">
-                        <Label htmlFor="address" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Street Address</Label>
-                        <Input id="address" name="address" placeholder="e.g., 123 Kingdom Way" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left" required />
+                    <div className="space-y-2 text-left text-left">
+                        <Label htmlFor="address" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Street Address</Label>
+                        <Input id="address" name="address" placeholder="e.g., 123 Kingdom Way" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" required />
                     </div>
 
-                    <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Country</Label>
+                    <div className="space-y-2 text-left text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Country</Label>
                         <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                <SelectValue placeholder="Select Country" className="text-left" />
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
+                                <SelectValue placeholder="Select Country" className="text-left text-left" />
                             </SelectTrigger>
-                            <SelectContent className="max-h-[300px] text-left">
-                                {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
+                            <SelectContent className="max-h-[300px] text-left text-left">
+                                {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left text-left">{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 text-left">
-                        <div className="space-y-2 text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">State</Label>
+                    <div className="grid grid-cols-2 gap-4 text-left text-left">
+                        <div className="space-y-2 text-left text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">State</Label>
                             <Select onValueChange={setRegState} value={regState} disabled={!regCountry || regStatesList.length === 0}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                    <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "Select State"} className="text-left" />
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
+                                    <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "Select State"} className="text-left text-left" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left">
-                                    {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
+                                <SelectContent className="max-h-[300px] text-left text-left">
+                                    {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left text-left">{s.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-2 text-left">
-                            <Label htmlFor="city" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">City</Label>
-                            <Input id="city" name="city" placeholder="Enter City" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left" required />
+                        <div className="space-y-2 text-left text-left">
+                            <Label htmlFor="city" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">City</Label>
+                            <Input id="city" name="city" placeholder="Enter City" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" required />
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-2 text-left">
-                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">About Your Service</Label>
-                    <Textarea id="description" name="description" placeholder="Describe your products..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
+                <div className="space-y-2 text-left text-left">
+                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">About Your Service</Label>
+                    <Textarea id="description" name="description" placeholder="Describe your products..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" />
                 </div>
-                <div className="space-y-2 text-left">
-                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
-                        <CreditCard className="h-3 w-3 text-left" /> Payment Details
+                <div className="space-y-2 text-left text-left">
+                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left text-left">
+                        <CreditCard className="h-3 w-3 text-left text-left" /> Payment Details
                     </Label>
-                    <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank details or payment instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
+                    <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank details or payment instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" required />
                 </div>
             </div>
             <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 text-left">
                 <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
                 <Button type="submit" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />} START PROVIDING
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : 'REGISTER ENTITY'}
                 </Button>
             </div>
         </form>
@@ -386,48 +386,48 @@ export default function GiftsMarketplaceClient() {
                     </div>
                     <div className="flex gap-2 w-full sm:w-auto text-left">
                         {myVendorProfile ? (
-                            <Button onClick={() => router.push(`/dashboard/marketplace/vendors/${myVendorProfile.id}`)} variant="outline" className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-md text-[10px] sm:text-xs text-left">
-                                <Store className="mr-2 h-4 w-4 text-primary text-left" /> My Storefront
+                            <Button onClick={() => router.push(`/dashboard/marketplace/vendors/${myVendorProfile.id}`)} variant="outline" className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-md text-[10px] sm:text-xs text-left text-left">
+                                <Store className="mr-2 h-4 w-4 text-primary text-left text-left" /> My Storefront
                             </Button>
                         ) : (
-                            <Button onClick={() => setIsRegisterOpen(true)} className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 text-[10px] sm:text-xs text-left">
-                                <PlusCircle className="mr-2 h-4 w-4 text-left" /> Become a Provider
+                            <Button onClick={() => setIsRegisterOpen(true)} className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 text-[10px] sm:text-xs text-left text-left">
+                                <PlusCircle className="mr-2 h-4 w-4 text-left text-left" /> Become a Provider
                             </Button>
                         )}
                     </div>
                 </div>
 
                 {soulName && (
-                    <div className="bg-primary/10 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[2rem] flex items-center justify-between group shadow-inner text-left">
-                        <div className="flex items-center gap-4 text-left">
-                            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shrink-0 text-left">
-                                <Gift className="h-5 w-5 sm:h-6 sm:w-6 text-white animate-pulse text-left" />
+                    <div className="bg-primary/10 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[2rem] flex items-center justify-between group shadow-inner text-left text-left">
+                        <div className="flex items-center gap-4 text-left text-left">
+                            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shrink-0 text-left text-left text-left">
+                                <Gift className="h-5 w-5 sm:h-6 sm:w-6 text-white animate-pulse text-left text-left text-left" />
                             </div>
-                            <div className="min-w-0 text-left">
-                                <p className="text-base sm:text-lg font-black uppercase tracking-tight leading-tight truncate text-left">Gift for {soulName}</p>
-                                <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-80 text-balance text-left">Choose a provider to gift a token of kindness.</p>
+                            <div className="min-w-0 text-left text-left">
+                                <p className="text-base sm:text-lg font-black uppercase tracking-tight leading-tight truncate text-left text-left">Gift for {soulName}</p>
+                                <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-80 text-balance text-left text-left">Choose a provider to gift a token of kindness.</p>
                             </div>
                         </div>
                     </div>
                 )}
 
                 <div className="space-y-4 text-left">
-                    <div className="flex flex-col sm:flex-row gap-3 text-left">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 text-left">
                         <div className="relative flex-1 text-left">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
+                            <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-40 text-left" />
                             <Input 
                                 placeholder="Search stores..." 
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
-                                className="h-12 sm:h-14 pl-12 rounded-[1.25rem] sm:rounded-[1.5rem] bg-muted/20 border-none shadow-inner font-bold w-full text-left"
+                                className="h-10 sm:h-14 pl-10 sm:pl-12 rounded-xl sm:rounded-[1.5rem] bg-muted/20 border-none shadow-inner font-bold w-full text-sm sm:text-lg text-left text-left"
                             />
                         </div>
                         
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="h-12 sm:h-14 px-6 rounded-[1.25rem] sm:rounded-[1.5rem] border-2 border-primary/20 text-primary hover:bg-primary/5 font-black uppercase tracking-widest text-[10px] gap-2 shadow-sm text-left">
-                                    <Filter className="h-4 w-4 text-left" />
-                                    {filterCategory === 'all' ? 'FILTER CATEGORY' : filterCategory.toUpperCase()}
+                                <Button variant="outline" className="h-10 sm:h-14 px-3 sm:px-6 rounded-xl sm:rounded-[1.5rem] border-2 border-primary/20 text-primary hover:bg-primary/5 font-black uppercase tracking-widest text-[9px] sm:text-[10px] gap-1.5 sm:gap-2 shadow-sm text-left w-full sm:w-auto flex items-center justify-center sm:justify-start">
+                                    <Filter className="h-3.5 w-3.5 sm:h-4 w-4 text-left" />
+                                    <span className="truncate">{filterCategory === 'all' ? 'FILTER CATEGORY' : filterCategory.toUpperCase()}</span>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-2xl border-none p-2 text-left">
@@ -453,8 +453,8 @@ export default function GiftsMarketplaceClient() {
                     <div className="flex flex-col sm:flex-row gap-3 text-left">
                         <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar text-left">
                             <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
-                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
-                                    <SelectValue placeholder="Country" className="text-left" />
+                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left">
+                                    <SelectValue placeholder="Country" className="text-left text-left" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px] text-left">
                                     <SelectItem value="all" className="text-left">All Countries</SelectItem>
@@ -463,8 +463,8 @@ export default function GiftsMarketplaceClient() {
                             </Select>
 
                             <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
-                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
-                                    <SelectValue placeholder="State/Region" className="text-left" />
+                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left">
+                                    <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "State/Region"} className="text-left text-left" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px] text-left">
                                     <SelectItem value="all" className="text-left">All States</SelectItem>
@@ -518,7 +518,7 @@ export default function GiftsMarketplaceClient() {
                                         <MapPin className="h-2.5 w-2.5 text-primary text-left" /> {vendor.location || 'Online / Delivery'}
                                     </div>
                                 </div>
-                                <div className="absolute top-4 left-4 text-left">
+                                <div className="absolute top-4 left-4 text-left text-left">
                                     {vendor.category && (
                                         <Badge className="bg-primary text-white font-black uppercase text-[7px] px-2 h-5 border-none shadow-sm text-center text-left">
                                             {vendor.category}
@@ -536,7 +536,7 @@ export default function GiftsMarketplaceClient() {
                                     &ldquo;{vendor.description || 'Verified Kingdom gift partner.'}&rdquo;
                                 </p>
                                 <Button className="w-full h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center text-left">
-                                    <span className="flex-1 text-left text-center">EXPLORE OFFERINGS</span>
+                                    <span className="flex-1 text-center text-left">EXPLORE OFFERINGS</span>
                                     <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 text-left" />
                                 </Button>
                             </div>
@@ -552,7 +552,7 @@ export default function GiftsMarketplaceClient() {
             </div>
 
             {cartCount > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left">
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left text-left">
                     <Link href="/marketplace/checkout" className="block group text-left">
                         <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left">
                             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left" />
@@ -573,7 +573,7 @@ export default function GiftsMarketplaceClient() {
                             </div>
 
                             <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left text-left">
-                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left text-left" />
+                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left text-left text-left" />
                             </div>
                         </div>
                     </Link>
@@ -583,11 +583,11 @@ export default function GiftsMarketplaceClient() {
             {mounted && (
                 isMobile ? (
                     <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left p-0 text-left">
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Register your gift storefront.</SheetDescription>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                                <SheetHeader className="text-left p-0 text-left text-left text-left">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Become a Provider</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Register your gift storefront.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -597,14 +597,14 @@ export default function GiftsMarketplaceClient() {
                     </Sheet>
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="p-0 text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Register your gift storefront and start providing physical tokens of kindness.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                                <DialogHeader className="p-0 text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Become a Provider</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Register your gift storefront and start providing physical tokens of kindness.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-grow text-left">
+                            <ScrollArea className="flex-grow text-left text-left text-left">
                                 {registrationForm}
                             </ScrollArea>
                         </DialogContent>
