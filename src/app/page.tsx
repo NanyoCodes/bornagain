@@ -269,64 +269,6 @@ export default function LandingPage() {
                         </div>
                     </motion.div>
 
-                    {/* Marketplace Teaser Section */}
-                    <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="w-full max-w-4xl space-y-10 text-center"
-                    >
-                        <div className="space-y-4">
-                            <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto">Kingdom Marketplace</Badge>
-                            <h2 className="text-3xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center">Physical Care & Provision</h2>
-                            <p className="text-muted-foreground text-lg italic font-medium leading-relaxed max-w-2xl mx-auto text-center">
-                                Nurturing a soul involves both spiritual and physical support. Testify connects you with providers dedicated to Kingdom care.
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                            <Card className="rounded-[2rem] bg-indigo-600 text-white overflow-hidden border-none shadow-2xl group hover:scale-[1.02] transition-transform text-left">
-                                <CardHeader className="p-8 pb-4 text-left text-left">
-                                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4 text-left">
-                                        <Store className="h-6 w-6 text-white text-left" />
-                                    </div>
-                                    <CardTitle className="text-2xl font-black uppercase tracking-tight text-left text-left">Kindness Center</CardTitle>
-                                    <CardDescription className="text-indigo-100 text-sm font-medium text-left">Create a store for any item—Bibles, tokens, or gifts.</CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-8 pt-0 text-left">
-                                    <p className="text-sm leading-relaxed font-medium text-indigo-50/80 italic text-left">
-                                        Empower your ministry by providing spiritual resources and tokens of love that can be gifted directly to new converts.
-                                    </p>
-                                </CardContent>
-                                <CardFooter className="p-0 border-t border-white/10 text-left text-left">
-                                    <Button variant="ghost" asChild className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-left">
-                                        <Link href="/signup" className="text-left text-left">REGISTER KINDNESS STORE</Link>
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-
-                            <Card className="rounded-[2rem] bg-primary text-white overflow-hidden border-none shadow-2xl group hover:scale-[1.02] transition-transform text-left">
-                                <CardHeader className="p-8 pb-4 text-left text-left">
-                                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4 text-left">
-                                        <Utensils className="h-6 w-6 text-white text-left" />
-                                    </div>
-                                    <CardTitle className="text-2xl font-black uppercase tracking-tight text-left text-left">Meals Center</CardTitle>
-                                    <CardDescription className="text-orange-50 text-sm font-medium text-left">Become a physical provision provider.</CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-8 pt-0 text-left">
-                                    <p className="text-sm leading-relaxed font-medium text-orange-50/80 italic text-left">
-                                        Register your meal service to provide physical nourishment for the brethren and those in need within your community.
-                                    </p>
-                                </CardContent>
-                                <CardFooter className="p-0 border-t border-white/10 text-left text-left">
-                                    <Button variant="ghost" asChild className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-left">
-                                        <Link href="/signup" className="text-left text-left">REGISTER MEALS STORE</Link>
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        </div>
-                    </motion.div>
-
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full text-left text-left">
                         {stats.map((stat, i) => (
                             <motion.div 
@@ -373,50 +315,6 @@ export default function LandingPage() {
                     </div>
                     <div className="w-full max-w-2xl mx-auto text-left text-left">
                          <BibleGameCard />
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        {/* Redeeming the Scroll Section */}
-        <section className="py-24 bg-muted/20 relative overflow-hidden text-center text-left text-left">
-            <div className="max-w-7xl mx-auto px-6 text-center text-left">
-                <div className="flex flex-col items-center gap-12 text-center text-left">
-                    <div className="space-y-8 max-w-3xl mx-auto text-center text-left text-left">
-                        <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto text-left">Redeeming the Habit</Badge>
-                        <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight tracking-tighter text-center text-left">The Scroll with Soul</h2>
-                        <div className="space-y-6 text-lg text-muted-foreground font-medium italic leading-relaxed text-center text-left">
-                            <p className="text-center text-balance text-left text-left">
-                                Aimless scrolling is the modern reflex, but it often leaves the heart empty. We believe that while the habit has come to stay, the content must change.
-                            </p>
-                            <p className="text-center text-balance text-left text-left">
-                                With Testify, every swipe is a spiritual deposit. As you scroll, you aren't just passing time; you are absorbing the manifest power of God and giving Him glory. We've replaced the noise with miracles, turning a mindless habit into a lifestyle of praise.
-                            </p>
-                        </div>
-                        <div className="pt-4 text-center text-left">
-                            <Button asChild size="lg" className="rounded-full h-12 px-10 font-black uppercase tracking-widest text-[10px] shadow-xl text-center text-left">
-                                <Link href="/signup" className="text-center text-left">JOIN THE FEED OF GLORY</Link>
-                            </Button>
-                        </div>
-                    </div>
-                    
-                    <div className="relative w-full max-w-[300px] mx-auto text-center text-left text-left">
-                        <div className="relative aspect-[9/16] rounded-[3rem] border-[8px] border-zinc-900 shadow-2xl overflow-hidden bg-zinc-950 ring-4 ring-primary/20 text-center mx-auto text-left">
-                            <div className="absolute inset-0 p-4 space-y-4 text-center text-left text-left">
-                                {[...Array(4)].map((_, i) => (
-                                    <div key={i} className="bg-white/5 rounded-2xl p-4 space-y-2 text-center text-left text-left">
-                                        <div className="flex gap-2 items-center justify-center text-center text-left text-left">
-                                            <div className="h-6 w-6 rounded-full bg-primary/20 text-left text-left text-left" />
-                                            <div className="h-2 w-20 bg-white/10 rounded text-left text-left text-left" />
-                                        </div>
-                                        <div className="h-10 w-full bg-white/5 rounded-lg text-left text-left text-left" />
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent flex items-end justify-center pb-12 text-center text-left text-left">
-                                <Sparkles className="h-12 w-12 text-white animate-pulse text-left text-left text-left" />
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -529,7 +427,7 @@ export default function LandingPage() {
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left text-left">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left text-left">Witness the Care</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-left text-left">
-                    Explore how believers around the world witness and record the manifest goodness of God in their daily lives.
+                    Explore how believers around the world witness what God is doing in their lives daily.
                   </p>
                 </div>
                 
@@ -578,27 +476,27 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden text-left text-left">
-          <div className="absolute inset-0 opacity-10 pointer-events-none text-left text-left">
-            <div className="absolute inset-0 grid grid-cols-6 gap-8 rotate-12 -translate-y-1/4 text-left text-left">
+        <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden text-left text-left text-left">
+          <div className="absolute inset-0 opacity-10 pointer-events-none text-left text-left text-left">
+            <div className="absolute inset-0 grid grid-cols-6 gap-8 rotate-12 -translate-y-1/4 text-left text-left text-left">
               {[...Array(24)].map((_, i) => (
-                <Globe key={i} className="h-24 w-24 text-left text-left" />
+                <Globe key={i} className="h-24 w-24 text-left text-left text-left" />
               ))}
             </div>
           </div>
           
-          <div className="max-w-7xl mx-auto px-6 text-center relative z-10 text-left text-left">
-            <div className="max-w-3xl mx-auto space-y-10 text-center text-left text-left">
-              <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance text-center text-left text-left">
+          <div className="max-w-7xl mx-auto px-6 text-center relative z-10 text-left text-left text-left">
+            <div className="max-w-3xl mx-auto space-y-10 text-center text-left text-left text-left">
+              <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance text-center text-left text-left text-left">
                 Ready to Look After Your Own?
               </h2>
-              <p className="text-lg sm:text-2xl text-primary-foreground/90 font-medium leading-relaxed italic text-balance text-center text-left text-left">
+              <p className="text-lg sm:text-2xl text-primary-foreground/90 font-medium leading-relaxed italic text-balance text-center text-left text-left text-left">
                 Join the app dedicated to caring for family, friends, souls, and the Kingdom.
                 Follow up on those you love and record the greatness of God together.
               </p>
-              <div className="flex justify-center pt-4 items-center text-left text-left">
-                <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center text-left text-left">
-                  <Link href="/signup" className="text-center text-left text-left">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6 text-left text-left" /></Link>
+              <div className="flex justify-center pt-4 items-center text-left text-left text-left">
+                <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center text-left text-left text-left">
+                  <Link href="/signup" className="text-center text-left text-left text-left">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6 text-left text-left text-left" /></Link>
                 </Button>
               </div>
             </div>
@@ -606,53 +504,53 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-muted/50 border-t py-20 text-left text-left">
-        <div className="max-w-7xl mx-auto px-8 text-left text-left">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16 text-left text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-8 text-left text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
+      <footer className="bg-muted/50 border-t py-20 text-left text-left text-left">
+        <div className="max-w-7xl mx-auto px-8 text-left text-left text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16 text-left text-left text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-8 text-left text-left text-left">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left text-left">
                 {logo && (
-                  <Avatar className="h-14 w-14 border-2 border-primary/20 text-left text-left">
-                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left" />
+                  <Avatar className="h-14 w-14 border-2 border-primary/20 text-left text-left text-left">
+                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left text-left" />
                     <AvatarFallback>T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-sm text-left text-left">
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-sm text-left text-left text-left">
                 Testify is the heart center for believers to care for family, friends, and the global harvest while sharing the greatness of Jesus Christ.
               </p>
             </div>
 
-            <div className="space-y-6 text-left text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Platform</h4>
-              <ul className="space-y-4 text-left text-left">
-                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Miracle Feed</Link></li>
-                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Care Missions</Link></li>
-                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Love Growth</Link></li>
-                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Community Hubs</Link></li>
+            <div className="space-y-6 text-left text-left text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left">Platform</h4>
+              <ul className="space-y-4 text-left text-left text-left">
+                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left text-left">Miracle Feed</Link></li>
+                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left text-left">Care Missions</Link></li>
+                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left text-left">Love Growth</Link></li>
+                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left text-left">Community Hubs</Link></li>
               </ul>
             </div>
 
-            <div className="space-y-6 text-left text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Ministry</h4>
-              <ul className="space-y-4 text-left text-left">
-                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Vision</Link></li>
-                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Partner with us</Link></li>
-                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Care Guide</Link></li>
-                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Growth Assets</Link></li>
-                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Terms</Link></li>
-                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Privacy</Link></li>
+            <div className="space-y-6 text-left text-left text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left">Ministry</h4>
+              <ul className="space-y-4 text-left text-left text-left">
+                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Vision</Link></li>
+                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Partner with us</Link></li>
+                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Care Guide</Link></li>
+                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Growth Assets</Link></li>
+                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Terms</Link></li>
+                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Privacy</Link></li>
               </ul>
             </div>
           </div>
           
-          <div className="h-px w-full bg-muted opacity-50 mb-10 text-left text-left" />
+          <div className="h-px w-full bg-muted opacity-50 mb-10 text-left text-left text-left" />
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left">
-            <p className="text-center md:text-left uppercase text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Caring for the Harvest.</p>
-            <div className="flex gap-8 text-left text-left">
-              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left text-left">Terms</Link>
-              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left text-left">Privacy</Link>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left text-left">
+            <p className="text-center md:text-left uppercase text-left text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Caring for the Harvest.</p>
+            <div className="flex gap-8 text-left text-left text-left">
+              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left text-left text-left">Terms</Link>
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left text-left text-left">Privacy</Link>
             </div>
           </div>
         </div>

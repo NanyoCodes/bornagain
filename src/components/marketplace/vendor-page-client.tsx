@@ -175,26 +175,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     const loading = userLoading || loadingVendor || loadingMeals || cartLoading;
 
-    if (!vendor && !loading) {
-        return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-32 text-center px-8 text-left">
-                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
-                    <Store className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
-                </div>
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left">Storefront Not Found</h2>
-                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left text-left text-left">This Kingdom partner may have moved their station or closed their doors.</p>
-                <Button variant="outline" className="mt-8 rounded-xl h-11 px-8 font-bold mx-auto block text-center text-left text-left text-left" onClick={() => router.back()}>
-                    <ArrowLeft className="mr-2 h-4 w-4 text-left" /> Go Back
-                </Button>
-            </div>
-        );
-    }
-
-    if (loading || !vendor) return <div className="flex h-full w-full items-center justify-center py-20 text-left"><Loader2 className="animate-spin text-primary text-left" /></div>;
-
-    const cartItems = Object.values(cart);
-    const cartCount = cartItems.reduce((acc, c) => acc + c.quantity, 0);
-
     const addToCart = async (item: Meal) => {
         if (!user?.uid || !firestore || !vendor) return;
         const itemRef = doc(firestore, 'users', user.uid, 'cart', item.id);
@@ -214,8 +194,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const handleShare = async () => {
         const shareUrl = window.location.href;
         const shareData = {
-            title: vendor?.businessName,
-            text: `Check out ${vendor?.businessName} on Testify!`,
+            title: vendor?.businessName || 'Kingdom Store',
+            text: `Check out ${vendor?.businessName || 'this Kingdom store'} on Testify!`,
             url: shareUrl,
         };
 
@@ -300,11 +280,30 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         deleteDoc(doc(firestore, 'vendors', vendorId, 'meals', itemToDelete.id)).then(() => { toast({ title: 'Item Removed' }); setItemToDelete(null); }).finally(() => setIsDeletingItem(false));
     };
 
+    if (!vendor && !loading) {
+        return (
+            <div className="flex h-full w-full flex-col items-center justify-center py-32 text-center px-8 text-left">
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                    <Store className="h-10 w-10 text-muted-foreground opacity-20" />
+                </div>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center">Storefront Not Found</h2>
+                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center">This Kingdom partner may have moved their station or closed their doors.</p>
+                <Button variant="outline" className="mt-8 rounded-xl h-11 px-8 font-bold mx-auto block" onClick={() => router.back()}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
+                </Button>
+            </div>
+        );
+    }
+
+    if (loading || !vendor) return <div className="flex h-full w-full items-center justify-center py-20 text-left"><Loader2 className="animate-spin text-primary" /></div>;
+
+    const cartCountTotal = Object.values(cart).reduce((acc, c) => acc + c.quantity, 0);
+
     const vendorEditForm = (
         <form onSubmit={handleUpdateVendor}>
             <div className="p-8 space-y-6 text-left">
                 <div className="space-y-4 text-left">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Store Branding</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Store Branding</Label>
                   <ImageUpload 
                       initialImageUrl={vendorUpdatePhotoURL} 
                       onUploadComplete={setVendorUpdatePhotoURL} 
@@ -314,33 +313,33 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Business Name</Label>
-                    <Input id="businessName" name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
+                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
+                    <Input id="businessName" name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
                         <Select name="category" defaultValue={vendor.category || 'Miscellaneous'}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                <SelectValue placeholder="Select Category" className="text-left" />
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                <SelectValue placeholder="Select Category" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
+                            <SelectContent className="rounded-2xl border-none shadow-2xl">
                                 {(isGiftVendor ? giftStoreCategories : ['Local Delivery', 'Bakery', 'Restaurant', 'Healthy Options', 'Catering']).map(c => (
-                                    <SelectItem key={c} value={c} className="rounded-xl font-bold text-left">{c}</SelectItem>
+                                    <SelectItem key={c} value={c} className="rounded-xl font-bold">{c}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Base Currency</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Base Currency</Label>
                         <Select name="currency" defaultValue={vendor.currency || 'NGN'}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                <SelectValue placeholder="Select Currency" className="text-left" />
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                <SelectValue placeholder="Select Currency" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
+                            <SelectContent className="rounded-2xl border-none shadow-2xl">
                                 {currencyOptions.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold text-left">{opt.label}</SelectItem>
+                                    <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold">{opt.label}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -348,26 +347,26 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Store Location</Label>
-                    <Input id="location" name="location" defaultValue={vendor.location || ''} placeholder="City, State, Country" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
+                    <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Store Location</Label>
+                    <Input id="location" name="location" defaultValue={vendor.location || ''} placeholder="City, State, Country" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">About Your Service</Label>
-                    <Textarea id="description" name="description" defaultValue={vendor.description || ''} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
+                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About Your Service</Label>
+                    <Textarea id="description" name="description" defaultValue={vendor.description || ''} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left">
-                        <CreditCard className="h-3 w-3 text-left" /> Payment & Coordinate Info
+                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+                        <CreditCard className="h-3 w-3" /> Payment & Coordinate Info
                     </Label>
-                    <Textarea id="paymentDetails" name="paymentDetails" defaultValue={vendor.paymentDetails || ''} placeholder="Bank details or pickup instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
+                    <Textarea id="paymentDetails" name="paymentDetails" defaultValue={vendor.paymentDetails || ''} placeholder="Bank details or pickup instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                 </div>
             </div>
-            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
-                <Button type="button" variant="outline" onClick={() => setIsEditVendorOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
-                <Button type="submit" disabled={isUpdatingVendor} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left">
-                    {isUpdatingVendor && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />} SAVE STOREFRONT
+            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3">
+                <Button type="button" variant="outline" onClick={() => setIsEditVendorOpen(false)} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
+                <Button type="submit" disabled={isUpdatingVendor} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">
+                    {isUpdatingVendor && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} SAVE STOREFRONT
                 </Button>
             </div>
         </form>
@@ -377,21 +376,21 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal}>
             <div className="p-8 space-y-6 text-left">
                 <div className="space-y-4 text-left">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left"> {itemLabel} Visual</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1"> {itemLabel} Visual</Label>
                   <ImageUpload initialImageUrl={itemPhotoURL} onUploadComplete={setItemPhotoURL} storagePath="marketplace-items" cropAspect={4/3} />
                 </div>
-                <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left"> {itemLabel} Name</Label><Input name="name" defaultValue={item?.name || ''} placeholder={`e.g. ${isGiftVendor ? 'Study Bible' : 'Full Platter'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required /></div>
+                <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1"> {itemLabel} Name</Label><Input name="name" defaultValue={item?.name || ''} placeholder={`e.g. ${isGiftVendor ? 'Study Bible' : 'Full Platter'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required /></div>
                 <div className="grid grid-cols-2 gap-4 text-left">
-                    <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Price ({getCurrencySymbol(vendor.currency)})</Label><Input name="price" type="number" step="0.01" defaultValue={item?.price || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required /></div>
-                    <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Delivery Fee</Label><Input name="deliveryFee" type="number" step="0.01" defaultValue={item?.deliveryFee || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
+                    <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price ({getCurrencySymbol(vendor.currency)})</Label><Input name="price" type="number" step="0.01" defaultValue={item?.price || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required /></div>
+                    <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Fee</Label><Input name="deliveryFee" type="number" step="0.01" defaultValue={item?.deliveryFee || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
                 </div>
-                <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
-                <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" /></div>
+                <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
+                <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" /></div>
             </div>
-            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
-                <Button type="button" variant="outline" onClick={() => { setIsAddMealOpen(false); setItemToEdit(null); setItemPhotoURL(''); }} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
-                <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest text-center text-left">
-                    {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+            <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3">
+                <Button type="button" variant="outline" onClick={() => { setIsAddMealOpen(false); setItemToEdit(null); setItemPhotoURL(''); }} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
+                <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest text-center">
+                    {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isEdit ? 'SAVE CHANGES' : 'ADD TO CATALOG'}
                 </Button>
             </div>
@@ -402,61 +401,61 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         <div className="w-full text-left">
             <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left">
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
-                    <div className="flex items-center justify-between gap-4 text-left text-left text-left">
-                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
-                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left">
-                                <AvatarImage src={vendor.photoURL || undefined} className="object-cover text-left" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary uppercase text-left"> {vendor.businessName?.charAt(0)}</AvatarFallback>
+                    <div className="flex items-center justify-between gap-4 text-left">
+                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left">
+                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6" /></Button>
+                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0">
+                                <AvatarImage src={vendor.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary uppercase"> {vendor.businessName?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 flex-1 text-left">
-                                <div className="flex items-center gap-2 mb-1 text-left">
-                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left" />}
-                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">{centerLabel}</span>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary" /> : <Utensils className="h-3.5 w-3.5 text-primary" />}
+                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                                 </div>
-                                <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase leading-tight text-left">{vendor.businessName}</h1>
+                                <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase leading-tight">{vendor.businessName}</h1>
                                 {isOwner && (
                                     <Button 
                                         variant="outline" 
                                         size="icon" 
                                         onClick={() => setIsEditVendorOpen(true)} 
-                                        className="h-8 w-8 rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background mt-2 text-left"
+                                        className="h-8 w-8 rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background mt-2"
                                     >
-                                        <Edit className="h-4 w-4 text-left" />
-                                        <span className="sr-only text-left">Manage Store</span>
+                                        <Edit className="h-4 w-4" />
+                                        <span className="sr-only">Manage Store</span>
                                     </Button>
                                 )}
                             </div>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0 text-left">
-                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary/60 hover:text-primary text-left" onClick={handleShare}>
-                                <Share2 className="h-5 w-5 text-left" />
+                        <div className="flex items-center gap-2 shrink-0">
+                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary/60 hover:text-primary" onClick={handleShare}>
+                                <Share2 className="h-5 w-5" />
                             </Button>
                         </div>
                     </div>
 
-                    <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left">
-                        {vendor.photoURL ? <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left"><Store className="h-16 w-16 text-primary opacity-10 text-left" /></div>}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
-                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left">
-                            <div className="flex items-center gap-2 opacity-80 mb-2 text-left">
-                                <MapPin className="h-3.5 w-3.5 text-primary text-left" />
-                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate text-left">{vendor.location || 'Kingdom Network'}</p>
+                    <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
+                        {vendor.photoURL ? <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5"><Store className="h-16 w-16 text-primary opacity-10" /></div>}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%]">
+                            <div className="flex items-center gap-2 opacity-80 mb-2">
+                                <MapPin className="h-3.5 w-3.5 text-primary" />
+                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor.location || 'Kingdom Network'}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="relative text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
-                        <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 sm:h-14 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-sm sm:text-lg text-left" />
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
+                        <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 sm:h-14 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-sm sm:text-lg" />
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
                     {isOwner && !itemSearchTerm && (
-                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left" onClick={() => setIsAddMealOpen(true)}>
-                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left"><Plus className="h-6 w-6 text-primary text-left" /></div>
-                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-center text-left"> {addLabel}</h3>
+                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm" onClick={() => setIsAddMealOpen(true)}>
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4"><Plus className="h-6 w-6 text-primary" /></div>
+                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-center"> {addLabel}</h3>
                         </Card>
                     )}
 
@@ -464,37 +463,37 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         const cartItem = cart[meal.id];
                         const itemSymbol = getCurrencySymbol(meal.currency);
                         return (
-                            <Card key={meal.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
-                                <CardContent className="p-0 text-left">
-                                    <div className="aspect-[4/3] relative bg-muted text-left">
-                                        {meal.photoURL ? <NextImage src={meal.photoURL} alt={meal.name} fill className="object-cover text-left" unoptimized /> : <div className="w-full h-full flex items-center justify-center text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left" />}</div>}
-                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left">
-                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-left"> {itemSymbol}{meal.price.toLocaleString()}</Badge>
-                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-left"> + {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
+                            <Card key={meal.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full">
+                                <CardContent className="p-0">
+                                    <div className="aspect-[4/3] relative bg-muted">
+                                        {meal.photoURL ? <NextImage src={meal.photoURL} alt={meal.name} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex items-center justify-center">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10" />}</div>}
+                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
+                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest"> {itemSymbol}{meal.price.toLocaleString()}</Badge>
+                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm"> + {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
                                         </div>
-                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-center text-left"> {cartItem.quantity}</div>}
+                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-center"> {cartItem.quantity}</div>}
                                     </div>
-                                    <div className="p-6 sm:p-8 space-y-4 flex-grow text-left">
-                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight mb-1 text-left">{meal.name}</h3>
-                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left">{meal.description || `Verified Kingdom service item.`}</p>
+                                    <div className="p-6 sm:p-8 space-y-4 flex-grow">
+                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight mb-1">{meal.name}</h3>
+                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed">{meal.description || `Verified Kingdom service item.`}</p>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left">
+                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2">
                                     {isOwner && (
-                                        <div className="flex gap-2 text-left">
-                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left" /></Button>
-                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="mr-2 h-4 w-4 text-left" /></Button>
+                                        <div className="flex gap-2">
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary" /></Button>
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10" onClick={() => setItemToDelete(meal)}><Trash2 className="mr-2 h-4 w-4 text-left" /></Button>
                                         </div>
                                     )}
-                                    <div className="flex-1 min-w-0 text-left">
+                                    <div className="flex-1 min-w-0">
                                         {cartItem ? (
-                                            <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left"/></Button>
-                                                <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-center">IN PACKAGE</span>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left"/></Button>
+                                            <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5"/></Button>
+                                                <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter">IN PACKAGE</span>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(meal.id, cartItem.quantity, 1)}><Plus className="h-3.5 w-3.5"/></Button>
                                             </div>
                                         ) : (
-                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-90 text-center text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
+                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-90 text-center">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
                                         )}
                                     </div>
                                 </CardFooter>
@@ -507,53 +506,53 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             {isOwner && (
                 <Drawer open={isEditVendorOpen} onOpenChange={setIsEditVendorOpen}>
                     <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
-                                <div className="flex items-center gap-2 mb-2 text-left text-left">
-                                    <Store className="h-5 w-5 text-primary text-left text-left" />
-                                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Storefront Management</span>
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <DrawerHeader className="text-left flex-shrink-0 p-0">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Store className="h-5 w-5 text-primary" />
+                                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Storefront Management</span>
                                 </div>
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Manage Store Details</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Update your branding and coordination info.</DrawerDescription>
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Store Details</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1">Update your branding and coordination info.</DrawerDescription>
                             </DrawerHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left">{vendorEditForm}</ScrollArea>
+                        <ScrollArea className="flex-grow">{vendorEditForm}</ScrollArea>
                     </DrawerContent>
                 </Drawer>
             )}
 
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="text-left p-0">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left"> {addLabel}</DialogTitle>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh]">
+                    <div className="p-8 border-b bg-muted/10 shrink-0">
+                        <DialogHeader className="p-0">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight"> {addLabel}</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm()}</div>
+                    <div className="flex-grow overflow-hidden">{itemForm()}</div>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="text-left p-0 text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Offering</DialogTitle>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh]">
+                    <div className="p-8 border-b bg-muted/10 shrink-0">
+                        <DialogHeader className="p-0">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Offering</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm(itemToEdit, true)}</div>
+                    <div className="flex-grow overflow-hidden">{itemForm(itemToEdit, true)}</div>
                 </DialogContent>
             </Dialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
                 <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left text-left">
-                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
+                    <AlertDialogHeader className="text-left">
+                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl">Remove Offering?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left">
-                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}
+                    <AlertDialogFooter className="gap-3 mt-6">
+                        <AlertDialogCancel className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center">
+                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
