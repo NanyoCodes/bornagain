@@ -204,27 +204,27 @@ export default function LandingPage() {
           </div>
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-center text-left">
             <div className="max-w-4xl mx-auto space-y-8 text-left">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-left">
-                <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto text-left">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center">
+                <Badge className="bg-primary text-primary-foreground mb-4 px-6 py-2 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto shadow-lg shadow-primary/20 border-none">
                   PROCLAIMING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center text-left">
+                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.
                 </h1>
-                <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center text-left">
+                <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center">
                   The App to care for family, friends, souls, and the Kingdom.
                 </span>
-                <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center text-left">
+                <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center text-left">
-                <Button asChild size="sm" className="h-9 px-6 text-[10px] font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center text-center text-left">
-                  <Link href="/signup" className="text-left">GET STARTED <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                <Button asChild size="sm" className="h-10 px-8 text-[11px] font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center text-center">
+                  <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
-                <Button asChild variant="outline" size="sm" className="h-9 px-6 text-[10px] font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 flex items-center justify-center text-center text-left">
-                  <Link href="/about" className="text-left">THE VISION</Link>
+                <Button asChild variant="outline" size="sm" className="h-10 px-8 text-[11px] font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 flex items-center justify-center text-center">
+                  <Link href="/about">THE VISION</Link>
                 </Button>
               </div>
             </div>
@@ -311,6 +311,49 @@ export default function LandingPage() {
                     </div>
                     <div className="w-full max-w-2xl mx-auto text-left">
                          <BibleGameCard />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {/* Redeeming the Scroll Section */}
+        <section className="py-24 bg-muted/20 relative overflow-hidden text-left">
+            <div className="max-w-7xl mx-auto px-6 text-left">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
+                    <div className="relative order-2 lg:order-1 text-left">
+                        <div className="relative aspect-[9/16] max-w-[300px] mx-auto rounded-[3rem] border-[8px] border-zinc-900 shadow-2xl overflow-hidden bg-zinc-950 ring-4 ring-primary/20 text-left">
+                            <div className="absolute inset-0 p-4 space-y-4 text-left">
+                                {[...Array(4)].map((_, i) => (
+                                    <div key={i} className="bg-white/5 rounded-2xl p-4 space-y-2 text-left">
+                                        <div className="flex gap-2 items-center text-left">
+                                            <div className="h-6 w-6 rounded-full bg-primary/20 text-left" />
+                                            <div className="h-2 w-20 bg-white/10 rounded text-left" />
+                                        </div>
+                                        <div className="h-10 w-full bg-white/5 rounded-lg text-left" />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent flex items-end justify-center pb-12 text-left">
+                                <Sparkles className="h-12 w-12 text-white animate-pulse text-left" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-8 order-1 lg:order-2 text-center lg:text-left text-left">
+                        <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 text-left">Redeeming the Habit</Badge>
+                        <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-left">The Scroll with Soul</h2>
+                        <div className="space-y-6 text-lg text-muted-foreground font-medium italic leading-relaxed text-left">
+                            <p className="text-left">
+                                Aimless scrolling is the modern reflex, but it often leaves the heart empty. We believe that while the habit has come to stay, the content must change.
+                            </p>
+                            <p className="text-left">
+                                With Testify, every swipe is a spiritual deposit. As you scroll, you aren't just passing time; you are absorbing the manifest power of God and giving Him glory. We've replaced the noise with miracles, turning a mindless habit into a lifestyle of praise.
+                            </p>
+                        </div>
+                        <div className="pt-4 text-left">
+                            <Button asChild size="lg" className="rounded-full h-12 px-10 font-black uppercase tracking-widest text-[10px] shadow-xl text-center text-left">
+                                <Link href="/signup" className="text-left">JOIN THE FEED OF GLORY</Link>
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -470,48 +513,6 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </section>
-
-        <section className="py-24 bg-muted/20 relative overflow-hidden text-left">
-            <div className="max-w-7xl mx-auto px-6 text-left">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
-                    <div className="relative order-2 lg:order-1 text-left">
-                        <div className="relative aspect-[9/16] max-w-[300px] mx-auto rounded-[3rem] border-[8px] border-zinc-900 shadow-2xl overflow-hidden bg-zinc-950 ring-4 ring-primary/20 text-left">
-                            <div className="absolute inset-0 p-4 space-y-4 text-left">
-                                {[...Array(4)].map((_, i) => (
-                                    <div key={i} className="bg-white/5 rounded-2xl p-4 space-y-2 text-left">
-                                        <div className="flex gap-2 items-center text-left">
-                                            <div className="h-6 w-6 rounded-full bg-primary/20 text-left" />
-                                            <div className="h-2 w-20 bg-white/10 rounded text-left" />
-                                        </div>
-                                        <div className="h-10 w-full bg-white/5 rounded-lg text-left" />
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent flex items-end justify-center pb-12 text-left">
-                                <Sparkles className="h-12 w-12 text-white animate-pulse text-left" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-8 order-1 lg:order-2 text-center lg:text-left text-left">
-                        <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 text-left">Redeeming the Habit</Badge>
-                        <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-left">The Scroll with Soul</h2>
-                        <div className="space-y-6 text-lg text-muted-foreground font-medium italic leading-relaxed text-left">
-                            <p className="text-left">
-                                Aimless scrolling is the modern reflex, but it often leaves the heart empty. We believe that while the habit has come to stay, the content must change.
-                            </p>
-                            <p className="text-left">
-                                With Testify, every swipe is a spiritual deposit. As you scroll, you aren't just passing time; you are absorbing the manifest power of God and giving Him glory. We've replaced the noise with miracles, turning a mindless habit into a lifestyle of praise.
-                            </p>
-                        </div>
-                        <div className="pt-4 text-left">
-                            <Button asChild size="lg" className="rounded-full h-12 px-10 font-black uppercase tracking-widest text-[10px] shadow-xl text-center text-left">
-                                <Link href="/signup" className="text-left">JOIN THE FEED OF GLORY</Link>
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden text-left">

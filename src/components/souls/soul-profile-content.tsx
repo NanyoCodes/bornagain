@@ -263,9 +263,9 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           {trigger}
           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
               <div className="sr-only text-left">
-                  <DialogHeader className="text-left">
-                    <DialogTitle className="text-left">Full View</DialogTitle>
-                    <DialogDescription className="text-left">Full miracle proof preview.</DialogDescription>
+                  <DialogHeader className="text-left text-left text-left">
+                    <DialogTitle className="text-left text-left text-left">Full View</DialogTitle>
+                    <DialogDescription className="text-left text-left text-left">Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
               {mediaContent}
@@ -650,7 +650,15 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                             const Icon = iconMap[action.id] || Heart; 
                             const isThisProcessing = clickedActionId === action.id && isActionSubmitting; 
                             if (action.id === 'matchmaking' && (soul.maritalStatus === 'Married' || isRestrictedForMatchmaking)) return null; 
-                            return (<Button key={action.id} variant="outline" className="flex items-center justify-start gap-3 h-12 px-4 rounded-xl border-2 border-transparent bg-muted/20 hover:bg-primary/5 hover:border-primary/10 transition-all group text-left" onClick={() => handleActionClick(action.id)} disabled={isActionSubmitting}><div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors text-left">{isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left" /> : <Icon className="h-4 w-4 text-left" />}</div><span className="text-xs font-bold uppercase tracking-tight truncate flex-1 text-left">{action.label}</span><ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity text-left" /></Button>) 
+                            return (
+                              <Button key={action.id} variant="outline" className="flex items-center justify-start gap-3 h-12 px-4 rounded-xl border-2 border-transparent bg-muted/20 hover:bg-primary/5 hover:border-primary/10 transition-all group text-left" onClick={() => handleActionClick(action.id)} disabled={isActionSubmitting}>
+                                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors text-left">
+                                  {isThisProcessing ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left" /> : <Icon className="h-4 w-4 text-left" />}
+                                </div>
+                                <span className="text-xs font-bold uppercase tracking-tight truncate flex-1 text-left">{action.label}</span>
+                                <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity text-left" />
+                              </Button>
+                            ) 
                         })}
                     </div>
                 </div>
@@ -776,11 +784,11 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                         </div>
                     )}
                 </div>
-                <div className="pt-2 space-y-3 text-left"><Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-center text-left" onClick={() => onFollowUp(soul)}>LOG FOLLOW-UP</Button><Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px] text-center text-left"><Trash2 className="mr-2 h-4 w-4 text-left" /> DELETE RECORD</Button></div>
+                <div className="pt-2 space-y-3 text-left"><Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-center text-left" onClick={() => onFollowUp(soul)}>LOG FOLLOW-UP</Button><Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px] text-center text-left" onClick={() => onDelete(soul)}><Trash2 className="mr-2 h-4 w-4 text-left" /> DELETE RECORD</Button></div>
             </CardContent>
         </Card>
         
-        <IntercessionHubDialog isOpen={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen} soul={soul} onComplete={(msg) => { setCustomMessageText(msg); setIsPrayerCustomizationOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} />
+        <IntercessionHubDialog isOpen={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen} soul={soul} onComplete={(msg) => { setCustomMessageText(msg); setIsPrayerDialogOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} />
         <MessageHubDialog isOpen={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen} soul={soul} onChannelSelect={(c) => handleCommChoice(c)} />
         <ShareWordDialog isOpen={isStudyWordOpen} onOpenChange={setIsStudyWordOpen} soul={soul} onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} />
     </React.Fragment>

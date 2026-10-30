@@ -54,7 +54,7 @@ function CampaignSkeletons() {
   return (
     <div className="flex flex-col gap-6 w-full max-w-3xl mx-auto text-left">
       {[...Array(3)].map((_, i) => (
-        <Card key={i} className="rounded-2xl border bg-card/50 backdrop-blur-sm">
+        <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
           <CardContent className="p-6 space-y-4 text-left">
             <div className="space-y-2 text-left">
               <Skeleton className="h-6 w-3/4 text-left" />
@@ -104,6 +104,7 @@ function CampaignsDashboardContent() {
   const [filter, setFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   
+  // State for managed dialogs
   const [campaignToManage, setCampaignToManage] = useState<Campaign | null>(null);
   const [campaignForSoul, setCampaignForSoul] = useState<Campaign | null>(null);
   const [campaignForTestimony, setCampaignForTestimony] = useState<Campaign | null>(null);
@@ -229,7 +230,7 @@ function CampaignsDashboardContent() {
 
             <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left">
                 <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto text-left">
-                    <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/40 p-1 rounded-2xl text-left">
+                    <TabsList className="grid w-full grid-cols-3 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl text-left">
                         <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left">All</TabsTrigger>
                         <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left">Mine</TabsTrigger>
                         <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left">Joined</TabsTrigger>

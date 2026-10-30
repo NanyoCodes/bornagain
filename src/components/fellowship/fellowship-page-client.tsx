@@ -249,7 +249,7 @@ function FullDevotionalDialog({
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left">
-                        <div className="p-8 pb-32 text-left">
+                        <div className="p-8 pb-32">
                             {content}
                         </div>
                     </ScrollArea>
@@ -498,7 +498,7 @@ export default function FellowshipPageClient() {
                 router.push(`/chats/${fellowshipId}`);
             } catch (e) {
                 console.error("Failed to join fellowship chat:", e);
-                errorEmitter.emit('permission-error', new FirestorePermissionError({ path: chatRef.path, operation: 'update' }, user));
+                errorEmitter.emit('permission-error', new FirestorePermissionError({ chatRef, operation: 'update' }, user));
             } finally {
                 setIsChatLoading(false);
             }
