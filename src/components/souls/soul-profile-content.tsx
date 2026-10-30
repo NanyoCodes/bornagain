@@ -224,7 +224,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                   </div>
                   <div className="min-w-0 flex-1 text-left">
                     <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
-                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
+                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left">Tap to Hear Miracle</p>
                   </div>
               </div>
           )}
@@ -262,10 +262,10 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
           {trigger}
           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
-              <div className="sr-only text-left text-left text-left">
-                  <DialogHeader className="text-left text-left text-left">
-                    <DialogTitle className="text-left text-left text-left">Full View</DialogTitle>
-                    <DialogDescription className="text-left text-left text-left">Full miracle proof preview.</DialogDescription>
+              <div className="sr-only text-left">
+                  <DialogHeader className="text-left">
+                    <DialogTitle className="text-left">Full View</DialogTitle>
+                    <DialogDescription className="text-left">Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
               {mediaContent}
@@ -611,7 +611,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                         <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Gender/Age</p><p className="text-[11px] sm:text-xs font-bold">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p></div>
                         <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Relationship</p><p className="text-[11px] sm:text-xs font-bold capitalize">{soul.relationship || 'N/A'}</p></div>
                         <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Work Status</p><p className="text-[11px] sm:text-xs font-bold capitalize">{soul.workStatus || 'N/A'}</p></div>
-                        <div className="space-y-1"><p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest">Rel. Status</p><p className="text-[11px] sm:text-xs font-bold capitalize">{soul.maritalStatus || 'N/A'}</p></div>
+                        <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Rel. Status</p><p className="text-[11px] sm:text-xs font-bold capitalize">{soul.maritalStatus || 'N/A'}</p></div>
                         <div className="space-y-1"><p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Nickname</p><p className="text-[11px] sm:text-xs font-bold capitalize">{soul.nickname || 'N/A'}</p></div>
                     </div>
                 </div>

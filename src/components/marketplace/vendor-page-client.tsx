@@ -402,8 +402,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         <div className="w-full text-left">
             <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left">
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
-                    <div className="flex items-center justify-between gap-4 text-left">
-                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left">
+                    <div className="flex items-center justify-between gap-4 text-left text-left text-left">
+                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left">
                             <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
                             <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left">
                                 <AvatarImage src={vendor.photoURL || undefined} className="object-cover text-left" />
@@ -508,7 +508,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <Drawer open={isEditVendorOpen} onOpenChange={setIsEditVendorOpen}>
                     <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                                 <div className="flex items-center gap-2 mb-2 text-left text-left">
                                     <Store className="h-5 w-5 text-primary text-left text-left" />
                                     <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Storefront Management</span>
@@ -562,4 +562,3 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
-

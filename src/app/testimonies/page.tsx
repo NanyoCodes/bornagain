@@ -357,7 +357,6 @@ function TestimoniesContent() {
             </Avatar>
             <div className="flex-1 min-w-0 text-left text-left">
               <p className="text-[12px] font-bold text-foreground/80 leading-tight text-left">Share God's goodness today...</p>
-              <p className="text-[10px] font-medium text-muted-foreground mt-0.5 text-left">Visible to Global Community</p>
             </div>
             <div className="flex items-center gap-2 text-left">
               <TooltipProvider>
@@ -436,7 +435,7 @@ function TestimoniesContent() {
                     ))
                   )}
                   {!loading && filteredTestimonies?.length === 0 && (
-                    <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
+                    <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
                       <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
                       <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">Your Altar of Praise</h3>
                       <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
@@ -551,10 +550,7 @@ function TestimoniesContent() {
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0 text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-4 text-left text-left">
-                          <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
-                          <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
-                        </div>
+                        <div className="flex items-center gap-2 mb-4 text-left text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span></div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
                           {prayerToAnswer ? 'Record Answer' : 'Share Testimony'}
                         </DrawerTitle>
@@ -573,10 +569,7 @@ function TestimoniesContent() {
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0 text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-4 text-left text-left">
-                          <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
-                          <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
-                        </div>
+                        <div className="flex items-center gap-2 mb-4 text-left text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span></div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Request Prayer</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Share your need with the global community.</DrawerDescription>
                     </DrawerHeader>
