@@ -189,10 +189,10 @@ export default function LandingPage() {
           </Link>
           <div className="flex items-center gap-2 sm:gap-4 text-left">
             <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold">
-              <Link href="/login" className="text-left text-left">Sign In</Link>
+              <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9">
-              <Link href="/signup" className="text-left text-left">Join Movement</Link>
+              <Link href="/signup">Join Movement</Link>
             </Button>
           </div>
         </div>
@@ -320,7 +320,7 @@ export default function LandingPage() {
                                 </CardContent>
                                 <CardFooter className="p-0 border-t border-white/10 text-left">
                                     <Button variant="ghost" asChild className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-left">
-                                        <Link href="/signup" className="text-left">REGISTER MEALS STORE</Link>
+                                        <Link href="/signup" className="text-left text-left">REGISTER MEALS STORE</Link>
                                     </Button>
                                 </CardFooter>
                             </Card>
