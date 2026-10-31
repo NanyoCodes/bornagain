@@ -358,7 +358,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 <div className="space-y-2 text-left text-left text-left text-left text-left">
-                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left text-left">
+                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2 text-left text-left text-left">
                         <CreditCard className="h-3 w-3 text-left text-left text-left" /> Payment & Coordinate Info
                     </Label>
                     <Textarea id="paymentDetails" name="paymentDetails" defaultValue={vendor.paymentDetails || ''} placeholder="Bank details or pickup instructions..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left" required />

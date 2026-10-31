@@ -144,11 +144,11 @@ function MatchmakingInner({ soulId }: { soulId?: string | null }) {
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 pb-32 px-3 sm:px-6 text-left">
+        <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-32 px-3 sm:px-6 text-left">
             <header className="space-y-4 sm:space-y-6 pt-4 text-left">
                 <div className="flex items-center gap-4 text-left">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background shadow-sm text-left">
-                        <ArrowLeft className="h-6 w-6 text-left" />
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-9 w-9 sm:h-10 sm:w-10 border bg-background shadow-sm text-left">
+                        <ArrowLeft className="h-4 w-4 text-left" />
                     </Button>
                     <div className="min-w-0 text-left">
                         <div className="flex items-center gap-2 mb-1 text-left">
@@ -159,16 +159,16 @@ function MatchmakingInner({ soulId }: { soulId?: string | null }) {
                     </div>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-4 sm:p-8 rounded-[2rem] flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6 shadow-inner relative overflow-hidden text-left">
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 sm:gap-8 shadow-inner relative overflow-hidden text-left">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-left">
-                        <Sparkles className="h-16 w-16 text-primary animate-pulse text-left" />
+                        <Sparkles className="h-12 w-12 sm:h-16 sm:w-16 text-primary animate-pulse text-left" />
                     </div>
-                    <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-background shadow-xl shrink-0 text-left">
+                    <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-xl shrink-0 text-left">
                         <AvatarImage src={targetSoul.photoURL || undefined} className="object-cover text-left" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xl text-left"> {targetSoul.firstName.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1 text-center sm:text-left">
-                        <p className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-tight text-center sm:text-left">{targetSoul.firstName} {targetSoul.lastName}</p>
+                        <p className="text-xl sm:text-3xl font-black font-headline uppercase tracking-tight leading-tight text-center sm:text-left">{targetSoul.firstName} {targetSoul.lastName}</p>
                         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2 text-left">
                             <Badge variant="outline" className="text-[9px] sm:text-[10px] uppercase font-black bg-background h-6 border-primary/20 text-primary text-left">{targetSoul.gender || 'Gender unset'}</Badge>
                             <Badge className="text-[9px] sm:text-[10px] uppercase font-black bg-primary text-white h-6 text-left">Single</Badge>
@@ -190,16 +190,16 @@ function MatchmakingInner({ soulId }: { soulId?: string | null }) {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
                 {matches.length > 0 ? matches.map(match => (
-                    <Card key={match.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
-                        <CardHeader className="p-6 pb-4 flex flex-row items-center gap-4 text-left">
-                            <Avatar className="h-16 w-16 border-2 border-primary/20 shadow-lg shrink-0 text-left">
+                    <Card key={match.id} className="rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
+                        <CardHeader className="p-5 sm:p-6 pb-4 flex flex-row items-center gap-4 text-left">
+                            <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-2 border-primary/20 shadow-lg shrink-0 text-left">
                                 <AvatarImage src={match.photoURL || undefined} className="object-cover text-left" />
                                 <AvatarFallback className="font-black bg-primary/5 text-primary text-lg text-left"> {match.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex-1 text-left">
-                                <h3 className="font-black text-lg uppercase tracking-tight truncate leading-tight mb-1 text-left">{match.firstName} {match.lastName}</h3>
+                                <h3 className="font-black text-base sm:text-lg uppercase tracking-tight truncate leading-tight mb-1 text-left">{match.firstName} {match.lastName}</h3>
                                 <div className="flex items-center gap-1.5 flex-wrap text-left">
                                     <Badge variant="secondary" className="h-5 px-1.5 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left">
                                         {match.gender}
@@ -210,7 +210,7 @@ function MatchmakingInner({ soulId }: { soulId?: string | null }) {
                                 </div>
                             </div>
                         </CardHeader>
-                        <CardContent className="px-6 pb-4 flex-grow text-left">
+                        <CardContent className="px-5 sm:px-6 pb-4 flex-grow text-left">
                              {match.hobbies && (
                                 <div className="p-3 rounded-xl bg-muted/30 border border-dashed text-xs text-muted-foreground italic font-medium leading-relaxed mb-4 relative overflow-hidden group/text text-left">
                                     <Quote className="absolute -top-1 right-2 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:text-rotate-0 text-left" />
@@ -232,7 +232,7 @@ function MatchmakingInner({ soulId }: { soulId?: string | null }) {
                             <Button 
                                 onClick={() => handleContact(match, 'whatsapp')} 
                                 disabled={!match.phone}
-                                className="flex-1 h-11 rounded-xl gap-2 font-black uppercase tracking-widest text-[10px] shadow-lg transition-all active:scale-95 text-center text-left"
+                                className="flex-1 h-10 sm:h-11 rounded-xl gap-2 font-black uppercase tracking-widest text-[10px] shadow-lg transition-all active:scale-95 text-center text-left"
                             >
                                 <WhatsAppIcon className="h-4 w-4 text-left" /> WhatsApp
                             </Button>
@@ -240,7 +240,7 @@ function MatchmakingInner({ soulId }: { soulId?: string | null }) {
                                 onClick={() => handleContact(match, 'sms')} 
                                 disabled={!match.phone}
                                 variant="outline"
-                                className="flex-1 h-11 rounded-xl font-black uppercase tracking-widest text-[10px] border-2 border-primary/20 text-primary hover:bg-primary/5 transition-all active:scale-95 text-center text-left"
+                                className="flex-1 h-10 sm:h-11 rounded-xl font-black uppercase tracking-widest text-[10px] border-2 border-primary/20 text-primary hover:bg-primary/5 transition-all active:scale-95 text-center text-left"
                             >
                                 <MessageSquare className="h-4 w-4 text-left" /> SMS Intro
                             </Button>

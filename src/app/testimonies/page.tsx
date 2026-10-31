@@ -302,12 +302,12 @@ function TestimoniesContent() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
           <div
-            className="bg-card/50 border shadow-sm sm:shadow-md rounded-none sm:rounded-[2rem] border-x-0 sm:border-x -mx-4 sm:mx-0 p-3 sm:p-4 flex items-center gap-4 cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98] backdrop-blur-md text-left"
+            className="bg-card border border-white/5 rounded-none sm:rounded-[2rem] border-x-0 sm:border-x -mx-4 sm:mx-0 p-3 sm:p-4 flex items-center gap-4 cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98] backdrop-blur-md text-left"
             onClick={() => setIsTestimonyDialogOpen(true)}
           >
             <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0">
               <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
-              <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px]">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-[13px] sm:text-sm font-bold text-foreground/80 leading-tight">Share what God has done today...</p>
@@ -451,7 +451,7 @@ function TestimoniesContent() {
             <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left text-left">
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Deletion</AlertDialogAction>
+            <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}Confirm Deletion</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -478,7 +478,7 @@ function TestimoniesContent() {
               </Drawer>
               <Drawer open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
                       <div className="flex items-center gap-2 mb-4 text-left text-left">
                         <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />

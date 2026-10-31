@@ -120,7 +120,10 @@ import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 
-const iconMap: Record<string, any> = {
+/**
+ * Standard mapping of action IDs to UI icons.
+ */
+export const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
     'studied_bible': BookOpen,
     'shared_meal': Utensils,
@@ -134,6 +137,9 @@ const iconMap: Record<string, any> = {
     'matchmaking': HeartHandshake,
 };
 
+/**
+ * Returns color-coded CSS classes based on follow-up status.
+ */
 export function getStatusClasses(status: FollowUpStatus | undefined): string {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
     switch (status) {
@@ -380,7 +386,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
   };
 
   const handleShareToPartner = async (partner: UserProfile['accountabilityPartners'][0]) => {
-      if (!user || !firestore || !soul || !currentUserProfile) return;
+      if (!user || !firestore || !soul || !userProfile) return;
       const wonAt = safeToDate(soul.wonAt);
       const text = `SHARING SOUL DATA:\nName: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nLet's coordinate follow-up on Testify.`;
       try {
@@ -393,7 +399,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
           else {
               const otherDoc = await getDoc(doc(firestore, 'users', partner.userId));
               const otherProfile = otherDoc.data() as UserProfile;
-              const newChat = { participantIds, participantInfo: { [user.uid]: { firstName: currentUserProfile.firstName, lastName: currentUserProfile.lastName, photoURL: currentUserProfile.photoURL || '' }, [partner.userId]: { firstName: partner.firstName, lastName: partner.lastName, photoURL: partner.photoURL || '' } }, lastUpdatedAt: serverTimestamp(), isGroupChat: false, hasMessages: true };
+              const newChat = { participantIds, participantInfo: { [user.uid]: { firstName: userProfile.firstName, lastName: userProfile.lastName, photoURL: userProfile.photoURL || '' }, [partner.userId]: { firstName: partner.firstName, lastName: partner.lastName, photoURL: partner.photoURL || '' } }, lastUpdatedAt: serverTimestamp(), isGroupChat: false, hasMessages: true };
               const ref = await addDoc(chatsRef, newChat);
               chatId = ref.id;
           }

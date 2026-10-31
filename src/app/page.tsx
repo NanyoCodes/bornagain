@@ -306,7 +306,7 @@ export default function LandingPage() {
                             <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto block w-fit text-left">Kingdom Arena</Badge>
                             <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center text-left">Empower Your Loved Ones</h2>
                             <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center text-left">
-                                Explore how believers around the world witness what God is doing in their lives daily.
+                                Explore how believers around the world witness and record the manifest goodness of God in their daily lives.
                             </p>
                         </div>
                         <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center text-center mx-auto text-left">
