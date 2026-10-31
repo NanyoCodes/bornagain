@@ -29,6 +29,7 @@ import {
     X,
     Share2
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
     Dialog, 
     DialogContent, 
@@ -71,8 +72,6 @@ import NextImage from 'next/image';
 import { ImageUpload } from '@/components/common/image-upload';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
 
 const currencyOptions = [
     { value: 'NGN', label: 'Naira (₦)', symbol: '₦' },
@@ -193,19 +192,20 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     };
 
     const handleShare = async () => {
+        if (!vendor) return;
         const shareUrl = window.location.href;
         const shareData = {
-            title: vendor?.businessName || 'Kingdom Store',
-            text: `Check out ${vendor?.businessName || 'this Kingdom store'} on Testify!`,
+            title: `${vendor.businessName} on Testify Global`,
+            text: `Support the harvest with physical provisions from ${vendor.businessName}. Browse their ${itemLabel.toLowerCase()}s on Testify!`,
             url: shareUrl,
         };
 
         try {
-            if (navigator.share) {
+            if (navigator && navigator.share) {
                 await navigator.share(shareData);
             } else {
                 await navigator.clipboard.writeText(shareUrl);
-                toast({ title: 'Link Copied' });
+                toast({ title: 'Link Copied', description: 'Store link copied to clipboard.' });
             }
         } catch (e) {}
     };
@@ -281,7 +281,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         deleteDoc(doc(firestore, 'vendors', vendorId, 'meals', itemToDelete.id)).then(() => { toast({ title: 'Item Removed' }); setItemToDelete(null); }).finally(() => setIsDeletingItem(false));
     };
 
-    if (loading) return <div className="flex h-full w-full items-center justify-center py-20 text-left text-left"><Loader2 className="animate-spin text-primary text-left text-left" /></div>;
+    if (loading || !mounted) return <div className="flex h-full w-full items-center justify-center py-20 text-left text-left"><Loader2 className="animate-spin text-primary text-left text-left" /></div>;
 
     if (!vendor) {
         return (
@@ -403,7 +403,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     return (
         <div className="w-full text-left text-left text-left">
             <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left text-left text-left">
-                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left text-left text-left">
+                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left text-left text-left text-left">
                     <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left">
                         <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left text-left text-left">
                             <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left"><ArrowLeft className="h-6 w-6 text-left text-left text-left" /></Button>
@@ -432,7 +432,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         </div>
                         <div className="flex items-center gap-2 shrink-0 text-left text-left text-left">
                             <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary/60 hover:text-primary text-left text-left text-left" onClick={handleShare}>
-                                <Share2 className="h-4 w-4 text-left text-left text-left" />
+                                <Avatar className="h-4 w-4 shrink-0">
+                                    <AvatarImage src="https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3" alt="Share" />
+                                    <AvatarFallback><Share2 className="h-full w-full" /></AvatarFallback>
+                                </Avatar>
                             </Button>
                         </div>
                     </div>
@@ -480,14 +483,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left text-left text-left">{meal.description || `Verified Kingdom service item.`}</p>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left text-left text-left">
+                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left text-left text-left text-left">
                                     {isOwner && (
                                         <div className="flex gap-2 text-left text-left text-left">
                                             <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left text-left text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left text-left text-left" /></Button>
                                             <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left text-left text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" /></Button>
                                         </div>
                                     )}
-                                    <div className="flex-1 min-w-0 text-left text-left text-left text-left">
+                                    <div className="flex-1 min-w-0 text-left text-left text-left text-left text-left">
                                         {cartItem ? (
                                             <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left text-left text-left">
                                                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left text-left text-left"/></Button>
@@ -530,7 +533,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">{addLabel}</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left text-left text-left">{itemForm()}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left">{itemForm()}</div>
                 </DialogContent>
             </Dialog>
 
@@ -551,7 +554,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left text-left">Remove Offering?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left">
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left">
                         <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left text-left text-left text-left text-left">
                             {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" />}

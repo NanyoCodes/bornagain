@@ -161,9 +161,9 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
   
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
-        <div className="min-w-0">
-            <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Intercession</h2>
-            <p className="text-sm font-medium mt-1 text-left text-left">Draft a powerful prayer for {soul?.firstName}.</p>
+        <div className="min-w-0 text-left">
+            <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</h2>
+            <p className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</p>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5 text-left" />
@@ -172,7 +172,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
   );
 
   const contentBody = (
-    <div className="p-8 space-y-6 text-left text-left text-left">
+    <div className="p-8 space-y-6 text-left">
         <div className="space-y-3 text-left">
             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Prayer Focus</label>
             <div className="flex flex-wrap gap-2 text-left">
@@ -181,7 +181,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
                 ))}
             </div>
         </div>
-        <div className="space-y-2 text-left text-left text-left">
+        <div className="space-y-2 text-left">
             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label>
             <Textarea value={text} onChange={e => setText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" />
         </div>
@@ -189,16 +189,16 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
     </div>
   );
 
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow">{contentBody}</ScrollArea></SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">{header}<ScrollArea className="flex-1 min-h-0">{contentBody}</ScrollArea></DialogContent></Dialog>;
+  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow text-left">{contentBody}</ScrollArea></SheetContent></Sheet>;
+  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">{header}<ScrollArea className="flex-1 min-h-0 text-left">{contentBody}</ScrollArea></DialogContent></Dialog>;
 }
 
 export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }: { isOpen: boolean; onOpenChange: (open: boolean) => void; soul: Soul | null; onChannelSelect: (channel: 'whatsapp' | 'sms') => void; }) {
   const isMobile = useIsMobile();
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left text-left">
+    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
         <div className="min-w-0 text-left">
-            <div className="flex items-center gap-2 mb-1 text-left text-left">
+            <div className="flex items-center gap-2 mb-1 text-left">
                 <MessageSquare className="h-4 w-4 text-primary text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Channel Select</span>
             </div>
@@ -267,16 +267,16 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
   };
 
   const header = (
-    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left text-left">
+    <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
       <div className="min-w-0 text-left">
-        <div className="flex items-center gap-3 mb-2 text-left text-left">
+        <div className="flex items-center gap-3 mb-2 text-left">
           {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2 text-left" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4 text-left" /></Button>}
           <Target className="h-5 w-5 text-primary text-left" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
         </div>
-        <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
+        <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
             {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}
         </h2>
-        <p className="text-xs sm:text-sm font-medium text-left text-left">
+        <p className="text-xs sm:text-sm font-medium text-left">
             {view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBook || 'Bible'}...`}
         </p>
       </div>
@@ -285,10 +285,10 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
   );
 
   const contentBody = (
-    <div className="p-4 sm:p-10 text-left text-left">
+    <div className="p-4 sm:p-10 text-left">
         {view === 'hub' && (
             <div className="space-y-8 text-left">
-                <div className="relative text-left text-left"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
+                <div className="relative text-left"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
                 {searchResults.map((res, idx) => (<Button key={idx} variant="outline" className="w-full h-auto p-4 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-3 border-2 border-dashed text-left" onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary text-left">{res.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-4 text-left">"{res.text.trim()}"</p></Button>))}
                 <div className="grid grid-cols-2 gap-4 text-left">
                     <Button onClick={() => setView('books')} variant="outline" className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center">
@@ -296,7 +296,7 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
                         <span className="text-[10px] font-black uppercase text-center text-left">Browse Bible</span>
                     </Button>
                     <Button variant="outline" asChild className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center">
-                        <Link href="/dashboard/bible" className="text-left text-center">
+                        <Link href="/dashboard/bible" className="text-center">
                             <BookMarked className="h-6 w-6 mb-1 text-left" />
                             <span className="text-[10px] font-black uppercase text-center text-left">Open Reader</span>
                         </Link>
@@ -310,16 +310,16 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
                 </div>
             </div>
         )}
-        {view === 'books' && <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2 text-left">{bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[9px] text-center text-left" onClick={() => { setSelectedBook(book.name); setView('chapters'); }}>{book.name}</Button>))}</div>}
-        {view === 'chapters' && <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2 text-left">{selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (<Button key={ch.chapter} variant="outline" className="h-9 w-9 p-0 rounded-lg font-black text-xs text-center text-left" onClick={() => handleSelectChapter(ch.chapter)}>{ch.chapter}</Button>))}</div>}
-        {view === 'verses' && <div className="space-y-4 pb-12 text-left"><div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left"><p className="text-[10px] font-black uppercase text-primary mb-1 text-left">SELECTED</p><p className="text-xs font-bold text-muted-foreground text-left">{selectedVerses.length > 0 ? `${selectedBook} ${selectedChapter}:${selectedVerses.join(', ')}` : 'Select verses below...'}</p></div><div className="space-y-1 font-serif text-left">{loadingVerses ? <div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div> : chapterContent?.verses.map(v => (<div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => setSelectedVerses(prev => prev.includes(v.verse) ? prev.filter(vs => vs !== v.verse) : [...prev, v.verse].sort((a,b)=>a-b))}><sup className="text-[10px] font-black mr-2 opacity-40 text-left">{v.verse}</sup><span className="text-sm leading-relaxed text-left">{v.text}</span></div>))}</div></div>}
+        {view === 'books' && <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2 text-left">{bibleData.map(book => (<Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[9px] text-center" onClick={() => { setSelectedBook(book.name); setView('chapters'); }}>{book.name}</Button>))}</div>}
+        {view === 'chapters' && <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2 text-left">{selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (<Button key={ch.chapter} variant="outline" className="h-9 w-9 p-0 rounded-lg font-black text-xs text-center" onClick={() => handleSelectChapter(ch.chapter)}>{ch.chapter}</Button>))}</div>}
+        {view === 'verses' && <div className="space-y-4 pb-12 text-left"><div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left"><p className="text-[10px] font-black uppercase text-primary mb-1 text-left">SELECTED</p><p className="text-xs font-bold text-muted-foreground text-left">{selectedVerses.length > 0 ? `${selectedBook} ${selectedChapter}:${selectedVerses.join(', ')}` : 'Select verses below...'}</p></div><div className="space-y-1 font-serif text-left">{loadingVerses ? <div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div> : chapterContent?.verses.map(v => (<div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2 text-left", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => setSelectedVerses(prev => prev.includes(v.verse) ? prev.filter(vs => vs !== v.verse) : [...prev, v.verse].sort((a,b)=>a-b))}><sup className="text-[10px] font-black mr-2 opacity-40 text-left">{v.verse}</sup><span className="text-sm leading-relaxed text-left">{v.text}</span></div>))}</div></div>}
     </div>
   );
 
   const footer = view === 'verses' && <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0 text-left"><Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold text-left">Clear</Button><Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-[2] font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center text-left">SHARE SELECTED ({selectedVerses.length})</Button></div>;
 
   if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow text-left">{contentBody}</ScrollArea>{footer}</SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">{header}<ScrollArea className="flex-1 min-h-0 text-left">{contentBody}</ScrollArea>{footer}</DialogContent></Dialog>;
+  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">{header}<ScrollArea className="flex-1 min-h-0 text-left">{contentBody}</ScrollArea>{footer}</DialogContent></Dialog>;
 }
 
 export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, onAssess, onOpenAssignDialog, onExportSingle, onDelete }: { soul: Soul; onFollowUp: (s: Soul) => void; onViewHistory: (s: Soul) => void; onEdit: (s: Soul) => void; onAssess: (s: Soul) => void; onOpenAssignDialog: (s: Soul) => void; onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void; onDelete: (s: Soul) => void; }) {
@@ -336,12 +336,14 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
   const [isStudyWordOpen, setIsStudyWordOpen] = useState(false);
   const [customMessageText, setCustomMessageText] = useState('');
-  const [clickedActionId, setClickedActionId] = useState<string | null>(null);
+  const [clickedActionId, setClickedActionId] = setClickedActionId = useState<string | null>(null);
   const [isActionSubmitting, setIsActionSubmitting] = useState(false);
 
   const address = useMemo(() => { if (!soul.locationWon) return ''; return [soul.locationWon.street, soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', '); }, [soul.locationWon]);
   const needs = soul.needsAssessment;
   const sortedHistory = useMemo(() => { if (!soul.followUpLog || soul.followUpLog.length === 0) return []; return [...soul.followUpLog].sort((a, b) => (safeToDate(b.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0)); }, [soul.followUpLog]);
+
+  const logo = PlaceHolderImages.find(img => img.id === 'logo');
 
   const finalizeLog = async (s: Soul, aId: string, noteAddendum: string = '') => {
     if (!user || !firestore || !s) return;
@@ -377,7 +379,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
       if (!soul?.phone || !clickedActionId) return;
       const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
-      const message = customMessageText || `Hi ${soul.firstName}, thinking of you!`;
+      const message = customMessageText || `Hi ${soul.firstName}, thinking of you! Shared via Testify Global.`;
       if (channel === 'whatsapp') window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
       else window.location.href = `sms:${soul.phone}?body=${encodeURIComponent(message)}`;
       finalizeLog(soul, clickedActionId, `Sent via ${channel.toUpperCase()}`);
@@ -388,7 +390,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
   const handleShareToPartner = async (partner: UserProfile['accountabilityPartners'][0]) => {
       if (!user || !firestore || !soul || !userProfile) return;
       const wonAt = safeToDate(soul.wonAt);
-      const text = `SHARING SOUL DATA:\nName: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nLet's coordinate follow-up on Testify.`;
+      const text = `SHARING SOUL DATA via Testify:\nName: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nLet's coordinate follow-up on Testify.`;
       try {
           const participantIds = [user.uid, partner.userId].sort();
           const chatsRef = collection(firestore, 'chats');
