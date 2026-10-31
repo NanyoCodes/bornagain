@@ -189,10 +189,10 @@ export default function LandingPage() {
           </Link>
           <div className="flex items-center gap-2 sm:gap-4 text-left">
             <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold text-left">
-              <Link href="/login" className="text-left text-left">Sign In</Link>
+              <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9 text-left">
-              <Link href="/signup" className="text-left text-left">Join Movement</Link>
+              <Link href="/signup">Join Movement</Link>
             </Button>
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function LandingPage() {
                   The App to care for family, friends, souls, and the Kingdom.
                 </span>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
-                  "Explore how believers around the world witness what God is doing in their lives daily."
+                  "Explore how believers around the world witness and record the manifest goodness of God in their daily lives."
                 </p>
               </motion.div>
 
@@ -306,7 +306,7 @@ export default function LandingPage() {
                             <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto block w-fit text-left">Kingdom Arena</Badge>
                             <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center text-left">Empower Your Loved Ones</h2>
                             <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center text-left">
-                                Explore how believers around the world witness what God is doing in their lives daily.
+                                Explore how believers around the world witness and record the manifest goodness of God in their daily lives.
                             </p>
                         </div>
                         <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center text-center mx-auto text-left">
@@ -427,7 +427,7 @@ export default function LandingPage() {
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left">Witness the Care</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-left">
-                    Explore how believers around the world witness what God is doing in their lives daily.
+                    Explore how believers around the world witness and record the manifest goodness of God in their daily lives.
                   </p>
                 </div>
                 
@@ -495,7 +495,7 @@ export default function LandingPage() {
                 Follow up on those you love and record the greatness of God together.
               </p>
               <div className="flex justify-center pt-4 items-center text-left">
-                <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center text-left text-left">
+                <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center text-left text-left text-left">
                   <Link href="/signup" className="text-center text-left text-left text-left">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6 text-left text-left text-left" /></Link>
                 </Button>
               </div>
@@ -558,4 +558,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
