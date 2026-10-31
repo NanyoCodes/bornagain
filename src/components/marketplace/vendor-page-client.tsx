@@ -511,7 +511,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                             <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left">
                                 <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                    <Store className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left" />
+                                    <Store className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                                     <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left text-left text-left text-left text-left text-left">Storefront Management</span>
                                 </div>
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left text-left">Manage Store Details</DrawerTitle>
