@@ -82,7 +82,7 @@ const features = [
   },
   {
     title: "Provision Hub",
-    description: "Practical compassion. Support the brethren and those in need with physical meals through the Meals Center.",
+    description: "Practical compassion. Support the brethren and those in need with physical meals through the Meals Center. Connect with local Kingdom vendors for tangible support.",
     icon: Utensils,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
@@ -90,7 +90,7 @@ const features = [
   },
   {
     title: "Kindness Center",
-    description: "Gifts of love. Send Bibles and spiritual tokens to nurture and care for the souls in your unique harvest.",
+    description: "Gifts of love. Send Bibles, spiritual tokens, and care packages to nurture the souls in your unique harvest. A tangible touch of God's love.",
     icon: Gift,
     color: "text-purple-600",
     bgColor: "bg-purple-600/10",
@@ -216,10 +216,10 @@ export default function LandingPage() {
                   Testify the GREATNESS OF GOD.
                 </h1>
                 <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center">
-                  The App to care for family, friends, souls, and the Kingdom.
+                  The #1 App to care for family, friends, souls, and the Kingdom.
                 </span>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
-                  "Explore how believers around the world witness and record the manifest goodness of God in their daily lives."
+                  "Explore how believers around the world witness what God is doing in their lives daily."
                 </p>
               </motion.div>
 
@@ -306,7 +306,7 @@ export default function LandingPage() {
                             <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto block w-fit text-left">Kingdom Arena</Badge>
                             <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center text-left">Empower Your Loved Ones</h2>
                             <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center text-left">
-                                Explore how believers around the world witness and record the manifest goodness of God in their daily lives.
+                                Use the Word Arena to challenge and sharpen those you care about. Bible study becomes a collaborative act of love.
                             </p>
                         </div>
                         <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center text-center mx-auto text-left">
@@ -427,7 +427,7 @@ export default function LandingPage() {
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left">Witness the Care</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-left">
-                    Explore how believers around the world witness and record the manifest goodness of God in their daily lives.
+                    Explore how believers around the world witness what God is doing in their lives daily.
                   </p>
                 </div>
                 
