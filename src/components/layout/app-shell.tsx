@@ -464,7 +464,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/marketplace" className="flex items-center gap-3 w-full text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center text-left text-left">
-                        <Utensils className="h-3.5 w-3.5 text-blue-500 text-left text-left" />
+                        <Utensils className="h-3.5 w-3.5 text-blue-500 text-left text-left text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left">Meals Center</span>
                     </Link>
@@ -501,7 +501,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                       <Link href="/resources" className="flex items-center gap-3 w-full text-left text-left">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left">
-                          <BookMarked className="h-3.5 w-3.5 text-left text-left text-left" />
+                          <BookMarked className="h-3.5 w-3.5 text-left text-left" />
                         </div>
                         <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left">Kingdom Library</span>
                       </Link>
@@ -753,17 +753,17 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       
       {user && mounted && (
         <Drawer open={!!isProfileIncomplete} onOpenChange={() => {}} shouldScaleBackground={false}>
-          <DrawerContent hideCloseButton className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] flex flex-col items-center justify-center gap-2 text-center text-left text-left">
-              <DrawerHeader className="text-center flex-shrink-0 p-0 text-left text-left">
-                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left text-left text-left">
-                    <UserPlus className="h-7 w-7 text-primary text-left text-left text-left text-left" />
+          <DrawerContent hideCloseButton className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] flex flex-col items-center justify-center gap-2 text-center text-left text-left text-left">
+              <DrawerHeader className="text-center flex-shrink-0 p-0 text-left text-left text-left">
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left text-left text-left text-left text-left">
+                    <UserPlus className="h-7 w-7 text-primary text-left text-left text-left text-left text-left" />
                 </div>
-                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left">Complete Your Identity</DrawerTitle>
-                <DrawerDescription className="text-sm font-medium mt-1 text-zinc-400 text-center text-balance text-left text-left text-left">Join the global movement by introducing yourself to the Body.</DrawerDescription>
+                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left text-left">Complete Your Identity</DrawerTitle>
+                <DrawerDescription className="text-sm font-medium mt-1 text-zinc-400 text-center text-balance text-left text-left text-left text-left">Join the global movement by introducing yourself to the Body.</DrawerDescription>
               </DrawerHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-5 sm:p-8 text-left text-left text-left text-left">
+            <div className="flex-grow overflow-y-auto p-5 sm:p-8 text-left text-left text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DrawerContent>
@@ -795,9 +795,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left text-left">
-                <div className="relative mx-auto w-fit text-left text-left text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left text-left" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left text-left text-left">
+                <div className="relative mx-auto w-fit text-left text-left text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left text-left text-left" />
                 </div>
             </div>
         }>
