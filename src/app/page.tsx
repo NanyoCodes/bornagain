@@ -187,19 +187,19 @@ export default function LandingPage() {
               </Avatar>
             )}
           </Link>
-          <div className="flex items-center gap-2 sm:gap-4 text-left text-left">
-            <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold text-left text-left">
-              <Link href="/login" className="text-left text-left text-left">Sign In</Link>
+          <div className="flex items-center gap-2 sm:gap-4 text-left">
+            <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold text-left">
+              <Link href="/login" className="text-left">Sign In</Link>
             </Button>
-            <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9 text-left text-left">
-              <Link href="/signup" className="text-left text-left text-left">Join Movement</Link>
+            <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9 text-left">
+              <Link href="/signup" className="text-left">Join Movement</Link>
             </Button>
           </div>
         </div>
       </nav>
 
       <main className="flex-grow pt-16">
-        <section className="relative h-[85vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-zinc-950 text-left text-left">
+        <section className="relative h-[85vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-zinc-950 text-left">
           <div className="absolute inset-0 z-0">
              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-zinc-950 to-zinc-950" />
              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.4),transparent_50%)]" />
@@ -224,21 +224,21 @@ export default function LandingPage() {
               </motion.div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center text-left">
-                <Button asChild size="sm" className="h-10 px-8 text-[11px] font-black rounded-2xl shadow-xl shadow-primary/20 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center text-center text-left text-left">
-                  <Link href="/signup" className="text-left text-left">GET STARTED <ArrowRight className="ml-2 h-4 w-4 text-left text-left" /></Link>
+                <Button asChild size="sm" className="h-10 px-8 text-[11px] font-black rounded-2xl shadow-xl shadow-primary/20 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center text-center text-left">
+                  <Link href="/signup" className="text-left">GET STARTED <ArrowRight className="ml-2 h-4 w-4 text-left" /></Link>
                 </Button>
-                <Button asChild variant="outline" size="sm" className="h-10 px-8 text-[11px] font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 flex items-center justify-center text-center text-left text-left">
-                  <Link href="/about" className="text-left text-left">THE VISION</Link>
+                <Button asChild variant="outline" size="sm" className="h-10 px-8 text-[11px] font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 flex items-center justify-center text-center text-left">
+                  <Link href="/about" className="text-left">THE VISION</Link>
                 </Button>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="py-24 relative overflow-hidden bg-background text-left text-left">
+        <section className="py-24 relative overflow-hidden bg-background text-left">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.05),transparent_40%)]" />
-            <div className="max-w-7xl mx-auto px-6 relative z-10 text-left text-left">
-                <div className="flex flex-col items-center gap-12 text-left text-left">
+            <div className="max-w-7xl mx-auto px-6 relative z-10 text-left">
+                <div className="flex flex-col items-center gap-12 text-left">
                     <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -269,7 +269,7 @@ export default function LandingPage() {
                         </div>
                     </motion.div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full text-left text-left text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full text-left">
                         {stats.map((stat, i) => (
                             <motion.div 
                                 key={i}
@@ -282,11 +282,11 @@ export default function LandingPage() {
                             >
                                 <div className="space-y-4 text-center text-left">
                                     <div className="flex items-center justify-center gap-2 text-left">
-                                        <stat.icon className="h-6 w-6 text-primary text-left text-left" />
-                                        <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em] text-left text-left text-left text-left"> {stat.label}</h4>
+                                        <stat.icon className="h-6 w-6 text-primary text-left" />
+                                        <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em] text-left text-left"> {stat.label}</h4>
                                     </div>
-                                    <p className="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-foreground text-left text-left"> {stat.value}</p>
-                                    <Badge variant="outline" className="border-primary/20 text-primary text-[8px] px-2 uppercase font-black text-left text-left"> {stat.desc}</Badge>
+                                    <p className="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-foreground text-left"> {stat.value}</p>
+                                    <Badge variant="outline" className="border-primary/20 text-primary text-[8px] px-2 uppercase font-black text-left"> {stat.desc}</Badge>
                                 </div>
                             </motion.div>
                         ))}
@@ -295,81 +295,81 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left text-left">
+        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
                 <Gamepad2 className="h-[40rem] w-[40rem] text-primary" />
             </div>
-            <div className="max-w-7xl mx-auto px-6 relative z-10 text-left text-left">
-                <div className="flex flex-col items-center gap-12 text-left text-left">
-                    <div className="space-y-8 max-w-3xl mx-auto text-center text-left text-left">
-                        <div className="space-y-4 text-left text-left">
-                            <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto block w-fit text-left text-left text-left">Kingdom Arena</Badge>
-                            <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center text-left text-left text-left">Empower Your Loved Ones</h2>
-                            <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center text-left text-left">
+            <div className="max-w-7xl mx-auto px-6 relative z-10 text-left">
+                <div className="flex flex-col items-center gap-12 text-left">
+                    <div className="space-y-8 max-w-3xl mx-auto text-center text-left">
+                        <div className="space-y-4 text-left">
+                            <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto block w-fit text-left">Kingdom Arena</Badge>
+                            <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center text-left">Empower Your Loved Ones</h2>
+                            <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center text-left">
                                 Use the Word Arena to challenge and sharpen those you care about. Bible study becomes a collaborative act of love.
                             </p>
                         </div>
-                        <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center text-center mx-auto text-left text-left text-left text-left">
-                            <Link href="/signup" className="text-center text-left text-left text-left text-left">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4 text-left text-left text-left text-left" /></Link>
+                        <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center text-center mx-auto text-left">
+                            <Link href="/signup" className="text-center text-left text-left">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4 text-left text-left" /></Link>
                         </Button>
                     </div>
-                    <div className="w-full max-w-2xl mx-auto text-left text-left text-left text-left">
+                    <div className="w-full max-w-2xl mx-auto text-left">
                          <BibleGameCard />
                     </div>
                 </div>
             </div>
         </section>
 
-        <section className="py-24 bg-background relative overflow-hidden text-left text-left">
-            <div className="max-w-7xl mx-auto px-6 relative z-10 text-left text-left">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center text-left text-left">
-                    <div className="space-y-8 text-center lg:text-left text-left text-left">
-                        <div className="space-y-4 text-left text-left">
-                            <Badge variant="outline" className="text-blue-500 border-blue-500/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 block w-fit text-left text-left">Provision Logistics</Badge>
-                            <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center lg:text-left text-left text-left">Practical Love in Action</h2>
-                            <p className="text-muted-foreground text-lg leading-relaxed italic font-medium text-center lg:text-left text-balance text-left text-left">
+        <section className="py-24 bg-background relative overflow-hidden text-left">
+            <div className="max-w-7xl mx-auto px-6 relative z-10 text-left">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center text-left">
+                    <div className="space-y-8 text-center lg:text-left text-left">
+                        <div className="space-y-4 text-left">
+                            <Badge variant="outline" className="text-blue-500 border-blue-500/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 block w-fit text-left">Provision Logistics</Badge>
+                            <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center lg:text-left text-left">Practical Love in Action</h2>
+                            <p className="text-muted-foreground text-lg leading-relaxed italic font-medium text-center lg:text-left text-balance text-left">
                                 Faith without works is dead. We provide the infrastructure to turn spiritual care into physical provision for those you lead to Christ.
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left text-left">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
                             <Card className="rounded-3xl border-none shadow-xl bg-blue-500 text-white overflow-hidden group hover:scale-[1.02] transition-transform text-left">
-                                <CardHeader className="p-8 pb-4 text-left text-left">
-                                    <Utensils className="h-10 w-10 mb-4 opacity-80 text-left text-left" />
-                                    <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Meals Center</CardTitle>
-                                    <CardDescription className="text-blue-100 font-medium text-left text-left">Coordinate physical meals for converts and the needy through local Kingdom vendors.</CardDescription>
+                                <CardHeader className="p-8 pb-4 text-left">
+                                    <Utensils className="h-10 w-10 mb-4 opacity-80 text-left" />
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Meals Center</CardTitle>
+                                    <CardDescription className="text-blue-100 font-medium text-left">Coordinate physical meals for converts and the needy through local Kingdom vendors.</CardDescription>
                                 </CardHeader>
                                 <CardFooter className="px-8 pb-8 pt-0 text-left">
                                     <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-center text-left">
-                                        <Link href="/marketplace" className="text-left text-left text-left">EXPLORE MEALS</Link>
+                                        <Link href="/marketplace" className="text-left text-left">EXPLORE MEALS</Link>
                                     </Button>
                                 </CardFooter>
                             </Card>
 
-                            <Card className="rounded-3xl border-none shadow-xl bg-indigo-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform text-left text-left">
-                                <CardHeader className="p-8 pb-4 text-left text-left">
-                                    <Gift className="h-10 w-10 mb-4 opacity-80 text-left text-left" />
-                                    <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Kindness Center</CardTitle>
-                                    <CardDescription className="text-indigo-100 font-medium text-left text-left">Send Bibles, tokens, and care packages as a tangible touch of God's love to your harvest.</CardDescription>
+                            <Card className="rounded-3xl border-none shadow-xl bg-indigo-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform text-left">
+                                <CardHeader className="p-8 pb-4 text-left">
+                                    <Gift className="h-10 w-10 mb-4 opacity-80 text-left" />
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Kindness Center</CardTitle>
+                                    <CardDescription className="text-indigo-100 font-medium text-left">Send Bibles, tokens, and care packages as a tangible touch of God's love to your harvest.</CardDescription>
                                 </CardHeader>
                                 <CardFooter className="px-8 pb-8 pt-0 text-left">
                                     <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-center text-left">
-                                        <Link href="/marketplace/gifts" className="text-left text-left text-left">SEND A GIFT</Link>
+                                        <Link href="/marketplace/gifts" className="text-left text-left">SEND A GIFT</Link>
                                     </Button>
                                 </CardFooter>
                             </Card>
                         </div>
                     </div>
 
-                    <div className="relative hidden lg:block text-left text-left">
-                        <div className="absolute inset-0 bg-primary/10 rounded-[3rem] -rotate-3 scale-105 text-left text-left" />
-                        <Card className="rounded-[3rem] border-none shadow-2xl overflow-hidden relative z-10 aspect-square flex items-center justify-center bg-[#1c1c21] text-left">
-                             <ShoppingBag className="h-48 w-48 text-primary opacity-20 text-left text-left" />
-                             <div className="absolute inset-0 flex items-center justify-center text-left text-left">
-                                 <div className="text-center space-y-4 px-12 text-left text-left">
-                                     <h4 className="text-2xl font-black uppercase tracking-tight text-white text-left text-left">Verified Kingdom Vendors</h4>
-                                     <p className="text-zinc-400 font-medium italic text-left text-left">Empowering Kingdom commerce to support the Great Commission.</p>
-                                     <Button asChild className="rounded-full px-8 h-12 font-black uppercase tracking-widest text-xs shadow-xl text-left text-left">
+                    <div className="relative hidden lg:block text-left">
+                        <div className="absolute inset-0 bg-primary/10 rounded-[3rem] -rotate-3 scale-105 text-left" />
+                        <Card className="rounded-[3rem] border-none shadow-2xl overflow-hidden relative z-10 aspect-square flex items-center justify-center bg-[#1c1c21] text-left text-left">
+                             <ShoppingBag className="h-48 w-48 text-primary opacity-20 text-left" />
+                             <div className="absolute inset-0 flex items-center justify-center text-left">
+                                 <div className="text-center space-y-4 px-12 text-left">
+                                     <h4 className="text-2xl font-black uppercase tracking-tight text-white text-left">Verified Kingdom Vendors</h4>
+                                     <p className="text-zinc-400 font-medium italic text-left">Empowering Kingdom commerce to support the Great Commission.</p>
+                                     <Button asChild className="rounded-full px-8 h-12 font-black uppercase tracking-widest text-xs shadow-xl text-left">
                                          <Link href="/marketplace" className="text-left text-left">REGISTER AS VENDOR</Link>
                                      </Button>
                                  </div>
@@ -380,24 +380,24 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section className="py-24 bg-muted/30 text-left text-left text-left">
-          <div className="max-w-7xl mx-auto px-6 text-left text-left text-left">
-            <div className="text-center mb-20 space-y-4 text-left text-left text-left">
+        <section className="py-24 bg-muted/30 text-left">
+          <div className="max-w-7xl mx-auto px-6 text-left">
+            <div className="text-center mb-20 space-y-4 text-left">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4 text-left text-left mx-auto"
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4 text-left mx-auto"
               >
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left">Mission Critical Care</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Mission Critical Care</span>
               </motion.div>
-              <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center text-left text-left text-left">The Caretaker Toolkit</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium italic text-center text-left text-left text-left">
+              <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center text-left">The Caretaker Toolkit</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium italic text-center text-left">
                 Equipping you to follow up and look after your harvest with professional intentionality.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left text-left text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left">
                 {features.map((feature, i) => {
                     return (
                         <motion.div
@@ -406,24 +406,24 @@ export default function LandingPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
-                            className="text-left text-left text-left"
+                            className="text-left"
                         >
-                            <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group border-b-8 border-b-primary/5 text-left text-left text-left">
-                                <CardHeader className="p-8 pb-4 flex flex-col items-center text-center text-left text-left text-left">
-                                    <div className={cn("h-14 w-14 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 text-left text-left text-left", feature.bgColor)}>
-                                        <feature.icon className={cn("h-7 w-7 text-left text-left text-left", feature.color)} />
+                            <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group border-b-8 border-b-primary/5 text-left text-left">
+                                <CardHeader className="p-8 pb-4 flex flex-col items-center text-center text-left">
+                                    <div className={cn("h-14 w-14 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 text-left", feature.bgColor)}>
+                                        <feature.icon className={cn("h-7 w-7 text-left", feature.color)} />
                                     </div>
-                                    <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-6 group-hover:text-primary transition-colors text-center text-left text-left text-left">{feature.title}</h3>
+                                    <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-6 group-hover:text-primary transition-colors text-center text-left">{feature.title}</h3>
                                 </CardHeader>
-                                <CardContent className="p-8 pb-8 flex-grow text-center text-left text-left text-left">
-                                    <p className="text-muted-foreground text-sm leading-relaxed font-medium text-left text-left text-left">
+                                <CardContent className="p-8 pb-8 flex-grow text-center text-left">
+                                    <p className="text-muted-foreground text-sm leading-relaxed font-medium text-left">
                                         {feature.description}
                                     </p>
                                 </CardContent>
-                                <CardFooter className="px-8 pb-8 pt-0 mt-auto justify-center text-center text-left text-left text-left">
-                                    <Button variant="ghost" size="icon" asChild className="rounded-full text-primary hover:bg-primary/5 transition-all group/btn flex items-center justify-center text-center text-left text-left text-left">
-                                        <Link href={feature.link} className="text-left text-left text-left text-left">
-                                            <ArrowRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1 text-left text-left text-left" />
+                                <CardFooter className="px-8 pb-8 pt-0 mt-auto justify-center text-center text-left">
+                                    <Button variant="ghost" size="icon" asChild className="rounded-full text-primary hover:bg-primary/5 transition-all group/btn flex items-center justify-center text-center text-left">
+                                        <Link href={feature.link} className="text-left">
+                                            <ArrowRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1 text-left" />
                                         </Link>
                                     </Button>
                                 </CardFooter>
@@ -435,72 +435,72 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left text-left text-left">
-            <div className="max-w-7xl mx-auto px-6 text-left text-left text-left">
-                <div className="text-center mb-20 space-y-4 text-left text-left text-left">
-                    <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter text-center text-left text-left text-left">Legacy of Compassion</h2>
-                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto italic font-medium text-center text-left text-left text-left">"Carry each other’s burdens, and in this way you will fulfill the law of Christ."</p>
+        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left">
+            <div className="max-w-7xl mx-auto px-6 text-left">
+                <div className="text-center mb-20 space-y-4 text-left">
+                    <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter text-center text-left">Legacy of Compassion</h2>
+                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto italic font-medium text-center text-left">"Carry each other’s burdens, and in this way you will fulfill the law of Christ."</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center text-left text-left">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center text-left">
                     {historicalFacts.map((fact, i) => (
-                        <div key={i} className="space-y-6 flex flex-col items-center text-center text-left text-left text-left">
-                            <div className="h-16 w-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl text-left text-left text-left text-left">
-                                <fact.icon className="h-8 w-8 text-primary text-left text-left text-left text-left" />
+                        <div key={i} className="space-y-6 flex flex-col items-center text-center text-left">
+                            <div className="h-16 w-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl text-left">
+                                <fact.icon className="h-8 w-8 text-primary text-left" />
                             </div>
-                            <div className="space-y-3 text-center text-left text-left text-left text-left">
-                                <h4 className="text-xl font-black uppercase tracking-tight text-center text-left text-left text-left">{fact.title}</h4>
-                                <p className="text-sm text-zinc-400 leading-relaxed font-medium text-balance text-center text-left text-left text-left text-left">{fact.description}</p>
-                                <Badge variant="outline" className="mt-2 border-primary/20 text-primary uppercase font-bold tracking-widest text-[9px] mx-auto flex items-center justify-center w-fit text-left text-left text-left text-left"> {fact.ref}</Badge>
+                            <div className="space-y-3 text-center text-left">
+                                <h4 className="text-xl font-black uppercase tracking-tight text-center text-left">{fact.title}</h4>
+                                <p className="text-sm text-zinc-400 leading-relaxed font-medium text-balance text-center text-left">{fact.description}</p>
+                                <Badge variant="outline" className="mt-2 border-primary/20 text-primary uppercase font-bold tracking-widest text-[9px] mx-auto flex items-center justify-center w-fit text-left"> {fact.ref}</Badge>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                <div className="mt-24 p-8 sm:p-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden text-left text-left text-left text-left">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.1),transparent_70%)] text-left text-left text-left text-left" />
-                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl relative z-10 text-center text-left text-left text-left">
-                        <Heart className="h-8 w-8 text-white text-left text-left text-left text-left" />
+                <div className="mt-24 p-8 sm:p-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden text-left">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.1),transparent_70%)] text-left" />
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl relative z-10 text-center text-left">
+                        <Heart className="h-8 w-8 text-white text-left" />
                     </div>
-                    <div className="space-y-4 relative z-10 text-center text-left text-left text-left text-left">
-                        <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-center text-left text-left text-left">Caring for the One</h3>
-                        <p className="text-zinc-400 max-w-2xl mx-auto text-sm sm:text-lg leading-relaxed font-medium italic text-pretty text-center text-left text-left text-left">
+                    <div className="space-y-4 relative z-10 text-center text-left">
+                        <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-center text-left">Caring for the One</h3>
+                        <p className="text-zinc-400 max-w-2xl mx-auto text-sm sm:text-lg leading-relaxed font-medium italic text-pretty text-center text-left">
                             True spiritual success is measured by the depth of your care. Testify makes it easy to stay present in the lives of your family and friends, ensuring they grow deep in the Word and established in the Kingdom.
                         </p>
                     </div>
-                    <div className="flex justify-center relative z-10 items-center text-left text-left text-left text-left">
-                        <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center text-left text-left text-left text-left">
-                            <Link href="/signup" className="text-center text-left text-left text-left text-left">JOIN THE MISSION OF LOVE</Link>
+                    <div className="flex justify-center relative z-10 items-center text-left">
+                        <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center text-left">
+                            <Link href="/signup" className="text-center text-left">JOIN THE MISSION OF LOVE</Link>
                         </Button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section className="py-24 relative overflow-hidden bg-background text-left text-left text-left text-left">
-          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left text-left text-left" />
+        <section className="py-24 relative overflow-hidden bg-background text-left text-left">
+          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left" />
           
-          <div className="max-w-7xl mx-auto px-6 text-left text-left text-left">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left text-left text-left">
-              <div className="space-y-10 text-center lg:text-left text-left text-left text-left">
-                <div className="space-y-6 text-center lg:text-left text-left text-left text-left">
-                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left text-left text-left">The Compassionate Altar</Badge>
-                  <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left text-left">Witness the Care</h2>
-                  <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-left text-left text-left">
+          <div className="max-w-7xl mx-auto px-6 text-left">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
+              <div className="space-y-10 text-center lg:text-left text-left">
+                <div className="space-y-6 text-center lg:text-left text-left">
+                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left">The Compassionate Altar</Badge>
+                  <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left">Witness the Care</h2>
+                  <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-left">
                     Explore how believers around the world witness what God is doing in their lives daily.
                   </p>
                 </div>
                 
-                <div className="flex justify-center lg:justify-start text-left text-left text-left">
-                    <Button asChild size="sm" variant="outline" className="h-9 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-8 w-full sm:w-auto uppercase tracking-widest flex items-center justify-center text-center text-left text-left text-left">
-                        <Link href="/testimonies" className="text-center text-left text-left text-left">VIEW FEED</Link>
+                <div className="flex justify-center lg:justify-start text-left">
+                    <Button asChild size="sm" variant="outline" className="h-9 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-8 w-full sm:w-auto uppercase tracking-widest flex items-center justify-center text-center text-left">
+                        <Link href="/testimonies" className="text-center text-left">VIEW FEED</Link>
                     </Button>
                 </div>
               </div>
 
-              <div className="space-y-6 text-left text-left text-left">
+              <div className="space-y-6 text-left text-left">
                 {loadingTestimonies ? (
-                  <div className="flex justify-center text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left text-left text-left text-left" /></div>
+                  <div className="flex justify-center text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left text-left text-left" /></div>
                 ) : testimonies?.map((t, idx) => (
                   <motion.div 
                     key={t.id}
@@ -508,22 +508,22 @@ export default function LandingPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
-                    className="text-left text-left text-left"
+                    className="text-left"
                   >
-                    <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left text-left text-left">
-                      <CardContent className="p-8 flex gap-6 text-left text-left text-left">
-                        <Quote className="h-10 w-10 text-primary opacity-20 shrink-0 mt-1 text-left text-left text-left" />
-                        <div className="min-w-0 flex-1 text-left text-left text-left">
-                          <p className="text-sm sm:text-lg italic text-muted-foreground line-clamp-3 leading-relaxed mb-6 font-medium text-left text-left text-left">
+                    <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left text-left">
+                      <CardContent className="p-8 flex gap-6 text-left text-left">
+                        <Quote className="h-10 w-10 text-primary opacity-20 shrink-0 mt-1 text-left" />
+                        <div className="min-w-0 flex-1 text-left text-left">
+                          <p className="text-sm sm:text-lg italic text-muted-foreground line-clamp-3 leading-relaxed mb-6 font-medium text-left text-left">
                             "{t.content}"
                           </p>
-                          <div className="flex items-center gap-4 text-left text-left text-left">
-                            <Avatar className="h-11 w-11 border-2 border-background shadow-md shrink-0 text-left text-left text-left">
-                                <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary font-black uppercase text-left text-left text-left"> {t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
+                          <div className="flex items-center gap-4 text-left text-left">
+                            <Avatar className="h-11 w-11 border-2 border-background shadow-md shrink-0 text-left text-left">
+                                <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary font-black uppercase text-left text-left"> {t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 flex-1 text-left text-left text-left">
-                              <p className="text-[11px] font-black uppercase tracking-tight truncate text-left text-left text-left">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
-                              <p className="text-[9px] font-bold text-primary uppercase tracking-widest truncate text-left text-left text-left">{t.category}</p>
+                            <div className="min-w-0 flex-1 text-left text-left">
+                              <p className="text-[11px] font-black uppercase tracking-tight truncate text-left text-left">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
+                              <p className="text-[9px] font-bold text-primary uppercase tracking-widest truncate text-left text-left">{t.category}</p>
                             </div>
                           </div>
                         </div>
@@ -536,27 +536,27 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden text-left text-left text-left">
-          <div className="absolute inset-0 opacity-10 pointer-events-none text-left text-left text-left">
-            <div className="absolute inset-0 grid grid-cols-6 gap-8 rotate-12 -translate-y-1/4 text-left text-left text-left">
+        <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden text-left text-left">
+          <div className="absolute inset-0 opacity-10 pointer-events-none text-left">
+            <div className="absolute inset-0 grid grid-cols-6 gap-8 rotate-12 -translate-y-1/4 text-left">
               {[...Array(24)].map((_, i) => (
-                <Globe key={i} className="h-24 w-24 text-left text-left text-left" />
+                <Globe key={i} className="h-24 w-24 text-left" />
               ))}
             </div>
           </div>
           
-          <div className="max-w-7xl mx-auto px-6 text-center relative z-10 text-left text-left text-left">
-            <div className="max-w-3xl mx-auto space-y-10 text-center text-left text-left text-left">
-              <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance text-center text-left text-left text-left">
+          <div className="max-w-7xl mx-auto px-6 text-center relative z-10 text-left">
+            <div className="max-w-3xl mx-auto space-y-10 text-center text-left">
+              <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance text-center text-left">
                 Ready to Look After Your Own?
               </h2>
-              <p className="text-lg sm:text-2xl text-primary-foreground/90 font-medium leading-relaxed italic text-balance text-center text-left text-left text-left">
+              <p className="text-lg sm:text-2xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-center text-left">
                 Join the app dedicated to caring for family, friends, souls, and the Kingdom.
                 Follow up on those you love and record the greatness of God together.
               </p>
-              <div className="flex justify-center pt-4 items-center text-left text-left text-left">
-                <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center text-left text-left text-left">
-                  <Link href="/signup" className="text-center text-left text-left text-left text-left">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6 text-left text-left text-left text-left" /></Link>
+              <div className="flex justify-center pt-4 items-center text-left">
+                <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center text-left">
+                  <Link href="/signup" className="text-center text-left text-left">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6 text-left text-left text-left" /></Link>
                 </Button>
               </div>
             </div>
@@ -564,53 +564,53 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-muted/50 border-t py-20 text-left text-left text-left">
-        <div className="max-w-7xl mx-auto px-8 text-left text-left text-left">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16 text-left text-left text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-8 text-left text-left text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left text-left">
+      <footer className="bg-muted/50 border-t py-20 text-left text-left">
+        <div className="max-w-7xl mx-auto px-8 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16 text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-8 text-left text-left">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
                 {logo && (
-                  <Avatar className="h-14 w-14 border-2 border-primary/20 text-left text-left text-left">
-                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left text-left" />
+                  <Avatar className="h-14 w-14 border-2 border-primary/20 text-left text-left">
+                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
                     <AvatarFallback className="text-left text-left">T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-sm text-left text-left text-left">
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-sm text-left text-left">
                 Testify is the heart center for believers to care for family, friends, and the global harvest while sharing the greatness of Jesus Christ.
               </p>
             </div>
 
-            <div className="space-y-6 text-left text-left text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left">Platform</h4>
-              <ul className="space-y-4 text-left text-left text-left">
-                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Miracle Feed</Link></li>
-                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Care Missions</Link></li>
-                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Love Growth</Link></li>
-                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Community Hubs</Link></li>
+            <div className="space-y-6 text-left text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Platform</h4>
+              <ul className="space-y-4 text-left text-left">
+                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Miracle Feed</Link></li>
+                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Care Missions</Link></li>
+                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Love Growth</Link></li>
+                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Community Hubs</Link></li>
               </ul>
             </div>
 
-            <div className="space-y-6 text-left text-left text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left">Ministry</h4>
-              <ul className="space-y-4 text-left text-left text-left">
-                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Vision</Link></li>
-                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Partner with us</Link></li>
-                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Care Guide</Link></li>
-                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Growth Assets</Link></li>
-                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Terms</Link></li>
-                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left text-left">Privacy</Link></li>
+            <div className="space-y-6 text-left text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Ministry</h4>
+              <ul className="space-y-4 text-left text-left">
+                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Vision</Link></li>
+                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Partner with us</Link></li>
+                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Care Guide</Link></li>
+                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Growth Assets</Link></li>
+                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Terms</Link></li>
+                <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Privacy</Link></li>
               </ul>
             </div>
           </div>
           
-          <div className="h-px w-full bg-muted opacity-50 mb-10 text-left text-left text-left" />
+          <div className="h-px w-full bg-muted opacity-50 mb-10 text-left text-left" />
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left text-left">
-            <p className="text-center md:text-left uppercase text-left text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Caring for the Harvest.</p>
-            <div className="flex gap-8 text-left text-left text-left">
-              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left text-left">Terms</Link>
-              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left text-left">Privacy</Link>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left">
+            <p className="text-center md:text-left uppercase text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Caring for the Harvest.</p>
+            <div className="flex gap-8 text-left text-left">
+              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left">Privacy</Link>
             </div>
           </div>
         </div>

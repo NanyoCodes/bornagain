@@ -212,8 +212,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         if (!vendor) return;
         const shareUrl = window.location.href;
         const shareData = {
-            title: `${vendor.businessName} on Testify Global`,
-            text: `Support the harvest with physical provisions from ${vendor.businessName}. Browse their ${itemLabel.toLowerCase()}s on Testify!`,
+            title: `${vendor.businessName} | Testify Global`,
+            text: `Support the harvest with physical provisions from ${vendor.businessName}. Browse their offerings on Testify Global!`,
             url: shareUrl,
         };
 
