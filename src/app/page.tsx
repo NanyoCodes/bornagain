@@ -216,10 +216,10 @@ export default function LandingPage() {
                   Testify the GREATNESS OF GOD.
                 </h1>
                 <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center">
-                  The #1 App to care for family, friends, souls, and the Kingdom.
+                  Explore how believers around the world witness what God is doing in their lives daily.
                 </span>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
-                  Explore how believers around the world witness what God is doing in their lives daily.
+                  "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
 
@@ -310,7 +310,7 @@ export default function LandingPage() {
                             </p>
                         </div>
                         <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center text-center mx-auto text-left text-left text-left text-left">
-                            <Link href="/signup" className="text-center text-left text-left text-left">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4 text-left text-left text-left text-left" /></Link>
+                            <Link href="/signup" className="text-center text-left text-left text-left text-left">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4 text-left text-left text-left text-left" /></Link>
                         </Button>
                     </div>
                     <div className="w-full max-w-2xl mx-auto text-left text-left text-left text-left">
@@ -435,7 +435,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left text-left">
+        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left text-left text-left">
             <div className="max-w-7xl mx-auto px-6 text-left text-left text-left">
                 <div className="text-center mb-20 space-y-4 text-left text-left text-left">
                     <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter text-center text-left text-left text-left">Legacy of Compassion</h2>
@@ -469,7 +469,7 @@ export default function LandingPage() {
                         </p>
                     </div>
                     <div className="flex justify-center relative z-10 items-center text-left text-left text-left text-left">
-                        <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center text-left text-left text-left">
+                        <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center text-left text-left text-left text-left">
                             <Link href="/signup" className="text-center text-left text-left text-left text-left">JOIN THE MISSION OF LOVE</Link>
                         </Button>
                     </div>
@@ -500,7 +500,7 @@ export default function LandingPage() {
 
               <div className="space-y-6 text-left text-left text-left">
                 {loadingTestimonies ? (
-                  <div className="flex justify-center text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left text-left text-left" /></div>
+                  <div className="flex justify-center text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left text-left text-left text-left" /></div>
                 ) : testimonies?.map((t, idx) => (
                   <motion.div 
                     key={t.id}
