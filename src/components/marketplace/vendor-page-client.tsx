@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useDoc, useUser, useCollection, useFirestore } from '@/firebase';
+import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { VendorProfile, Meal, UserProfile, Soul } from '@/lib/types';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc, limit } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -592,4 +591,3 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
-

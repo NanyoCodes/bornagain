@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -113,7 +112,7 @@ function TestimoniesContent() {
 
   const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony'; data: Testimony } | { type: 'prayer'; data: PrayerRequest } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [testimonyToEdit, setTestimonyToEdit] = useState<Testimony | null>(null);
+  const [testimonyToEdit, setTestimonyToEdit] = setTestimonyToEdit = useState<Testimony | null>(null);
   const [prayerToEdit, setPrayerToEdit] = useState<PrayerRequest | null>(null);
   const [prayerToAnswer, setPrayerToAnswer] = useState<PrayerRequest | null>(null);
 
@@ -303,14 +302,14 @@ function TestimoniesContent() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
           <div
-            className="bg-card border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98]"
+            className="bg-card border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98] text-left"
             onClick={() => setIsTestimonyDialogOpen(true)}
           >
             <Avatar className="h-9 w-9 border shadow-sm shrink-0 text-left">
               <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left" />
               <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px] text-left">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0 text-left">
+            <div className="flex-1 min-w-0 text-left text-left">
               <p className="text-[12px] font-bold text-foreground/80 leading-tight text-left">Share God's goodness today...</p>
             </div>
             <div className="flex items-center gap-2 text-left">
@@ -457,7 +456,7 @@ function TestimoniesContent() {
         </AlertDialogContent>
       </AlertDialog>
       {mounted && (
-        <>
+        <Suspense>
           {isMobile ? (
             <>
               <Drawer open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
@@ -499,7 +498,7 @@ function TestimoniesContent() {
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0 text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-4 text-left text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span></div>
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">
                           {prayerToAnswer ? 'Record Answer' : 'Share Testimony'}
                         </DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">
@@ -517,7 +516,7 @@ function TestimoniesContent() {
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0 text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-4 text-left text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span></div>
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Request Prayer</DrawerTitle>
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Request Prayer</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Share your need with the global community.</DrawerDescription>
                     </DrawerHeader>
                   </div>
@@ -572,7 +571,7 @@ function TestimoniesContent() {
               </Dialog>
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Share your request with the Body of Christ.</DialogDescription>
@@ -583,13 +582,13 @@ function TestimoniesContent() {
               </Dialog>
             </>
           )}
-        </>
+        </Suspense>
       )}
     </div>
   );
 }
 
-export default function TestimoniesPage() {
+export default function TestimoniesStandalonePage() {
     return (
         <AppShell>
             <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left text-left" /></div>}>
