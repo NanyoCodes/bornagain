@@ -1,9 +1,10 @@
-'use client';
+
+"use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Newspaper, HandHeart, Loader2, Trash2, Edit, Camera, Flame, Sparkles, X, ChevronDown, Send, Globe, Hourglass, UserPlus } from 'lucide-react';
+import { Newspaper, HandHeart, Loader2, Trash2, Edit, Camera, Flame, Sparkles, X, ChevronDown, Send, Globe, Hourglass, UserPlus, PlusCircle } from 'lucide-react';
 import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 import { TestimonyCard } from '@/components/testimonies/testimony-card';
 import { PrayerRequestCard } from '@/components/prayer/PrayerRequestCard';
@@ -301,64 +302,57 @@ function TestimoniesContent() {
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
-          <Card className="rounded-none sm:rounded-[2rem] border-none shadow-xl bg-card/50 backdrop-blur-xl -mx-4 sm:mx-0 overflow-hidden text-left">
-            <CardContent className="p-4 sm:p-6 text-left">
-                <div
-                    className="flex items-center gap-4 cursor-pointer hover:bg-muted/30 transition-all rounded-full p-1.5 pr-6 text-left"
-                    onClick={() => setIsTestimonyDialogOpen(true)}
-                >
-                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0">
-                    <AvatarImage src={userProfile?.photoURL ?? undefined} className="object-cover text-left" />
-                    <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px] text-left">{userProfile?.firstName?.charAt(0) || 'U'}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0 text-left">
-                    <p className="text-[12px] sm:text-sm font-bold text-foreground/60 leading-tight text-left">Share God's goodness today, {userProfile?.firstName}...</p>
-                    </div>
-                    <div className="flex items-center gap-2 text-left">
-                        <div className="hidden sm:flex items-center gap-2">
-                             <TooltipProvider>
-                                <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button
-                                    className="h-9 w-9 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setIsTestimonyDialogOpen(true);
-                                    }}
-                                    >
-                                    <Newspaper className="h-4 w-4" />
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p className="text-[10px] font-black uppercase text-left">Share Testimony</p>
-                                </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                                <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button
-                                    className="h-9 w-9 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setIsPrayerDialogOpen(true);
-                                    }}
-                                    >
-                                    <HandHeart className="h-4 w-4 text-left" />
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p className="text-[10px] font-black uppercase text-left">Request Prayer</p>
-                                </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </div>
-                        <PlusCircle className="h-5 w-5 text-primary sm:hidden" />
-                    </div>
-                </div>
-            </CardContent>
-          </Card>
-
+          <div
+            className="bg-card border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98]"
+            onClick={() => setIsTestimonyDialogOpen(true)}
+          >
+            <Avatar className="h-9 w-9 border shadow-sm shrink-0 text-left">
+              <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left" />
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px] text-left">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0 text-left">
+              <p className="text-[12px] font-bold text-foreground/80 leading-tight text-left">Share God's goodness today...</p>
+            </div>
+            <div className="flex items-center gap-2 text-left">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsTestimonyDialogOpen(true);
+                      }}
+                    >
+                      <Newspaper className="h-3.5 w-3.5 text-left" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="text-left">
+                    <p className="text-[10px] font-black uppercase text-left">Share Testimony</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsPrayerDialogOpen(true);
+                      }}
+                    >
+                      <HandHeart className="h-3.5 w-3.5 text-left" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="text-left">
+                    <p className="text-[10px] font-black uppercase text-left">Request Prayer</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <PlusCircle className="h-5 w-5 text-primary sm:hidden" />
+            </div>
+          </div>
           <div className="px-4 sm:px-0 text-left">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
               <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 text-left">
@@ -454,7 +448,7 @@ function TestimoniesContent() {
               This will permanently delete this {itemToDelete?.type}. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
+          <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
             <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left text-left">
               Cancel
             </AlertDialogCancel>
@@ -557,7 +551,9 @@ function TestimoniesContent() {
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left">
-                    {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}
+                    <div className="p-8 text-left text-left text-left text-left text-left">
+                        {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}
+                    </div>
                   </ScrollArea>
                 </DialogContent>
               </Dialog>
@@ -578,8 +574,8 @@ function TestimoniesContent() {
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Share your request with the Body of Christ.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Share Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left text-left text-left text-left">{prayerFormContent}</div></ScrollArea>
@@ -593,7 +589,7 @@ function TestimoniesContent() {
   );
 }
 
-export default function TestimoniesStandalonePage() {
+export default function TestimoniesPage() {
     return (
         <AppShell>
             <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left text-left" /></div>}>

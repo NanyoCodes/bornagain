@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useDoc, useUser, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useDoc, useUser, useCollection, useFirestore } from '@/firebase';
 import type { VendorProfile, Meal, UserProfile, Soul } from '@/lib/types';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc, limit } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -281,18 +282,18 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         deleteDoc(doc(firestore, 'vendors', vendorId, 'meals', itemToDelete.id)).then(() => { toast({ title: 'Item Removed' }); setItemToDelete(null); }).finally(() => setIsDeletingItem(false));
     };
 
-    if (loading || !mounted) return <div className="flex h-full w-full items-center justify-center py-20 text-left"><Loader2 className="animate-spin text-primary" /></div>;
+    if (loading || !mounted) return <div className="flex h-full w-full items-center justify-center py-20 text-left text-left text-left text-left text-left"><Loader2 className="animate-spin text-primary text-left text-left text-left text-left text-left" /></div>;
 
     if (!vendor) {
         return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-32 text-center px-8 text-left">
-                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
-                    <Store className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
+            <div className="flex h-full w-full flex-col items-center justify-center py-32 text-center px-8 text-left text-left text-left text-left">
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left text-left text-left">
+                    <Store className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left text-left" />
                 </div>
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">Storefront Not Found</h2>
-                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left">This Kingdom partner may have moved their station or closed their doors.</p>
-                <Button variant="outline" className="mt-8 rounded-xl h-11 px-8 font-bold mx-auto block text-center text-left" onClick={() => router.back()}>
-                    <ArrowLeft className="mr-2 h-4 w-4 text-left" /> Go Back
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left text-left text-left">Storefront Not Found</h2>
+                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left text-left text-left text-left">This Kingdom partner may have moved their station or closed their doors.</p>
+                <Button variant="outline" className="mt-8 rounded-xl h-11 px-8 font-bold mx-auto block text-center text-left text-left text-left text-left" onClick={() => router.back()}>
+                    <ArrowLeft className="mr-2 h-4 w-4 text-left text-left text-left text-left" /> Go Back
                 </Button>
             </div>
         );
@@ -401,101 +402,101 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const itemSymbol = getCurrencySymbol(vendor.currency);
 
     return (
-        <div className="w-full text-left">
-            <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left">
-                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
-                    <div className="flex items-center justify-between gap-4 text-left">
-                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
-                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left">
-                                <AvatarImage src={vendor.photoURL || undefined} className="object-cover text-left" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary uppercase text-left"> {vendor.businessName?.charAt(0)}</AvatarFallback>
+        <div className="w-full text-left text-left text-left text-left text-left">
+            <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left text-left text-left text-left text-left">
+                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left text-left text-left text-left text-left">
+                    <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left text-left">
+                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left text-left text-left text-left">
+                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left text-left text-left"><ArrowLeft className="h-6 w-6 text-left text-left text-left text-left text-left" /></Button>
+                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left text-left text-left text-left text-left text-left">
+                                <AvatarImage src={vendor.photoURL || undefined} className="object-cover text-left text-left text-left text-left text-left" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary uppercase text-left text-left text-left text-left text-left"> {vendor.businessName?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 flex-1 text-left">
-                                <div className="flex items-center gap-2 mb-1 text-left">
-                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left" />}
-                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">{centerLabel}</span>
+                            <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left">
+                                <div className="flex items-center gap-2 mb-1 text-left text-left text-left text-left text-left">
+                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left text-left" />}
+                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left text-left text-left text-left">{centerLabel}</span>
                                 </div>
-                                <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase leading-tight text-left">{vendor.businessName}</h1>
+                                <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase leading-tight text-left text-left text-left text-left text-left">{vendor.businessName}</h1>
                                 {isOwner && (
                                     <Button 
                                         variant="outline" 
                                         size="icon" 
                                         onClick={() => setIsEditVendorOpen(true)} 
-                                        className="h-8 w-8 rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background mt-2 text-left"
+                                        className="h-8 w-8 rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background mt-2 text-left text-left text-left text-left text-left"
                                     >
-                                        <Edit className="h-4 w-4 text-left" />
-                                        <span className="sr-only text-left">Manage Store</span>
+                                        <Edit className="h-4 w-4 text-left text-left text-left text-left text-left" />
+                                        <span className="sr-only text-left text-left text-left text-left text-left">Manage Store</span>
                                     </Button>
                                 )}
                             </div>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0 text-left">
-                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary/60 hover:text-primary text-left" onClick={handleShare}>
-                                <Share2 className="h-4 w-4 shrink-0 text-left" />
+                        <div className="flex items-center gap-2 shrink-0 text-left text-left text-left text-left text-left">
+                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary/60 hover:text-primary text-left text-left text-left text-left text-left" onClick={handleShare}>
+                                <Share2 className="h-4 w-4 shrink-0 text-left text-left text-left text-left text-left" />
                             </Button>
                         </div>
                     </div>
 
-                    <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
-                        {vendor.photoURL ? <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5"><Store className="h-16 w-16 text-primary opacity-10" /></div>}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
-                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left">
-                            <div className="flex items-center gap-2 opacity-80 mb-2 text-left">
-                                <MapPin className="h-3.5 w-3.5 text-primary text-left" />
-                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor.location || 'Kingdom Network'}</p>
+                    <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left text-left text-left text-left">
+                        {vendor.photoURL ? <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left text-left text-left text-left text-left"><Store className="h-16 w-16 text-primary opacity-10 text-left text-left text-left text-left text-left" /></div>}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left text-left text-left text-left" />
+                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left text-left text-left text-left text-left">
+                            <div className="flex items-center gap-2 opacity-80 mb-2 text-left text-left text-left text-left text-left">
+                                <MapPin className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left text-left" />
+                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate text-left text-left text-left text-left"> {vendor.location || 'Kingdom Network'}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="relative text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
-                        <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 sm:h-14 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-sm sm:text-lg text-left" />
+                    <div className="relative text-left text-left text-left text-left text-left">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left text-left text-left" />
+                        <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 sm:h-14 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-sm sm:text-lg text-left text-left text-left text-left text-left" />
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left text-left text-left text-left text-left">
                     {isOwner && !itemSearchTerm && (
-                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left" onClick={() => setIsAddMealOpen(true)}>
-                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left"><Plus className="h-6 w-6 text-primary text-left" /></div>
-                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-center"> {addLabel}</h3>
+                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left text-left text-left text-left text-left" onClick={() => setIsAddMealOpen(true)}>
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left text-left text-left text-left text-left"><Plus className="h-6 w-6 text-primary text-left text-left text-left text-left text-left" /></div>
+                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-center text-left text-left text-left text-left text-left"> {addLabel}</h3>
                         </Card>
                     )}
 
                     {filteredMeals.map(meal => {
                         const cartItem = cart[meal.id];
                         return (
-                            <Card key={meal.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
-                                <CardContent className="p-0 text-left">
-                                    <div className="aspect-[4/3] relative bg-muted text-left">
-                                        {meal.photoURL ? <NextImage src={meal.photoURL} alt={meal.name} fill className="object-cover text-left" unoptimized /> : <div className="w-full h-full flex items-center justify-center text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left" />}</div>}
-                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left">
-                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-left"> {itemSymbol}{meal.price.toLocaleString()}</Badge>
-                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-left"> + {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
+                            <Card key={meal.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left text-left text-left text-left text-left">
+                                <CardContent className="p-0 text-left text-left text-left text-left text-left">
+                                    <div className="aspect-[4/3] relative bg-muted text-left text-left text-left text-left text-left">
+                                        {meal.photoURL ? <NextImage src={meal.photoURL} alt={meal.name} fill className="object-cover text-left text-left text-left text-left text-left" unoptimized /> : <div className="w-full h-full flex items-center justify-center text-left text-left text-left text-left text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left text-left text-left text-left text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left text-left text-left text-left text-left" />}</div>}
+                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left text-left text-left text-left text-left">
+                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-left text-left text-left text-left text-left"> {itemSymbol}{meal.price.toLocaleString()}</Badge>
+                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-left text-left text-left text-left text-left"> + {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
                                         </div>
-                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-center text-left"> {cartItem.quantity}</div>}
+                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-center text-left text-left text-left text-left text-left"> {cartItem.quantity}</div>}
                                     </div>
-                                    <div className="p-6 sm:p-8 space-y-4 flex-grow text-left">
-                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight mb-1 text-left">{meal.name}</h3>
-                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left">{meal.description || `Verified Kingdom service item.`}</p>
+                                    <div className="p-6 sm:p-8 space-y-4 flex-grow text-left text-left text-left text-left text-left">
+                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight mb-1 text-left text-left text-left text-left text-left">{meal.name}</h3>
+                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left text-left text-left text-left text-left">{meal.description || `Verified Kingdom service item.`}</p>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left">
+                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left text-left text-left text-left text-left">
                                     {isOwner && (
-                                        <div className="flex gap-2 text-left">
-                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left" /></Button>
-                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="mr-2 h-4 w-4 text-left" /></Button>
+                                        <div className="flex gap-2 text-left text-left text-left text-left text-left">
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left text-left text-left text-left text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" /></Button>
+                                            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left text-left text-left text-left text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left" /></Button>
                                         </div>
                                     )}
-                                    <div className="flex-1 min-w-0 text-left">
+                                    <div className="flex-1 min-w-0 text-left text-left text-left text-left text-left">
                                         {cartItem ? (
-                                            <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left"/></Button>
-                                                <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-left">IN PACKAGE</span>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left"/></Button>
+                                            <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left text-left text-left text-left text-left">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, -1)}><Minus className="h-3.5 w-3.5 text-left text-left text-left text-left text-left"/></Button>
+                                                <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-left text-left text-left text-left text-left">IN PACKAGE</span>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left text-left" onClick={() => updateQuantity(meal.id, cartItem.quantity, 1)}><Plus className="h-3.5 w-3.5 text-left text-left text-left text-left text-left"/></Button>
                                             </div>
                                         ) : (
-                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-90 text-center text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
+                                            <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-90 text-center text-left text-left text-left text-left text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
                                         )}
                                     </div>
                                 </CardFooter>
@@ -507,54 +508,54 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             
             {isOwner && (
                 <Drawer open={isEditVendorOpen} onOpenChange={setIsEditVendorOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
-                                <div className="flex items-center gap-2 mb-2 text-left text-left">
-                                    <Store className="h-5 w-5 text-primary text-left" />
-                                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Storefront Management</span>
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
+                                <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                                    <Store className="h-5 w-5 text-primary text-left text-left text-left text-left" />
+                                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Storefront Management</span>
                                 </div>
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Manage Store Details</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Update your branding and coordination info.</DrawerDescription>
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Manage Store Details</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Update your branding and coordination info.</DrawerDescription>
                             </DrawerHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left text-left">{vendorEditForm}</ScrollArea>
+                        <ScrollArea className="flex-grow text-left text-left text-left text-left">{vendorEditForm}</ScrollArea>
                     </DrawerContent>
                 </Drawer>
             )}
 
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                        <DialogHeader className="p-0 text-left text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{addLabel}</DialogTitle>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
+                        <DialogHeader className="p-0 text-left text-left text-left text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">{addLabel}</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left text-left">{itemForm()}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left">{itemForm()}</div>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                        <DialogHeader className="p-0 text-left text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{itemLabel} Details</DialogTitle>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
+                        <DialogHeader className="p-0 text-left text-left text-left text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">{itemLabel} Details</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left text-left">{itemForm(itemToEdit, true)}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left">{itemForm(itemToEdit, true)}</div>
                 </DialogContent>
             </Dialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
-                    <AlertDialogHeader className="text-left text-left">
-                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left">Remove Offering?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left text-left">
+                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left text-left">Remove Offering?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left text-left">
-                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left" />}
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left text-left text-left text-left">
+                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left" />}
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -562,27 +563,27 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             </AlertDialog>
 
             {cartCountTotal > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left text-left">
-                    <Link href="/marketplace/checkout" className="block group text-left text-left">
-                        <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left text-left">
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left text-left" />
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left text-left text-left text-left">
+                    <Link href="/marketplace/checkout" className="block group text-left text-left text-left text-left">
+                        <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left text-left text-left text-left">
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left text-left text-left text-left text-left" />
                             
-                            <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left text-left">
-                                <div className="relative text-left text-left">
-                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left text-left">
-                                        <ShoppingBag className="h-5 w-5 text-white/80 text-left text-left" />
+                            <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left text-left text-left text-left">
+                                <div className="relative text-left text-left text-left text-left">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left text-left text-left text-left">
+                                        <ShoppingBag className="h-5 w-5 text-white/80 text-left text-left text-left text-left" />
                                     </div>
-                                    <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center text-left text-left">
-                                        <span className="text-[10px] font-black text-white text-center text-left"> {cartCountTotal}</span>
+                                    <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center text-left text-left text-left text-left">
+                                        <span className="text-[10px] font-black text-white text-center text-left text-left text-left text-left"> {cartCountTotal}</span>
                                     </div>
                                 </div>
-                                <div className="flex flex-col leading-none min-w-0 text-left text-left text-left">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">{centerLabel} Package</span>
+                                <div className="flex flex-col leading-none min-w-0 text-left text-left text-left text-left">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left text-left text-left text-left">{centerLabel} Package</span>
                                 </div>
                             </div>
 
-                            <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left text-left">
-                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left text-left" />
+                            <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left text-left text-left text-left">
+                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left text-left text-left text-left" />
                             </div>
                         </div>
                     </Link>
@@ -591,3 +592,4 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
+
