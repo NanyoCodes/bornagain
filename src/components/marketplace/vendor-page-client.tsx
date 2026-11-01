@@ -348,7 +348,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Store Location</Label>
+                    <Label htmlFor="location" className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Store Location</Label>
                     <Input id="location" name="location" defaultValue={vendor.location || ''} placeholder="City, State, Country" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                 </div>
 
@@ -406,7 +406,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
                     <div className="flex items-center justify-between gap-4 text-left">
                         <div className="flex items-center gap-4 min-w-0 flex-1 text-left">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
+                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
                             <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left">
                                 <AvatarImage src={vendor.photoURL || undefined} className="object-cover text-left" />
                                 <AvatarFallback className="font-black bg-primary/10 text-primary uppercase text-left"> {vendor.businessName?.charAt(0)}</AvatarFallback>
@@ -440,7 +440,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
                         {vendor.photoURL ? <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized /> : <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5"><Store className="h-16 w-16 text-primary opacity-10" /></div>}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
-                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%]">
+                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left">
                             <div className="flex items-center gap-2 opacity-80 mb-2 text-left">
                                 <MapPin className="h-3.5 w-3.5 text-primary text-left" />
                                 <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor.location || 'Kingdom Network'}</p>
@@ -507,54 +507,54 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             
             {isOwner && (
                 <Drawer open={isEditVendorOpen} onOpenChange={setIsEditVendorOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                                <div className="flex items-center gap-2 mb-2 text-left">
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
+                                <div className="flex items-center gap-2 mb-2 text-left text-left">
                                     <Store className="h-5 w-5 text-primary text-left" />
                                     <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Storefront Management</span>
                                 </div>
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Store Details</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Update your branding and coordination info.</DrawerDescription>
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Manage Store Details</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Update your branding and coordination info.</DrawerDescription>
                             </DrawerHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left">{vendorEditForm}</ScrollArea>
+                        <ScrollArea className="flex-grow text-left text-left">{vendorEditForm}</ScrollArea>
                     </DrawerContent>
                 </Drawer>
             )}
 
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="p-0 text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{addLabel}</DialogTitle>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+                        <DialogHeader className="p-0 text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{addLabel}</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm()}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left">{itemForm()}</div>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="p-0 text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{itemLabel} Details</DialogTitle>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+                        <DialogHeader className="p-0 text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{itemLabel} Details</DialogTitle>
                         </DialogHeader>
                     </div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm(itemToEdit, true)}</div>
+                    <div className="flex-grow overflow-hidden text-left text-left">{itemForm(itemToEdit, true)}</div>
                 </DialogContent>
             </Dialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left">
-                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+                    <AlertDialogHeader className="text-left text-left">
+                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left">Remove Offering?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left">
-                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-center text-left text-left">
+                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left" />}
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -562,27 +562,27 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             </AlertDialog>
 
             {cartCountTotal > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left">
-                    <Link href="/marketplace/checkout" className="block group text-left">
-                        <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left">
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left" />
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-6 animate-in slide-in-from-bottom-10 duration-500 text-left text-left">
+                    <Link href="/marketplace/checkout" className="block group text-left text-left">
+                        <div className="relative overflow-hidden rounded-full bg-[#1c1c21] border-4 border-white/5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center h-16 p-1 transition-all group-hover:scale-[1.02] group-active:scale-95 group-hover:border-primary/20 text-left text-left">
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-left text-left" />
                             
-                            <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left">
-                                <div className="relative text-left">
-                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left">
-                                        <ShoppingBag className="h-5 w-5 text-white/80 text-left" />
+                            <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left text-left">
+                                <div className="relative text-left text-left">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left text-left">
+                                        <ShoppingBag className="h-5 w-5 text-white/80 text-left text-left" />
                                     </div>
-                                    <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center text-left">
+                                    <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center text-left text-left">
                                         <span className="text-[10px] font-black text-white text-center text-left"> {cartCountTotal}</span>
                                     </div>
                                 </div>
-                                <div className="flex flex-col leading-none min-w-0 text-left">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">{centerLabel} Package</span>
+                                <div className="flex flex-col leading-none min-w-0 text-left text-left text-left">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">{centerLabel} Package</span>
                                 </div>
                             </div>
 
-                            <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left">
-                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left" />
+                            <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_20px_rgba(249,116,22,0.4)] transition-all relative z-10 shrink-0 mr-1 text-left text-left">
+                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1 text-left text-left" />
                             </div>
                         </div>
                     </Link>

@@ -320,6 +320,67 @@ export default function LandingPage() {
             </div>
         </section>
 
+        {/* Provision Hubs Section */}
+        <section className="py-24 bg-background relative overflow-hidden text-left">
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div className="space-y-8 text-center lg:text-left">
+                        <div className="space-y-4">
+                            <Badge variant="outline" className="text-blue-500 border-blue-500/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 block w-fit">Provision Logistics</Badge>
+                            <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center lg:text-left">Practical Love in Action</h2>
+                            <p className="text-muted-foreground text-lg leading-relaxed italic font-medium text-center lg:text-left text-balance">
+                                Faith without works is dead. We provide the infrastructure to turn spiritual care into physical provision for those you lead to Christ.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                            <Card className="rounded-3xl border-none shadow-xl bg-blue-500 text-white overflow-hidden group hover:scale-[1.02] transition-transform">
+                                <CardHeader className="p-8 pb-4">
+                                    <Utensils className="h-10 w-10 mb-4 opacity-80" />
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Meals Center</CardTitle>
+                                    <CardDescription className="text-blue-100 font-medium">Coordinate physical meals for converts and the needy through local Kingdom vendors.</CardDescription>
+                                </CardHeader>
+                                <CardFooter className="px-8 pb-8 pt-0">
+                                    <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px]">
+                                        <Link href="/marketplace">EXPLORE MEALS</Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+
+                            <Card className="rounded-3xl border-none shadow-xl bg-indigo-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform">
+                                <CardHeader className="p-8 pb-4">
+                                    <Gift className="h-10 w-10 mb-4 opacity-80" />
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Kindness Center</CardTitle>
+                                    <CardDescription className="text-indigo-100 font-medium">Send Bibles, tokens, and care packages as a tangible touch of God's love to your harvest.</CardDescription>
+                                </CardHeader>
+                                <CardFooter className="px-8 pb-8 pt-0">
+                                    <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px]">
+                                        <Link href="/marketplace/gifts">SEND A GIFT</Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        </div>
+                    </div>
+
+                    <div className="relative hidden lg:block">
+                        <div className="absolute inset-0 bg-primary/10 rounded-[3rem] -rotate-3 scale-105" />
+                        <Card className="rounded-[3rem] border-none shadow-2xl overflow-hidden relative z-10 aspect-square flex items-center justify-center bg-[#1c1c21]">
+                             <ShoppingBag className="h-48 w-48 text-primary opacity-20" />
+                             <div className="absolute inset-0 flex items-center justify-center">
+                                 <div className="text-center space-y-4 px-12">
+                                     <h4 className="text-2xl font-black uppercase tracking-tight text-white">Verified Kingdom Vendors</h4>
+                                     <p className="text-zinc-400 font-medium italic">Empowering Kingdom commerce to support the Great Commission.</p>
+                                     <Button asChild className="rounded-full px-8 h-12 font-black uppercase tracking-widest text-xs shadow-xl">
+                                         <Link href="/marketplace">REGISTER AS VENDOR</Link>
+                                     </Button>
+                                 </div>
+                             </div>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section className="py-24 bg-muted/30 text-left">
           <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="text-center mb-20 space-y-4 text-left">
