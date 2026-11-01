@@ -216,7 +216,7 @@ export default function LandingPage() {
                   Testify the GREATNESS OF GOD.
                 </h1>
                 <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center">
-                  Explore how believers around the world witness what God is doing in their lives daily.
+                   Explore how believers around the world witness what God is doing in their lives daily.
                 </span>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
@@ -328,7 +328,7 @@ export default function LandingPage() {
                             <Badge variant="outline" className="text-blue-500 border-blue-500/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 block w-fit text-left">Provision Logistics</Badge>
                             <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center lg:text-left text-left">Practical Love in Action</h2>
                             <p className="text-muted-foreground text-lg leading-relaxed italic font-medium text-center lg:text-left text-balance text-left">
-                                Faith without works is dead. We provide the infrastructure to turn spiritual care into physical provision for those you lead to Christ.
+                                Faith without works is dead. We provide the infrastructure to turn spiritual care into physical provision for those you lead to Christ through our verified Kingdom hubs.
                             </p>
                         </div>
 
@@ -337,10 +337,10 @@ export default function LandingPage() {
                                 <CardHeader className="p-8 pb-4 text-left">
                                     <Utensils className="h-10 w-10 mb-4 opacity-80 text-left" />
                                     <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Meals Center</CardTitle>
-                                    <CardDescription className="text-blue-100 font-medium text-left">Coordinate physical meals for converts and the needy through local Kingdom vendors.</CardDescription>
+                                    <CardDescription className="text-blue-100 font-medium text-left">Coordinate physical meals for converts and the needy through local Kingdom food vendors.</CardDescription>
                                 </CardHeader>
                                 <CardFooter className="px-8 pb-8 pt-0 text-left">
-                                    <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-center text-left">
+                                    <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-center text-left text-left">
                                         <Link href="/marketplace" className="text-left text-left">EXPLORE MEALS</Link>
                                     </Button>
                                 </CardFooter>
@@ -350,10 +350,10 @@ export default function LandingPage() {
                                 <CardHeader className="p-8 pb-4 text-left">
                                     <Gift className="h-10 w-10 mb-4 opacity-80 text-left" />
                                     <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Kindness Center</CardTitle>
-                                    <CardDescription className="text-indigo-100 font-medium text-left">Send Bibles, tokens, and care packages as a tangible touch of God's love to your harvest.</CardDescription>
+                                    <CardDescription className="text-indigo-100 font-medium text-left">Send Bibles, spiritual tokens, and care packages as a tangible touch of God's love to your harvest.</CardDescription>
                                 </CardHeader>
                                 <CardFooter className="px-8 pb-8 pt-0 text-left">
-                                    <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-center text-left">
+                                    <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-center text-left text-left">
                                         <Link href="/marketplace/gifts" className="text-left text-left">SEND A GIFT</Link>
                                     </Button>
                                 </CardFooter>
@@ -606,7 +606,7 @@ export default function LandingPage() {
           
           <div className="h-px w-full bg-muted opacity-50 mb-10 text-left text-left" />
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left text-left">
             <p className="text-center md:text-left uppercase text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Caring for the Harvest.</p>
             <div className="flex gap-8 text-left text-left">
               <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
