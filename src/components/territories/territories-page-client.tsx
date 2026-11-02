@@ -275,10 +275,15 @@ export default function TerritoriesPageClient() {
                             <Globe className="h-5 w-5 text-primary text-left" />
                             <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Territories Hub</span>
                         </div>
-                        <h1 className="text-3xl sm:text-5xl font-black font-headline uppercase tracking-tight text-left">Region Watch</h1>
+                        <h1 className="text-2xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left">Region Watch</h1>
                     </div>
-                    <Button onClick={() => setIsCreateOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 text-left">
-                        <PlusCircle className="mr-2 h-4 w-4 text-left" /> SHARE CHALLENGE WITH AT LEAST TWO PHOTO EVIDENCES
+                    <Button 
+                        onClick={() => setIsCreateOpen(true)} 
+                        size="icon"
+                        className="rounded-full font-black uppercase tracking-widest h-12 w-12 shadow-xl shadow-primary/20 shrink-0 text-center"
+                    >
+                        <PlusCircle className="h-6 w-6" />
+                        <span className="sr-only">Share Challenge with at least two photo evidences</span>
                     </Button>
                 </div>
 
@@ -358,7 +363,7 @@ export default function TerritoriesPageClient() {
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Registration</span>
                                     </div>
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Post Regional Challenge</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Detail the needs of your territory with evidence.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Detail the needs of your territory with evidence.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
