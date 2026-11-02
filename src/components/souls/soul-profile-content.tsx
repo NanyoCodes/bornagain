@@ -167,7 +167,7 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
         <div className="min-w-0">
             <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</h2>
-            <p className="text-sm font-medium mt-1">Draft a powerful prayer for {soul?.firstName}.</p>
+            <p className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</p>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -207,7 +207,7 @@ export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
             </div>
             <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Message Hub</h2>
-            <p className="text-sm font-medium mt-1">Encourage {soul?.firstName} via mobile.</p>
+            <p className="text-sm font-medium mt-1 text-left">Encourage {soul?.firstName} via mobile.</p>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -276,9 +276,9 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
 
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
-      <div className="min-w-0 text-left">
+      <div className="min-w-0 text-left text-left">
         <div className="flex items-center gap-3 mb-2 text-left">
-          {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4 text-left" /></Button>}
+          {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2 text-left" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4 text-left" /></Button>}
           <Target className="h-5 w-5 text-primary text-left" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
@@ -296,24 +296,24 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
     <div className="p-4 sm:p-10 text-left">
         {view === 'hub' && (
             <div className="space-y-8 text-left">
-                <div className="relative text-left text-left"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" /></div>
-                {searchResults.map((res, idx) => (<Button key={idx} variant="outline" className="w-full h-auto p-4 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-3 border-2 border-dashed text-left" onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary text-left">{res.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-4 text-left text-left">"{res.text.trim()}"</p></Button>))}
+                <div className="relative text-left text-left"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left" /><Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left" /></div>
+                {searchResults.map((res, idx) => (<Button key={idx} variant="outline" className="w-full h-auto p-4 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-3 border-2 border-dashed text-left" onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}><span className="font-black text-[9px] uppercase tracking-widest text-primary text-left">{res.reference}</span><p className="text-xs text-muted-foreground italic line-clamp-4 text-left text-left text-left">"{res.text.trim()}"</p></Button>))}
                 <div className="grid grid-cols-2 gap-4 text-left">
                     <Button onClick={() => setView('books')} variant="outline" className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center">
                         <BookOpen className="h-6 w-6 mb-1 text-center" />
-                        <span className="text-[10px] font-black uppercase text-center">Browse Bible</span>
+                        <span className="text-[10px] font-black uppercase text-center text-left">Browse Bible</span>
                     </Button>
                     <Button variant="outline" asChild className="h-24 rounded-2xl border-2 border-primary/20 text-primary flex flex-col items-center justify-center p-4 text-center">
-                        <Link href="/dashboard/bible" className="text-center text-center">
-                            <BookMarked className="h-6 w-6 mb-1 text-center" />
-                            <span className="text-[10px] font-black uppercase text-center">Open Reader</span>
+                        <Link href="/dashboard/bible" className="text-center text-center text-center">
+                            <BookMarked className="h-6 w-6 mb-1 text-center text-left" />
+                            <span className="text-[10px] font-black uppercase text-center text-left">Open Reader</span>
                         </Link>
                     </Button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">{kingdomVerses.map((v, idx) => (
-                    <Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:bg-primary/10 transition-all text-left block text-left" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}>
+                    <Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-4 rounded-2xl bg-muted/5 border border-transparent hover:bg-primary/10 transition-all text-left block text-left text-left" onClick={() => onSelectVerse(`"${v.text.trim()}" — ${v.reference}`)}>
                         <span className="font-black text-[9px] uppercase tracking-widest text-primary text-left">{v.reference}</span>
-                        <p className="text-xs text-muted-foreground italic line-clamp-2 text-left text-left">"{v.text}"</p>
+                        <p className="text-xs text-muted-foreground italic line-clamp-2 text-left text-left text-left">"{v.text}"</p>
                     </Button>))}
                 </div>
             </div>

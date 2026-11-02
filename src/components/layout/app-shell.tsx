@@ -119,6 +119,22 @@ const inspirationalMessages = [
   "REJOICE ALWAYS"
 ];
 
+const SYSTEM_NOTIFICATION_TYPES = [
+  'campaign_join', 
+  'accountability_nudge', 
+  'accountability_request', 
+  'request_accepted', 
+  'request_declined', 
+  'accountability_partner_removed', 
+  'new_soul_in_fellowship', 
+  'soul_unassigned_from_fellowship', 
+  'new_order', 
+  'order_update',
+  'birthday_reminder',
+  'pending_provision',
+  'org_invite'
+];
+
 function CartButton() {
   const { user } = useUser();
   const firestore = useFirestore();
@@ -241,8 +257,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
-  const router = useRouter();
   const firestore = useFirestore();
+  const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
@@ -748,7 +764,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
                 isProfileIncomplete={isProfileIncomplete}
             />
           )}
-          <div className="flex-1 relative min-h-0 text-left text-left">
+          <div className="flex-1 relative min-h-0 text-left text-left text-left">
           <main 
               ref={scrollContainerRef}
               className={cn(
@@ -786,8 +802,8 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
-            <div className="p-6 border-b bg-muted/10 text-left text-left text-left">
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left">
               <DialogHeader className="text-left text-left text-left text-left text-left">
                 <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
                 <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>

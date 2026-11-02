@@ -391,7 +391,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
                 <Button type="button" variant="outline" onClick={() => { setIsAddMealOpen(false); setItemToEdit(null); setItemPhotoURL(''); }} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
                 <Button type="submit" disabled={isSubmittingMeal || isUpdatingItem} className="flex-1 rounded-xl h-12 font-black shadow-lg uppercase tracking-widest text-center text-left text-left">
-                    {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                    {(isSubmittingMeal || isUpdatingItem) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                     {isEdit ? 'SAVE CHANGES' : 'ADD TO CATALOG'}
                 </Button>
             </div>
@@ -414,7 +414,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <div className="min-w-0 flex-1 text-left text-left text-left">
                                 <div className="flex items-center gap-2 mb-1 text-left text-left text-left text-left">
                                     {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left text-left text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left text-left text-left" />}
-                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left text-left">{centerLabel}</span>
+                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left text-left text-left">{centerLabel}</span>
                                 </div>
                                 <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase leading-tight text-left text-left text-left">{vendor.businessName}</h1>
                                 {isOwner && (
@@ -570,7 +570,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left text-left text-left text-left">
                                 <div className="relative text-left text-left text-left">
                                     <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left text-left text-left text-left">
-                                        <ShoppingBag className="h-5 w-5 text-white/80 text-left text-left text-left" />
+                                        <ShoppingBag className="h-5 w-5 text-white/80 text-left text-left text-left text-left" />
                                     </div>
                                     <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center text-left text-left text-left text-left">
                                         <span className="text-[10px] font-black text-white text-center text-left text-left text-left"> {cartCountTotal}</span>
