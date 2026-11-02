@@ -49,9 +49,10 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
+  DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
@@ -89,7 +90,7 @@ import { SplashScreen } from "../common/splash-screen";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
-const SYSTEM_NOTIFICATION_TYPES = [
+const OTHER_NOTIFICATION_TYPES = [
   'campaign_join', 
   'accountability_nudge', 
   'accountability_request', 
@@ -839,4 +840,3 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SearchProvider>
   );
 }
-
