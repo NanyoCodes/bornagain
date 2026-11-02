@@ -51,6 +51,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -785,7 +786,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
-              <SheetHeader className="text-left flex-shrink-0 p-0">
+              <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
                 <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
                 <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>

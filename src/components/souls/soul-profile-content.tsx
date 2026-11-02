@@ -202,7 +202,7 @@ export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }
   const header = (
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
         <div className="min-w-0 text-left">
-            <div className="flex items-center gap-2 mb-1 text-left">
+            <div className="flex items-center gap-2 mb-2 text-left">
                 <MessageSquare className="h-4 w-4 text-primary text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
             </div>
@@ -537,7 +537,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
                 </div>
                 <Separator className="opacity-20 text-left" />
                 <div className="space-y-4 text-left text-left">
-                    <div className="flex items-center justify-between text-left text-left">
+                    <div className="flex items-center justify-between text-left text-left text-left">
                         <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left text-left text-left">
                             <History className="h-3.5 w-3.5 text-left text-left" /> Interaction History
                         </p>

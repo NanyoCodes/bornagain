@@ -180,8 +180,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     if (!vendor) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-32 text-center px-8 text-left text-left">
-                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left">
-                    <Store className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left" />
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left text-left">
+                    <Store className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left" />
                 </div>
                 <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left text-left">Storefront Not Found</h2>
                 <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left text-left">This Kingdom partner may have moved their station or closed their doors.</p>
@@ -385,7 +385,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Price ({getCurrencySymbol(vendor.currency)})</Label><Input name="price" type="number" step="0.01" defaultValue={item?.price || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required /></div>
                     <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Delivery Fee</Label><Input name="deliveryFee" type="number" step="0.01" defaultValue={item?.deliveryFee || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
                 </div>
-                <div className="space-y-2 text-left text-left"><Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
+                <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
                 <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" /></div>
             </div>
             <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
