@@ -233,20 +233,27 @@ export default function TerritoriesPageClient() {
                     <Textarea name="description" placeholder="Detail the regional challenges and spiritual hurdles..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" required />
                 </div>
 
-                <div className="space-y-4 text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                        <Camera className="h-3.5 w-3.5 text-primary" /> Mandatory Evidence (2 Photos)
-                    </Label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="text-[8px] font-bold uppercase text-muted-foreground/60 ml-2">Photo 1</Label>
-                            <ImageUpload onUploadComplete={setMediaUrl1} storagePath="territories" circularCrop={false} initialImageUrl={mediaUrl1} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-[8px] font-bold uppercase text-muted-foreground/60 ml-2">Photo 2</Label>
-                            <ImageUpload onUploadComplete={setMediaUrl2} storagePath="territories" circularCrop={false} initialImageUrl={mediaUrl2} />
-                        </div>
+                <div className="space-y-8 text-left">
+                    <div className="space-y-4 text-left">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Primary Evidence Photo</Label>
+                      <ImageUpload 
+                          initialImageUrl={mediaUrl1} 
+                          onUploadComplete={setMediaUrl1} 
+                          storagePath="territories" 
+                          cropAspect={4/3}
+                      />
                     </div>
+
+                    <div className="space-y-4 text-left">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Secondary Evidence Photo</Label>
+                      <ImageUpload 
+                          initialImageUrl={mediaUrl2} 
+                          onUploadComplete={setMediaUrl2} 
+                          storagePath="territories" 
+                          cropAspect={4/3}
+                      />
+                    </div>
+
                     <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
                         <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                         <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
@@ -283,7 +290,7 @@ export default function TerritoriesPageClient() {
                         className="rounded-full font-black uppercase tracking-widest h-12 w-12 shadow-xl shadow-primary/20 shrink-0 text-center"
                     >
                         <PlusCircle className="h-6 w-6" />
-                        <span className="sr-only">Share Challenge with at least two photo evidences</span>
+                        <span className="sr-only text-left">Share Challenge</span>
                     </Button>
                 </div>
 

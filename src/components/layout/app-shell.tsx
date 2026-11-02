@@ -103,6 +103,8 @@ const SYSTEM_NOTIFICATION_TYPES = [
   'org_invite'
 ];
 
+const OTHER_NOTIFICATION_TYPES = SYSTEM_NOTIFICATION_TYPES;
+
 const inspirationalMessages = [
   "GOD FIRST",
   "SEEK THE KINGDOM",
@@ -442,14 +444,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                         <ShieldCheck className="h-3.5 w-3.5 text-primary text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left">Victory Hub</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/games" className="flex items-center gap-3 w-full">
-                        <div className="h-7 w-7 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                            <Gamepad2 className="h-3.5 w-3.5 text-violet-500" />
-                        </div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Games Arena</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
@@ -827,7 +821,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const unreadOtherNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', SYSTEM_NOTIFICATION_TYPES), where('isRead', '==', false));
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', OTHER_NOTIFICATION_TYPES), where('isRead', '==', false));
   }, [user?.uid, firestore]);
   const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotificationsQuery);
 

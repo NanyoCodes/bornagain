@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Refined secure upload pathway for all mission sectors - 2025-03-12T22:00:00Z
+    // Deployment trigger: Explicit Territory and Mission Evidence pathway - 2025-03-12T23:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -23,9 +23,15 @@ service firebase.storage {
              request.resource.contentType == 'application/pdf';
     }
 
-    // Unified policy for mission-critical folders
+    // Explicit pathway for mission evidence and territory reports
+    match /territories/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isValidSize() && isAllowedType();
+      allow delete: if isOwner(userId);
+    }
+
+    // Unified policy for other mission-critical folders
     match /{folder}/{userId}/{allPaths=**} {
-      // Public read access for community content and branding
       allow read: if folder in [
         'profile-pictures', 
         'vendor-branding', 
@@ -34,14 +40,11 @@ service firebase.storage {
         'kindness-center', 
         'campaign-assets', 
         'testimonies', 
-        'events', 
-        'territories'
+        'events'
       ];
       
-      // Private read for soul records
       allow read: if folder == 'souls' && isAuthenticated();
 
-      // Secure write for authenticated owners
       allow write: if isOwner(userId) && (
         folder in [
           'profile-pictures', 
@@ -52,12 +55,10 @@ service firebase.storage {
           'campaign-assets', 
           'testimonies', 
           'souls', 
-          'events', 
-          'territories'
+          'events'
         ]
       ) && isValidSize() && isAllowedType();
 
-      // Permission to delete own content
       allow delete: if isOwner(userId);
     }
   }
