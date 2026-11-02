@@ -338,7 +338,7 @@ export default function LandingPage() {
                                 <CardHeader className="p-8 pb-4 text-left">
                                     <Utensils className="h-10 w-10 mb-4 opacity-80" />
                                     <CardTitle className="text-xl font-black uppercase tracking-tight">Meals Center</CardTitle>
-                                    <CardDescription className="text-blue-100 font-medium">Coordinate physical meals for converts and the needy through local Kingdom food vendors.</CardDescription>
+                                    <CardDescription className="text-blue-100 font-medium text-left">Coordinate physical meals for converts and the needy through local Kingdom food vendors.</CardDescription>
                                 </CardHeader>
                                 <CardFooter className="px-8 pb-8 pt-0">
                                     <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-center">
@@ -351,7 +351,7 @@ export default function LandingPage() {
                                 <CardHeader className="p-8 pb-4 text-left">
                                     <Gift className="h-10 w-10 mb-4 opacity-80" />
                                     <CardTitle className="text-xl font-black uppercase tracking-tight">Kindness Center</CardTitle>
-                                    <CardDescription className="text-indigo-100 font-medium">Send Bibles, spiritual tokens, and care packages as a tangible touch of God's love to your harvest.</CardDescription>
+                                    <CardDescription className="text-indigo-100 font-medium text-left">Send Bibles, spiritual tokens, and care packages as a tangible touch of God's love to your harvest.</CardDescription>
                                 </CardHeader>
                                 <CardFooter className="px-8 pb-8 pt-0">
                                     <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-center">

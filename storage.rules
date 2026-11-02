@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Immediate authorized access for all mission folders - 2025-03-12T19:30:00Z
+    // Deployment trigger: Immediate authorized access for all mission folders including territories - 2025-03-12T21:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -27,6 +27,7 @@ service firebase.storage {
       return folder in [
         'profile-pictures', 
         'vendor-branding', 
+        'marketplace-items',
         'meals-center', 
         'kindness-center', 
         'campaign-assets', 
@@ -43,6 +44,7 @@ service firebase.storage {
       allow read: if folder in [
         'profile-pictures', 
         'vendor-branding', 
+        'marketplace-items',
         'meals-center', 
         'kindness-center', 
         'campaign-assets', 
