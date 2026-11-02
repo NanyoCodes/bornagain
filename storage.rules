@@ -23,14 +23,7 @@ service firebase.storage {
              request.resource.contentType == 'application/pdf';
     }
 
-    // Explicit pathway for mission evidence and territory reports
-    match /territories/{userId}/{allPaths=**} {
-      allow read: if isAuthenticated();
-      allow write: if isOwner(userId) && isValidSize() && isAllowedType();
-      allow delete: if isOwner(userId);
-    }
-
-    // Unified policy for other mission-critical folders
+    // Unified policy for mission-critical folders including territories
     match /{folder}/{userId}/{allPaths=**} {
       allow read: if folder in [
         'profile-pictures', 
@@ -40,7 +33,8 @@ service firebase.storage {
         'kindness-center', 
         'campaign-assets', 
         'testimonies', 
-        'events'
+        'events',
+        'territories'
       ];
       
       allow read: if folder == 'souls' && isAuthenticated();
@@ -55,7 +49,8 @@ service firebase.storage {
           'campaign-assets', 
           'testimonies', 
           'souls', 
-          'events'
+          'events',
+          'territories'
         ]
       ) && isValidSize() && isAllowedType();
 

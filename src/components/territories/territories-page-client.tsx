@@ -198,7 +198,7 @@ export default function TerritoriesPageClient() {
 
     const creationForm = (
         <form onSubmit={handleCreateChallenge}>
-            <div className="p-8 space-y-6 text-left">
+            <div className="p-8 space-y-6 text-left text-left">
                 <div className="space-y-2 text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Challenge Title</Label>
                     <Input name="title" placeholder="e.g., Spiritual Insecurity in North Lagos" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
@@ -233,8 +233,8 @@ export default function TerritoriesPageClient() {
                     <Textarea name="description" placeholder="Detail the regional challenges and spiritual hurdles..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" required />
                 </div>
 
-                <div className="space-y-8 text-left">
-                    <div className="space-y-4 text-left">
+                <div className="space-y-8 text-left text-left text-left">
+                    <div className="space-y-4 text-left text-left text-left">
                       <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Primary Evidence Photo</Label>
                       <ImageUpload 
                           initialImageUrl={mediaUrl1} 
@@ -244,7 +244,7 @@ export default function TerritoriesPageClient() {
                       />
                     </div>
 
-                    <div className="space-y-4 text-left">
+                    <div className="space-y-4 text-left text-left text-left">
                       <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Secondary Evidence Photo</Label>
                       <ImageUpload 
                           initialImageUrl={mediaUrl2} 
@@ -382,7 +382,7 @@ export default function TerritoriesPageClient() {
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                                <DialogHeader className="p-0 text-left">
+                                <DialogHeader className="text-left p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Regional Challenge</DialogTitle>
                                     <DialogDescription className="text-base font-medium text-left">Share hurdles in your region with at least two photo evidences to mobilize global solutions.</DialogDescription>
                                 </DialogHeader>
