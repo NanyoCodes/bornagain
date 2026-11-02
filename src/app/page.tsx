@@ -324,7 +324,7 @@ export default function LandingPage() {
         <section className="py-24 bg-background relative overflow-hidden text-left">
             <div className="max-w-7xl mx-auto px-6 relative z-10 text-left">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center text-left">
-                    <div className="space-y-8 text-center lg:text-left text-left">
+                    <div className="space-y-8 text-center lg:text-left text-left text-left">
                         <div className="space-y-4">
                             <Badge variant="outline" className="text-blue-500 border-blue-500/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 block w-fit">Provision Hubs</Badge>
                             <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center lg:text-left">Practical Love in Action</h2>
@@ -333,7 +333,7 @@ export default function LandingPage() {
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left text-left">
                             <Card className="rounded-3xl border-none shadow-xl bg-blue-500 text-white overflow-hidden group hover:scale-[1.02] transition-transform text-left">
                                 <CardHeader className="p-8 pb-4 text-left">
                                     <Utensils className="h-10 w-10 mb-4 opacity-80" />
@@ -347,7 +347,7 @@ export default function LandingPage() {
                                 </CardFooter>
                             </Card>
 
-                            <Card className="rounded-3xl border-none shadow-xl bg-indigo-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform text-left">
+                            <Card className="rounded-3xl border-none shadow-xl bg-indigo-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform text-left text-left">
                                 <CardHeader className="p-8 pb-4 text-left">
                                     <Gift className="h-10 w-10 mb-4 opacity-80" />
                                     <CardTitle className="text-xl font-black uppercase tracking-tight">Kindness Center</CardTitle>
@@ -362,7 +362,7 @@ export default function LandingPage() {
                         </div>
                     </div>
 
-                    <div className="relative hidden lg:block text-left">
+                    <div className="relative hidden lg:block text-left text-left">
                         <div className="absolute inset-0 bg-primary/10 rounded-[3rem] -rotate-3 scale-105" />
                         <Card className="rounded-[3rem] border-none shadow-2xl overflow-hidden relative z-10 aspect-square flex items-center justify-center bg-[#1c1c21] text-left">
                              <ShoppingBag className="h-48 w-48 text-primary opacity-20" />
@@ -382,7 +382,7 @@ export default function LandingPage() {
         </section>
 
         <section className="py-24 bg-muted/30 text-left">
-          <div className="max-w-7xl mx-auto px-6 text-left">
+          <div className="max-w-7xl mx-auto px-6 text-left text-left">
             <div className="text-center mb-20 space-y-4 text-left">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -409,7 +409,7 @@ export default function LandingPage() {
                             transition={{ delay: i * 0.1 }}
                             className="text-left"
                         >
-                            <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group border-b-8 border-b-primary/5 text-left">
+                            <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group border-b-8 border-b-primary/5 text-left text-left">
                                 <CardHeader className="p-8 pb-4 flex flex-col items-center text-center text-left">
                                     <div className={cn("h-14 w-14 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500 text-left", feature.bgColor)}>
                                         <feature.icon className={cn("h-7 w-7 text-left", feature.color)} />
@@ -437,7 +437,7 @@ export default function LandingPage() {
         </section>
 
         <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left">
-            <div className="max-w-7xl mx-auto px-6 text-left">
+            <div className="max-w-7xl mx-auto px-6 text-left text-left">
                 <div className="text-center mb-20 space-y-4 text-left">
                     <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter text-center text-left">Legacy of Compassion</h2>
                     <p className="text-zinc-400 text-lg max-w-2xl mx-auto italic font-medium text-center text-left">"Carry each other’s burdens, and in this way you will fulfill the law of Christ."</p>
@@ -458,7 +458,7 @@ export default function LandingPage() {
                     ))}
                 </div>
 
-                <div className="mt-24 p-8 sm:p-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden text-left">
+                <div className="mt-24 p-8 sm:p-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden text-left text-left">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.1),transparent_70%)] text-left" />
                     <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl relative z-10 text-center text-left">
                         <Heart className="h-8 w-8 text-white text-left" />
@@ -481,10 +481,10 @@ export default function LandingPage() {
         <section className="py-24 relative overflow-hidden bg-background text-left">
           <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left" />
           
-          <div className="max-w-7xl mx-auto px-6 text-left">
+          <div className="max-w-7xl mx-auto px-6 text-left text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
-              <div className="space-y-10 text-center lg:text-left text-left">
-                <div className="space-y-6 text-center lg:text-left text-left">
+              <div className="space-y-10 text-center lg:text-left text-left text-left">
+                <div className="space-y-6 text-center lg:text-left text-left text-left">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left">Witness the Care</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-left">
@@ -547,7 +547,7 @@ export default function LandingPage() {
           </div>
           
           <div className="max-w-7xl mx-auto px-6 text-center relative z-10 text-left">
-            <div className="max-w-3xl mx-auto space-y-10 text-center text-left">
+            <div className="max-w-3xl mx-auto space-y-10 text-center text-left text-left">
               <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance text-center text-left">
                 Ready to Look After Your Own?
               </h2>
@@ -566,9 +566,9 @@ export default function LandingPage() {
       </main>
 
       <footer className="bg-muted/50 border-t py-20 text-left">
-        <div className="max-w-7xl mx-auto px-8 text-left">
+        <div className="max-w-7xl mx-auto px-8 text-left text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16 text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-8 text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-8 text-left text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
                 {logo && (
                   <Avatar className="h-14 w-14 border-2 border-primary/20 text-left">

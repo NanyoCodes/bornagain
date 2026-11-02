@@ -385,7 +385,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Price ({getCurrencySymbol(vendor.currency)})</Label><Input name="price" type="number" step="0.01" defaultValue={item?.price || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required /></div>
                     <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Delivery Fee</Label><Input name="deliveryFee" type="number" step="0.01" defaultValue={item?.deliveryFee || ''} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
                 </div>
-                <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
+                <div className="space-y-2 text-left text-left"><Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label><Input name="category" defaultValue={item?.category || ''} placeholder="e.g. Bibles, Lunch..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
                 <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Description</Label><Textarea name="description" defaultValue={item?.description || ''} placeholder="Provide details about this offering..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" /></div>
             </div>
             <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
@@ -514,7 +514,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <Store className="h-5 w-5 text-primary text-left text-left text-left" />
                                     <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Storefront Management</span>
                                 </div>
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Manage Store Details</DrawerTitle>
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Manage Store Details</DrawerTitle>
                                 <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update your branding and coordination info.</DrawerDescription>
                             </DrawerHeader>
                         </div>
@@ -569,7 +569,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             
                             <div className="flex-1 flex items-center gap-4 pl-5 pr-2 relative z-10 text-left text-left text-left text-left">
                                 <div className="relative text-left text-left text-left">
-                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left text-left text-left">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10 text-left text-left text-left text-left">
                                         <ShoppingBag className="h-5 w-5 text-white/80 text-left text-left text-left" />
                                     </div>
                                     <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-[#1c1c21] shadow-xl animate-in zoom-in text-center text-left text-left text-left text-left">
