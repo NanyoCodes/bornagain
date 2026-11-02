@@ -598,10 +598,14 @@ export type JoinedEvent = {
   joinedAt: Timestamp;
 };
 
+export type ChallengeType = 'Physical' | 'Spiritual';
+
 export type RegionalChallenge = {
     id: string;
     title: string;
     description: string;
+    challengeType: ChallengeType;
+    subCategory: string;
     country: string;
     state: string;
     city: string;

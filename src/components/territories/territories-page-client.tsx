@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, addDoc, serverTimestamp, doc, orderBy, where } from 'firebase/firestore';
-import type { RegionalChallenge, UserProfile } from '@/lib/types';
+import type { RegionalChallenge, UserProfile, ChallengeType } from '@/lib/types';
 import { 
     Card, 
     CardContent, 
@@ -31,7 +31,9 @@ import {
     ChevronDown,
     Flag,
     Camera,
-    Info
+    Info,
+    Zap,
+    ShieldAlert
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -48,22 +50,61 @@ import { safeToDate, cn } from '@/lib/utils';
 import Link from 'next/link';
 import { ImageUpload } from '@/components/common/image-upload';
 
+const challengeTypeOptions: { label: string; value: ChallengeType }[] = [
+    { label: 'Physical', value: 'Physical' },
+    { label: 'Spiritual', value: 'Spiritual' },
+];
+
+const subCategories: Record<ChallengeType, string[]> = {
+    'Physical': [
+        'Infrastructural (Roads, Power, Water)',
+        'Health & Medical',
+        'Educational',
+        'Poverty & Welfare',
+        'Economic/Employment',
+        'Security/Safety',
+        'Other Physical'
+    ],
+    'Spiritual': [
+        'Religious Strongholds (Idolatry, etc.)',
+        'Spiritual Blindness',
+        'Moral Decay',
+        'Persecution',
+        'Lack of Gospel Presence',
+        'Other Spiritual'
+    ]
+};
+
 function ChallengeCard({ challenge }: { challenge: RegionalChallenge }) {
     const createdAt = safeToDate(challenge.createdAt);
+    const isSpiritual = challenge.challengeType === 'Spiritual';
 
     return (
         <Card className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5 text-left">
             <CardHeader className="p-6 sm:p-8 pb-4 text-left">
                 <div className="flex justify-between items-start mb-4 text-left">
-                    <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 h-5 px-2 font-black uppercase text-[8px] tracking-widest text-left"> {challenge.country}</Badge>
+                    <div className="flex gap-1.5 flex-wrap text-left">
+                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 h-5 px-2 font-black uppercase text-[8px] tracking-widest text-left"> {challenge.country}</Badge>
+                        <Badge className={cn(
+                            "h-5 px-2 font-black uppercase text-[8px] tracking-widest border-none text-left",
+                            isSpiritual ? "bg-indigo-500 text-white" : "bg-emerald-500 text-white"
+                        )}>
+                            {challenge.challengeType}
+                        </Badge>
+                    </div>
                     <Flag className="h-4 w-4 text-primary opacity-20 text-left" />
                 </div>
                 <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight group-hover:text-primary transition-colors text-left">
                     {challenge.title}
                 </CardTitle>
-                <div className="flex items-center gap-2 mt-2 text-muted-foreground text-left">
-                    <MapPin className="h-3 w-3 text-primary text-left" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">{challenge.city || challenge.state}, {challenge.country}</span>
+                <div className="mt-2 flex flex-col gap-2 text-left">
+                    <Badge variant="secondary" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 h-5 text-left">
+                        {challenge.subCategory || 'Other'}
+                    </Badge>
+                    <div className="flex items-center gap-2 text-muted-foreground text-left">
+                        <MapPin className="h-3 w-3 text-primary text-left" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">{challenge.city || challenge.state}, {challenge.country}</span>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="px-6 sm:p-8 pt-0 flex-grow text-left">
@@ -106,6 +147,8 @@ export default function TerritoriesPageClient() {
 
     const [regCountry, setRegCountry] = useState('');
     const [regState, setRegState] = useState('');
+    const [challengeType, setChallengeType] = useState<ChallengeType>('Physical');
+    const [subCategory, setSubCategory] = useState('');
     const [mediaUrl1, setMediaUrl1] = useState('');
     const [mediaUrl2, setMediaUrl2] = useState('');
 
@@ -148,6 +191,10 @@ export default function TerritoriesPageClient() {
         return list;
     }, [challenges, searchTerm, filterCountry, filterState]);
 
+    useEffect(() => {
+        setSubCategory(subCategories[challengeType][0]);
+    }, [challengeType]);
+
     const handleCreateChallenge = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!user || !userProfile || !firestore) return;
@@ -157,7 +204,10 @@ export default function TerritoriesPageClient() {
         const description = formData.get('description') as string;
         const city = formData.get('city') as string;
 
-        if (!title || !description || !regCountry) return;
+        if (!title || !description || !regCountry || !subCategory) {
+            toast({ variant: 'destructive', title: 'Incomplete Form', description: 'Please fill out all required fields.' });
+            return;
+        }
 
         if (!mediaUrl1 || !mediaUrl2) {
             toast({ variant: 'destructive', title: 'Evidence Required', description: 'Please provide at least two photo evidences for this challenge.' });
@@ -168,6 +218,8 @@ export default function TerritoriesPageClient() {
         const challengeData = {
             title,
             description,
+            challengeType,
+            subCategory,
             country: regCountry,
             state: regState,
             city,
@@ -189,6 +241,7 @@ export default function TerritoriesPageClient() {
             setRegState('');
             setMediaUrl1('');
             setMediaUrl2('');
+            setSubCategory('');
         } catch (error) {
             toast({ variant: 'destructive', title: 'Action Failed' });
         } finally {
@@ -198,12 +251,46 @@ export default function TerritoriesPageClient() {
 
     const creationForm = (
         <form onSubmit={handleCreateChallenge}>
-            <div className="p-8 space-y-6 text-left text-left">
+            <div className="p-8 space-y-6 text-left">
+                <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex items-center gap-3 text-left">
+                    <Target className="h-5 w-5 text-primary text-left" />
+                    <p className="text-xs font-bold text-primary uppercase tracking-widest text-left">Mobilizing Territorial Intervention</p>
+                </div>
+
                 <div className="space-y-2 text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Challenge Title</Label>
                     <Input name="title" placeholder="e.g., Spiritual Insecurity in North Lagos" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                 </div>
                 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Domain</Label>
+                        <Select onValueChange={(val: any) => setChallengeType(val)} value={challengeType}>
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                                <SelectValue placeholder="Select Type" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
+                                {challengeTypeOptions.map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold text-left">{opt.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label>
+                        <Select onValueChange={setSubCategory} value={subCategory}>
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                                <SelectValue placeholder="Select Category" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[300px] rounded-2xl border-none shadow-2xl text-left">
+                                {subCategories[challengeType].map(cat => (
+                                    <SelectItem key={cat} value={cat} className="rounded-xl font-bold text-left">{cat}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
                 <div className="space-y-4 text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Territory Location</Label>
                     <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
@@ -233,8 +320,8 @@ export default function TerritoriesPageClient() {
                     <Textarea name="description" placeholder="Detail the regional challenges and spiritual hurdles..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" required />
                 </div>
 
-                <div className="space-y-8 text-left text-left text-left">
-                    <div className="space-y-4 text-left text-left text-left">
+                <div className="space-y-8 text-left">
+                    <div className="space-y-4 text-left">
                       <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Primary Evidence Photo</Label>
                       <ImageUpload 
                           initialImageUrl={mediaUrl1} 
@@ -244,7 +331,7 @@ export default function TerritoriesPageClient() {
                       />
                     </div>
 
-                    <div className="space-y-4 text-left text-left text-left">
+                    <div className="space-y-4 text-left">
                       <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Secondary Evidence Photo</Label>
                       <ImageUpload 
                           initialImageUrl={mediaUrl2} 
@@ -363,14 +450,14 @@ export default function TerritoriesPageClient() {
                 isMobile ? (
                     <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left p-0 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left">
                                         <Globe className="h-4 w-4 text-primary text-left" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Registration</span>
                                     </div>
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Post Regional Challenge</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Detail the needs of your territory with evidence.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Detail the needs of your territory with evidence.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -380,11 +467,15 @@ export default function TerritoriesPageClient() {
                     </Drawer>
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                                <DialogHeader className="text-left p-0 text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Regional Challenge</DialogTitle>
-                                    <DialogDescription className="text-base font-medium text-left">Share hurdles in your region with at least two photo evidences to mobilize global solutions.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                                <DialogHeader className="p-0 text-left text-left text-left">
+                                    <div className="flex items-center gap-2 mb-2 text-left">
+                                        <Globe className="h-4 w-4 text-primary text-left" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Registration</span>
+                                    </div>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Regional Challenge</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Share hurdles in your region with at least two photo evidences to mobilize global solutions.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -397,3 +488,4 @@ export default function TerritoriesPageClient() {
         </div>
     );
 }
+
