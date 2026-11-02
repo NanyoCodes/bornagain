@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Integrated Territories and Regional Challenges logic - 2025-03-12T14:30:00Z
+    // Deployment trigger: Updated for Regional Challenges and Territories logic - 2025-03-12T16:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -176,9 +175,9 @@ service cloud.firestore {
         match /comments/{commentId} {
           allow get, list: if isAuthenticated();
           allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-          allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
           allow update: if isAuthenticated() && (
-            (resource.data.authorId == request.auth.uid) ||
+            (resource.data.authorId == request.authorId) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
           );
         }
@@ -194,8 +193,8 @@ service cloud.firestore {
       match /solutions/{solutionId} {
         allow read, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes']));
-        allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+        allow update: if isAuthenticated() && (resource.data.authorId == request.authorId || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes']));
+        allow delete: if isAuthenticated() && request.resource.data.authorId == request.authorId;
       }
     }
     
@@ -224,7 +223,7 @@ service cloud.firestore {
           allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
           allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
           allow update: if isAuthenticated() && (
-            (resource.data.authorId == request.auth.uid) ||
+            (request.resource.data.authorId == request.auth.uid) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
           );
       }

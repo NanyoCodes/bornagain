@@ -36,13 +36,13 @@ import {
     DialogHeader, 
     DialogTitle, 
 } from '@/components/ui/dialog';
-import {
-    Drawer,
-    DrawerContent,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerDescription,
-} from "@/components/ui/drawer";
+import { 
+    Drawer, 
+    DrawerContent, 
+    DrawerHeader, 
+    DrawerTitle, 
+    DrawerDescription 
+} from '@/components/ui/drawer';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -406,7 +406,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left text-left">
                     <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left">
                         <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left text-left">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left"><ArrowLeft className="h-6 w-6 text-left text-left text-left" /></Button>
+                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
                             <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left text-left text-left">
                                 <AvatarImage src={vendor.photoURL || undefined} className="object-cover text-left text-left text-left" />
                                 <AvatarFallback className="font-black bg-primary/10 text-primary uppercase text-left text-left text-left"> {vendor.businessName?.charAt(0)}</AvatarFallback>
@@ -449,7 +449,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     </div>
 
                     <div className="relative text-left text-left text-left text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left text-left" />
                         <Input placeholder={`Search ${itemLabel.toLowerCase()}s...`} value={itemSearchTerm} onChange={e => setItemSearchTerm(e.target.value)} className="h-12 sm:h-14 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-sm sm:text-lg text-left text-left text-left" />
                     </div>
                 </div>

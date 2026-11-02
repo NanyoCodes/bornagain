@@ -13,7 +13,6 @@ import {
   Newspaper,
   Search,
   Settings,
-  Target,
   User,
   UserPlus,
   Loader2,
@@ -37,7 +36,8 @@ import {
   ChevronDown,
   Gamepad2,
   Trash2,
-  Map
+  Map,
+  Target
 } from "lucide-react";
 
 import {
@@ -82,7 +82,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
-import type { Notification } from "@/lib/types";
+import type { Notification, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
@@ -105,7 +105,6 @@ const itemColors: Record<string, string> = {
   "/territories": "from-indigo-500 to-indigo-700",
   "/testimonies": "from-primary to-orange-600",
   "/campaigns": "from-rose-500 to-rose-600",
-  "/victory-hub": "from-indigo-600 to-violet-700",
 };
 
 const inspirationalMessages = [
@@ -172,9 +171,9 @@ function CartButton() {
   );
 
   const listContent = (
-    <div className="p-4 space-y-4 text-left text-left">
+    <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
-            <div className="space-y-3 text-left">
+            <div className="space-y-3">
                 {cartItems.map((item: any) => (
                     <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left group">
                         <Avatar className="h-10 w-10 border shrink-0">
@@ -255,12 +254,20 @@ function CartButton() {
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfileIncomplete }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, isProfileIncomplete: boolean }) {
   const { user } = useUser();
+  const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
   const router = useRouter();
+  const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+
+  const userVendorsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, 'vendors'), where('userId', '==', user.uid));
+  }, [user?.uid, firestore]);
+  const { data: userVendors } = useCollection<VendorProfile>(userVendorsQuery);
 
   const showGuestButtons = isPublicRoute && !user;
 
@@ -294,7 +301,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-3 sm:px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-2 sm:gap-4 text-left text-left">
+    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-3 sm:px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-2 sm:gap-4 text-left">
       <div className="flex shrink-0 w-auto">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
@@ -334,11 +341,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left">
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left text-left">
         {isSearchVisible && (
           <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-11 sm:w-11 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-5 w-5 sm:h-6 sm:w-6" />
-            <span className="sr-only">Search</span>
+            <span className="sr-only text-left">Search</span>
           </Button>
         )}
         
@@ -347,7 +354,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             <CartButton />
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-11 sm:w-11 rounded-full">
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-11 sm:w-11 rounded-full text-left">
                       <MessagesSquare className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
@@ -359,7 +366,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-11 sm:w-11 rounded-full">
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 sm:h-11 sm:w-11 rounded-full text-left">
                       <Bell className="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
@@ -371,7 +378,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 sm:h-11 sm:w-11 shrink-0">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 sm:h-11 sm:w-11 shrink-0 text-left">
                   <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
                     <AvatarFallback className="text-xs font-bold"> {user.displayName?.charAt(0) || 'U'}</AvatarFallback>
@@ -425,12 +432,12 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 
                 <div className="p-1 space-y-1 text-left text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/territories" className="flex items-center gap-3 w-full">
                         <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                             <Map className="h-3.5 w-3.5 text-indigo-500" />
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">Territories Hub</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">Regions Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
@@ -451,15 +458,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/fellowships" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Users className="h-3.5 w-3.5 text-primary text-left text-left" />
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
+                        <Users className="h-3.5 w-3.5 text-primary text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Fellowship Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/events" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
                         <CalendarDays className="h-3.5 w-3.5 text-primary text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Events Hub</span>
@@ -499,10 +506,28 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 
                 <DropdownMenuSeparator />
                 
+                {userVendors && userVendors.length > 0 && (
+                    <div className="p-1 space-y-1 text-left text-left">
+                        <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Provider Stations</p>
+                        {userVendors.map(v => (
+                            <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
+                                <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full text-left">
+                                    <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
+                                        <Store className="h-3.5 w-3.5 text-primary text-left" />
+                                    </div>
+                                    <span className="text-[11px] font-bold uppercase tracking-widest text-left truncate">{v.businessName}</span>
+                                </Link>
+                            </DropdownMenuItem>
+                        ))}
+                    </div>
+                )}
+
+                <DropdownMenuSeparator />
+                
                 <div className="p-1 space-y-1 text-left text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
                       <Link href="/guide" className="flex items-center gap-3 w-full text-left">
-                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
                           <Info className="h-3.5 w-3.5 text-left" />
                         </div>
                         <span className="text-[11px] font-bold uppercase tracking-widest text-left">App Guide</span>
@@ -520,8 +545,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 text-left text-left">
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer text-left">
+                <div className="p-1 text-left text-left text-left text-left">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer text-left text-left">
                     <LogOut className="mr-3 h-4 w-4 text-left" />
                     <span className="text-[11px] font-black uppercase tracking-[0.2em] text-left">Sign Out</span>
                   </DropdownMenuItem>
@@ -708,7 +733,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center text-left">
             Kingdom Network Active
         </p>
       </div>
@@ -817,8 +842,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SearchProvider>
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left">
-                <div className="relative mx-auto w-fit text-left text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
+                <div className="relative mx-auto w-fit text-left text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left" />
                 </div>
             </div>
         }>
