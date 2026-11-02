@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Explicit Territory and Mission Evidence pathway - 2025-03-12T23:00:00Z
+    // Deployment trigger: Refined Territory and Mission Evidence pathway - 2025-03-13T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -34,16 +34,15 @@ service firebase.storage {
         'campaign-assets', 
         'testimonies', 
         'events',
-        'territories'
+        'territories',
+        'souls'
       ];
       
-      allow read: if folder == 'souls' && isAuthenticated();
-
       allow write: if isOwner(userId) && (
         folder in [
           'profile-pictures', 
           'vendor-branding', 
-          'marketplace-items',
+          'marketplace-items', 
           'meals-center', 
           'kindness-center', 
           'campaign-assets', 

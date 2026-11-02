@@ -90,7 +90,7 @@ import { SplashScreen } from "../common/splash-screen";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
-const OTHER_NOTIFICATION_TYPES = [
+const SYSTEM_NOTIFICATION_TYPES = [
   'campaign_join', 
   'accountability_nudge', 
   'accountability_request', 
@@ -771,7 +771,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
               <SheetHeader className="text-left flex-shrink-0">
                 <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
@@ -814,7 +814,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const unreadOtherNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', OTHER_NOTIFICATION_TYPES), where('isRead', '==', false));
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', SYSTEM_NOTIFICATION_TYPES), where('isRead', '==', false));
   }, [user?.uid, firestore]);
   const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotificationsQuery);
 
