@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Universal UID logic fix for reactions and community interactions - 2025-03-12T10:00:00Z
+    // Deployment trigger: Integrated Territories and Regional Challenges logic - 2025-03-12T14:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -182,32 +182,19 @@ service cloud.firestore {
           );
         }
       }
-      
-      match /armor/{armorId} {
-        allow get, list: if isAuthenticated();
+    }
+    
+    match /regionalChallenges/{challengeId} {
+      allow read, list: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+      allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['solutionCount', 'status']));
+      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+
+      match /solutions/{solutionId} {
+        allow read, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
-        allow update: if isAuthenticated() && (
-          (resource.data.authorId == request.auth.uid) ||
-          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
-        );
-      }
-      
-      match /foundational_armor/{armorIdx}/comments/{commentId} {
-        allow get, list: if isAuthenticated();
-        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
-        allow update: if isAuthenticated() && (
-          (resource.data.authorId == request.auth.uid) ||
-          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
-        );
-      }
-      
-      match /resources/{resourceId} {
-        allow get, list: if isAuthenticated();
-        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
-        allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
+        allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes']));
+        allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
       }
     }
     
@@ -313,9 +300,9 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              (resource.data.authorId == request.auth.uid) ||
+              (request.resource.data.authorId == request.authorId) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }
