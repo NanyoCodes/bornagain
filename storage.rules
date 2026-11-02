@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Immediate authorized access for all mission folders including territories - 2025-03-12T21:00:00Z
+    // Deployment trigger: Refined secure upload pathway for all mission sectors - 2025-03-12T22:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -23,24 +23,9 @@ service firebase.storage {
              request.resource.contentType == 'application/pdf';
     }
 
-    function isAllowedFolder(folder) {
-      return folder in [
-        'profile-pictures', 
-        'vendor-branding', 
-        'marketplace-items',
-        'meals-center', 
-        'kindness-center', 
-        'campaign-assets', 
-        'testimonies', 
-        'souls', 
-        'events', 
-        'territories'
-      ];
-    }
-
-    // Unified rule for UID-based directory structure
+    // Unified policy for mission-critical folders
     match /{folder}/{userId}/{allPaths=**} {
-      // Public Read for public-facing assets
+      // Public read access for community content and branding
       allow read: if folder in [
         'profile-pictures', 
         'vendor-branding', 
@@ -53,11 +38,26 @@ service firebase.storage {
         'territories'
       ];
       
-      // Private Read for souls data
+      // Private read for soul records
       allow read: if folder == 'souls' && isAuthenticated();
 
-      // Secure Write access for owners
-      allow create, update: if isOwner(userId) && isAllowedFolder(folder) && isValidSize() && isAllowedType();
+      // Secure write for authenticated owners
+      allow write: if isOwner(userId) && (
+        folder in [
+          'profile-pictures', 
+          'vendor-branding', 
+          'marketplace-items',
+          'meals-center', 
+          'kindness-center', 
+          'campaign-assets', 
+          'testimonies', 
+          'souls', 
+          'events', 
+          'territories'
+        ]
+      ) && isValidSize() && isAllowedType();
+
+      // Permission to delete own content
       allow delete: if isOwner(userId);
     }
   }

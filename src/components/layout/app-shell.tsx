@@ -87,34 +87,6 @@ import { SplashScreen } from "../common/splash-screen";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
-const navItems = [
-  { href: "/growth", label: "Growth", icon: TrendingUp, color: "bg-orange-500" },
-  { href: "/souls-won", label: "Souls", icon: UserPlus, color: "bg-amber-500" },
-  { href: "/territories", label: "Regions", icon: Map, color: "bg-indigo-500" },
-  { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "bg-primary" },
-  { href: "/campaigns", label: "Missions", icon: Target, color: "bg-rose-500" },
-];
-
-const itemColors: Record<string, string> = {
-  "/growth": "from-orange-500 to-orange-600",
-  "/souls-won": "from-amber-500 to-amber-600",
-  "/territories": "from-indigo-500 to-indigo-700",
-  "/testimonies": "from-primary to-orange-600",
-  "/campaigns": "from-rose-500 to-rose-600",
-};
-
-const inspirationalMessages = [
-  "GOD FIRST",
-  "SEEK THE KINGDOM",
-  "POWER IN TESTIMONY",
-  "GLORY TO THE MOST HIGH",
-  "EMPOWERING THE HARVEST",
-  "JESUS IS LORD",
-  "THE HARVEST IS PLENTIFUL",
-  "STAND FIRM IN FAITH",
-  "REJOICE ALWAYS"
-];
-
 const SYSTEM_NOTIFICATION_TYPES = [
   'campaign_join', 
   'accountability_nudge', 
@@ -130,6 +102,34 @@ const SYSTEM_NOTIFICATION_TYPES = [
   'pending_provision',
   'org_invite'
 ];
+
+const inspirationalMessages = [
+  "GOD FIRST",
+  "SEEK THE KINGDOM",
+  "POWER IN TESTIMONY",
+  "GLORY TO THE MOST HIGH",
+  "EMPOWERING THE HARVEST",
+  "JESUS IS LORD",
+  "THE HARVEST IS PLENTIFUL",
+  "STAND FIRM IN FAITH",
+  "REJOICE ALWAYS"
+];
+
+const navItems = [
+  { href: "/growth", label: "Growth", icon: TrendingUp, color: "bg-orange-500" },
+  { href: "/souls-won", label: "Souls", icon: UserPlus, color: "bg-amber-500" },
+  { href: "/territories", label: "Regions", icon: Map, color: "bg-indigo-500" },
+  { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "bg-primary" },
+  { href: "/campaigns", label: "Missions", icon: Target, color: "bg-rose-500" },
+];
+
+const itemColors: Record<string, string> = {
+  "/growth": "from-orange-500 to-orange-600",
+  "/souls-won": "from-amber-500 to-amber-600",
+  "/territories": "from-indigo-500 to-indigo-700",
+  "/testimonies": "from-primary to-orange-600",
+  "/campaigns": "from-rose-500 to-rose-600",
+};
 
 function CartButton() {
   const { user } = useUser();
@@ -212,13 +212,13 @@ function CartButton() {
     return (
         <Drawer open={isOpen} onOpenChange={setIsOpen}>
             <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-            <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+            <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b bg-muted/10 shrink-0 flex-shrink-0 text-left">
                     <div className="flex items-center gap-2 mb-1 text-left">
                         <ShoppingCart className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
                     </div>
-                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
+                    <DrawerHeader className="text-left flex-shrink-0 p-0">
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left">Review selection for gifting.</DrawerDescription>
                     </DrawerHeader>
@@ -233,11 +233,11 @@ function CartButton() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center gap-2 mb-1 text-left text-left">
+            <div className="flex items-center gap-2 mb-1 text-left">
                 <ShoppingCart className="h-3.5 w-3.5 text-primary text-left" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kindness Package</span>
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kindness Package</span>
             </div>
-            <DialogHeader className="text-left p-0 text-left">
+            <DialogHeader className="text-left p-0">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Pending Offering</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1 text-balance text-left">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
@@ -460,7 +460,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Fellowship Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/events" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left">
                         <CalendarDays className="h-3.5 w-3.5 text-primary" />
@@ -483,7 +483,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left text-left">
+                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left text-left text-left">
                         <Gift className="h-3.5 w-3.5 text-indigo-600 text-left" />
                       </div>
@@ -529,7 +529,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                         <span className="text-[11px] font-bold uppercase tracking-widest text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                       <Link href="/resources" className="flex items-center gap-3 w-full text-left text-left text-left">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left">
                           <BookMarked className="h-3.5 w-3.5 text-left" />
@@ -788,7 +788,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
               <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
                 <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
+                <SheetDescription className="text-sm text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8 text-left">
