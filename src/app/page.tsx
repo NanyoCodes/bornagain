@@ -335,7 +335,7 @@ export default function LandingPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
                             <Card className="rounded-3xl border-none shadow-xl bg-blue-500 text-white overflow-hidden group hover:scale-[1.02] transition-transform text-left">
-                                <CardHeader className="p-8 pb-4">
+                                <CardHeader className="p-8 pb-4 text-left">
                                     <Utensils className="h-10 w-10 mb-4 opacity-80" />
                                     <CardTitle className="text-xl font-black uppercase tracking-tight">Meals Center</CardTitle>
                                     <CardDescription className="text-blue-100 font-medium">Coordinate physical meals for converts and the needy through local Kingdom food vendors.</CardDescription>
@@ -348,7 +348,7 @@ export default function LandingPage() {
                             </Card>
 
                             <Card className="rounded-3xl border-none shadow-xl bg-indigo-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform text-left">
-                                <CardHeader className="p-8 pb-4">
+                                <CardHeader className="p-8 pb-4 text-left">
                                     <Gift className="h-10 w-10 mb-4 opacity-80" />
                                     <CardTitle className="text-xl font-black uppercase tracking-tight">Kindness Center</CardTitle>
                                     <CardDescription className="text-indigo-100 font-medium">Send Bibles, spiritual tokens, and care packages as a tangible touch of God's love to your harvest.</CardDescription>
@@ -488,7 +488,7 @@ export default function LandingPage() {
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit text-left">The Compassionate Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left text-left">Witness the Care</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left text-left">
-                    Explore how believers around the world witness and record the manifest goodness of God in their daily lives.
+                    Explore how believers around the world witness what God is doing in their lives daily.
                   </p>
                 </div>
                 
@@ -506,7 +506,7 @@ export default function LandingPage() {
                   <motion.div 
                     key={t.id}
                     initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
                     className="text-left"

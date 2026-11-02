@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -30,7 +29,9 @@ import {
     X,
     Sparkles,
     ChevronDown,
-    Flag
+    Flag,
+    Camera,
+    Info
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -43,8 +44,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Country, State } from 'country-state-city';
 import { format } from 'date-fns';
-import { safeToDate } from '@/lib/utils';
+import { safeToDate, cn } from '@/lib/utils';
 import Link from 'next/link';
+import { ImageUpload } from '@/components/common/image-upload';
 
 function ChallengeCard({ challenge }: { challenge: RegionalChallenge }) {
     const createdAt = safeToDate(challenge.createdAt);
@@ -104,6 +106,8 @@ export default function TerritoriesPageClient() {
 
     const [regCountry, setRegCountry] = useState('');
     const [regState, setRegState] = useState('');
+    const [mediaUrl1, setMediaUrl1] = useState('');
+    const [mediaUrl2, setMediaUrl2] = useState('');
 
     useEffect(() => { setMounted(true); }, []);
 
@@ -155,6 +159,11 @@ export default function TerritoriesPageClient() {
 
         if (!title || !description || !regCountry) return;
 
+        if (!mediaUrl1 || !mediaUrl2) {
+            toast({ variant: 'destructive', title: 'Evidence Required', description: 'Please provide at least two photo evidences for this challenge.' });
+            return;
+        }
+
         setIsSubmitting(true);
         const challengeData = {
             title,
@@ -168,6 +177,8 @@ export default function TerritoriesPageClient() {
             status: 'open',
             solutionCount: 0,
             createdAt: serverTimestamp(),
+            mediaUrl: mediaUrl1,
+            mediaUrl2: mediaUrl2
         };
 
         try {
@@ -176,6 +187,8 @@ export default function TerritoriesPageClient() {
             setIsCreateOpen(false);
             setRegCountry('');
             setRegState('');
+            setMediaUrl1('');
+            setMediaUrl2('');
         } catch (error) {
             toast({ variant: 'destructive', title: 'Action Failed' });
         } finally {
@@ -219,6 +232,28 @@ export default function TerritoriesPageClient() {
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Description of Challenge</Label>
                     <Textarea name="description" placeholder="Detail the regional challenges and spiritual hurdles..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" required />
                 </div>
+
+                <div className="space-y-4 text-left">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+                        <Camera className="h-3.5 w-3.5 text-primary" /> Mandatory Evidence (2 Photos)
+                    </Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label className="text-[8px] font-bold uppercase text-muted-foreground/60 ml-2">Photo 1</Label>
+                            <ImageUpload onUploadComplete={setMediaUrl1} storagePath="territories" circularCrop={false} initialImageUrl={mediaUrl1} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[8px] font-bold uppercase text-muted-foreground/60 ml-2">Photo 2</Label>
+                            <ImageUpload onUploadComplete={setMediaUrl2} storagePath="territories" circularCrop={false} initialImageUrl={mediaUrl2} />
+                        </div>
+                    </div>
+                    <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
+                        <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                            Visual evidence is critical for global intervention. Challenges with clear photo proof receive prioritized Kingdom response.
+                        </p>
+                    </div>
+                </div>
             </div>
             <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 text-left">
                 <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
@@ -243,7 +278,7 @@ export default function TerritoriesPageClient() {
                         <h1 className="text-3xl sm:text-5xl font-black font-headline uppercase tracking-tight text-left">Region Watch</h1>
                     </div>
                     <Button onClick={() => setIsCreateOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 text-left">
-                        <PlusCircle className="mr-2 h-4 w-4 text-left" /> SHARE CHALLENGE
+                        <PlusCircle className="mr-2 h-4 w-4 text-left" /> SHARE CHALLENGE WITH AT LEAST TWO PHOTO EVIDENCES
                     </Button>
                 </div>
 
@@ -253,8 +288,8 @@ export default function TerritoriesPageClient() {
                     </div>
                     <div className="text-left">
                         <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left">Mapping Kingdom Solutions</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-left">
-                            Identify territories requiring spiritual or practical intervention. Share regional hurdles and collaborate with the global workforce to provide effective Kingdom solutions.
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-left text-balance">
+                            Identify territories requiring spiritual or practical intervention. Share regional hurdles with evidence and collaborate with the global workforce to provide effective Kingdom solutions.
                         </p>
                     </div>
                 </div>
@@ -306,7 +341,7 @@ export default function TerritoriesPageClient() {
                 ) : (
                     <div className="col-span-full py-32 text-center flex flex-col items-center text-left">
                         <Globe className="h-16 w-16 text-muted-foreground opacity-10 mb-6 text-left" />
-                        <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-center text-left">Territory Silence</h3>
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">Territory Silence</h3>
                         <p className="text-xs text-muted-foreground italic mt-2 max-w-xs mx-auto text-balance text-center text-left">No regional challenges recorded for this filter. Start one to mobilize solutions.</p>
                     </div>
                 )}
@@ -323,7 +358,7 @@ export default function TerritoriesPageClient() {
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Registration</span>
                                     </div>
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Post Regional Challenge</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Detail the needs of your territory.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Detail the needs of your territory with evidence.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -335,9 +370,9 @@ export default function TerritoriesPageClient() {
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                                <DialogHeader className="text-left p-0 text-left">
+                                <DialogHeader className="p-0 text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Regional Challenge</DialogTitle>
-                                    <DialogDescription className="text-base font-medium text-left">Share hurdles in your region to mobilize global solutions.</DialogDescription>
+                                    <DialogDescription className="text-base font-medium text-left">Share hurdles in your region with at least two photo evidences to mobilize global solutions.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">

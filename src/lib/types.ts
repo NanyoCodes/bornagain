@@ -1,4 +1,3 @@
-
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -612,6 +611,8 @@ export type RegionalChallenge = {
     status: 'open' | 'resolved';
     solutionCount: number;
     createdAt: Timestamp;
+    mediaUrl?: string;
+    mediaUrl2?: string;
 };
 
 export type ChallengeSolution = {
