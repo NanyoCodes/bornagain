@@ -258,12 +258,12 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
           <div className="p-6 sm:p-10 border-b bg-muted/10 shrink-0 relative overflow-hidden text-left">
             <DialogHeader className="text-left relative z-10 p-0">
-                <div className="flex items-center gap-2 mb-2 text-left text-left">
-                    <CropIcon className="h-4 w-4 text-primary text-left text-left" />
-                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Kingdom Identity Hub</span>
+                <div className="flex items-center gap-2 mb-2 text-left">
+                    <CropIcon className="h-4 w-4 text-primary text-left" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Identity Hub</span>
                 </div>
-                <DialogTitle className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left text-left">Refine Your Image</DialogTitle>
-                <DialogDescription className="text-xs sm:text-sm font-medium mt-1 text-left text-left">Set your focus for the global Kingdom directory.</DialogDescription>
+                <DialogTitle className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Refine Your Image</DialogTitle>
+                <DialogDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Set your focus for the global Kingdom directory.</DialogDescription>
             </DialogHeader>
           </div>
           <ScrollArea className="flex-1 min-h-0 bg-black/5 relative">
@@ -291,19 +291,25 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           <DialogFooter className="p-6 sm:p-10 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0 text-left">
             <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12">Cancel</Button>
             <div className="flex-1 flex flex-col gap-2">
-                {!user && (
-                    <p className="text-[9px] text-destructive font-black uppercase tracking-widest text-center animate-pulse">
-                        Sign in to upload photo
-                    </p>
+                {user ? (
+                    <Button 
+                        onClick={handleCrop} 
+                        disabled={!completedCrop || isLoading} 
+                        className="w-full h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center"
+                    >
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Sparkles className="mr-2 h-4 w-4 text-left" />}
+                        {isLoading ? 'OPTIMIZING...' : 'ACTIVATE IDENTITY'}
+                    </Button>
+                ) : (
+                    <div className="space-y-2">
+                        <p className="text-[9px] text-destructive font-black uppercase tracking-widest text-center animate-pulse">
+                            Sign in to upload photo
+                        </p>
+                        <Button disabled className="w-full h-12 rounded-xl font-black uppercase tracking-widest text-center opacity-50">
+                            SIGN IN REQUIRED
+                        </Button>
+                    </div>
                 )}
-                <Button 
-                    onClick={handleCrop} 
-                    disabled={!completedCrop || isLoading || !user} 
-                    className="w-full h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center"
-                >
-                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Sparkles className="mr-2 h-4 w-4 text-left" />}
-                    {isLoading ? 'OPTIMIZING...' : 'ACTIVATE IDENTITY'}
-                </Button>
             </div>
           </DialogFooter>
         </DialogContent>
