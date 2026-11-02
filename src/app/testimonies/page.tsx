@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -191,11 +192,13 @@ function TestimoniesContent() {
 
   const filteredPrayerRequests = useMemo(() => {
     if (!prayerRequests) return [];
-    if (activeTab !== 'prayers' || !searchTerm) return prayerRequests;
-    const term = searchTerm.toLowerCase();
-    return prayerRequests.filter(
-      (req) => req.content.toLowerCase().includes(term) || req.category.toLowerCase().includes(term)
-    );
+    if (activeTab === 'prayers' && searchTerm) {
+        const term = searchTerm.toLowerCase();
+        return prayerRequests.filter(
+            (req) => req.content.toLowerCase().includes(term) || req.category.toLowerCase().includes(term)
+        );
+    }
+    return prayerRequests;
   }, [prayerRequests, searchTerm, activeTab]);
 
   const interleavedPrayers = useMemo(() => {
@@ -306,165 +309,166 @@ function TestimoniesContent() {
         strategy="afterInteractive"
       />
       
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
-        <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left">
-            <div 
-                className="bg-card border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-card/40 transition-all active:scale-[0.98] text-left"
-                onClick={() => setIsTestimonyDialogOpen(true)}
-            >
-                <Avatar className="h-9 w-9 border shadow-sm shrink-0 text-left">
-                    <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left" />
-                    <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0 text-left text-left">
-                    <p className="text-[12px] font-bold text-foreground/80 leading-tight text-left">Share what God has done today</p>
-                </div>
-                <div className="flex items-center gap-3 text-left">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button 
-                              className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors text-left"
-                              onClick={(e) => { e.stopPropagation(); setIsTestimonyDialogOpen(true); }}
-                          >
-                              <Camera className="h-4 w-4 text-left" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent className="text-left"><p className="text-[10px] font-black uppercase text-left">Share Testimony</p></TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button 
-                              className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors text-left"
-                              onClick={(e) => { e.stopPropagation(); setIsPrayerDialogOpen(true); }}
-                          >
-                              <HandHeart className="h-4 w-4 text-left" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent className="text-left"><p className="text-[10px] font-black uppercase text-left">Request Prayer</p></TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <PlusCircle className="h-5 w-5 text-primary sm:hidden text-left" />
-                </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+        <div className="lg:col-span-8 space-y-6 md:space-y-10">
+          <div
+            className="bg-card border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-card/40 transition-all active:scale-[0.98]"
+            onClick={() => setIsTestimonyDialogOpen(true)}
+          >
+            <Avatar className="h-9 w-9 border shadow-sm shrink-0 text-left">
+              <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left" />
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px] text-left">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0 text-left text-left">
+              <p className="text-[12px] font-bold text-foreground/80 leading-tight text-left">Share God's goodness today...</p>
             </div>
-
-            <div className="px-4 sm:px-0 text-left">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
-                    <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 text-left">
-                        <TabsTrigger 
-                            value="testimonies" 
-                            className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left"
-                        >
-                            Testimonies
-                        </TabsTrigger>
-                        <TabsTrigger 
-                            value="prayers" 
-                            className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left"
-                        >
-                            Prayer requests
-                        </TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="testimonies" className="outline-none text-left">
-                        <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
-                            {loading ? (
-                            [...Array(3)].map((_, i) => (
-                                <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
-                            ))
-                            ) : interleavedTestimonies.map((item) => (
-                                item.isAd ? (
-                                    item.adType === 'adsense' 
-                                        ? <AdsenseAd key={item.id} adSlot="5186166468" />
-                                        : <KingdomAdSpot key={item.id} type={item.adType as any} />
-                                ) : item.isGame ? (
-                                    <BibleGameCard key={item.id} />
-                                ) : (
-                                    <TestimonyCard 
-                                        key={item.id}
-                                        testimony={item} 
-                                        isPartner={item._isPartner}
-                                        hasPendingRequest={pendingRequestIds.has(item.authorId)}
-                                        currentUserProfile={userProfile}
-                                        onDelete={() => setItemToDelete({ type: 'testimony', data: item })}
-                                        onEdit={() => setTestimonyToEdit(item)}
-                                    />
-                                )
-                            ))}
-                            {!loading && filteredTestimonies?.length === 0 && (
-                            <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
-                                <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
-                                <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Your Altar of Praise</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
-                                Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
-                                </p>
-                            </div>
-                            )}
-                        </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="prayers" className="outline-none text-left">
-                        <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
-                            {loading ? (
-                            [...Array(3)].map((_, i) => (
-                                <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
-                            ))
-                            ) : interleavedPrayers.map((item) => (
-                                item.isAd ? (
-                                    item.adType === 'adsense' 
-                                        ? <AdsenseAd key={item.id} adSlot="5186166468" />
-                                        : <KingdomAdSpot key={item.id} type={item.adType as any} />
-                                ) : item.isGame ? (
-                                    <BibleGameCard key={item.id} />
-                                ) : (
-                                    <PrayerRequestCard 
-                                        key={item.id}
-                                        prayerRequest={item}
-                                        onDelete={() => setItemToDelete({ type: 'prayer', data: item })}
-                                        onAnswerPrayer={() => handleOpenTestimonyDialog(item)}
-                                        onEdit={() => setPrayerToEdit(item)}
-                                    />
-                                )
-                            ))}
-                            {!loading && filteredPrayerRequests?.length === 0 && (
-                            <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
-                                <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
-                                <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">United in Faith</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
-                                No one should walk through a trial alone. Share your request with the global community.
-                                </p>
-                            </div>
-                            )}
-                        </div>
-                    </TabsContent>
-                </Tabs>
+            <div className="flex items-center gap-2 text-left">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsTestimonyDialogOpen(true);
+                      }}
+                    >
+                      <Newspaper className="h-3.5 w-3.5 text-left" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="text-left">
+                    <p className="text-[10px] font-black uppercase text-left">Share Testimony</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      className="h-8 w-8 rounded-full bg-muted/40 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsPrayerDialogOpen(true);
+                      }}
+                    >
+                      <HandHeart className="h-3.5 w-3.5 text-left" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="text-left">
+                    <p className="text-[10px] font-black uppercase text-left">Request Prayer</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <PlusCircle className="h-5 w-5 text-primary sm:hidden" />
             </div>
+          </div>
+          <div className="px-4 sm:px-0 text-left">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
+              <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 text-left">
+                <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">
+                  Testimonies
+                </TabsTrigger>
+                <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">
+                  Prayer requests
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="testimonies" className="outline-none text-left">
+                <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full text-left">
+                  {loading ? (
+                    [...Array(3)].map((_, i) => (
+                      <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
+                    ))
+                  ) : (
+                    interleavedTestimonies.map((item) => (
+                      item.isAd ? (
+                        item.adType === 'adsense' 
+                            ? <AdsenseAd key={item.id} adSlot="5186166468" />
+                            : <KingdomAdSpot key={item.id} type={item.adType as any} />
+                      ) : item.isGame ? (
+                        <BibleGameCard key={item.id} />
+                      ) : (
+                        <TestimonyCard
+                          key={item.id}
+                          testimony={item}
+                          isPartner={item._isPartner}
+                          hasPendingRequest={pendingRequestIds.has(item.authorId)}
+                          currentUserProfile={userProfile}
+                          onDelete={() => setItemToDelete({ type: 'testimony', data: item })}
+                          onEdit={() => setTestimonyToEdit(item)}
+                        />
+                      )
+                    ))
+                  )}
+                  {!loading && filteredTestimonies?.length === 0 && (
+                    <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
+                      <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
+                      <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">Your Altar of Praise</h3>
+                      <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
+                        Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+              <TabsContent value="prayers" className="outline-none text-left">
+                <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full text-left">
+                  {loading ? (
+                    [...Array(3)].map((_, i) => (
+                      <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
+                    ))
+                  ) : (
+                    interleavedPrayers.map((item) => (
+                      item.isAd ? (
+                        item.adType === 'adsense' 
+                            ? <AdsenseAd key={item.id} adSlot="5186166468" />
+                            : <KingdomAdSpot key={item.id} type={item.adType as any} />
+                      ) : item.isGame ? (
+                        <BibleGameCard key={item.id} />
+                      ) : (
+                        <PrayerRequestCard
+                          key={item.id}
+                          prayerRequest={item}
+                          onDelete={() => setItemToDelete({ type: 'prayer', data: item })}
+                          onAnswerPrayer={() => handleOpenTestimonyDialog(item)}
+                          onEdit={() => setPrayerToEdit(item)}
+                        />
+                      )
+                    ))
+                  )}
+                  {!loading && filteredPrayerRequests?.length === 0 && (
+                    <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
+                      <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
+                      <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">United in Faith</h3>
+                      <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
+                        No one should walk through a trial alone. Share your request with the global community.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
-
         <div className="lg:col-span-4 text-left">
-            <FeedSidebar mode="testimonies" />
+          <FeedSidebar mode="testimonies" />
         </div>
       </div>
-      
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+        <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
           <AlertDialogHeader className="text-left text-left text-left">
-              <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight text-left">Remove from Feed?</AlertDialogTitle>
-              <AlertDialogDescription className="text-left text-sm font-medium text-left">
+            <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight text-left">Remove from Feed?</AlertDialogTitle>
+            <AlertDialogDescription className="text-left text-sm font-medium text-left">
               This will permanently delete this {itemToDelete?.type}. This action cannot be undone.
-              </AlertDialogDescription>
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
-              <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
-              Confirm Deletion
-              </AlertDialogAction>
+            <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left text-left">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}Confirm Deletion</AlertDialogAction>
           </AlertDialogFooter>
-          </AlertDialogContent>
+        </AlertDialogContent>
       </AlertDialog>
-
       {mounted && (
         <>
           {isMobile ? (
@@ -481,17 +485,14 @@ function TestimoniesContent() {
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Update your shared story for the community.</DrawerDescription>
                     </DrawerHeader>
                   </div>
-                  <ScrollArea className="flex-grow text-left text-left">
-                    <div className="p-8 text-left text-left">
-                      {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}
-                    </div>
+                  <ScrollArea className="flex-grow text-left text-left text-left">
+                    <div className="p-8 text-left text-left">{testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}</div>
                   </ScrollArea>
                 </DrawerContent>
               </Drawer>
-
               <Drawer open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-4 text-left text-left">
                             <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
@@ -502,9 +503,7 @@ function TestimoniesContent() {
                     </DrawerHeader>
                   </div>
                   <ScrollArea className="flex-grow text-left text-left">
-                    <div className="p-8 text-left text-left">
-                      {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}
-                    </div>
+                    <div className="p-8 text-left text-left">{prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}</div>
                   </ScrollArea>
                 </DrawerContent>
               </Drawer>
@@ -515,7 +514,7 @@ function TestimoniesContent() {
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-4 text-left text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span></div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left"> {prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">
                           {prayerToAnswer ? 'Share how God answered this prayer.' : 'Encourage others with what God has done.'}
                         </DrawerDescription>
                     </DrawerHeader>
@@ -527,12 +526,12 @@ function TestimoniesContent() {
               </Drawer>
 
               <Drawer open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0 text-left text-left text-left">
                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-4 text-left text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span></div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Request Prayer</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Share your need with the global community.</DrawerDescription>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Share your need with the global community.</DrawerDescription>
                     </DrawerHeader>
                   </div>
                   <ScrollArea className="flex-grow text-left text-left">
@@ -551,21 +550,21 @@ function TestimoniesContent() {
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left text-left text-left">
-                    <div className="p-8 text-left text-left text-left text-left text-left text-left">{testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}</div>
+                  <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left text-left text-left text-left">
+                    <div className="p-8 text-left text-left text-left text-left text-left">{testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}</div>
                   </ScrollArea>
                 </DialogContent>
               </Dialog>
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
-                    <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Edit Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Update the details of your request.</DialogDescription>
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Edit Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left">
+                  <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left">
                     <div className="p-8 text-left text-left text-left text-left text-left text-left">{prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}</div>
                   </ScrollArea>
                 </DialogContent>
@@ -580,15 +579,15 @@ function TestimoniesContent() {
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left text-left">{testimonyFormContent}</div></ScrollArea>
+                  <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left text-left">{testimonyFormContent}</div></ScrollArea>
                 </DialogContent>
               </Dialog>
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Share your request with the Body of Christ.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left">Share Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><div className="p-8 text-left text-left text-left text-left text-left text-left text-left text-left text-left">{prayerFormContent}</div></ScrollArea>
@@ -602,7 +601,7 @@ function TestimoniesContent() {
   );
 }
 
-export default function TestimoniesPage() {
+export default function TestimoniesStandalonePage() {
     return (
         <AppShell>
             <Suspense fallback={<div className="flex justify-center py-20 text-left text-left text-left text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left text-left text-left" /></div>}>

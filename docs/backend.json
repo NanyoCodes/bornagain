@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -481,6 +482,39 @@
           ]
         }
       }
+    },
+    "RegionalChallenge": {
+      "title": "Regional Challenge",
+      "description": "A challenge faced in a specific region requiring Kingdom solutions.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "country": { "type": "string" },
+        "state": { "type": "string" },
+        "city": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorPhotoURL": { "type": "string", "format": "uri" },
+        "status": { "type": "string", "enum": ["open", "resolved"] },
+        "solutionCount": { "type": "number" },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["title", "description", "country", "authorId", "status"]
+    },
+    "ChallengeSolution": {
+      "title": "Challenge Solution",
+      "description": "A proposed solution or word of wisdom for a regional challenge.",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorPhotoURL": { "type": "string", "format": "uri" },
+        "createdAt": { "type": "object" },
+        "upvotes": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["text", "authorId", "createdAt"]
     }
   },
   "auth": {
@@ -520,6 +554,18 @@
         "$ref": "#/entities/Ad"
       },
       "description": "Global promotional spots."
+    },
+    "/regionalChallenges/{challengeId}": {
+      "schema": {
+        "$ref": "#/entities/RegionalChallenge"
+      },
+      "description": "Shared regional challenges."
+    },
+    "/regionalChallenges/{challengeId}/solutions/{solutionId}": {
+      "schema": {
+        "$ref": "#/entities/ChallengeSolution"
+      },
+      "description": "Solutions proposed for regional challenges."
     }
   }
 }

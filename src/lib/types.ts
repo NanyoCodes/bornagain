@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -192,13 +193,6 @@ export type CircleResource = {
   createdAt: Timestamp;
 };
 
-export type Achievement = {
-  id: string;
-  level: 1 | 2 | 3 | 4 | 5;
-  name: string;
-  description: string;
-};
-
 export type TestimonyCategory = 
   | 'Healing' 
   | 'Financial Breakthrough' 
@@ -323,11 +317,6 @@ export type JoinedCampaign = {
   id: string;
   campaignId: string;
   joinedAt: Timestamp;
-};
-
-export type ProgressLog = {
-  date: string;
-  soulsWon: number;
 };
 
 export type FollowUpStatus = 'New' | 'Contacted' | 'Established';
@@ -461,14 +450,6 @@ export type Notification = {
   targetId?: string;
   actionId?: string;
   soulId?: string;
-};
-
-export type Mail = {
-  to: string[];
-  message: {
-    subject: string;
-    html: string;
-  };
 };
 
 export type DailyDevotional = {
@@ -616,4 +597,29 @@ export type JoinedEvent = {
   id: string;
   eventId: string;
   joinedAt: Timestamp;
+};
+
+export type RegionalChallenge = {
+    id: string;
+    title: string;
+    description: string;
+    country: string;
+    state: string;
+    city: string;
+    authorId: string;
+    authorName: string;
+    authorPhotoURL?: string;
+    status: 'open' | 'resolved';
+    solutionCount: number;
+    createdAt: Timestamp;
+};
+
+export type ChallengeSolution = {
+    id: string;
+    text: string;
+    authorId: string;
+    authorName: string;
+    authorPhotoURL?: string;
+    createdAt: Timestamp;
+    upvotes: string[];
 };
