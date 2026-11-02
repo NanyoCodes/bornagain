@@ -382,8 +382,6 @@ function TestimoniesContent() {
                         item.adType === 'adsense' 
                             ? <AdsenseAd key={item.id} adSlot="5186166468" />
                             : <KingdomAdSpot key={item.id} type={item.adType as any} />
-                      ) : item.isGame ? (
-                        <BibleGameCard key={item.id} />
                       ) : (
                         <TestimonyCard
                           key={item.id}
@@ -420,8 +418,6 @@ function TestimoniesContent() {
                         item.adType === 'adsense' 
                             ? <AdsenseAd key={item.id} adSlot="5186166468" />
                             : <KingdomAdSpot key={item.id} type={item.adType as any} />
-                      ) : item.isGame ? (
-                        <BibleGameCard key={item.id} />
                       ) : (
                         <PrayerRequestCard
                           key={item.id}
@@ -496,8 +492,8 @@ function TestimoniesContent() {
                         <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left text-left" />
                         <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">SWIPE DOWN TO CLOSE</span>
                       </div>
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Edit Prayer Request</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update your request for the Body of Christ.</DrawerDescription>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Edit Prayer Request</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Update your request for the Body of Christ.</DrawerDescription>
                     </DrawerHeader>
                   </div>
                   <ScrollArea className="flex-grow text-left text-left text-left">
@@ -555,7 +551,7 @@ function TestimoniesContent() {
                 </DialogContent>
               </Dialog>
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Edit Prayer Request</DialogTitle>

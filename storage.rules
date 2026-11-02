@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Updated for Territories evidence support - 2025-03-12T17:00:00Z
+    // Deployment trigger: Consolidated secure rules for Territories and Kingdom assets - 2025-03-12T18:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -24,21 +24,37 @@ service firebase.storage {
     }
 
     function isAllowedFolder(folder) {
-      return folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'souls', 'events', 'territories'];
+      return folder in [
+        'profile-pictures', 
+        'vendor-branding', 
+        'meals-center', 
+        'kindness-center', 
+        'campaign-assets', 
+        'testimonies', 
+        'souls', 
+        'events', 
+        'territories'
+      ];
     }
 
-    // Publicly viewable Kingdom activities (Identities, Testimonies, and Regional Challenges)
+    // Unified rule for UID-based directory structure
     match /{folder}/{userId}/{allPaths=**} {
-      allow read: if folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'events', 'territories'];
-    }
+      // Public Read for public-facing assets
+      allow read: if folder in [
+        'profile-pictures', 
+        'vendor-branding', 
+        'meals-center', 
+        'kindness-center', 
+        'campaign-assets', 
+        'testimonies', 
+        'events', 
+        'territories'
+      ];
+      
+      // Private Read for souls data
+      allow read: if folder == 'souls' && isAuthenticated();
 
-    // Private harvest records (Converted souls information)
-    match /souls/{userId}/{allPaths=**} {
-      allow read: if isAuthenticated();
-    }
-
-    // Secure UID-based directory structure for all Kingdom assets
-    match /{folder}/{userId}/{allPaths=**} {
+      // Secure Write access for owners
       allow create, update: if isOwner(userId) && isAllowedFolder(folder) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);
     }
