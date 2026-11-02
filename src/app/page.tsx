@@ -74,7 +74,7 @@ const features = [
     link: "/campaigns",
   },
   {
-    title: "Territories Hub",
+    title: "Regions Hub",
     description: "Identify and solve regional challenges. Connect with the global Body to provide Kingdom solutions for specific territories.",
     icon: Map,
     color: "text-indigo-500",
@@ -324,7 +324,7 @@ export default function LandingPage() {
         <section className="py-24 bg-background relative overflow-hidden text-left text-left">
             <div className="max-w-7xl mx-auto px-6 relative z-10 text-left text-left">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center text-left text-left">
-                    <div className="space-y-8 text-center lg:text-left text-left text-left">
+                    <div className="space-y-8 text-center lg:text-left text-left text-left text-left">
                         <div className="space-y-4 text-left text-left">
                             <Badge variant="outline" className="text-blue-500 border-blue-500/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 block w-fit">Provision Hubs</Badge>
                             <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center lg:text-left">Practical Love in Action</h2>

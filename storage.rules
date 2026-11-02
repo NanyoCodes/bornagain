@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Updated for Kingdom Worship music metadata - 2025-03-05T16:00:00Z
+    // Deployment trigger: Updated for Territories evidence support - 2025-03-12T17:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -24,12 +24,12 @@ service firebase.storage {
     }
 
     function isAllowedFolder(folder) {
-      return folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'souls', 'events'];
+      return folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'souls', 'events', 'territories'];
     }
 
-    // Publicly viewable Kingdom activities (Identities and Testimonies)
+    // Publicly viewable Kingdom activities (Identities, Testimonies, and Regional Challenges)
     match /{folder}/{userId}/{allPaths=**} {
-      allow read: if folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'events'];
+      allow read: if folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'events', 'territories'];
     }
 
     // Private harvest records (Converted souls information)
@@ -38,7 +38,6 @@ service firebase.storage {
     }
 
     // Secure UID-based directory structure for all Kingdom assets
-    // Validates: {folder}/{userId}/{filename}
     match /{folder}/{userId}/{allPaths=**} {
       allow create, update: if isOwner(userId) && isAllowedFolder(folder) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);
