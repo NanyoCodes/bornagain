@@ -179,7 +179,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     if (!vendor) {
         return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-32 text-center px-8 text-left text-left">
+            <div className="flex h-full w-full flex-col items-center justify-center py-32 text-center px-8 text-left text-left text-left">
                 <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left text-left text-left">
                     <Store className="h-10 w-10 text-muted-foreground opacity-20 text-left text-left text-left" />
                 </div>

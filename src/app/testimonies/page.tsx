@@ -300,7 +300,7 @@ function TestimoniesContent() {
   const prayerFormContent = <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} />;
 
   return (
-    <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
+    <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left text-left text-left">
       <Script 
         async 
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5186166468494737"
@@ -308,10 +308,10 @@ function TestimoniesContent() {
         strategy="afterInteractive"
       />
       
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-        <div className="lg:col-span-8 space-y-6 md:space-y-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
+        <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left">
           <div
-            className="bg-card border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98]"
+            className="bg-card border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-card/80 transition-all active:scale-[0.98] text-left"
             onClick={() => setIsTestimonyDialogOpen(true)}
           >
             <Avatar className="h-9 w-9 border shadow-sm shrink-0 text-left">
@@ -363,10 +363,10 @@ function TestimoniesContent() {
           <div className="px-4 sm:px-0 text-left">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
               <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 text-left">
-                <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">
+                <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-center">
                   Testimonies
                 </TabsTrigger>
-                <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">
+                <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-center">
                   Prayer Requests
                 </TabsTrigger>
               </TabsList>
@@ -382,6 +382,8 @@ function TestimoniesContent() {
                         item.adType === 'adsense' 
                             ? <AdsenseAd key={item.id} adSlot="5186166468" />
                             : <KingdomAdSpot key={item.id} type={item.adType as any} />
+                      ) : item.isGame ? (
+                        <BibleGameCard key={item.id} />
                       ) : (
                         <TestimonyCard
                           key={item.id}
@@ -418,6 +420,8 @@ function TestimoniesContent() {
                         item.adType === 'adsense' 
                             ? <AdsenseAd key={item.id} adSlot="5186166468" />
                             : <KingdomAdSpot key={item.id} type={item.adType as any} />
+                      ) : item.isGame ? (
+                        <BibleGameCard key={item.id} />
                       ) : (
                         <PrayerRequestCard
                           key={item.id}
@@ -449,7 +453,7 @@ function TestimoniesContent() {
       </div>
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
         <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-          <AlertDialogHeader className="text-left">
+          <AlertDialogHeader className="text-left text-left">
             <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight text-left">Remove from Feed?</AlertDialogTitle>
             <AlertDialogDescription className="text-left text-sm font-medium text-left">
               This will permanently delete this {itemToDelete?.type}. This action cannot be undone.
@@ -459,7 +463,7 @@ function TestimoniesContent() {
             <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left">
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Deletion</AlertDialogAction>
+            <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Deletion</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -505,7 +509,7 @@ function TestimoniesContent() {
               <Drawer open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0 text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 text-left">
+                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                         <div className="flex items-center gap-2 mb-4 text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left">SWIPE DOWN TO CLOSE</span></div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">
                           {prayerToAnswer ? 'Record Answer' : 'Share Testimony'}
@@ -523,7 +527,7 @@ function TestimoniesContent() {
               <Drawer open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex-shrink-0 text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 text-left">
+                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                         <div className="flex items-center gap-2 mb-4 text-left"><ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left">SWIPE DOWN TO CLOSE</span></div>
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Request Prayer</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left">Share your need with the global community.</DrawerDescription>
@@ -540,7 +544,7 @@ function TestimoniesContent() {
               <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
                 <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                   <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
+                    <DialogHeader className="text-left p-0 text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
@@ -553,7 +557,7 @@ function TestimoniesContent() {
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
+                    <DialogHeader className="text-left p-0 text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
@@ -564,7 +568,7 @@ function TestimoniesContent() {
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
                 <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
+                    <DialogHeader className="text-left p-0 text-left">
                         <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">
                           {prayerToAnswer ? 'Record Answer' : 'Share Testimony'}
                         </DialogTitle>
@@ -577,7 +581,7 @@ function TestimoniesContent() {
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
+                    <DialogHeader className="text-left p-0 text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>

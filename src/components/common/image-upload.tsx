@@ -3,11 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactCrop, { centerCrop, makeAspectCrop, type Crop, type PixelCrop } from 'react-image-crop';
 import { useStorage, useUser } from '@/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Camera, X, Loader2, Crop as CropIcon, Trash2, Sparkles, ShieldCheck, Flame } from 'lucide-react';
+import { Camera, X, Loader2, Crop as CropIcon, Trash2, Sparkles, ShieldCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -86,6 +85,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [imgSrc, setImgSrc] = useState('');
@@ -111,8 +111,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please select an image file.' });
         return;
       }
-      if (file.size > 10 * 1024 * 1024) { 
-        toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 10MB.' });
+      if (file.size > 20 * 1024 * 1024) { 
+        toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 20MB.' });
         return;
       }
       setCrop(undefined);
@@ -137,36 +137,33 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     setCrop(crop);
   };
 
-  const handleUpload = async (file: File | Blob): Promise<string> => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
+  const handleUpload = async (file: Blob): Promise<string> => {
+    if (!user?.uid || !storage) throw new Error("Kingdom session not ready.");
 
-    if (!currentUser || !user?.uid) {
-        throw new Error("Kingdom session not ready. Please try again.");
-    }
-
-    if (!storage) throw new Error("Storage service unavailable.");
-
-    const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
-    const fileRef = ref(storage, `${storagePath}/${currentUser.uid}/${Date.now()}_${fileName}`);
+    const fileName = `upload_${Date.now()}.jpg`;
+    const fileRef = ref(storage, `${storagePath}/${user.uid}/${fileName}`);
     
-    const metadata = {
-      contentType: file.type || 'image/jpeg'
-    };
+    const metadata = { contentType: 'image/jpeg' };
 
-    try {
-        await uploadBytes(fileRef, file, metadata);
-        return getDownloadURL(fileRef);
-    } catch (err: any) {
-        console.error("Firebase Storage Upload Failure:", err);
-        throw new Error(err.message || "Unauthorized access to Kingdom storage.");
-    }
+    return new Promise((resolve, reject) => {
+        const uploadTask = uploadBytesResumable(fileRef, file, metadata);
+        
+        uploadTask.on('state_changed', 
+            (snapshot) => setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
+            (error) => reject(error),
+            async () => {
+                const url = await getDownloadURL(uploadTask.snapshot.ref);
+                resolve(url);
+            }
+        );
+    });
   };
 
   const handleCrop = async () => {
     if (!completedCrop || !imgRef.current) return;
     
     setIsLoading(true);
+    setUploadProgress(0);
     try {
       const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
       const downloadURL = await handleUpload(croppedImageBlob);
@@ -174,18 +171,12 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
       setPreviewUrl(downloadURL);
       onUploadComplete(downloadURL);
       
-      toast({ title: 'Success', description: 'Photo updated and optimized.' });
-      
+      toast({ title: 'Success', description: 'Identity proof optimized and transmitted.' });
       setIsCropModalOpen(false);
       setImgSrc('');
-
     } catch (error: any) {
       console.error("Photo processing failed:", error);
-      toast({ 
-        variant: 'destructive', 
-        title: 'Upload Failed', 
-        description: error.message
-      });
+      toast({ variant: 'destructive', title: 'Upload Failed', description: error.message || "Access denied." });
     } finally {
       setIsLoading(false);
     }
@@ -225,9 +216,11 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         </div>
         
         {isLoading ? (
-          <div className="flex items-center gap-3 bg-muted/50 px-5 py-2.5 rounded-full border shadow-inner">
-            <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Transmitting...</span>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-3 bg-muted/50 px-5 py-2.5 rounded-full border shadow-inner">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Transmitting {Math.round(uploadProgress)}%</span>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3">
@@ -248,9 +241,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
                 </Button>
                 )}
             </div>
-            {!previewUrl && (
-                <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] animate-pulse">Identity verification requires a photo</p>
-            )}
           </div>
         )}
         <input 
@@ -264,27 +254,20 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
       <Dialog open={isCropModalOpen} onOpenChange={(open) => { if (!isLoading) setIsCropModalOpen(open); }}>
         <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
-          <div className="p-6 sm:p-10 border-b bg-muted/10 shrink-0 relative overflow-hidden">
+          <div className="p-6 sm:p-10 border-b bg-muted/10 shrink-0 relative overflow-hidden text-left">
             <div className="absolute top-0 right-0 p-4 opacity-5">
                 {logo && <Avatar className="h-24 w-24 grayscale"><AvatarImage src={logo.imageUrl} /></Avatar>}
             </div>
-            <DialogHeader className="text-left relative z-10">
-                <div className="flex items-center gap-2 mb-2">
-                    <CropIcon className="h-4 w-4 text-primary" />
-                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Identity Hub</span>
+            <DialogHeader className="text-left relative z-10 p-0">
+                <div className="flex items-center gap-2 mb-2 text-left">
+                    <CropIcon className="h-4 w-4 text-primary text-left" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Identity Hub</span>
                 </div>
                 <DialogTitle className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Refine Your Image</DialogTitle>
                 <DialogDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Set your focus for the global Kingdom directory.</DialogDescription>
             </DialogHeader>
           </div>
           <ScrollArea className="flex-1 min-h-0 bg-black/5 relative">
-             <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center overflow-hidden">
-                <div className="grid grid-cols-4 gap-8 rotate-12">
-                    {[...Array(12)].map((_, i) => (
-                        <ShieldCheck key={i} className="h-24 w-24 text-primary" />
-                    ))}
-                </div>
-            </div>
             <div className="p-4 sm:p-10 overflow-hidden flex justify-center items-center min-h-[300px] relative z-10">
               {imgSrc && (
                 <ReactCrop
@@ -306,10 +289,10 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
               )}
             </div>
           </ScrollArea>
-          <DialogFooter className="p-6 sm:p-10 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0">
+          <DialogFooter className="p-6 sm:p-10 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0 text-left">
             <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12">Cancel</Button>
-            <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest">
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+            <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest text-center">
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Sparkles className="mr-2 h-4 w-4 text-left" />}
               {isLoading ? 'OPTIMIZING...' : 'ACTIVATE IDENTITY'}
             </Button>
           </DialogFooter>
@@ -318,4 +301,3 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     </>
   );
 }
-

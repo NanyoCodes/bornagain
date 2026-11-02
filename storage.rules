@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Immediate access grant for territories and consolidated assets - 2025-03-12T19:30:00Z
+    // Deployment trigger: Immediate authorized access for all mission folders - 2025-03-12T19:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -13,7 +13,7 @@ service firebase.storage {
     }
 
     function isValidSize() {
-      return request.resource.size < 50 * 1024 * 1024;
+      return request.resource.size < 100 * 1024 * 1024; // 100MB limit
     }
 
     function isAllowedType() {
