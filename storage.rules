@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Refined Territory and Mission Evidence pathway - 2025-03-13T10:00:00Z
+    // Deployment trigger: Refined Territory and Mission Evidence pathway - 2025-03-13T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -23,20 +23,9 @@ service firebase.storage {
              request.resource.contentType == 'application/pdf';
     }
 
-    // Unified policy for mission-critical folders including territories
+    // Unified policy for mission-critical folders
     match /{folder}/{userId}/{allPaths=**} {
-      allow read: if folder in [
-        'profile-pictures', 
-        'vendor-branding', 
-        'marketplace-items',
-        'meals-center', 
-        'kindness-center', 
-        'campaign-assets', 
-        'testimonies', 
-        'events',
-        'territories',
-        'souls'
-      ];
+      allow read: if isAuthenticated();
       
       allow write: if isOwner(userId) && (
         folder in [
