@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -183,15 +183,14 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
         toast({ variant: 'destructive', title: 'Missing Name', description: 'Please select or enter a campaign name.' });
         return;
     }
-    
-    // Safety check for Firebase Batch set - ensure required dates are not undefined
+
     if (!values.startDate || !values.endDate) {
-        toast({ 
-            variant: 'destructive', 
-            title: 'Dates Required', 
-            description: 'Please ensure both start and end dates are selected before launching.' 
-        });
-        return;
+      toast({
+        variant: 'destructive',
+        title: 'Dates Required',
+        description: 'Please select a start and end date for the mission.',
+      });
+      return;
     }
 
     if (!user || !firestore) {
@@ -408,8 +407,11 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                       <Input
                         type="date"
                         value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                        onClick={(e) => (e.target as any).showPicker?.()}
-                        onFocus={(e) => (e.target as any).showPicker?.()}
+                        onClick={(e) => {
+                          try {
+                            (e.target as any).showPicker?.();
+                          } catch (err) {}
+                        }}
                         onChange={(e) => {
                             if (e.target.value) {
                                 const [year, month, day] = e.target.value.split('-').map(Number);
@@ -436,8 +438,11 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                        <Input
                         type="date"
                         value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                        onClick={(e) => (e.target as any).showPicker?.()}
-                        onFocus={(e) => (e.target as any).showPicker?.()}
+                        onClick={(e) => {
+                          try {
+                            (e.target as any).showPicker?.();
+                          } catch (err) {}
+                        }}
                         onChange={(e) => {
                             if (e.target.value) {
                                 const [year, month, day] = e.target.value.split('-').map(Number);
@@ -526,7 +531,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                 </FormItem>
               )}
             />
-           <p className="text-sm text-muted-foreground pt-2">
+           <p className="text-sm text-muted-foreground pt-2 text-left">
             Fill the details above to continue.
            </p>
 

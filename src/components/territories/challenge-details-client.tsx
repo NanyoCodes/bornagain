@@ -213,7 +213,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                             </div>
                         </div>
 
-                        <div className="relative pl-6 border-l-4 border-primary/20 py-2 text-left text-left">
+                        <div className="relative pl-6 border-l-4 border-primary/20 py-2 text-left text-left text-left">
                             <Quote className="absolute top-0 right-0 h-16 w-16 opacity-[0.03] pointer-events-none text-left" />
                             <p className="text-base sm:text-xl font-medium leading-relaxed italic text-balance text-left">
                                 &ldquo;{challenge.description}&rdquo;
@@ -269,7 +269,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
 
                 <div className="space-y-6 text-left">
                     {solutionsLoading ? (
-                        <div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div>
+                        <div className="flex justify-center py-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left" /></div>
                     ) : solutions && solutions.length > 0 ? (
                         solutions.map(sol => (
                             <SolutionItem key={sol.id} solution={sol} challengeId={challengeId} />
@@ -279,7 +279,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                             <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
                                 <MessageSquare className="h-10 w-10 text-primary opacity-10 text-left" />
                             </div>
-                            <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-center text-left">No Solutions Yet</h3>
+                            <h3 className="text-xl font-black font-headline uppercase tracking-tight text-center opacity-40 text-left">No Solutions Yet</h3>
                             <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto text-balance text-center text-left">Be the first to provide a Kingdom insight for this regional challenge.</p>
                         </div>
                     )}

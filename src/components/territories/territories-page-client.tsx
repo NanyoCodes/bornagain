@@ -481,11 +481,6 @@ export default function TerritoriesPageClient() {
         </form>
     );
 
-    const [mountedState, setMountedState] = useState(false);
-    useEffect(() => setMountedState(true), []);
-
-    if (!mountedState) return null;
-
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
@@ -576,9 +571,9 @@ export default function TerritoriesPageClient() {
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Detail the needs of your territory with evidence.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow text-left">
+                            <div className="flex-grow overflow-y-auto text-left">
                                 {creationForm(handleCreateChallenge)}
-                            </ScrollArea>
+                            </div>
                         </DrawerContent>
                     </Drawer>
                 ) : (
@@ -594,9 +589,9 @@ export default function TerritoriesPageClient() {
                                     <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Share hurdles in your region with photo evidence to mobilize global solutions.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 overflow-y-auto text-left">
+                            <div className="flex-1 min-h-0 overflow-y-auto text-left">
                                 {creationForm(handleCreateChallenge)}
-                            </ScrollArea>
+                            </div>
                         </DialogContent>
                     </Dialog>
                 )
@@ -615,9 +610,9 @@ export default function TerritoriesPageClient() {
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Update Hub Report</DrawerTitle>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow text-left">
+                            <div className="flex-grow overflow-y-auto text-left">
                                 {creationForm(handleUpdateChallenge, true)}
-                            </ScrollArea>
+                            </div>
                         </DrawerContent>
                     </Drawer>
                 ) : (
@@ -632,9 +627,9 @@ export default function TerritoriesPageClient() {
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Update Hub Report</DialogTitle>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 overflow-y-auto text-left">
+                            <div className="flex-1 min-h-0 overflow-y-auto text-left">
                                 {creationForm(handleUpdateChallenge, true)}
-                            </ScrollArea>
+                            </div>
                         </DialogContent>
                     </Dialog>
                 )
@@ -660,3 +655,4 @@ export default function TerritoriesPageClient() {
         </div>
     );
 }
+
