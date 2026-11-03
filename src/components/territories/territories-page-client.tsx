@@ -618,14 +618,14 @@ export default function TerritoriesPageClient() {
                     </Drawer>
                 ) : (
                     <Dialog open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
-                                <DialogHeader className="p-0 text-left text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                                <DialogHeader className="p-0 text-left text-left text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
                                         <Edit className="h-4 w-4 text-primary text-left text-left text-left" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Refinement</span>
                                     </div>
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Update Hub Report</DrawerTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Update Hub Report</DialogTitle>
                                 </DialogHeader>
                             </div>
                             <div className="flex-1 min-h-0 overflow-y-auto text-left">
@@ -647,7 +647,7 @@ export default function TerritoriesPageClient() {
                     <AlertDialogFooter className="gap-3 mt-6 text-left">
                         <AlertDialogCancel className="rounded-xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDeleteChallenge} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">
-                            {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>

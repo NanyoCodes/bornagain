@@ -182,7 +182,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                             <div className="flex items-center gap-3 text-left">
                                 <Avatar className="h-10 w-10 border shadow-md text-left">
                                     <AvatarImage src={challenge.authorPhotoURL} />
-                                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{challenge.authorName?.charAt(0)}</AvatarFallback>
+                                    <AvatarFallback className="font-bold bg-primary/10 text-primary text-xs text-left">{challenge.authorName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="text-left">
                                     <p className="text-xs font-black uppercase tracking-tight text-left">Reporter: {challenge.authorName}</p>

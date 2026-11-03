@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { format, isSameDay, differenceInDays } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { CalendarDays, MapPin, Users, Share2, Edit, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info, X, Camera, PlusCircle, Upload, FileUp, Video, Mic, Square, Sparkles } from "lucide-react";
-import type { Campaign, CampaignParticipant, UserProfile, CampaignGalleryItem } from "@/lib/types";
+import type { Campaign, CampaignParticipant, UserProfile, CampaignGalleryItem, Chat } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,14 +39,15 @@ import {
     DrawerTitle,
     DrawerDescription,
 } from "@/components/ui/drawer";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCollection, useFirestore, useUser, useDoc, useUserProfile, useStorage } from "@/firebase";
 import { collection, serverTimestamp, query, where, getDocs, addDoc, doc, getDoc, updateDoc, arrayUnion, orderBy } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { cn, safeToDate, haversineDistance } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
@@ -233,7 +234,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
 
     const startDate = safeToDate(campaign.startDate);
     const endDate = safeToDate(campaign.endDate);
-    const dateStr = useMemo(() => {
+    const dateStr = React.useMemo(() => {
         if (startDate && endDate) {
             if (isSameDay(startDate, endDate)) return format(startDate, "PPP");
             return `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`;
@@ -301,7 +302,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left text-left">
-                        <div className="p-8 pb-32 text-left text-left">
+                        <div className="p-8 pb-32 text-left text-left text-left">
                             {dialogContent}
                         </div>
                     </ScrollArea>
@@ -315,7 +316,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
             <DialogTrigger asChild onClick={stopPropagation}>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left text-left">
                 <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
                     <div className="flex items-center gap-3 mb-2 text-left text-left text-left">
                         <Target className="h-5 w-5 text-primary text-left text-left text-left" />
@@ -411,7 +412,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
             <div className="flex items-center justify-between gap-4 text-left text-left">
                 <div className="min-w-0 text-left text-left">
                     <h2 className="text-2xl font-black font-headline text-left text-left text-left">Mission Evidence</h2>
-                    <p className="text-sm font-medium mt-1 text-left text-left text-left">Capture the harvest impact of "{campaign.title}".</p>
+                    <p className="text-sm font-medium mt-1 text-left text-left text-left">Capture impact for "{campaign.title}".</p>
                 </div>
                 <div className="flex items-center gap-2 opacity-40 text-left text-left">
                     <ChevronDown className="h-3 w-3 animate-bounce text-left text-left" />
@@ -449,7 +450,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                             ) : (
                                 <div className="flex flex-col items-center text-left text-left">
                                     <FileUp className="h-8 w-8 text-primary mb-2 text-left text-left" />
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase text-center text-left text-left text-left text-left">ADD MEDIA</p>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase text-center text-left text-left text-left text-left text-left">ADD MEDIA</p>
                                 </div>
                             )}
                         </div>

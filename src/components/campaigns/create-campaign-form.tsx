@@ -272,11 +272,11 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
     window.open('https://meet.google.com/new', '_blank');
   };
 
-  const handleDatePickerClick = (e: React.MouseEvent<HTMLInputElement>) => {
+  const handleDatePickerAction = (e: React.MouseEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => {
     try {
       (e.target as any).showPicker?.();
     } catch (err) {
-      console.warn("showPicker is not supported or blocked in this environment.");
+      console.warn("Native date picker could not be triggered automatically in this environment.");
     }
   };
 
@@ -415,7 +415,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                       <Input
                         type="date"
                         value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                        onClick={handleDatePickerClick}
+                        onClick={handleDatePickerAction}
                         onChange={(e) => {
                             if (e.target.value) {
                                 const [year, month, day] = e.target.value.split('-').map(Number);
@@ -442,7 +442,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                        <Input
                         type="date"
                         value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                        onClick={handleDatePickerClick}
+                        onClick={handleDatePickerAction}
                         onChange={(e) => {
                             if (e.target.value) {
                                 const [year, month, day] = e.target.value.split('-').map(Number);

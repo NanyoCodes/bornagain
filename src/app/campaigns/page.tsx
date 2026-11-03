@@ -300,7 +300,7 @@ function CampaignPageContentInner() {
                 </CardContent>
             </Card>
 
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left text-left text-left text-left">
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left text-left text-left text-left text-left">
                 <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto text-left text-left">
                     <TabsList className="grid w-full grid-cols-3 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl text-left text-left">
                         <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left">All</TabsTrigger>
@@ -366,7 +366,7 @@ function CampaignPageContentInner() {
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                 <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl rounded-3xl text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
                         <DialogHeader className="text-left p-0 text-left text-left text-left">
                             <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">Create a New Mission</DialogTitle>
                             <DialogDescription className="text-sm font-medium text-left text-left">Fill in the details below.</DialogDescription>
@@ -433,7 +433,7 @@ function CampaignPageContentInner() {
                         </DrawerHeader>
                     </div>
                     <div className="flex-1 min-h-0 overflow-y-auto text-left text-left text-left text-left text-left">
-                        <div className="p-8 text-left text-left">
+                        <div className="p-8 text-left text-left text-left">
                             {campaignToManage && <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => setCampaignToManage(null)} onDelete={() => { const c = campaignToManage; setCampaignToManage(null); setTimeout(() => setCampaignToDelete(c), 150); }} />}
                         </div>
                     </div>
