@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2, Video, MapPin, User, Trash2, Sparkles, Target } from "lucide-react";
+import { Loader2, Video, MapPin, User, Trash2, Sparkles, Target, Camera } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser, useFirestore } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
@@ -25,6 +25,7 @@ import type { Event, EventCategory } from "@/lib/types";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { safeToDate } from "@/lib/utils";
+import { ImageUpload } from "../common/image-upload";
 
 const eventCategories: EventCategory[] = [
   'Conference', 'Worship', 'Seminar', 'Outreach', 'Prayer', 'Youth', 'Church Service', 'Other'
@@ -43,6 +44,7 @@ const formSchema = z.object({
   endTime: z.string().min(1, "End time is required."),
   maxParticipants: z.number().optional().nullable(),
   streamUrl: z.string().url("Valid URL required").optional().or(z.literal('')),
+  photoURL: z.string().min(5, "A cover photo is required."),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
@@ -69,6 +71,7 @@ export function ManageEventForm({ event, onEventUpdated, onDelete }: { event: Ev
       endTime: event.endTime || "12:00",
       maxParticipants: event.maxParticipants ?? null,
       streamUrl: event.streamUrl || "",
+      photoURL: event.photoURL || "",
     },
   });
 
@@ -91,6 +94,7 @@ export function ManageEventForm({ event, onEventUpdated, onDelete }: { event: Ev
         endTime: values.endTime,
         maxParticipants: values.maxParticipants || null,
         streamUrl: values.streamUrl || null,
+        photoURL: values.photoURL,
         updatedAt: serverTimestamp(),
     };
 
@@ -118,6 +122,26 @@ export function ManageEventForm({ event, onEventUpdated, onDelete }: { event: Ev
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
         <div className="space-y-6">
+            <div className="bg-primary/5 p-8 rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center text-center space-y-4">
+                <FormField
+                    control={form.control}
+                    name="photoURL"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col items-center">
+                            <FormControl>
+                                <ImageUpload
+                                    initialImageUrl={field.value}
+                                    onUploadComplete={(url) => field.onChange(url)}
+                                    storagePath="events"
+                                    cropAspect={21/9}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+
             <div className="flex items-center gap-3 px-1">
                 <Sparkles className="h-5 w-5 text-primary" />
                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">General Info</h3>

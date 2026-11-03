@@ -601,6 +601,14 @@ export type EventParticipant = {
   joinedAt: Timestamp;
 };
 
+export type EventGalleryItem = {
+  id: string;
+  url: string;
+  authorId: string;
+  authorName: string;
+  createdAt: Timestamp;
+};
+
 export type JoinedEvent = {
   id: string;
   eventId: string;

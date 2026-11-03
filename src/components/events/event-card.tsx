@@ -13,9 +13,12 @@ import {
   MoreVertical, 
   Trash2, 
   MessagesSquare, 
-  Edit
+  Edit,
+  Camera,
+  PlusCircle,
+  X
 } from "lucide-react";
-import type { Event, UserProfile, EventParticipant, Chat } from "@/lib/types";
+import type { Event, UserProfile, EventParticipant, Chat, EventGalleryItem } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,7 +46,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+} from "@/components/ui/drawer";
+import { useCollection, useFirestore, useUser, useDoc, useUserProfile } from "@/firebase";
 import { 
   collection, 
   serverTimestamp, 
@@ -52,7 +62,9 @@ import {
   getDoc, 
   runTransaction, 
   arrayUnion, 
-  updateDoc 
+  updateDoc, 
+  addDoc,
+  orderBy
 } from "firebase/firestore";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
@@ -66,6 +78,7 @@ import Link from "next/link";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import Image from "next/image";
+import { ImageUpload } from "../common/image-upload";
 
 interface EventCardProps {
     event: Event;
@@ -75,9 +88,6 @@ interface EventCardProps {
     onDelete: () => void;
 }
 
-/**
- * Ensures the profile photo displayed in the directory is always the most recent version.
- */
 function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
     const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
@@ -94,14 +104,19 @@ function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, classNam
             </DialogTrigger>
             {currentPhotoUrl && (
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
+                    <div className="sr-only text-left">
+                        <DialogHeader className="text-left">
+                            <DialogTitle className="text-left">Profile Photo</DialogTitle>
+                            <DialogDescription className="text-left">Full screen view of participant's photo.</DialogDescription>
+                        </DialogHeader>
+                    </div>
                     <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
                         <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                             <Image 
                                 src={currentPhotoUrl} 
                                 alt="Participant" 
                                 fill 
-                                className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                className="object-contain shadow-2xl ring-4 ring-white/10 text-left" 
                                 unoptimized 
                             />
                         </div>
@@ -141,15 +156,15 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
       {loading ? (
         <div className="space-y-4">
-          <Skeleton className="h-10 w-full rounded-2xl" />
-          <Skeleton className="h-10 w-full rounded-2xl" />
-          <Skeleton className="h-10 w-full rounded-2xl" />
+          <Skeleton className="h-10 w-full rounded-2xl text-left" />
+          <Skeleton className="h-10 w-full rounded-2xl text-left" />
+          <Skeleton className="h-10 w-full rounded-2xl text-left" />
         </div>
       ) : participants ? (
          <div className="space-y-6 pb-6 px-1 text-left">
             {organizer && (
                 <div className="space-y-3 text-left">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Organizer</h3>
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Organizer</h3>
                     <div className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed hover:bg-muted/40 transition-colors group relative">
                         <LiveParticipantAvatar userId={organizer.userId} fallbackUrl={organizer.photoURL} fallbackInitials={organizer.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm group-hover:scale-105 transition-transform" />
                         <Link 
@@ -165,7 +180,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
             )}
             {otherParticipants && otherParticipants.length > 0 && (
               <div className="space-y-3 text-left">
-                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Members ({otherParticipants.length})</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Members ({otherParticipants.length})</h3>
                 <div className="space-y-3">
                   {otherParticipants.map(p => (
                     <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm text-left">
@@ -238,6 +253,130 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
   );
 }
 
+function EventEvidenceDialog({ event, isOpen, onOpenChange }: { event: Event, isOpen: boolean, onOpenChange: (open: boolean) => void }) {
+    const { user } = useUser();
+    const { userProfile } = useUserProfile();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const isMobile = useIsMobile();
+    const [isUploading, setIsUploading] = useState(false);
+    const [photoUrl, setPhotoUrl] = useState('');
+
+    const galleryQuery = React.useMemo(() => {
+        if (!isOpen || !firestore || !event.id) return null;
+        return query(collection(firestore, 'events', event.id, 'gallery'), orderBy('createdAt', 'desc'));
+    }, [isOpen, firestore, event.id]);
+    const { data: galleryItems, loading } = useCollection<EventGalleryItem>(galleryQuery);
+
+    const handleUpload = async () => {
+        if (!user || !userProfile || !photoUrl || !firestore) return;
+        setIsUploading(true);
+        const itemData = {
+            url: photoUrl,
+            authorId: user.uid,
+            authorName: `${userProfile.firstName} ${userProfile.lastName}`,
+            createdAt: serverTimestamp(),
+        };
+        try {
+            await addDoc(collection(firestore, 'events', event.id, 'gallery'), itemData);
+            setPhotoUrl('');
+            toast({ title: 'Evidence Saved', description: 'Your mission photo is now in the gallery.' });
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Upload Failed' });
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const header = (
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                        <Camera className="h-5 w-5 text-primary" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Evidence Hub</span>
+                    </div>
+                    <DialogHeader className="p-0">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Mission Proof</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1">Capture the impact of "{event.title}".</DialogDescription>
+                    </DialogHeader>
+                </div>
+                <Button variant="outline" size="icon" className="rounded-full h-10 w-10 shrink-0 border bg-background" onClick={() => onOpenChange(false)}>
+                    <X className="h-6 w-6" />
+                </Button>
+            </div>
+        </div>
+    );
+
+    const content = (
+        <div className="p-8 space-y-8 text-left">
+            <div className="space-y-4 p-6 rounded-3xl bg-muted/20 border-2 border-dashed border-primary/20">
+                <div className="space-y-4">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Photo Evidence</Label>
+                    <ImageUpload 
+                        onUploadComplete={setPhotoUrl} 
+                        storagePath="events" 
+                        cropAspect={4/3}
+                    />
+                </div>
+                <Button 
+                    onClick={handleUpload} 
+                    disabled={!photoUrl || isUploading}
+                    className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20"
+                >
+                    {isUploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <PlusCircle className="h-4 w-4 mr-2" />}
+                    ensure uploads work
+                </Button>
+            </div>
+
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 px-1">
+                    <Users className="h-4 w-4 text-primary" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">COMMUNITY FEED</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {loading ? (
+                        [...Array(4)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-2xl" />)
+                    ) : galleryItems && galleryItems.length > 0 ? (
+                        galleryItems.map(item => (
+                            <div key={item.id} className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group">
+                                <Image src={item.url} alt="Proof" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
+                                    <p className="text-[8px] font-black text-white uppercase truncate">By {item.authorName}</p>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="col-span-full py-16 text-center border-2 border-dashed rounded-3xl opacity-40">
+                            <p className="text-xs font-bold uppercase italic">No mission impact photos yet</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    {header}
+                    <ScrollArea className="flex-grow">{content}</ScrollArea>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                {header}
+                <ScrollArea className="flex-1 min-h-0">{content}</ScrollArea>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 function LiveAuthor({ userId, fallbackInitials }: { userId: string, fallbackInitials: string }) {
     const firestore = useFirestore();
     const userDocRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
@@ -258,6 +397,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
   const router = useRouter();
   const [isJoining, setIsJoining] = React.useState(false);
   const [isChatLoading, setIsChatLoading] = React.useState(false);
+  const [isGalleryOpen, setIsGalleryOpen] = React.useState(false);
 
   const isOwner = user?.uid === event.organizerId;
   const startDate = safeToDate(event.startDate);
@@ -356,103 +496,126 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
   };
 
   return (
-    <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-8 border-b-primary/10 text-left">
-      <CardHeader className="p-6 sm:p-10 pb-4 text-left">
-        <div className="flex justify-between items-start">
-          <Badge className="h-6 text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20">
-            {event.category}
-          </Badge>
-          <div className="flex items-center gap-2">
-            {isOwner && (
-                <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full">
-                        <MoreVertical className="h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
-                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Manage Gathering</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={onEdit} className="rounded-lg text-left">
-                        <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Event
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg text-left" onClick={onDelete}>
-                        <Trash2 className="mr-2 h-4 w-4" /> Cancel Event
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-                </DropdownMenu>
-            )}
-          </div>
-        </div>
-        <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase mt-4 leading-tight break-words [overflow-wrap:anywhere]">{event.title}</CardTitle>
-        <CardDescription className="flex items-center gap-3 mt-3 text-left">
-          <LiveAuthor userId={event.organizerId} fallbackInitials={event.organizerName.charAt(0)} />
-          <span className="text-[11px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest truncate">Host: {event.organizerName}</span>
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent className="p-6 sm:p-10 pt-0 space-y-8 flex-grow text-left">
-        <p className="text-sm sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium italic border-l-4 border-primary/20 pl-6 py-2 bg-primary/5 rounded-r-[1.5rem] text-left">
-          &ldquo;{event.description}&rdquo;
-        </p>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
-          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left">
-            <CalendarDays className="h-6 w-6 text-primary shrink-0" />
-            <div className="min-w-0 text-left">
-                <p className="text-sm sm:text-base font-bold leading-tight">{dateStr}</p>
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1">{event.startTime} - {event.endTime}</p>
+    <>
+      <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-8 border-b-primary/10 text-left">
+        {event.photoURL && (
+            <div className="relative aspect-[21/9] sm:aspect-[3/1] bg-muted overflow-hidden">
+                <Image src={event.photoURL} alt={event.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" unoptimized />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             </div>
-          </div>
-          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left">
-            <MapPin className="h-6 w-6 text-primary shrink-0" />
-            <div className="min-w-0 text-left">
-                <p className="text-sm sm:text-base font-bold truncate leading-tight uppercase tracking-tight">{event.location}</p>
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1">BOTH PHYSICAL AND VIRTUAL</p>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-
-      <CardFooter className="p-6 sm:p-10 bg-muted/10 border-t flex flex-col sm:flex-row items-center justify-between gap-6 mt-auto text-left">
-        <ParticipantsDialog campaign={event}>
-            <div className="flex items-center gap-2.5 text-xs sm:text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-              <Users className="h-5 w-5 text-primary" />
-              {event.participantCount || 0} {event.participantCount === 1 ? 'MEMBER' : 'MEMBERS'}
-            </div>
-        </ParticipantsDialog>
-        
-        <div className="flex gap-3 w-full sm:w-auto text-left">
-          <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary/60 hover:text-primary" onClick={handleShare}>
-            <Share2 className="h-5 w-5" />
-          </Button>
-          
-          {(isJoined || isOwner) && event.hasGroupChat && (
-              <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary" onClick={handleOpenGroupChat} disabled={isChatLoading}>
-                {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
-              </Button>
-          )}
-
-          {event.streamUrl && (
-            <Button variant="outline" className="rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-md flex-1 sm:flex-none" asChild>
-              <a href={event.streamUrl} target="_blank" rel="noopener noreferrer">
-                <PlayCircle className="mr-2 h-5 w-5" /> LIVE STREAM
-              </a>
-            </Button>
-          )}
-          
-          {isJoined ? (
-            <Badge variant="secondary" className="h-12 px-6 rounded-2xl flex items-center gap-2 font-black tracking-[0.1em] bg-primary/10 text-primary border-primary/30 flex-1 sm:flex-none text-[10px] sm:text-xs">
-              <UserCheck className="h-5 w-5" /> I'M ATTENDING
+        )}
+        <CardHeader className="p-6 sm:p-10 pb-4 text-left">
+            <div className="flex justify-between items-start">
+            <Badge className="h-6 text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20">
+                {event.category}
             </Badge>
-          ) : (
-            <Button onClick={handleJoin} disabled={isJoining || event.status !== 'active'} className="h-12 px-8 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95 flex-1 sm:flex-none">
-              {isJoining ? <Loader2 className="h-5 w-5 animate-spin" /> : "JOIN GATHERING"}
+            <div className="flex items-center gap-2">
+                {isOwner && (
+                    <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+                            <MoreVertical className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Manage Gathering</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={onEdit} className="rounded-lg text-left">
+                            <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Event
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg text-left" onClick={onDelete}>
+                            <Trash2 className="mr-2 h-4 w-4" /> Cancel Event
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
+            </div>
+            </div>
+            <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase mt-4 leading-tight break-words [overflow-wrap:anywhere]">{event.title}</CardTitle>
+            <CardDescription className="flex items-center gap-3 mt-3 text-left">
+            <LiveAuthor userId={event.organizerId} fallbackInitials={event.organizerName.charAt(0)} />
+            <span className="text-[11px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest truncate">Host: {event.organizerName}</span>
+            </CardDescription>
+        </CardHeader>
+        
+        <CardContent className="p-6 sm:p-10 pt-0 space-y-8 flex-grow text-left">
+            <p className="text-sm sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium italic border-l-4 border-primary/20 pl-6 py-2 bg-primary/5 rounded-r-[1.5rem] text-left">
+            &ldquo;{event.description}&rdquo;
+            </p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
+            <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left">
+                <CalendarDays className="h-6 w-6 text-primary shrink-0" />
+                <div className="min-w-0 text-left">
+                    <p className="text-sm sm:text-base font-bold leading-tight">{dateStr}</p>
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1">{event.startTime} - {event.endTime}</p>
+                </div>
+            </div>
+            <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left">
+                <MapPin className="h-6 w-6 text-primary shrink-0" />
+                <div className="min-w-0 text-left">
+                    <p className="text-sm sm:text-base font-bold truncate leading-tight uppercase tracking-tight">{event.location}</p>
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1">BOTH PHYSICAL AND VIRTUAL</p>
+                </div>
+            </div>
+            </div>
+        </CardContent>
+
+        <CardFooter className="p-6 sm:p-10 bg-muted/10 border-t flex flex-col sm:flex-row items-center justify-between gap-6 mt-auto text-left">
+            <ParticipantsDialog campaign={event}>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+                <Users className="h-5 w-5 text-primary" />
+                {event.participantCount || 0} {event.participantCount === 1 ? 'MEMBER' : 'MEMBERS'}
+                </div>
+            </ParticipantsDialog>
+            
+            <div className="flex gap-3 w-full sm:w-auto text-left">
+            <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary/60 hover:text-primary" onClick={handleShare}>
+                <Share2 className="h-5 w-5" />
             </Button>
-          )}
-        </div>
-      </CardFooter>
-    </Card>
+            
+            <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary/60 hover:text-primary" 
+                onClick={(e) => { e.stopPropagation(); setIsGalleryOpen(true); }}
+            >
+                <Camera className="h-5 w-5" />
+            </Button>
+
+            {(isJoined || isOwner) && event.hasGroupChat && (
+                <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary" onClick={handleOpenGroupChat} disabled={isChatLoading}>
+                    {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
+                </Button>
+            )}
+
+            {event.streamUrl && (
+                <Button variant="outline" className="rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-md flex-1 sm:flex-none" asChild>
+                <a href={event.streamUrl} target="_blank" rel="noopener noreferrer">
+                    <PlayCircle className="mr-2 h-5 w-5" /> LIVE STREAM
+                </a>
+                </Button>
+            )}
+            
+            {isJoined ? (
+                <Badge variant="secondary" className="h-12 px-6 rounded-2xl flex items-center gap-2 font-black tracking-[0.1em] bg-primary/10 text-primary border-primary/30 flex-1 sm:flex-none text-[10px] sm:text-xs">
+                <UserCheck className="h-5 w-5" /> I'M ATTENDING
+                </Badge>
+            ) : (
+                <Button onClick={handleJoin} disabled={isJoining || event.status !== 'active'} className="h-12 px-8 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95 flex-1 sm:flex-none">
+                {isJoining ? <Loader2 className="h-5 w-5 animate-spin" /> : "JOIN GATHERING"}
+                </Button>
+            )}
+            </div>
+        </CardFooter>
+      </Card>
+
+      <EventEvidenceDialog 
+        event={event}
+        isOpen={isGalleryOpen}
+        onOpenChange={setIsGalleryOpen}
+      />
+    </>
   );
 }
