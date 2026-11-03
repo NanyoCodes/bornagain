@@ -209,11 +209,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
               )}
             </div>
           )}
-          {!previewUrl && (
-            <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg border-2 border-background animate-bounce whitespace-nowrap z-20">
-                IT CAN COVER ENTIRE PHOTO
-            </div>
-          )}
         </div>
         
         {isLoading ? (

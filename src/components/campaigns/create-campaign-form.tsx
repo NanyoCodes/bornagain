@@ -119,25 +119,25 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
   });
 
   useEffect(() => {
-    const source = searchParams.get('source');
+    const source = searchParams?.get('source');
     if (source === 'territory') {
       const title = searchParams.get('title');
       const location = searchParams.get('location');
       const description = searchParams.get('description');
       
       if (title) {
-          form.setValue('goal', 'Custom');
-          form.setValue('customGoal', title);
+          form.setValue('goal', 'Custom', { shouldDirty: true });
+          form.setValue('customGoal', title, { shouldDirty: true });
           setSelectedName('custom');
           setCustomName(title);
       }
-      if (location) form.setValue('location', location);
+      if (location) form.setValue('location', location, { shouldDirty: true });
       if (description) {
           setFinalDescription(description);
           setIdeas({ campaignNames: [], description: description });
       }
       
-      form.setValue('scriptureTestimony', `Mission inspired by regional report: "${title}"`);
+      form.setValue('scriptureTestimony', `Mission inspired by regional report: "${title}"`, { shouldDirty: true });
     }
   }, [searchParams, form]);
 
@@ -464,7 +464,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
               />
            </div>
            {durationText && (
-                <p className="text-sm text-muted-foreground -mt-2">{durationText}</p>
+                <p className="text-sm text-muted-foreground -mt-2 text-left">{durationText}</p>
            )}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
