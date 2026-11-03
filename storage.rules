@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Integrated and hardened write permissions - 2025-03-16T12:00:00Z
+    // Deployment trigger: Hardened write permissions for Territories, Events, and Campaigns - 2025-03-16T18:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;

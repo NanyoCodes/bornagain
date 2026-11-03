@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreHorizontal, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info, X, Camera, PlusCircle, Upload, FileUp, Video, Mic, Square, Sparkles } from "lucide-react";
+import { format, isSameDay, differenceInDays } from "date-fns";
+import { CalendarDays, MapPin, Users, Share2, Edit, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info, X, Camera, PlusCircle, Upload, FileUp, Video, Mic, Square, Sparkles } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,13 +45,12 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { cn, safeToDate } from "@/lib/utils";
+import { cn, safeToDate, haversineDistance } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ImageUpload } from "../common/image-upload";
 import Image from "next/image";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -124,32 +123,32 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   const content = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
       {loading ? (
-        <div className="space-y-4 text-left text-left">
-          <Skeleton className="h-10 w-full rounded-2xl text-left text-left" />
-          <Skeleton className="h-10 w-full rounded-2xl text-left text-left" />
-          <Skeleton className="h-10 w-full rounded-2xl text-left text-left" />
+        <div className="space-y-4 text-left">
+          <Skeleton className="h-10 w-full rounded-2xl" />
+          <Skeleton className="h-10 w-full rounded-2xl" />
+          <Skeleton className="h-10 w-full rounded-2xl" />
         </div>
       ) : participants ? (
-         <div className="space-y-6 pb-6 px-1 text-left text-left text-left">
+         <div className="space-y-6 pb-6 px-1 text-left">
             {organizer && (
                 <div className="space-y-3 text-left">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Organizer</h3>
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Organizer</h3>
                     <div className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed hover:bg-muted/40 transition-colors group relative text-left">
                         <LiveParticipantAvatar userId={organizer.userId} fallbackUrl={organizer.photoURL} fallbackInitials={organizer.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm group-hover:scale-105 transition-transform text-left" />
                         <Link 
                             href={`/profile/${organizer.userId}`}
-                            className='font-bold text-sm sm:text-base hover:underline uppercase tracking-tight text-left'
+                            className='font-bold text-sm sm:text-base hover:underline uppercase tracking-tight'
                             onClick={stopPropagation}
                         >
                             {organizer.firstName} {organizer.lastName}
                         </Link>
-                        {organizer.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60 text-left text-left">You</span>}
+                        {organizer.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60 text-left">You</span>}
                     </div>
                 </div>
             )}
             {otherParticipants && otherParticipants.length > 0 && (
               <div className="space-y-3 text-left">
-                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Members ({otherParticipants.length})</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Members ({otherParticipants.length})</h3>
                 <div className="space-y-3 text-left">
                   {otherParticipants.map(p => (
                     <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm text-left">
@@ -157,15 +156,15 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                         <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform text-left" />
                         <Link 
                             href={`/profile/${p.userId}`}
-                            className='font-bold text-sm hover:underline uppercase tracking-tight text-left'
+                            className='font-bold text-sm hover:underline uppercase tracking-tight'
                             onClick={stopPropagation}
                         >
                             {p.firstName} {p.lastName}
                         </Link>
-                        {p.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60 text-left text-left">You</span>}
+                        {p.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60 text-left">You</span>}
                       </div>
                       {p.joinReason && (
-                        <blockquote className="border-l-4 border-primary/20 pl-4 text-xs italic text-muted-foreground bg-primary/[0.02] py-2 rounded-r-xl text-left text-left">
+                        <blockquote className="border-l-4 border-primary/20 pl-4 text-xs italic text-muted-foreground bg-primary/[0.02] py-2 rounded-r-xl text-left">
                             &ldquo;{p.joinReason}&rdquo;
                         </blockquote>
                       )}
@@ -175,12 +174,12 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
               </div>
             )}
             {otherParticipants?.length === 0 && participants?.length > 0 && (
-                <p className="text-center text-muted-foreground py-12 text-sm italic px-8 text-center text-left text-left">No other believers have joined this mission yet. Share the campaign to invite others!</p>
+                <p className="text-center text-muted-foreground py-12 text-sm italic px-8 text-center text-left">No other believers joined yet.</p>
             )}
         </div>
       ) : (
-        <div className="text-center py-16 bg-muted/20 rounded-[2rem] border-2 border-dashed mx-1 text-left text-left">
-            <p className="text-sm text-muted-foreground px-10 leading-relaxed font-medium text-left">Join this campaign to connect with the full participant directory.</p>
+        <div className="text-center py-16 bg-muted/20 rounded-[2rem] border-2 border-dashed mx-1 text-left">
+            <p className="text-sm text-muted-foreground px-10 leading-relaxed font-medium text-left">Join mission to view directory.</p>
         </div>
       )}
     </ScrollArea>
@@ -191,15 +190,15 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{children}</SheetTrigger>
         <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-          <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-            <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
-                <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left text-left text-left">Participants Directory</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">
+          <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+            <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
+                <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants Directory</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1 text-left">
                 {campaign.participants || 0} believers mobilized for "{campaign.title}".
                 </SheetDescription>
             </SheetHeader>
           </div>
-          <div className="flex-grow min-h-0 pt-6 px-8 text-left text-left">
+          <div className="flex-grow min-h-0 pt-6 px-8 text-left">
             {content}
           </div>
         </SheetContent>
@@ -210,16 +209,16 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
-            <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
-                <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left text-left">Participants for "{campaign.title}"</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">
-                    {campaign.participants || 0} people have joined this mission.
+      <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <DialogHeader className="text-left p-0 text-left">
+                <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants: {campaign.title}</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-left">
+                    {campaign.participants || 0} believers joined.
                 </DialogDescription>
             </DialogHeader>
         </div>
-        <div className="flex-1 min-h-0 p-8 text-left text-left text-left">
+        <div className="flex-1 min-h-0 p-8 text-left">
             {content}
         </div>
       </DialogContent>
@@ -250,18 +249,18 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
     const dialogContent = (
         <div className="space-y-6 text-left">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-                <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3 text-left text-left text-left">
-                    <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left text-left text-left" />
-                    <div className="min-w-0 text-left text-left text-left">
-                        <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest text-left text-left">Meeting Point</p>
-                        <p className="text-xs font-bold leading-snug text-balance break-words text-left text-left">{campaign.location}</p>
+                <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3 text-left">
+                    <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
+                    <div className="min-w-0 text-left">
+                        <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest text-left">Meeting Point</p>
+                        <p className="text-xs font-bold leading-snug text-balance break-words text-left">{campaign.location}</p>
                     </div>
                 </div>
-                <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3 text-left text-left text-left">
-                    <CalendarDays className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left text-left text-left" />
-                    <div className="min-w-0 text-left text-left">
-                        <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest text-left text-left">Campaign Dates</p>
-                        <p className="text-xs font-bold leading-snug text-left text-left">{dateStr}</p>
+                <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3 text-left">
+                    <CalendarDays className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
+                    <div className="min-w-0 text-left">
+                        <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest text-left">Campaign Dates</p>
+                        <p className="text-xs font-bold leading-snug text-left">{dateStr}</p>
                     </div>
                 </div>
             </div>
@@ -276,10 +275,10 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
             </div>
 
             {campaign.scripture && (
-                <div className="p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative text-left text-left text-left">
+                <div className="p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative text-left">
                     <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em] text-left">Inspirational Word</span>
-                    <p className="italic text-base text-primary font-serif leading-relaxed text-left text-balance text-left">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
-                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right text-left text-left text-left">— {campaign.scripture}</p>
+                    <p className="italic text-base text-primary font-serif leading-relaxed text-left text-balance">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right">— {campaign.scripture}</p>
                 </div>
             )}
         </div>
@@ -291,19 +290,19 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
-                        <div className="flex items-center gap-3 mb-2 text-left text-left">
-                            <Target className="h-5 w-5 text-primary text-left text-left" />
-                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Mission Overview</span>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <div className="flex items-center gap-3 mb-2 text-left">
+                            <Target className="h-5 w-5 text-primary text-left" />
+                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Mission Overview</span>
                         </div>
-                        <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
-                            <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance break-words text-left text-left text-left">{campaign.title}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full Mission Details & Vision</SheetDescription>
+                        <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
+                            <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance break-words text-left">{campaign.title}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left">Full Mission Details & Vision</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <ScrollArea className="flex-grow text-left text-left">
-                        <div className="p-8 pb-32 text-left text-left text-left text-left">
+                    <ScrollArea className="flex-grow text-left">
+                        <div className="p-8 pb-32 text-left">
                             {dialogContent}
                         </div>
                     </ScrollArea>
@@ -317,15 +316,15 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
             <DialogTrigger asChild onClick={stopPropagation}>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
-                    <div className="flex items-center gap-3 mb-2 text-left text-left text-left">
-                        <Target className="h-5 w-5 text-primary text-left text-left" />
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left">Mission Overview</span>
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="flex items-center gap-3 mb-2 text-left">
+                        <Target className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Mission Overview</span>
                     </div>
-                    <DialogHeader className="text-left p-0 text-left text-left">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words text-left text-left text-left">{campaign.title}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Full Campaign Description</DialogDescription>
+                    <DialogHeader className="text-left p-0 text-left">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words text-left">{campaign.title}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left">Full Campaign Description</DialogDescription>
                     </DialogHeader>
                 </div>
                 <div className="flex-1 min-h-0 text-left">
@@ -335,8 +334,8 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                         </div>
                     </ScrollArea>
                 </div>
-                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left text-left text-left">
-                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold text-left text-left text-left">Close Details</Button>
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left">
+                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold text-left">Close Details</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -461,22 +460,22 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
     };
 
     const content = (
-        <div className="p-8 space-y-8 text-left text-left text-left text-left">
-            <div className="space-y-4 text-left text-left text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Upload Stage</Label>
+        <div className="p-8 space-y-8 text-left">
+            <div className="space-y-4 text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Upload Stage</Label>
                 <Select value={stage} onValueChange={(v: any) => setStage(v)}>
-                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left text-left">
+                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                         <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-2xl text-left text-left">
-                        <SelectItem value="preparatory" className="text-left">preparatory photos should be saved here</SelectItem>
-                        <SelectItem value="ongoing" className="text-left">Ongoing Mission</SelectItem>
+                    <SelectContent className="rounded-2xl text-left">
+                        <SelectItem value="preparatory">preparatory photos should be saved here</SelectItem>
+                        <SelectItem value="ongoing">Ongoing Mission</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
             
-            <div className="space-y-4 text-left text-left text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Photo/Media Evidence</Label>
+            <div className="space-y-4 text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Photo/Media Evidence</Label>
                 {!preview ? (
                     <div className="space-y-3 text-left">
                         <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left", isUploading ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => fileInputRef.current?.click()}>
@@ -492,7 +491,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                                 </div>
                             )}
                         </div>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 gap-2 text-left">
                             <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest" onClick={() => startRecorder('video')} disabled={isUploading}><Video className="h-3 w-3 mr-2" />VIDEO</Button>
                             <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest" onClick={() => startRecorder('audio')} disabled={isUploading}><Mic className="h-3 w-3 mr-2" />AUDIO</Button>
                         </div>
@@ -516,8 +515,8 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0">
-                    <DialogHeader className="text-left p-0">
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <DialogHeader className="text-left p-0 text-left">
                         <DialogTitle className="text-2xl font-black font-headline text-left">Mission Evidence</DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1 text-left">Capture the harvest impact of "{campaign.title}".</DialogDescription>
                     </DialogHeader>
@@ -699,36 +698,36 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-none pt-3 sm:pt-0 text-left">
               <div className="flex items-center gap-2 text-left">
                 {(isJoined || isOwner) && (
-                    <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" onClick={(e) => { e.stopPropagation(); setIsUploadOpen(true); }}><Camera className="h-4 w-4 sm:h-5 w-5" /><span className="sr-only">Add Evidence</span></Button></TooltipTrigger><TooltipContent><p className="text-[10px] font-bold uppercase">IT CAN COVER ENTIRE PHOTO</p></TooltipContent></Tooltip></TooltipProvider>
+                    <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background text-left" onClick={(e) => { e.stopPropagation(); setIsUploadOpen(true); }}><Camera className="h-4 w-4 sm:h-5 w-5 text-left" /><span className="sr-only text-left">Add Evidence</span></Button></TooltipTrigger><TooltipContent><p className="text-[10px] font-bold uppercase text-left">IT CAN COVER ENTIRE PHOTO</p></TooltipContent></Tooltip></TooltipProvider>
                 )}
-                <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" onClick={(e) => { e.stopPropagation(); router.push(`/campaigns/${campaign.id}`); }}><BarChart3 className="h-4 w-4 sm:h-5 w-5" /><span className="sr-only">View Insights</span></Button></TooltipTrigger><TooltipContent><p className="text-[10px] font-bold uppercase">Kingdom Insights</p></TooltipContent></Tooltip></TooltipProvider>
+                <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background text-left" onClick={(e) => { e.stopPropagation(); router.push(`/campaigns/${campaign.id}`); }}><BarChart3 className="h-4 w-4 sm:h-5 w-5 text-left" /><span className="sr-only text-left">View Insights</span></Button></TooltipTrigger><TooltipContent><p className="text-[10px] font-bold uppercase text-left">Kingdom Insights</p></TooltipContent></Tooltip></TooltipProvider>
               </div>
               <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'} className="uppercase font-bold tracking-widest text-[9px] sm:text-[10px] h-6 px-2 text-left">{status}</Badge>
             </div>
         </CardHeader>
-        <CardContent className="p-4 sm:p-6 pt-0 flex-grow space-y-4 text-left">
-            <div className="space-y-1 text-left"><p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium break-words text-left">{campaign.description}</p>{isDescriptionTruncated && (<FullDescriptionDialog campaign={campaign}><Button variant="link" className="p-0 h-auto text-sm font-bold text-primary">Read More</Button></FullDescriptionDialog>)}</div>
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-left text-left"><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left"><MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" /><div className="min-w-0 flex-1 text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Location</p><p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-left">{campaign.location}</p></div></div><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left"><CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5" /><div className="min-w-0 flex-1 text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Schedule</p><p className="font-bold text-foreground leading-snug line-clamp-2 text-left">{startDate && endDate ? (isSameDay(startDate, endDate) ? format(startDate, "PPP") : `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`) : "Date not set"}</p></div></div></div>
+        <CardContent className="p-4 sm:p-6 pt-0 flex-grow space-y-4 text-left text-left">
+            <div className="space-y-1 text-left text-left text-left"><p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium break-words text-left text-left text-left">{campaign.description}</p>{isDescriptionTruncated && (<FullDescriptionDialog campaign={campaign}><Button variant="link" className="p-0 h-auto text-sm font-bold text-primary text-left text-left text-left">Read More</Button></FullDescriptionDialog>)}</div>
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-left text-left"><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left"><MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left">Location</p><p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-left text-left text-left">{campaign.location}</p></div></div><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left"><CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left">Schedule</p><p className="font-bold text-foreground leading-snug line-clamp-2 text-left text-left text-left">{startDate && endDate ? (isSameDay(startDate, endDate) ? format(startDate, "PPP") : `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`) : "Date not set"}</p></div></div></div>
         </CardContent>
-        <CardFooter className="p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm text-left">
-            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground text-left"><ParticipantsDialog campaign={campaign}><Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors" onClick={stopPropagation}><Users className="h-4 w-4" /><span className="ml-1.5">{campaign.participants} MEMBERS</span></Button></ParticipantsDialog>{status === "Ongoing" && (<div className="flex items-center gap-1.5 text-primary"><UserCheck className="h-4 w-4" /><span> {campaign.soulsLogged || 0} SOULS WON</span></div>)}</div>
+        <CardFooter className="p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm text-left text-left text-left">
+            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground text-left text-left text-left"><ParticipantsDialog campaign={campaign}><Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors text-left text-left text-left" onClick={stopPropagation}><Users className="h-4 w-4 text-left text-left text-left" /><span className="ml-1.5 text-left text-left text-left">{campaign.participants} MEMBERS</span></Button></ParticipantsDialog>{status === "Ongoing" && (<div className="flex items-center gap-1.5 text-primary text-left text-left text-left"><UserCheck className="h-4 w-4 text-left text-left text-left" /><span> {campaign.soulsLogged || 0} SOULS WON</span></div>)}</div>
             <div className="w-full sm:w-auto flex items-center flex-wrap justify-end gap-2 text-left" onClick={stopPropagation}>
-                {status === 'Ongoing' && campaign.streamUrl && (<Button asChild className="w-full sm:w-auto font-black rounded-xl shadow-lg h-9"><Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer"><PlayCircle className="mr-2 h-4 w-4" />WATCH LIVE</Link></Button>)}
+                {status === 'Ongoing' && campaign.streamUrl && (<Button asChild className="w-full sm:w-auto font-black rounded-xl shadow-lg h-9 text-center text-left text-left"><Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer" className="text-center text-left text-left"><PlayCircle className="mr-2 h-4 w-4 text-left text-left" />WATCH LIVE</Link></Button>)}
                 {isOwner ? (
-                    <div onClick={stopPropagation} className="flex items-center gap-2 text-left">
-                      {status === "Ongoing" && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}><UserPlus className="h-4 w-4" /></Button></TooltipTrigger><TooltipContent><p>Log Soul Won</p></TooltipContent></Tooltip></TooltipProvider>)}
-                      {(status === 'Ongoing' || status === 'Past') && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onShareTestimony(); }}><Newspaper className="h-4 w-4" /></Button></TooltipTrigger><TooltipContent><p>Share Testimony</p></TooltipContent></Tooltip></TooltipProvider>)}
-                      <Button variant="outline" size="sm" className="h-9 rounded-xl gap-2 font-black uppercase tracking-widest text-[10px] shadow-sm border-primary/20 text-primary hover:bg-primary/5" onClick={(e) => { e.stopPropagation(); onManage(); }}><Edit className="h-4 w-4" />MANAGE</Button>
-                      <Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" onClick={handleShare} disabled={status === 'Past'}><Share2 className="h-4 w-4" /></Button>
+                    <div onClick={stopPropagation} className="flex items-center gap-2 text-left text-left text-left">
+                      {status === "Ongoing" && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}><UserPlus className="h-4 w-4 text-left text-left text-left" /></Button></TooltipTrigger><TooltipContent className="text-left text-left text-left"><p className="text-left text-left text-left">Log Soul Won</p></TooltipContent></Tooltip></TooltipProvider>)}
+                      {(status === 'Ongoing' || status === 'Past') && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left" onClick={(e) => { e.stopPropagation(); onShareTestimony(); }}><Newspaper className="h-4 w-4 text-left text-left text-left" /></Button></TooltipTrigger><TooltipContent className="text-left text-left text-left"><p className="text-left text-left text-left">Share Testimony</p></TooltipContent></Tooltip></TooltipProvider>)}
+                      <Button variant="outline" size="sm" className="h-9 rounded-xl gap-2 font-black uppercase tracking-widest text-[10px] shadow-sm border-primary/20 text-primary hover:bg-primary/5 text-center text-left text-left" onClick={(e) => { e.stopPropagation(); onManage(); }}><Edit className="h-4 w-4 text-left text-left text-left" />MANAGE</Button>
+                      <Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left" onClick={handleShare} disabled={status === 'Past'}><Share2 className="h-4 w-4 text-left text-left text-left" /></Button>
                     </div>
                 ) : (
-                    <div onClick={stopPropagation} className="flex items-center gap-2 text-left">
-                        {!isJoined && status !== 'Past' && (<Button className="font-black rounded-xl shadow-lg h-9" onClick={(e) => { e.stopPropagation(); if (!userProfile) { toast({ variant: 'destructive', title: 'Please log in' }); return; } setIsJoinDialogOpen(true); }}>JOIN MISSION</Button>)}
-                        {isJoined && (<Badge variant="secondary" className="flex items-center gap-2 py-1.5 px-3 h-9 font-black rounded-xl bg-primary/10 text-primary border-primary/20 shrink-0"><UserCheck className="h-4 w-4" /> JOINED</Badge>)}
-                        {isJoined && status === 'Ongoing' && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}><UserPlus className="h-4 w-4" /></Button></TooltipTrigger><TooltipContent><p>Log Soul Won</p></TooltipContent></Tooltip></TooltipProvider>)}
-                        {isJoined && (status === 'Ongoing' || status === 'Past') && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onShareTestimony(); }}><Newspaper className="h-4 w-4" /></Button></TooltipTrigger><TooltipContent><p>Share Testimony</p></TooltipContent></Tooltip></TooltipProvider>)}
-                        <TooltipProvider><Tooltip><TooltipTrigger asChild><Button onClick={handleInitiateChat} variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" disabled={!userId || isChatLoading}>{isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4" />}</Button></TooltipTrigger><TooltipContent><p className="text-[10px] font-bold uppercase">Chat with Organizer</p></TooltipContent></Tooltip></TooltipProvider>
-                        <Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" onClick={handleShare} disabled={status === 'Past'}><Share2 className="h-4 w-4" /></Button>
+                    <div onClick={stopPropagation} className="flex items-center gap-2 text-left text-left text-left">
+                        {!isJoined && status !== 'Past' && (<Button className="font-black rounded-xl shadow-lg h-9 text-center text-left text-left" onClick={(e) => { e.stopPropagation(); if (!userProfile) { toast({ variant: 'destructive', title: 'Please log in' }); return; } setIsJoinDialogOpen(true); }}>JOIN MISSION</Button>)}
+                        {isJoined && (<Badge variant="secondary" className="flex items-center gap-2 py-1.5 px-3 h-9 font-black rounded-xl bg-primary/10 text-primary border-primary/20 shrink-0 text-left text-left text-left"><UserCheck className="h-4 w-4 text-left text-left text-left" /> JOINED</Badge>)}
+                        {isJoined && status === 'Ongoing' && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}><UserPlus className="h-4 w-4 text-left text-left text-left" /></Button></TooltipTrigger><TooltipContent className="text-left text-left text-left"><p className="text-left text-left text-left">Log Soul Won</p></TooltipContent></Tooltip></TooltipProvider>)}
+                        {isJoined && (status === 'Ongoing' || status === 'Past') && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left" onClick={(e) => { e.stopPropagation(); onShareTestimony(); }}><Newspaper className="h-4 w-4 text-left text-left text-left" /></Button></TooltipTrigger><TooltipContent className="text-left text-left text-left"><p className="text-left text-left text-left">Share Testimony</p></TooltipContent></Tooltip></TooltipProvider>)}
+                        <TooltipProvider><Tooltip><TooltipTrigger asChild><Button onClick={handleInitiateChat} variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left" disabled={!userId || isChatLoading}>{isChatLoading ? <Loader2 className="h-4 w-4 animate-spin text-left text-left text-left" /> : <MessagesSquare className="h-4 w-4 text-left text-left text-left" />}</Button></TooltipTrigger><TooltipContent className="text-left text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left text-left">Chat with Organizer</p></TooltipContent></Tooltip></TooltipProvider>
+                        <Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left" onClick={handleShare} disabled={status === 'Past'}><Share2 className="h-4 w-4 text-left text-left text-left" /></Button>
                     </div>
                 )}
             </div>

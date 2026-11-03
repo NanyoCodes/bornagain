@@ -6,7 +6,7 @@ import { useStorage, useUser } from '@/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Camera, X, Loader2, Crop as CropIcon, Trash2, Sparkles, FileUp } from 'lucide-react';
+import { Camera, X, Loader2, Crop as CropIcon, Trash2, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import Image from 'next/image';
@@ -125,7 +125,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     const photoAspect = naturalWidth / naturalHeight;
     const aspectToUse = cropAspect || (circularCrop ? 1 : photoAspect);
     
-    // Initialize crop to cover as much as possible
+    // Expanded initialization: Initialize crop to cover full width
     const crop = centerCrop(
       makeAspectCrop({ unit: '%', width: 100 }, aspectToUse, width, height),
       width,
@@ -210,7 +210,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             </div>
           )}
           {!previewUrl && (
-            <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg border-2 border-background animate-bounce whitespace-nowrap">
+            <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg border-2 border-background animate-bounce whitespace-nowrap z-20">
                 IT CAN COVER ENTIRE PHOTO
             </div>
           )}
