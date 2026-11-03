@@ -367,7 +367,7 @@ function CampaignPageContentInner() {
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                 <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl rounded-3xl text-left text-left text-left">
                     <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left">
-                        <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
+                        <DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left">
                             <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left text-left">Create a New Mission</DialogTitle>
                             <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Fill in the details below.</DialogDescription>
                         </DialogHeader>
@@ -416,7 +416,7 @@ function CampaignPageContentInner() {
                         </DrawerHeader>
                     </div>
                     <div className="flex-1 min-h-0 overflow-y-auto text-left text-left text-left text-left text-left">
-                        <div className="p-8 text-left text-left text-left text-left">
+                        <div className="p-8 text-left text-left text-left text-left text-left">
                             {campaignForSoul && <LogSoulForm onSoulLogged={handleSoulLogged} defaultCampaign={campaignForSoul} fellowships={[]} campaigns={[]} />
                             }
                         </div>
@@ -426,13 +426,13 @@ function CampaignPageContentInner() {
 
             <Drawer open={!!campaignToManage} onOpenChange={(open) => { if (!open) setCampaignToManage(null); }}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
-                        <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left">Manage Mission</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left">Update mission progress and details.</DrawerDescription>
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
+                        <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left">Manage Mission</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left text-left">Update mission progress and details.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <div className="flex-1 min-h-0 overflow-y-auto text-left text-left text-left text-left text-left text-left">
+                    <div className="flex-1 min-h-0 overflow-y-auto text-left text-left text-left text-left text-left text-left text-left">
                         <div className="p-8 text-left text-left text-left text-left">
                             {campaignToManage && <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => setCampaignToManage(null)} onDelete={() => { const c = campaignToManage; setCampaignToManage(null); setTimeout(() => setCampaignToDelete(c), 150); }} />}
                         </div>
@@ -447,7 +447,7 @@ function CampaignPageContentInner() {
 
 function CampaignPageContent() {
   return (
-    <Suspense fallback={<div className="flex justify-center p-20 text-left text-left text-left text-left text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left" /></div>}>
+    <Suspense fallback={<div className="flex justify-center p-20 text-left text-left text-left text-left text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left text-left text-left text-left" /></div>}>
       <CampaignPageContentInner />
     </Suspense>
   )

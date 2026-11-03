@@ -125,7 +125,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     const photoAspect = naturalWidth / naturalHeight;
     const aspectToUse = cropAspect || (circularCrop ? 1 : photoAspect);
     
-    // Expanded initialization: Initialize crop to cover full width
     const crop = centerCrop(
       makeAspectCrop({ unit: '%', width: 100 }, aspectToUse, width, height),
       width,

@@ -35,8 +35,6 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CommentSection } from '../testimonies/comment-section';
 import { Label } from '@/components/ui/label';

@@ -83,7 +83,8 @@ import {
   getDoc, 
   updateDoc, 
   arrayUnion, 
-  orderBy 
+  orderBy,
+  deleteDoc
 } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -397,10 +398,11 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
     const [uploadProgress, setUploadProgress] = useState(0);
     const [preview, setPreview] = useState<{ url: string, localUrl?: string, type: 'image' | 'video' | 'audio' } | null>(null);
     const [stage, setStage] = useState<'preparatory' | 'ongoing'>('ongoing');
+    const [isDeleting, setIsDeleting] = useState<string | null>(null);
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const galleryQuery = useMemo(() => {
+    const galleryQuery = React.useMemo(() => {
         if (!isOpen || !firestore || !campaign.id) return null;
         return query(collection(firestore, 'campaigns', campaign.id, 'gallery'), orderBy('createdAt', 'desc'));
     }, [isOpen, firestore, campaign.id]);
@@ -450,6 +452,19 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
         finally { setIsUploading(false); }
     };
 
+    const handleDeleteItem = async (itemId: string) => {
+        if (!firestore) return;
+        setIsDeleting(itemId);
+        try {
+            await deleteDoc(doc(firestore, 'campaigns', campaign.id, 'gallery', itemId));
+            toast({ title: 'Evidence Removed' });
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Action Failed' });
+        } finally {
+            setIsDeleting(null);
+        }
+    };
+
     const header = (
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
             <div className="flex items-center justify-between gap-4 text-left">
@@ -492,7 +507,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center text-left">
-                                    <FileUp className="h-8 w-8 text-primary mb-2 text-left" />
+                                    <Camera className="h-8 w-8 text-primary mb-2 text-left" />
                                     <p className="text-[10px] font-bold text-muted-foreground uppercase text-center text-left">ADD MEDIA</p>
                                 </div>
                             )}
@@ -508,8 +523,36 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
 
             <Button onClick={handleUploadFinal} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left">
                 {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left" /> : <Upload className="h-5 w-5 mr-2 text-left" />}
-                UPLOAD PHOTO
+                UPLOAD EVIDENCE
             </Button>
+
+            <div className="space-y-4 pt-4 border-t border-dashed text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Mission Gallery</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left">
+                    {galleryLoading ? (
+                        [...Array(3)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-2xl text-left" />)
+                    ) : galleryItems?.map(item => (
+                        <div key={item.id} className="relative aspect-square rounded-2xl overflow-hidden border group/item text-left">
+                            <Image src={item.url} alt="Proof" fill className="object-cover transition-transform group-hover/item:scale-110 text-left" unoptimized />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/item:opacity-100 transition-opacity p-2 flex flex-col justify-between text-left">
+                                <div className="flex justify-end text-left">
+                                    {(user?.uid === item.authorId || user?.uid === campaign.organizerId) && (
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteItem(item.id); }}
+                                            disabled={isDeleting === item.id}
+                                            className="h-6 w-6 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg"
+                                        >
+                                            {isDeleting === item.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+                                        </button>
+                                    )}
+                                </div>
+                                <p className="text-[7px] font-black text-white uppercase truncate text-left">By {item.authorName}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if(f) handleUploadProcessedFile(f, 'image'); }} />
         </div>
     );
@@ -686,7 +729,13 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         <CardFooter className="p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm text-left text-left text-left text-left text-left">
             <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground text-left text-left text-left text-left text-left"><ParticipantsDialog campaign={campaign}><Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors text-left text-left text-left text-left text-left" onClick={stopPropagation}><Users className="h-4 w-4 text-left text-left text-left text-left text-left" /><span className="ml-1.5 text-left text-left text-left text-left text-left">{campaign.participants} MEMBERS</span></Button></ParticipantsDialog>{status === "Ongoing" && (<div className="flex items-center gap-1.5 text-primary text-left text-left text-left text-left text-left"><UserCheck className="h-4 w-4 text-left text-left text-left text-left text-left" /><span> {campaign.soulsLogged || 0} SOULS WON</span></div>)}</div>
             <div className="w-full sm:w-auto flex items-center flex-wrap justify-end gap-2 text-left text-left text-left" onClick={stopPropagation}>
-                {status === 'Ongoing' && campaign.streamUrl && (<Button asChild className="w-full sm:w-auto font-black rounded-xl shadow-lg h-9 text-center text-left text-left text-left text-left"><Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer" className="text-center text-left text-left text-left text-left"><PlayCircle className="mr-2 h-4 w-4 text-left text-left text-left text-left" />WATCH LIVE</Link></Button>)}
+                {status === 'Ongoing' && campaign.streamUrl && (
+                    <Button asChild className="w-full sm:w-auto font-black rounded-xl shadow-lg h-9 text-center text-left text-left text-left text-left">
+                        <a href={campaign.streamUrl} target="_blank" rel="noopener noreferrer" className="text-center text-left text-left text-left text-left">
+                            <PlayCircle className="mr-2 h-4 w-4 text-left text-left text-left text-left" />WATCH LIVE
+                        </a>
+                    </Button>
+                )}
                 {isOwner ? (
                     <div onClick={stopPropagation} className="flex items-center gap-2 text-left text-left text-left text-left text-left">
                       {status === "Ongoing" && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left text-left text-left" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}><UserPlus className="h-4 w-4 text-left text-left text-left text-left text-left" /></Button></TooltipTrigger><TooltipContent className="text-left text-left text-left text-left"><p className="text-left text-left text-left text-left">Log Soul Won</p></TooltipContent></Tooltip></TooltipProvider>)}

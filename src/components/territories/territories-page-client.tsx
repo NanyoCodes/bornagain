@@ -561,7 +561,7 @@ export default function TerritoriesPageClient() {
                 isMobile ? (
                     <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DrawerHeader className="text-left p-0 text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left">
                                         <Globe className="h-4 w-4 text-primary text-left" />
@@ -663,4 +663,3 @@ export default function TerritoriesPageClient() {
         </div>
     );
 }
-
