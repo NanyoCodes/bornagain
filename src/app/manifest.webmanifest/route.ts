@@ -10,8 +10,8 @@ export async function GET() {
   const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
 
   const manifest = {
-    name: 'Testify Global',
-    short_name: 'Testify',
+    name: 'Born Again Global',
+    short_name: 'Born Again',
     description: 'The global platform for sharing Christian testimonies and organizing the harvest.',
     start_url: '/',
     display: 'standalone',

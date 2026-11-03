@@ -37,7 +37,7 @@ const prompt = ai.definePrompt({
   name: 'generateFollowUpInsightsPrompt',
   input: {schema: FollowUpInsightsInputSchema},
   output: {schema: FollowUpInsightsOutputSchema},
-  prompt: `You are an AI assistant for "Testify", a Christian evangelism app. Your role is to provide encouraging and practical follow-up advice to users who have led someone to Christ.
+  prompt: `You are an AI assistant for "Born Again", a Christian evangelism app. Your role is to provide encouraging and practical follow-up advice to users who have led someone to Christ.
 
 A user is asking for insights on how to follow up with a person named {{{firstName}}}.
 

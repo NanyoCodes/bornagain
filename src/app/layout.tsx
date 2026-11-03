@@ -19,15 +19,15 @@ const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
 export const metadata: Metadata = {
   metadataBase: new URL('https://testifyglobal.com'),
   title: {
-    default: 'Testify | Global Christian Testimony & Evangelism Platform',
-    template: '%s | Testify Global',
+    default: 'Born Again | Global Christian Testimony & Evangelism Platform',
+    template: '%s | Born Again',
   },
   description:
-    'Testify is the global platform for believers to share the greatness of GOD in their lives, join soul-winning campaigns, and track the harvest. Join Testify Global today.',
+    'Born Again is the global platform for believers to share the greatness of GOD in their lives, join soul-winning campaigns, and track the harvest. Join Born Again today.',
   keywords: [
-    'Testify',
-    'Testify Global',
-    'Testify App',
+    'Born Again',
+    'Born Again Global',
+    'Born Again App',
     'Christian Testimonies',
     'Miracle Stories',
     'Soul Winning',
@@ -37,25 +37,25 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Testify',
+    title: 'Born Again',
   },
-  authors: [{ name: 'Testify Global Team' }],
-  creator: 'Testify Global',
-  publisher: 'Testify Global',
+  authors: [{ name: 'Born Again Team' }],
+  creator: 'Born Again',
+  publisher: 'Born Again',
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'Testify - Share Your Story, Join the Harvest',
-    description: 'Testify is empowering the Great Commission through technology. Share testimonies and track souls won globally.',
+    title: 'Born Again - Share Your Story, Join the Harvest',
+    description: 'Born Again is empowering the Great Commission through technology. Share testimonies and track souls won globally.',
     url: 'https://testifyglobal.com',
-    siteName: 'Testify Global',
+    siteName: 'Born Again',
     images: [
       {
         url: testifyLogoUrl,
         width: 1200,
         height: 630,
-        alt: 'Testify Global - Christian Testimony Platform',
+        alt: 'Born Again - Christian Testimony Platform',
       },
     ],
     locale: 'en_US',
@@ -63,10 +63,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Testify | Global Evangelism Platform',
+    title: 'Born Again | Global Evangelism Platform',
     description: 'The premier platform for Christian miracle stories and soul-winning campaigns.',
     images: [testifyLogoUrl],
-    creator: '@testifyglobal',
+    creator: '@bornagainglobal',
   },
   manifest: '/manifest.webmanifest',
   icons: {

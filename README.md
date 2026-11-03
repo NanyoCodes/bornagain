@@ -1,4 +1,4 @@
-# Testify - Global Evangelism Platform
+# Born Again - Global Evangelism Platform
 
 This is a NextJS application built for the global body of Christ.
 
@@ -25,7 +25,7 @@ To ensure the **App Logo** appears as the profile photo when users receive verif
 
 2.  **Firebase Console Branding**:
     *   Go to the [Firebase Console Authentication Settings](https://console.firebase.google.com/project/_/authentication/settings).
-    *   In the **Templates** tab, ensure your "Public-facing name" is set to "Testify".
+    *   In the **Templates** tab, ensure your "Public-facing name" is set to "Born Again".
     *   If using custom SMTP, ensure the logo is embedded in the HTML templates.
 
 ### Troubleshooting (If needed)

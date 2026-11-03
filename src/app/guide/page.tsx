@@ -33,8 +33,8 @@ import { cn } from '@/lib/utils';
 import { GuidePageClient } from '@/components/guide/guide-page-client';
 
 export const metadata: Metadata = {
-  title: 'App Guide - Testify Global',
-  description: 'A complete guide to using Testify Global for soul winning and testifying. Learn how to log souls, join campaigns, and grow in the Kingdom.',
+  title: 'App Guide - Born Again Global',
+  description: 'A complete guide to using Born Again Global for soul winning and testifying. Learn how to log souls, join campaigns, and grow in the Kingdom.',
 };
 
 const gettingStartedItems = [

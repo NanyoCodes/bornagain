@@ -183,7 +183,7 @@ export default function LandingPage() {
             {logo && (
               <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 text-left text-left">
                 <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-                <AvatarFallback>T</AvatarFallback>
+                <AvatarFallback>B</AvatarFallback>
               </Avatar>
             )}
           </Link>
@@ -213,7 +213,7 @@ export default function LandingPage() {
                   </Badge>
                 </div>
                 <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
-                  Testify the GREATNESS OF GOD.
+                  Born Again.
                 </h1>
                 <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center">
                    The premier relationship platform for nurturing and managing your connections with family, friends, souls, and the Kingdom of God.
@@ -254,7 +254,7 @@ export default function LandingPage() {
                         </h2>
                         <div className="space-y-6 text-center">
                             <p className="text-lg sm:text-2xl text-muted-foreground font-medium leading-relaxed italic border-x-4 border-primary/20 px-8 text-center text-balance">
-                                We are here to help you look after those you lead to Christ. Testify provides the heartbeat of care for your family, your friends, and the souls God places in your path. 
+                                We are here to help you look after those you lead to Christ. Born Again provides the heartbeat of care for your family, your friends, and the souls God places in your path. 
                                 We offer men the tools for spiritual legacy. We provide women a community of radiant restoration. We guard the dreams of our children through intentional spiritual follow-up.
                             </p>
                         </div>
@@ -464,7 +464,7 @@ export default function LandingPage() {
                     <div className="space-y-4 relative z-10 text-center">
                         <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-center">Caring for the One</h3>
                         <p className="text-zinc-400 max-w-2xl mx-auto text-sm sm:text-lg leading-relaxed font-medium italic text-pretty text-center">
-                            True spiritual success is measured by the depth of your care. Testify makes it easy to stay present in the lives of your family and friends, ensuring they grow deep in the Word and established in the Kingdom.
+                            True spiritual success is measured by the depth of your care. Born Again makes it easy to stay present in the lives of your family and friends, ensuring they grow deep in the Word and established in the Kingdom.
                         </p>
                     </div>
                     <div className="flex justify-center relative z-10 items-center">
@@ -566,16 +566,16 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16">
             <div className="col-span-1 sm:col-span-2 space-y-8 text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
                 {logo && (
                   <Avatar className="h-14 w-14 border-2 border-primary/20">
                     <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-                    <AvatarFallback>T</AvatarFallback>
+                    <AvatarFallback>B</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
               <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-sm">
-                Testify is the heart center for believers to care for family, friends, and the global harvest while sharing the greatness of Jesus Christ.
+                Born Again is the heart center for believers to care for family, friends, and the global harvest while sharing the greatness of Jesus Christ.
               </p>
             </div>
 
@@ -605,7 +605,7 @@ export default function LandingPage() {
           <div className="h-px w-full bg-muted opacity-50 mb-10" />
           
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left">
-            <p className="text-center md:text-left uppercase">© {new Date().getFullYear()} TESTIFY GLOBAL. Caring for the Harvest.</p>
+            <p className="text-center md:text-left uppercase">© {new Date().getFullYear()} BORN AGAIN GLOBAL. Caring for the Harvest.</p>
             <div className="flex gap-8">
               <Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms</Link>
               <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy</Link>

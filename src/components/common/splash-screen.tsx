@@ -16,7 +16,7 @@ const splashScriptures = [
 ];
 
 /**
- * @fileOverview A high-fidelity splash screen for the Testify platform.
+ * @fileOverview A high-fidelity splash screen for the Born Again platform.
  * Displays the logo, mission statement, and a call to action.
  */
 
@@ -57,8 +57,8 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
                 <Avatar className="h-32 w-32 sm:h-48 sm:w-48 shadow-2xl ring-8 ring-primary/10 border-4 border-background text-left">
-                  <AvatarImage src={logoUrl} alt="Testify Logo" className="text-left" />
-                  <AvatarFallback className="text-4xl bg-primary/10 text-primary font-black text-left">T</AvatarFallback>
+                  <AvatarImage src={logoUrl} alt="Born Again Logo" className="text-left" />
+                  <AvatarFallback className="text-4xl bg-primary/10 text-primary font-black text-left">B</AvatarFallback>
                 </Avatar>
             </motion.div>
             <motion.div 
@@ -83,7 +83,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
                 transition={{ delay: 1.1, duration: 1 }}
                 className="text-primary font-black uppercase tracking-[0.1em] text-[9px] sm:text-[10px] px-4 text-center text-left"
             >
-                When you Testify, the Glory goes to Jesus.
+                When you share your story, the Glory goes to Jesus.
             </motion.p>
         </div>
 

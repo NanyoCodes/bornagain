@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.testifyglobal.app',
-  appName: 'Testify',
+  appName: 'Born Again',
   webDir: 'out',
   server: {
     // We point directly to your production URL to support Next.js Server Actions (AI Flows)
