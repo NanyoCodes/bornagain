@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreHorizontal, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info, X } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreHorizontal, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info, X, Camera, Upload } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +29,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+} from "@/components/ui/drawer";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, serverTimestamp, query, where, getDocs, addDoc, doc, getDoc } from "firebase/firestore";
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -41,6 +48,7 @@ import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ImageUpload } from "../common/image-upload";
 import Image from "next/image";
 
 /**
@@ -322,9 +330,107 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                         </div>
                     </ScrollArea>
                 </div>
-                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0">
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left">
                     <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold">Close Details</Button>
                 </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Campaign, isOpen: boolean, onOpenChange: (open: boolean) => void }) {
+    const { user } = useUser();
+    const { userProfile } = useUserProfile();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const isMobile = useIsMobile();
+    const [isUploading, setIsUploading] = useState(false);
+    const [photoUrl, setPhotoUrl] = useState('');
+    const [stage, setStage] = useState<'preparatory' | 'ongoing'>('ongoing');
+
+    const handleUpload = async () => {
+        if (!user || !userProfile || !photoUrl || !firestore) return;
+        setIsUploading(true);
+        const itemData = {
+            url: photoUrl,
+            type: stage,
+            authorId: user.uid,
+            authorName: `${userProfile.firstName} ${userProfile.lastName}`,
+            createdAt: serverTimestamp(),
+        };
+        try {
+            await addDoc(collection(firestore, 'campaigns', campaign.id, 'gallery'), itemData);
+            setPhotoUrl('');
+            toast({ title: 'Evidence Saved', description: 'Your mission photo is now in the gallery.' });
+            onOpenChange(false);
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Upload Failed' });
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const content = (
+        <div className="p-8 space-y-8 text-left">
+            <div className="space-y-4 text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Upload Stage</Label>
+                <Select value={stage} onValueChange={(v: any) => setStage(v)}>
+                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl">
+                        <SelectItem value="preparatory">Preparatory Phase</SelectItem>
+                        <SelectItem value="ongoing">Ongoing Mission</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            
+            <div className="space-y-4 text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Photo Evidence</Label>
+                <ImageUpload 
+                    onUploadComplete={setPhotoUrl} 
+                    storagePath="campaign-assets" 
+                    cropAspect={4/3}
+                />
+            </div>
+
+            <Button 
+                onClick={handleUpload} 
+                disabled={!photoUrl || isUploading}
+                className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20"
+            >
+                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Upload className="h-5 w-5 mr-2" />}
+                TRANSMIT EVIDENCE
+            </Button>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b bg-muted/10 text-left">
+                        <DrawerHeader className="p-0 text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left">Add Mission Evidence</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1">Capture the spiritual impact of "{campaign.title}".</DrawerDescription>
+                        </DrawerHeader>
+                    </div>
+                    {content}
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                <div className="p-8 border-b bg-muted/10">
+                    <DialogHeader className="text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Mission Evidence</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1">Capture and categorize mission proof.</DialogDescription>
+                    </DialogHeader>
+                </div>
+                {content}
             </DialogContent>
         </Dialog>
     );
@@ -351,6 +457,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
   const isOwner = campaign.organizerId === userId;
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
@@ -627,6 +734,26 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             </div>
             <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-none pt-3 sm:pt-0 text-left">
               <div className="flex items-center gap-2 text-left">
+                {(isJoined || isOwner) && (
+                    <TooltipProvider>
+                        <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background text-left" 
+                            onClick={(e) => { e.stopPropagation(); setIsUploadOpen(true); }}
+                            >
+                            <Camera className="h-4 w-4 sm:h-5 w-5 text-left" />
+                            <span className="sr-only text-left text-left text-left">Add Evidence</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="text-left text-left">
+                            <p className="text-[10px] font-bold uppercase text-left">Add Mission Evidence</p>
+                        </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -637,7 +764,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                         onClick={(e) => { e.stopPropagation(); router.push(`/campaigns/${campaign.id}`); }}
                       >
                         <BarChart3 className="h-4 w-4 sm:h-5 w-5 text-left" />
-                        <span className="sr-only">View Insights</span>
+                        <span className="sr-only text-left text-left text-left">View Insights</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent className="text-left text-left">
@@ -765,6 +892,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             <span className="flex-shrink-0 opacity-60 text-left">{footerDateText}</span>
         </CardFooter>
       </Card>
+      
       {userProfile && !isOwner && (
         <JoinCampaignDialog
           campaign={campaign}
@@ -773,6 +901,14 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
           onOpenChange={setIsJoinDialogOpen}
           onCampaignJoined={() => {}}
         />
+      )}
+
+      {isUploadOpen && (
+          <QuickEvidenceDialog 
+            campaign={campaign}
+            isOpen={isUploadOpen}
+            onOpenChange={setIsUploadOpen}
+          />
       )}
     </>
   );

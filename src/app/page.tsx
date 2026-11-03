@@ -58,7 +58,7 @@ import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 const features = [
   {
     title: "COMPASSIONATE TESTIMONIES",
-    description: "Share miracles that inspire hope. Your testimony is a weapon of love that encourages family and friends to trust in God.",
+    description: "Share miracles that inspire hope. Your testimony is a weapon of love that overcomes the enemy.",
     icon: Newspaper,
     color: "text-orange-500",
     bgColor: "bg-orange-500/10",
@@ -212,13 +212,13 @@ export default function LandingPage() {
                     PROCLAIMING GOD'S GOODNESS
                   </Badge>
                 </div>
-                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance">
+                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
                   Testify the GREATNESS OF GOD.
                 </h1>
-                <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4">
+                <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center">
                    The premier relationship platform for nurturing and managing your connections with family, friends, souls, and the Kingdom of God.
                 </span>
-                <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-xl mx-auto italic leading-relaxed text-pretty">
+                <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
@@ -248,7 +248,7 @@ export default function LandingPage() {
                         <Badge className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
                             THE COMPASSIONATE NETWORK
                         </Badge>
-                        <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-[0.9] tracking-tighter text-balance">
+                        <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-[0.9] tracking-tighter text-balance text-center">
                             Nurture the Harvest.<br/>
                             <span className="text-primary">With Love.</span>
                         </h2>
@@ -263,7 +263,7 @@ export default function LandingPage() {
                                 <Sparkles className="h-6 w-6 text-primary" />
                                 Care Factor: Unmatched
                             </h3>
-                            <p className="text-muted-foreground leading-relaxed font-medium text-pretty">
+                            <p className="text-muted-foreground leading-relaxed font-medium text-pretty text-center">
                                 In this digital age, your care is your testimony. We provide the tools to ensure no one is forgotten. Follow up on the people you love with strategic compassion, logging every milestone of their journey into the light.
                             </p>
                         </div>
@@ -324,7 +324,7 @@ export default function LandingPage() {
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-8 text-center lg:text-left">
-                        <div className="space-y-4 text-left">
+                        <div className="space-y-4 text-center lg:text-left">
                             <Badge variant="outline" className="text-blue-500 border-blue-500/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 block w-fit">Provision Hubs</Badge>
                             <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center lg:text-left text-balance">Practical Love in Action</h2>
                             <p className="text-muted-foreground text-lg leading-relaxed italic font-medium text-center lg:text-left text-balance">
