@@ -38,9 +38,9 @@ const formSchema = z.object({
   }),
   customGoal: z.string().optional(),
   location: z.string().min(3, "A location is required.").max(200, "Location is too long."),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
-  coverageRadius: z.number().min(100, "Minimum radius is 100m").max(50000, "Maximum radius is 50km").optional(),
+  latitude: z.number().optional().nullable(),
+  longitude: z.number().optional().nullable(),
+  coverageRadius: z.number().min(100, "Minimum radius is 100m").max(50000, "Maximum radius is 50km").optional().nullable(),
   startDate: z.date({
     required_error: "A start date is required.",
   }),
@@ -52,9 +52,12 @@ const formSchema = z.object({
   targetAudience: z.string().min(3, "Target audience is too short.").max(100, "Target audience is too long."),
   scripture: z.string().min(3, "Scripture is too short.").max(100, "Scripture is too long."),
   scriptureTestimony: z.string().max(500, "Caption is too long.").optional(),
-  maxParticipants: z.number().optional(),
+  maxParticipants: z.number().optional().nullable(),
   streamUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
-}).refine((data) => data.endDate >= data.startDate, {
+}).refine((data) => {
+    if (data.startDate && data.endDate) return data.endDate >= data.startDate;
+    return true;
+}, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
 }).refine((data) => {
@@ -272,16 +275,16 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
     window.open('https://meet.google.com/new', '_blank');
   };
 
-  const handleDatePickerAction = (e: React.MouseEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => {
+  const handleDatePickerAction = (e: React.MouseEvent<HTMLInputElement>) => {
     try {
       (e.target as any).showPicker?.();
     } catch (err) {
-      console.warn("Native date picker could not be triggered automatically in this environment.");
+      console.warn("Native date picker could not be triggered automatically.");
     }
   };
 
   return (
-    <>
+    <div className="space-y-6">
       <Form {...form}>
         <form className="space-y-4 text-left">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
@@ -522,7 +525,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                       placeholder="e.g., 20" 
                       {...field} 
                       className="text-base"
-                      onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))}
+                      onChange={e => field.onChange(e.target.value === '' ? null : parseInt(e.target.value, 10))}
                       value={field.value ?? ''}
                     />
                   </FormControl>
@@ -535,57 +538,56 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
             Fill the details above to continue.
            </p>
 
-            <Button type="button" className="w-full" onClick={handleCreateManually}>
+            <Button type="button" className="w-full h-12 rounded-xl font-bold" onClick={handleCreateManually}>
                 Continue
             </Button>
         </form>
       </Form>
 
       {ideas && (
-        <Card className="mt-6" ref={ideasCardRef}>
-          <CardContent className="p-6">
+        <Card className="mt-6 border-primary/20 shadow-xl rounded-[2rem] overflow-hidden" ref={ideasCardRef}>
+          <CardContent className="p-8 space-y-8">
             <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Campaign Name</h3>
-                <RadioGroup onValueChange={setSelectedName} value={selectedName}>
+              <div className="space-y-4">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Campaign Name</Label>
+                <RadioGroup onValueChange={setSelectedName} value={selectedName} className="grid gap-3">
                   {ideas.campaignNames.length > 0 && ideas.campaignNames.map((name, index) => (
-                    <div key={index} className="flex items-center space-x-2">
+                    <div key={index} className="flex items-center space-x-3 p-3 rounded-xl border bg-muted/20 cursor-pointer transition-all hover:bg-muted/40">
                       <RadioGroupItem value={name} id={`name-${index}`} />
-                      <Label htmlFor={`name-${index}`} className="font-normal">{name}</Label>
+                      <Label htmlFor={`name-${index}`} className="font-bold flex-1 cursor-pointer">{name}</Label>
                     </div>
                   ))}
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-3 p-3 rounded-xl border bg-muted/20 cursor-pointer transition-all hover:bg-muted/40">
                     <RadioGroupItem value="custom" id="name-custom" />
-                    <Label htmlFor="name-custom" className="font-normal">Custom</Label>
+                    <Label htmlFor="name-custom" className="font-bold flex-1 cursor-pointer">Custom Name</Label>
                   </div>
                 </RadioGroup>
                 {selectedName === 'custom' && (
                   <Input 
                     placeholder="Enter custom campaign name" 
-                    className="mt-4 text-base"
+                    className="mt-4 text-base h-12 rounded-xl bg-background shadow-inner"
                     value={customName}
                     onChange={(e) => setCustomName(e.target.value)}
                   />
                 )}
               </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">{ideas.description ? 'Suggested Description' : 'Description'}</h3>
+              <div className="space-y-4">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{ideas.description ? 'Vision Statement' : 'Description'}</Label>
                 <Textarea 
                     value={finalDescription} 
                     onChange={(e) => setFinalDescription(e.target.value)} 
-                    rows={5} 
-                    className="text-base"
+                    className="text-base min-h-[160px] rounded-2xl bg-muted/20 border-none shadow-inner p-6 leading-relaxed"
                     placeholder="Describe your campaign's purpose and activities..." 
                 />
               </div>
-              <Button className="w-full" onClick={handleCreateCampaign} disabled={isCreating}>
-                {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                 {isCreating ? 'Creating...' : 'Create Campaign'}
+              <Button className="w-full h-14 rounded-2xl font-black shadow-xl shadow-primary/20 uppercase tracking-widest" onClick={handleCreateCampaign} disabled={isCreating}>
+                {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Target className="mr-2 h-5 w-5" />}
+                 {isCreating ? 'LAUNCHING...' : 'LAUNCH MISSION'}
               </Button>
             </div>
           </CardContent>
         </Card>
       )}
-    </>
+    </div>
   );
 }

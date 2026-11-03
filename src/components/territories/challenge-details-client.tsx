@@ -214,7 +214,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                             </div>
                         </div>
 
-                        <div className="relative pl-6 border-l-4 border-primary/20 py-2 text-left text-left text-left">
+                        <div className="relative pl-6 border-l-4 border-primary/20 py-2 text-left">
                             <Quote className="absolute top-0 right-0 h-16 w-16 opacity-[0.03] pointer-events-none text-left" />
                             <p className="text-base sm:text-xl font-medium leading-relaxed italic text-balance text-left">
                                 &ldquo;{challenge.description}&rdquo;

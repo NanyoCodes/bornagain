@@ -3,7 +3,32 @@
 import * as React from "react";
 import Link from "next/link";
 import { format, isSameDay } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info, X, Camera, PlusCircle, Upload, FileUp, Video, Mic, Square, Sparkles } from "lucide-react";
+import { 
+  CalendarDays, 
+  MapPin, 
+  Users, 
+  Share2, 
+  Edit, 
+  Loader2, 
+  MessagesSquare, 
+  UserCheck, 
+  PlayCircle, 
+  Newspaper, 
+  UserPlus, 
+  ChevronDown, 
+  BarChart3, 
+  Target, 
+  Info, 
+  X, 
+  Camera, 
+  PlusCircle, 
+  Upload, 
+  FileUp, 
+  Video, 
+  Mic, 
+  Square, 
+  Sparkles 
+} from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile, CampaignGalleryItem, Chat } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -298,7 +323,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                         </div>
                         <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                             <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance break-words text-left">{campaign.title}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">Full Mission Details & Vision</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Full Mission Details & Vision</SheetDescription>
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left text-left">
@@ -411,8 +436,8 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
             <div className="flex items-center justify-between gap-4 text-left text-left">
                 <div className="min-w-0 text-left text-left">
-                    <h2 className="text-2xl font-black font-headline text-left text-left text-left">Mission Evidence</h2>
-                    <p className="text-sm font-medium mt-1 text-left text-left text-left">Capture impact for "{campaign.title}".</p>
+                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Mission Evidence</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Capture harvest impact for "{campaign.title}".</DrawerDescription>
                 </div>
                 <div className="flex items-center gap-2 opacity-40 text-left text-left">
                     <ChevronDown className="h-3 w-3 animate-bounce text-left text-left" />
@@ -438,7 +463,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
             </div>
             
             <div className="space-y-4 text-left text-left text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Photo Evidence</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Photo/Media Evidence</Label>
                 {!preview ? (
                     <div className="space-y-3 text-left text-left text-left">
                         <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left text-left", isUploading ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => fileInputRef.current?.click()}>
@@ -463,7 +488,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                 )}
             </div>
 
-            <Button onClick={handleUploadFinal} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left text-left">
+            <Button onClick={handleUploadFinal} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left text-left text-left">
                 {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left text-left" /> : <Upload className="h-5 w-5 mr-2 text-left text-left" />}
                 UPLOAD EVIDENCE
             </Button>
@@ -638,7 +663,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         </CardHeader>
         <CardContent className="p-4 sm:p-6 pt-0 flex-grow space-y-4 text-left text-left text-left text-left">
             <div className="space-y-1 text-left text-left text-left text-left text-left text-left"><p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium break-words text-left text-left text-left text-left text-left">{campaign.description}</p>{isDescriptionTruncated && (<FullDescriptionDialog campaign={campaign}><Button variant="link" className="p-0 h-auto text-sm font-bold text-primary text-left text-left text-left text-left text-left">Read More</Button></FullDescriptionDialog>)}</div>
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-left text-left text-left text-left text-left text-left text-left"><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left">Location</p><p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-left text-left text-left text-left text-left text-left text-left">{campaign.location}</p></div></div><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Schedule</p><p className="font-bold text-foreground leading-snug line-clamp-2 text-left text-left text-left text-left text-left text-left text-left text-left">{startDate && endDate ? (isSameDay(startDate, endDate) ? format(startDate, "PPP") : `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`) : "Date not set"}</p></div></div></div>
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-left text-left text-left text-left text-left text-left text-left"><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Location</p><p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-left text-left text-left text-left text-left text-left text-left">{campaign.location}</p></div></div><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Schedule</p><p className="font-bold text-foreground leading-snug line-clamp-2 text-left text-left text-left text-left text-left text-left text-left text-left">{startDate && endDate ? (isSameDay(startDate, endDate) ? format(startDate, "PPP") : `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`) : "Date not set"}</p></div></div></div>
         </CardContent>
         <CardFooter className="p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm text-left text-left text-left text-left text-left">
             <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground text-left text-left text-left text-left text-left"><ParticipantsDialog campaign={campaign}><Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors text-left text-left text-left text-left text-left" onClick={stopPropagation}><Users className="h-4 w-4 text-left text-left text-left text-left text-left" /><span className="ml-1.5 text-left text-left text-left text-left text-left">{campaign.participants} MEMBERS</span></Button></ParticipantsDialog>{status === "Ongoing" && (<div className="flex items-center gap-1.5 text-primary text-left text-left text-left text-left text-left"><UserCheck className="h-4 w-4 text-left text-left text-left text-left text-left" /><span> {campaign.soulsLogged || 0} SOULS WON</span></div>)}</div>
@@ -665,7 +690,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         </CardFooter>
       </Card>
       {userProfile && !isOwner && (<JoinCampaignDialog campaign={campaign} userProfile={userProfile} isOpen={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen} onCampaignJoined={() => {}} />)}
-      {isUploadOpen && (<QuickEvidenceDialog campaign={campaign} isOpen={isUploadOpen} onOpenChange={setIsUploadOpen} />)}
+      {isUploadOpen && (<EventEvidenceDialog event={campaign as any} isOpen={isUploadOpen} onOpenChange={setIsUploadOpen} />)}
     </>
   );
 }

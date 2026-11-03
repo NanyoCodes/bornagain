@@ -132,11 +132,11 @@ function ChallengeCard({
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-xl shadow-xl">
-                                    <DropdownMenuItem onClick={onEdit} className="rounded-lg">
+                                    <DropdownMenuItem onClick={onEdit} className="rounded-lg text-left">
                                         <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit Challenge
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive rounded-lg">
+                                    <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive rounded-lg text-left">
                                         <Trash2 className="mr-2 h-4 w-4 text-left" /> Delete Challenge
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -418,20 +418,20 @@ export default function TerritoriesPageClient() {
                 <div className="space-y-4 text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Territory Location</Label>
                     <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
                             <SelectValue placeholder="Select Country" className="text-left" />
                         </SelectTrigger>
-                        <SelectContent className="max-h-[300px] text-left">
+                        <SelectContent className="max-h-[300px] text-left text-left">
                             {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     
                     <div className="grid grid-cols-2 gap-4 text-left">
                         <Select onValueChange={setRegState} value={regState} disabled={!regCountry || regStatesList.length === 0}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
                                 <SelectValue placeholder="State/Region" className="text-left" />
                             </SelectTrigger>
-                            <SelectContent className="max-h-[300px] text-left">
+                            <SelectContent className="max-h-[300px] text-left text-left">
                                 {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
@@ -466,8 +466,8 @@ export default function TerritoriesPageClient() {
                     </div>
 
                     <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
-                        <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                        <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
+                        <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left">
                             A challenge can be posted without a photo. However, visual evidence is critical for global intervention. Challenges with clear photo proof receive prioritized Kingdom response.
                         </p>
                     </div>
@@ -503,13 +503,13 @@ export default function TerritoriesPageClient() {
                     </Button>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-start gap-4 shadow-inner text-left">
-                    <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1 text-left">
-                        <Target className="h-6 w-6 text-white text-left" />
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-start gap-4 shadow-inner text-left text-left">
+                    <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1 text-left text-left">
+                        <Target className="h-6 w-6 text-white text-left text-left" />
                     </div>
-                    <div className="text-left">
+                    <div className="text-left text-left">
                         <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left">Mapping Kingdom Solutions</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-left text-balance">
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-left text-balance text-left">
                             Identify territories requiring spiritual or practical intervention. Share regional hurdles with evidence and collaborate with the global workforce to provide effective Kingdom solutions.
                         </p>
                     </div>
@@ -550,10 +550,10 @@ export default function TerritoriesPageClient() {
                         />
                     ))
                 ) : (
-                    <div className="col-span-full py-32 text-center flex flex-col items-center text-left">
+                    <div className="col-span-full py-32 text-center flex flex-col items-center text-left text-left">
                         <Globe className="h-16 w-16 text-muted-foreground opacity-10 mb-6 text-left" />
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">Territory Silence</h3>
-                        <p className="text-xs text-muted-foreground italic mt-2 max-w-xs mx-auto text-balance text-center text-left">No regional challenges recorded for this filter. Start one to mobilize solutions.</p>
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left text-left">Territory Silence</h3>
+                        <p className="text-xs text-muted-foreground italic mt-2 max-w-xs mx-auto text-balance text-center text-left text-left">No regional challenges recorded for this filter. Start one to mobilize solutions.</p>
                     </div>
                 )}
             </div>
@@ -562,8 +562,8 @@ export default function TerritoriesPageClient() {
                 isMobile ? (
                     <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
-                                <DrawerHeader className="text-left p-0 text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
                                         <Globe className="h-4 w-4 text-primary text-left text-left text-left" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Registration</span>
@@ -572,22 +572,22 @@ export default function TerritoriesPageClient() {
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Detail the needs of your territory with evidence.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <div className="flex-grow overflow-y-auto text-left">
+                            <ScrollArea className="flex-grow text-left">
                                 {creationForm(handleCreateChallenge)}
-                            </div>
+                            </ScrollArea>
                         </DrawerContent>
                     </Drawer>
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                                <DialogHeader className="p-0 text-left text-left text-left text-left">
-                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                        <Globe className="h-4 w-4 text-primary text-left text-left text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Registration</span>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
+                                <DialogHeader className="p-0 text-left text-left text-left text-left text-left">
+                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                                        <Globe className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Registration</span>
                                     </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Regional Challenge</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Share hurdles in your region with photo evidence to mobilize global solutions.</DialogDescription>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Regional Challenge</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Share hurdles in your region with photo evidence to mobilize global solutions.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <div className="flex-1 min-h-0 overflow-y-auto text-left">
@@ -601,31 +601,31 @@ export default function TerritoriesPageClient() {
             {challengeToEdit && (
                 isMobile ? (
                     <Drawer open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
-                                <DrawerHeader className="text-left p-0 text-left text-left text-left">
-                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                        <Edit className="h-4 w-4 text-primary text-left text-left text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Refinement</span>
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
+                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                                        <Edit className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Refinement</span>
                                     </div>
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Update Hub Report</DrawerTitle>
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Update Hub Report</DrawerTitle>
                                 </DrawerHeader>
                             </div>
-                            <div className="flex-grow overflow-y-auto text-left">
+                            <ScrollArea className="flex-grow text-left">
                                 {creationForm(handleUpdateChallenge, true)}
-                            </div>
+                            </ScrollArea>
                         </DrawerContent>
                     </Drawer>
                 ) : (
                     <Dialog open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                                 <DialogHeader className="p-0 text-left text-left text-left text-left text-left">
-                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                        <Edit className="h-4 w-4 text-primary text-left text-left text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Refinement</span>
+                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
+                                        <Edit className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left text-left">Refinement</span>
                                     </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Update Hub Report</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Update Hub Report</DialogTitle>
                                 </DialogHeader>
                             </div>
                             <div className="flex-1 min-h-0 overflow-y-auto text-left">
@@ -637,17 +637,17 @@ export default function TerritoriesPageClient() {
             )}
 
             <AlertDialog open={!!challengeToDelete} onOpenChange={open => !open && setChallengeToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left">
-                        <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">Remove Report?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left">
+                        <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left text-left">Remove Report?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">
                             Are you sure you want to delete this territorial challenge? All proposed solutions will also be removed. This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel className="rounded-xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteChallenge} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">
-                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left" />}
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-12 font-bold text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteChallenge} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left text-left text-left">
+                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>
