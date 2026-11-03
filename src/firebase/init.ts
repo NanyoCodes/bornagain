@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
-import { getFirestore, initializeFirestore, type Firestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, type Firestore, getFirestore as getExistingFirestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 import { getMessaging, type Messaging } from 'firebase/messaging';
 import { firebaseConfig } from './config';
@@ -16,6 +16,11 @@ type FirebaseServices = {
 // Use a module-level variable to store the initialized services.
 let firebaseServices: FirebaseServices | null = null;
 
+/**
+ * initializeFirebase
+ * Implements a robust singleton pattern to prevent "INTERNAL ASSERTION FAILED" errors.
+ * Forces long-polling for compatibility with proxied workstation environments.
+ */
 export function initializeFirebase(): FirebaseServices {
   // Return existing services if already initialized on the client.
   if (typeof window !== 'undefined' && firebaseServices) {
@@ -26,24 +31,22 @@ export function initializeFirebase(): FirebaseServices {
   const app = existingApps.length > 0 ? getApp() : initializeApp(firebaseConfig);
   
   let firestore: Firestore;
-  // Firestore must be initialized before other services that might implicitly call getFirestore()
+  
   if (typeof window !== 'undefined') {
+    // On the client, we must ensure initializeFirestore is only called once per app instance.
     try {
-      // Attempt to initialize with long polling and disabled fetch streams for proxy/station compatibility.
-      // This is the robust fix for "INTERNAL ASSERTION FAILED" and connectivity timeouts in proxied environments.
+      // experimentalForceLongPolling is the robust fix for connectivity timeouts in proxied environments.
       firestore = initializeFirestore(app, {
         experimentalForceLongPolling: true,
-        // @ts-ignore - useFetchStreams is valid in newer Firebase versions to resolve proxy stream issues
-        useFetchStreams: false,
       });
     } catch (e: any) {
       // If Firestore is already initialized, initializeFirestore throws an error.
       // We then get the existing instance.
-      firestore = getFirestore(app);
+      firestore = getExistingFirestore(app);
     }
   } else {
     // On the server (SSR), use standard initialization.
-    firestore = getFirestore(app);
+    firestore = getExistingFirestore(app);
   }
 
   const auth = getAuth(app);

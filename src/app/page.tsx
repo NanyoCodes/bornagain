@@ -218,7 +218,7 @@ export default function LandingPage() {
                 <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4">
                    The premier relationship platform for nurturing and managing your connections with family, friends, souls, and the Kingdom of God.
                 </span>
-                <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-w-xl mx-auto italic leading-relaxed text-pretty">
+                <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-xl mx-auto italic leading-relaxed text-pretty">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
