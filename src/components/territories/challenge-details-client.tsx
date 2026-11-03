@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
-import { collection, query, addDoc, serverTimestamp, doc, updateDoc, writeBatch, where, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { useUser, useAuth, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { collection, query, addDoc, serverTimestamp, doc, updateDoc, writeBatch, where, arrayUnion, arrayRemove, orderBy } from 'firebase/firestore';
 import type { RegionalChallenge, ChallengeSolution, UserProfile } from '@/lib/types';
 import { 
     Card, 
@@ -28,7 +27,8 @@ import {
     Quote,
     CheckCircle2,
     Calendar,
-    Award
+    Award,
+    X
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -36,6 +36,10 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { CommentSection } from '../testimonies/comment-section';
 
 function SolutionItem({ solution, challengeId }: { solution: ChallengeSolution, challengeId: string }) {
     const { user } = useUser();
@@ -102,6 +106,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
     const { userProfile } = useUserProfile();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const isMobile = useIsMobile();
     
     const [newSolution, setNewSolution] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
