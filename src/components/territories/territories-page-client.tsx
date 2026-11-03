@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
@@ -624,7 +625,7 @@ export default function TerritoriesPageClient() {
                                         <Edit className="h-4 w-4 text-primary text-left text-left text-left" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Refinement</span>
                                     </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Update Hub Report</DialogTitle>
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Update Hub Report</DrawerTitle>
                                 </DialogHeader>
                             </div>
                             <div className="flex-1 min-h-0 overflow-y-auto text-left">
@@ -655,4 +656,3 @@ export default function TerritoriesPageClient() {
         </div>
     );
 }
-

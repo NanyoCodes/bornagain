@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
@@ -238,9 +239,10 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button asChild variant="ghost" size="sm" className="h-8 px-3 rounded-full font-black uppercase tracking-widest text-[9px] border border-primary/20 text-primary hover:bg-primary/5 shadow-sm group/launch text-center">
+                                        <Button asChild variant="ghost" size="icon" className="h-9 w-9 rounded-full border border-primary/20 text-primary hover:bg-primary/5 shadow-sm group/launch">
                                             <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`} className="text-center">
-                                                <Target className="mr-1.5 h-3.5 w-3.5" /> LAUNCH MISSION
+                                                <Target className="h-5 w-5" />
+                                                <span className="sr-only">LAUNCH MISSION</span>
                                             </Link>
                                         </Button>
                                     </TooltipTrigger>

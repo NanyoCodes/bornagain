@@ -272,6 +272,14 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
     window.open('https://meet.google.com/new', '_blank');
   };
 
+  const handleDatePickerClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    try {
+      (e.target as any).showPicker?.();
+    } catch (err) {
+      console.warn("showPicker is not supported or blocked in this environment.");
+    }
+  };
+
   return (
     <>
       <Form {...form}>
@@ -283,7 +291,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Campaign Goal</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a campaign goal" />
@@ -407,11 +415,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                       <Input
                         type="date"
                         value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                        onClick={(e) => {
-                          try {
-                            (e.target as any).showPicker?.();
-                          } catch (err) {}
-                        }}
+                        onClick={handleDatePickerClick}
                         onChange={(e) => {
                             if (e.target.value) {
                                 const [year, month, day] = e.target.value.split('-').map(Number);
@@ -438,11 +442,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                        <Input
                         type="date"
                         value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                        onClick={(e) => {
-                          try {
-                            (e.target as any).showPicker?.();
-                          } catch (err) {}
-                        }}
+                        onClick={handleDatePickerClick}
                         onChange={(e) => {
                             if (e.target.value) {
                                 const [year, month, day] = e.target.value.split('-').map(Number);
