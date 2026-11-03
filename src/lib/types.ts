@@ -312,6 +312,15 @@ export type CampaignParticipant = {
   joinReason?: string;
 };
 
+export type CampaignGalleryItem = {
+  id: string;
+  url: string;
+  type: 'preparatory' | 'ongoing';
+  authorId: string;
+  authorName: string;
+  createdAt: Timestamp;
+};
+
 export type JoinedCampaign = {
   id: string;
   campaignId: string;
