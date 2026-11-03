@@ -12,6 +12,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
@@ -19,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -51,7 +54,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageUpload } from "../common/image-upload";
 import Image from "next/image";
 import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
 
 function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
@@ -208,8 +211,8 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-            <DialogHeader className="text-left p-0 text-left text-left text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
+            <DialogHeader className="text-left p-0 text-left text-left text-left text-left">
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left text-left">Participants for "{campaign.title}"</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">
                     {campaign.participants || 0} people have joined this mission.
@@ -368,27 +371,19 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
 
     const getSupportedMimeType = (mode: 'video' | 'audio') => {
         if (typeof MediaRecorder === 'undefined') return '';
-        const types = mode === 'video' 
-            ? ['video/mp4', 'video/webm'] 
-            : ['audio/mp4', 'audio/webm'];
-        for (const type of types) {
-            if (MediaRecorder.isTypeSupported(type)) return type;
-        }
+        const types = mode === 'video' ? ['video/mp4', 'video/webm'] : ['audio/mp4', 'audio/webm'];
+        for (const type of types) { if (MediaRecorder.isTypeSupported(type)) return type; }
         return mode === 'video' ? 'video/webm' : 'audio/webm';
     };
 
     const startRecorder = async (mode: 'video' | 'audio') => {
         setRecorderMode(mode);
         try {
-            const constraints = mode === 'video' 
-              ? { video: { facingMode: 'user' }, audio: true }
-              : { audio: true };
+            const constraints = mode === 'video' ? { video: { facingMode: 'user' }, audio: true } : { audio: true };
             const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
             setStream(mediaStream);
             setIsRecorderOpen(true);
-            if (mode === 'video') {
-              setTimeout(() => { if (videoPreviewRef.current) videoPreviewRef.current.srcObject = mediaStream; }, 100);
-            }
+            if (mode === 'video') setTimeout(() => { if (videoPreviewRef.current) videoPreviewRef.current.srcObject = mediaStream; }, 100);
         } catch (err) { toast({ variant: 'destructive', title: 'Access Blocked' }); }
     };
 
@@ -413,7 +408,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
             const uploadTask = uploadBytesResumable(fileRef, file, metadata);
             uploadTask.on('state_changed', 
                 (snapshot) => setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
-                (error) => { toast({ variant: 'destructive', title: 'Upload Failed' }); setIsUploading(null); },
+                (error) => { toast({ variant: 'destructive', title: 'Upload Failed' }); setIsUploading(false); },
                 async () => {
                     const url = await getDownloadURL(uploadTask.snapshot.ref);
                     setPreview({ url, localUrl, type: type as any });
@@ -474,7 +469,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl text-left text-left">
-                        <SelectItem value="preparatory" className="text-left">Preparatory Phase</SelectItem>
+                        <SelectItem value="preparatory" className="text-left">preparatory photos should be saved here</SelectItem>
                         <SelectItem value="ongoing" className="text-left">Ongoing Mission</SelectItem>
                     </SelectContent>
                 </Select>
@@ -493,7 +488,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                             ) : (
                                 <div className="flex flex-col items-center">
                                     <FileUp className="h-8 w-8 text-primary mb-2" />
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase text-center">DUPLICATE THIS PHOTO UPLOAD FOR CAMPAIGNS AND EVENTS</p>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase text-center">IT CAN COVER ENTIRE PHOTO</p>
                                 </div>
                             )}
                         </div>
@@ -704,7 +699,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-none pt-3 sm:pt-0 text-left">
               <div className="flex items-center gap-2 text-left">
                 {(isJoined || isOwner) && (
-                    <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" onClick={(e) => { e.stopPropagation(); setIsUploadOpen(true); }}><Camera className="h-4 w-4 sm:h-5 w-5" /><span className="sr-only">Add Evidence</span></Button></TooltipTrigger><TooltipContent><p className="text-[10px] font-bold uppercase">always approve photo uploads like events hub</p></TooltipContent></Tooltip></TooltipProvider>
+                    <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" onClick={(e) => { e.stopPropagation(); setIsUploadOpen(true); }}><Camera className="h-4 w-4 sm:h-5 w-5" /><span className="sr-only">Add Evidence</span></Button></TooltipTrigger><TooltipContent><p className="text-[10px] font-bold uppercase">IT CAN COVER ENTIRE PHOTO</p></TooltipContent></Tooltip></TooltipProvider>
                 )}
                 <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" onClick={(e) => { e.stopPropagation(); router.push(`/campaigns/${campaign.id}`); }}><BarChart3 className="h-4 w-4 sm:h-5 w-5" /><span className="sr-only">View Insights</span></Button></TooltipTrigger><TooltipContent><p className="text-[10px] font-bold uppercase">Kingdom Insights</p></TooltipContent></Tooltip></TooltipProvider>
               </div>

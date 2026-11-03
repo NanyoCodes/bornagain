@@ -125,7 +125,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     const photoAspect = naturalWidth / naturalHeight;
     const aspectToUse = cropAspect || (circularCrop ? 1 : photoAspect);
     
-    // EXPAND initial crop to full width
+    // Initialize crop to cover as much as possible
     const crop = centerCrop(
       makeAspectCrop({ unit: '%', width: 100 }, aspectToUse, width, height),
       width,
@@ -211,7 +211,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           )}
           {!previewUrl && (
             <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg border-2 border-background animate-bounce whitespace-nowrap">
-                SIGNED IN USER CAN ACCESS EVENTS FOLDER AND MEDIA
+                IT CAN COVER ENTIRE PHOTO
             </div>
           )}
         </div>

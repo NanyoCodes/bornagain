@@ -434,7 +434,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1 text-left text-left text-left">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left text-left">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left text-left">
@@ -618,7 +618,7 @@ function BottomNavBar() {
                     "text-[9px] font-black uppercase tracking-tighter transition-colors duration-300 leading-none text-left text-left text-left text-left text-left text-left text-left text-left",
                     isActive ? "text-white" : "text-zinc-500"
                   )}>
-                    {item.label === 'Victory Clinic' ? 'Victory' : item.label}
+                    {item.label}
                   </span>
                 </motion.div>
               </Link>
@@ -727,7 +727,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left text-left text-left">
-        <div className="relative mb-8 mx-auto w-fit text-left text-left text-left text-left">
+        <div className="relative mb-8 mx-auto w-fit text-left text-left text-left text-left text-left">
             <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left text-left text-left text-left" />
             <div className="absolute inset-0 flex items-center justify-center text-left text-left text-left text-left">
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left text-left text-left text-left text-left" />

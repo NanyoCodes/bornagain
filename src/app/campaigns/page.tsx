@@ -359,7 +359,7 @@ function CampaignsPageContent() {
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                 <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl rounded-3xl text-left">
                     <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                        <DialogHeader className="text-left p-0">
+                        <DialogHeader className="text-left p-0 text-left">
                             <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Create a New Mission</DialogTitle>
                             <DialogDescription className="text-sm font-medium text-left">Fill in the details below.</DialogDescription>
                         </DialogHeader>
