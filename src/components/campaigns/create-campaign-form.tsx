@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
-import { Loader2, Video } from "lucide-react";
+import { Loader2, Video, Target, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -279,7 +279,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
     try {
       (e.target as any).showPicker?.();
     } catch (err) {
-      console.warn("Native date picker could not be triggered automatically.");
+      console.warn("Native date picker could not be triggered automatically in this environment.");
     }
   };
 
@@ -360,7 +360,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                   <Accordion type="single" collapsible defaultValue="item-1" className="w-full rounded-md border">
                     <AccordionItem value="item-1" className="border-none">
                       <AccordionTrigger className="px-3 py-3 hover:no-underline">
-                        <div className="flex flex-col items-start gap-1">
+                        <div className="flex flex-col items-start gap-1 text-left">
                           <FormLabel>Campaign Location</FormLabel>
                            <FormDescription className="text-left">
                             Search or use the map to set a precise location for your campaign.

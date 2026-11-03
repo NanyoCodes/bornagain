@@ -66,7 +66,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Country, State } from 'country-state-city';
 import Link from 'next/link';
-import NextImage from 'next/image';
 import { ImageUpload } from '@/components/common/image-upload';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -564,9 +563,9 @@ export default function TerritoriesPageClient() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
                                 <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
-                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                        <Globe className="h-4 w-4 text-primary text-left text-left text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Registration</span>
+                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                                        <Globe className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Registration</span>
                                     </div>
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Post Regional Challenge</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Detail the needs of your territory with evidence.</DrawerDescription>

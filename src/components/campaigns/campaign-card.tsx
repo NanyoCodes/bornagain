@@ -24,10 +24,10 @@ import {
   PlusCircle, 
   Upload, 
   FileUp, 
-  Video, 
-  Mic, 
-  Square, 
-  Sparkles 
+  Sparkles,
+  Quote,
+  MoreVertical,
+  Trash2
 } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile, CampaignGalleryItem, Chat } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -64,15 +64,33 @@ import {
     DrawerTitle,
     DrawerDescription,
 } from "@/components/ui/drawer";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { useCollection, useFirestore, useUser, useDoc, useUserProfile, useStorage } from "@/firebase";
-import { collection, serverTimestamp, query, where, getDocs, addDoc, doc, getDoc, updateDoc, arrayUnion, orderBy } from "firebase/firestore";
+import { 
+  collection, 
+  serverTimestamp, 
+  query, 
+  where, 
+  getDocs, 
+  addDoc, 
+  doc, 
+  getDoc, 
+  updateDoc, 
+  arrayUnion, 
+  orderBy 
+} from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { cn, safeToDate } from "@/lib/utils";
+import { cn, safeToDate, haversineDistance } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
@@ -326,7 +344,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                             <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Full Mission Details & Vision</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <ScrollArea className="flex-grow text-left text-left">
+                    <ScrollArea className="flex-grow text-left text-left text-left">
                         <div className="p-8 pb-32 text-left text-left text-left">
                             {dialogContent}
                         </div>
@@ -382,7 +400,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const galleryQuery = React.useMemo(() => {
+    const galleryQuery = useMemo(() => {
         if (!isOpen || !firestore || !campaign.id) return null;
         return query(collection(firestore, 'campaigns', campaign.id, 'gallery'), orderBy('createdAt', 'desc'));
     }, [isOpen, firestore, campaign.id]);
@@ -455,7 +473,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                     <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
                         <SelectValue className="text-left text-left" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-2xl text-left text-left">
+                    <SelectContent className="rounded-2xl border-none shadow-2xl text-left text-left">
                         <SelectItem value="preparatory" className="text-left text-left">Preparatory Phase</SelectItem>
                         <SelectItem value="ongoing" className="text-left text-left">Ongoing Mission</SelectItem>
                     </SelectContent>
@@ -463,7 +481,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
             </div>
             
             <div className="space-y-4 text-left text-left text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Photo/Media Evidence</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Photo Evidence</Label>
                 {!preview ? (
                     <div className="space-y-3 text-left text-left text-left">
                         <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left text-left", isUploading ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => fileInputRef.current?.click()}>
@@ -488,7 +506,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                 )}
             </div>
 
-            <Button onClick={handleUploadFinal} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left text-left text-left">
+            <Button onClick={handleUploadFinal} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left text-left text-left text-left">
                 {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left text-left" /> : <Upload className="h-5 w-5 mr-2 text-left text-left" />}
                 UPLOAD EVIDENCE
             </Button>
@@ -646,7 +664,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     <>
       <Card id={campaign.id} className={cn("flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 border-t-4 cursor-pointer rounded-2xl border shadow-md sm:shadow-lg bg-card/50 backdrop-blur-sm text-left text-left", borderColorClass)} onClick={handleCardClick}>
         <CardHeader className="p-4 sm:p-6 flex flex-col sm:flex-row items-start justify-between gap-4 pb-3 sm:pb-6 text-left text-left">
-            <div className="flex-1 min-w-0 w-full text-left text-left">
+            <div className="flex-1 min-w-0 w-full text-left text-left text-left">
                 <CardTitle className="font-bold text-lg md:text-xl leading-tight break-words text-balance text-left text-left text-left">{campaign.title}</CardTitle>
                 <CardDescription className="text-sm mt-1 line-clamp-2 font-medium break-words text-left text-left text-left">{campaign.goal}</CardDescription>
                 {distance != null && (<CardDescription className="text-xs text-primary font-black mt-2 flex items-center gap-1.5 uppercase tracking-widest text-left text-left text-left"><MapPin className="h-3 w-3 text-left text-left text-left" />{distance.toFixed(1)} km away</CardDescription>)}
@@ -690,7 +708,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         </CardFooter>
       </Card>
       {userProfile && !isOwner && (<JoinCampaignDialog campaign={campaign} userProfile={userProfile} isOpen={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen} onCampaignJoined={() => {}} />)}
-      {isUploadOpen && (<EventEvidenceDialog event={campaign as any} isOpen={isUploadOpen} onOpenChange={setIsUploadOpen} />)}
+      {isUploadOpen && (<QuickEvidenceDialog campaign={campaign} isOpen={isUploadOpen} onOpenChange={setIsUploadOpen} />)}
     </>
   );
 }
