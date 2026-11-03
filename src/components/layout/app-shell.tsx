@@ -126,7 +126,7 @@ const navItems = [
   { href: "/growth", label: "Growth", icon: TrendingUp, color: "bg-orange-500" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "bg-amber-500" },
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "bg-primary" },
-  { href: "/victory-hub", label: "Victory Clinic", icon: ShieldCheck, color: "bg-indigo-600" },
+  { href: "/victory-hub", label: "Victory", icon: ShieldCheck, color: "bg-indigo-600" },
   { href: "/campaigns", label: "Missions", icon: Target, color: "bg-rose-500" },
 ];
 
@@ -616,7 +616,7 @@ function BottomNavBar() {
                   </div>
                   <span className={cn(
                     "text-[9px] font-black uppercase tracking-tighter transition-colors duration-300 leading-none text-left",
-                    isActive ? "text-primary" : "text-zinc-500"
+                    isActive ? "text-white" : "text-zinc-500"
                   )}>
                     {item.label}
                   </span>
