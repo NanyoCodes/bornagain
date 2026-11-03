@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
-import { collection, query, addDoc, serverTimestamp, doc, updateDoc, writeBatch, where, arrayUnion, arrayRemove, orderBy } from 'firebase/firestore';
-import type { RegionalChallenge, ChallengeSolution, UserProfile } from '@/lib/types';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useUser, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { collection, query, addDoc, serverTimestamp, doc, updateDoc, where, arrayUnion, arrayRemove, orderBy } from 'firebase/firestore';
+import type { RegionalChallenge, ChallengeSolution } from '@/lib/types';
 import { 
     Card, 
     CardContent, 
@@ -25,9 +25,6 @@ import {
     HandHeart,
     MapPin,
     Quote,
-    CheckCircle2,
-    Calendar,
-    Award,
     X,
     Target
 } from 'lucide-react';
@@ -42,6 +39,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CommentSection } from '../testimonies/comment-section';
 import { Label } from '@/components/ui/label';
+import Link from 'next/link';
 
 function SolutionItem({ solution, challengeId }: { solution: ChallengeSolution, challengeId: string }) {
     const { user } = useUser();
@@ -189,19 +187,19 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
                                 </div>
                             </div>
-                            <Badge variant="outline" className="h-6 px-3 bg-primary/5 text-primary border-primary/20 font-black uppercase text-[8px] tracking-widest text-left">Open Challenge</Badge>
+                            
+                            <Button asChild variant="outline" size="sm" className="h-8 px-4 rounded-full font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-md group/launch">
+                                <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`}>
+                                    <Target className="mr-1.5 h-3.5 w-3.5 text-left" />
+                                    LAUNCH MISSION
+                                </Link>
+                            </Button>
                         </div>
                         
                         <div className="flex flex-wrap items-center gap-4 mb-6 text-left">
                             <div className="flex items-center gap-3 bg-muted/20 p-3 rounded-2xl border border-dashed w-fit text-left">
                                 <MapPin className="h-4 w-4 text-primary text-left" />
                                 <span className="text-xs font-black uppercase tracking-widest text-left">Location: {challenge.city || challenge.state}, {challenge.country}</span>
-                            </div>
-                            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 animate-in fade-in zoom-in duration-500 shadow-inner">
-                                <Sparkles className="h-3.5 w-3.5" />
-                                <span className="text-[9px] font-black uppercase tracking-widest leading-tight">
-                                    either solutions or a campaign can be run from this
-                                </span>
                             </div>
                         </div>
 
@@ -225,7 +223,15 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
 
                 <div className="space-y-4 text-left">
                     <div className="p-6 rounded-[2rem] bg-muted/20 border-2 border-dashed border-primary/10 space-y-4 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60 ml-2 text-left">Propose a Word or Solution</Label>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60 ml-2 text-left">Propose a Word or Solution</Label>
+                            <Button asChild variant="link" className="h-auto p-0 text-[10px] font-black uppercase text-primary/60 hover:text-primary transition-colors gap-1.5">
+                                <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`}>
+                                    <Target className="h-3 w-3" />
+                                    OR LAUNCH MISSION CAMPAIGN
+                                </Link>
+                            </Button>
+                        </div>
                         <Textarea 
                             placeholder="Share a strategy, scripture, or practical step for this territory..."
                             value={newSolution}

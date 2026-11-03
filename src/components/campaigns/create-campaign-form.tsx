@@ -29,6 +29,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { format, differenceInDays, isSameDay } from "date-fns";
 import { LocationMapPicker } from "../common/location-map-picker";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useSearchParams } from "next/navigation";
 import type { UserProfile } from "@/lib/types";
 
 const formSchema = z.object({
@@ -91,6 +92,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
+  const searchParams = useSearchParams();
 
   const [ideas, setIdeas] = useState<CampaignIdeas | null>(null);
   const [selectedName, setSelectedName] = useState('');
@@ -117,6 +119,29 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
   const endDate = form.watch('endDate');
 
   useEffect(() => {
+    const source = searchParams.get('source');
+    if (source === 'territory') {
+      const title = searchParams.get('title');
+      const location = searchParams.get('location');
+      const description = searchParams.get('description');
+      
+      if (title) {
+          form.setValue('goal', 'Custom');
+          form.setValue('customGoal', title);
+          setSelectedName('custom');
+          setCustomName(title);
+      }
+      if (location) form.setValue('location', location);
+      if (description) {
+          setFinalDescription(description);
+          setIdeas({ campaignNames: [], description: description });
+      }
+      
+      form.setValue('scriptureTestimony', `Mission inspired by regional report: "${title}"`);
+    }
+  }, [searchParams, form]);
+
+  useEffect(() => {
     if (ideas && ideasCardRef.current) {
       setTimeout(() => {
         ideasCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -138,9 +163,8 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
   const handleCreateManually = () => {
     form.trigger().then(isValid => {
         if (isValid) {
-            setIdeas({ campaignNames: [], description: '' }); // Set ideas to a non-null state to trigger the next step
+            if (!ideas) setIdeas({ campaignNames: [], description: '' }); 
             setSelectedName('custom');
-            setFinalDescription('');
         } else {
             toast({
                 variant: "destructive",
@@ -375,6 +399,8 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                       <Input
                         type="date"
                         value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                        onClick={(e) => (e.target as any).showPicker?.()}
+                        onFocus={(e) => (e.target as any).showPicker?.()}
                         onChange={(e) => {
                             if (e.target.value) {
                                 const [year, month, day] = e.target.value.split('-').map(Number);
@@ -401,6 +427,8 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                        <Input
                         type="date"
                         value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                        onClick={(e) => (e.target as any).showPicker?.()}
+                        onFocus={(e) => (e.target as any).showPicker?.()}
                         onChange={(e) => {
                             if (e.target.value) {
                                 const [year, month, day] = e.target.value.split('-').map(Number);

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, addDoc, serverTimestamp, doc, orderBy, where, updateDoc, deleteDoc } from 'firebase/firestore';
 import type { RegionalChallenge, UserProfile, ChallengeType } from '@/lib/types';
 import { 
@@ -576,9 +576,9 @@ export default function TerritoriesPageClient() {
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Detail the needs of your territory with evidence.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <div className="flex-1 overflow-y-auto text-left">
+                            <ScrollArea className="flex-grow text-left">
                                 {creationForm(handleCreateChallenge)}
-                            </div>
+                            </ScrollArea>
                         </DrawerContent>
                     </Drawer>
                 ) : (
@@ -596,9 +596,9 @@ export default function TerritoriesPageClient() {
                                     <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Share hurdles in your region with photo evidence to mobilize global solutions.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <div className="flex-1 min-h-0 overflow-y-auto text-left">
+                            <ScrollArea className="flex-1 min-h-0 overflow-y-auto text-left">
                                 {creationForm(handleCreateChallenge)}
-                            </div>
+                            </ScrollArea>
                         </DialogContent>
                     </Dialog>
                 )
@@ -617,9 +617,9 @@ export default function TerritoriesPageClient() {
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Update Hub Report</DrawerTitle>
                                 </DrawerHeader>
                             </div>
-                            <div className="flex-1 overflow-y-auto text-left">
+                            <ScrollArea className="flex-grow text-left">
                                 {creationForm(handleUpdateChallenge, true)}
-                            </div>
+                            </ScrollArea>
                         </DrawerContent>
                     </Drawer>
                 ) : (
@@ -634,9 +634,9 @@ export default function TerritoriesPageClient() {
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Update Hub Report</DialogTitle>
                                 </DialogHeader>
                             </div>
-                            <div className="flex-1 min-h-0 overflow-y-auto text-left">
+                            <ScrollArea className="flex-1 min-h-0 overflow-y-auto text-left">
                                 {creationForm(handleUpdateChallenge, true)}
-                            </div>
+                            </ScrollArea>
                         </DialogContent>
                     </Dialog>
                 )

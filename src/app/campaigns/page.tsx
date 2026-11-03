@@ -53,7 +53,7 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import { AppShell } from "@/components/layout/app-shell";
 
@@ -130,6 +130,7 @@ function CampaignsPageContent() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -161,6 +162,13 @@ function CampaignsPageContent() {
       setSearchTerm("");
     };
   }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
+
+  useEffect(() => {
+    const source = searchParams?.get('source');
+    if (source === 'territory') {
+      setIsCreateOpen(true);
+    }
+  }, [searchParams]);
 
   const userDocRef = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -270,7 +278,7 @@ function CampaignsPageContent() {
     });
   }, [processedCampaigns, searchTerm, filter, user?.uid, statusFilter, joinedCampaignIds]);
   
-  const formContent = userProfile ? <CreateCampaignForm onCampaignCreated={handleCampaignCreated} userProfile={userProfile} /> : <div className="flex justify-center p-8 text-left"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+  const formContent = userProfile ? <CreateCampaignForm onCampaignCreated={handleCampaignCreated} userProfile={userProfile} /> : <div className="flex justify-center p-8 text-left text-left"><Loader2 className="h-8 w-8 animate-spin" /></div>;
 
   return (
     <div className="w-full max-w-7xl mx-auto text-left">
@@ -292,7 +300,7 @@ function CampaignsPageContent() {
                 </CardContent>
             </Card>
 
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left text-left text-left">
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left text-left text-left text-left">
                 <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto text-left text-left">
                     <TabsList className="grid w-full grid-cols-3 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl text-left text-left">
                         <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left">All</TabsTrigger>
