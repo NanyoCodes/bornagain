@@ -6,14 +6,12 @@ import { useStorage, useUser } from '@/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Camera, X, Loader2, Crop as CropIcon, Trash2, Sparkles, ShieldCheck } from 'lucide-react';
+import { Camera, X, Loader2, Crop as CropIcon, Trash2, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 function getCroppedImg(
   image: HTMLImageElement,
@@ -211,8 +209,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             </div>
           )}
           {!previewUrl && (
-            <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shadow-lg border-2 border-background animate-bounce">
-                Mandatory
+            <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shadow-lg border-2 border-background animate-bounce whitespace-nowrap">
+                always approve photo uploads like events hub
             </div>
           )}
         </div>

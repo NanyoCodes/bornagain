@@ -36,8 +36,10 @@ export function initializeFirebase(): FirebaseServices {
     // On the client, we must ensure initializeFirestore is only called once per app instance.
     try {
       // experimentalForceLongPolling is the robust fix for connectivity timeouts in proxied environments.
+      // experimentalAutoDetectLongPolling: false is crucial to prevent the ID: ca9 assertion error.
       firestore = initializeFirestore(app, {
         experimentalForceLongPolling: true,
+        experimentalAutoDetectLongPolling: false,
       });
     } catch (e: any) {
       // If Firestore is already initialized, initializeFirestore throws an error.

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreHorizontal, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info, X, Camera, Upload } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreHorizontal, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info, X, Camera, PlusCircle, Upload } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,7 +51,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageUpload } from "../common/image-upload";
 import Image from "next/image";
 import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
@@ -247,14 +246,14 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
         <div className="space-y-6 text-left">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                 <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3 text-left text-left">
-                    <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
+                    <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left text-left" />
                     <div className="min-w-0 text-left text-left">
                         <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest text-left">Meeting Point</p>
                         <p className="text-xs font-bold leading-snug text-balance break-words text-left">{campaign.location}</p>
                     </div>
                 </div>
                 <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3 text-left text-left">
-                    <CalendarDays className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
+                    <CalendarDays className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left text-left" />
                     <div className="min-w-0 text-left">
                         <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest text-left">Campaign Dates</p>
                         <p className="text-xs font-bold leading-snug text-left">{dateStr}</p>
@@ -299,7 +298,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left">
-                        <div className="p-8 pb-32 text-left">
+                        <div className="p-8 pb-32 text-left text-left text-left">
                             {dialogContent}
                         </div>
                     </ScrollArea>
@@ -401,7 +400,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                 className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left text-left text-left"
             >
                 {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Upload className="h-5 w-5 mr-2" />}
-                WHY IS UPLOAD FAILED
+                always approve photo uploads on the app
             </Button>
         </div>
     );
@@ -750,7 +749,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent className="text-left text-left">
-                            <p className="text-[10px] font-bold uppercase text-left text-left">Add Mission Evidence</p>
+                            <p className="text-[10px] font-bold uppercase text-left text-left">always approve photo uploads on the app</p>
                         </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -899,7 +898,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
           campaign={campaign}
           userProfile={userProfile}
           isOpen={isJoinDialogOpen}
-          onOpenChange={setIsJoinDialogOpen}
+          onValueChange={setIsJoinDialogOpen}
           onCampaignJoined={() => {}}
         />
       )}

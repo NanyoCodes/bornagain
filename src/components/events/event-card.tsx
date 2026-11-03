@@ -16,7 +16,8 @@ import {
   Edit,
   Camera,
   PlusCircle,
-  X
+  X,
+  Upload
 } from "lucide-react";
 import type { Event, UserProfile, EventParticipant, Chat, EventGalleryItem } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -79,6 +80,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import Image from "next/image";
 import { ImageUpload } from "../common/image-upload";
+import { Label } from "../ui/label";
 
 interface EventCardProps {
     event: Event;
@@ -289,22 +291,20 @@ function EventEvidenceDialog({ event, isOpen, onOpenChange }: { event: Event, is
     };
 
     const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <Camera className="h-5 w-5 text-primary" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Evidence Hub</span>
-                    </div>
-                    <DialogHeader className="p-0">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Mission Proof</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1">Capture the impact of "{event.title}".</DialogDescription>
-                    </DialogHeader>
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex items-center justify-between gap-4">
+            <div className="min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                    <Camera className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Evidence Hub</span>
                 </div>
-                <Button variant="outline" size="icon" className="rounded-full h-10 w-10 shrink-0 border bg-background" onClick={() => onOpenChange(false)}>
-                    <X className="h-6 w-6" />
-                </Button>
+                <DialogHeader className="p-0">
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Mission Proof</DialogTitle>
+                    <DialogDescription className="text-sm font-medium mt-1">Capture the impact of "{event.title}".</DialogDescription>
+                </DialogHeader>
             </div>
+            <Button variant="outline" size="icon" className="rounded-full h-10 w-10 shrink-0 border bg-background" onClick={() => onOpenChange(false)}>
+                <X className="h-6 w-6" />
+            </Button>
         </div>
     );
 
@@ -325,7 +325,7 @@ function EventEvidenceDialog({ event, isOpen, onOpenChange }: { event: Event, is
                     className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20"
                 >
                     {isUploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <PlusCircle className="h-4 w-4 mr-2" />}
-                    ensure uploads work
+                    always approve photo uploads like events hub
                 </Button>
             </div>
 
