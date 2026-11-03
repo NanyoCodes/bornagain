@@ -57,8 +57,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Country, State } from 'country-state-city';
 import { format } from 'date-fns';
@@ -179,7 +179,7 @@ function ChallengeCard({
     );
 }
 
-export function TerritoriesPageClient() {
+export default function TerritoriesPageClient() {
     const { user } = useUser();
     const { userProfile } = useUserProfile();
     const firestore = useFirestore();
@@ -541,7 +541,7 @@ export function TerritoriesPageClient() {
                     [...Array(4)].map((_, i) => (
                         <Card key={i} className="h-48 rounded-[2rem] animate-pulse bg-muted/30 border-none text-left" />
                     ))
-                ) : filteredChallenges.length > 0 ? (
+                ) : filteredOrgs.length > 0 ? (
                     filteredChallenges.map(challenge => (
                         <ChallengeCard 
                             key={challenge.id} 
@@ -647,7 +647,7 @@ export function TerritoriesPageClient() {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogCancel className="rounded-xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDeleteChallenge} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">
                             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                             Confirm Removal
