@@ -37,6 +37,8 @@ import {
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
+import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
@@ -62,8 +64,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Country, State } from 'country-state-city';
-import { format } from 'date-fns';
-import { safeToDate, cn } from '@/lib/utils';
 import Link from 'next/link';
 import NextImage from 'next/image';
 import { ImageUpload } from '@/components/common/image-upload';
@@ -467,7 +467,7 @@ export default function TerritoriesPageClient() {
                     <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
                         <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                         <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
-                            challenge can be posted without photo. Visual evidence is critical for global intervention. Challenges with clear photo proof receive prioritized Kingdom response.
+                            A challenge can be posted without a photo. However, visual evidence is critical for global intervention. Challenges with clear photo proof receive prioritized Kingdom response.
                         </p>
                     </div>
                 </div>
@@ -481,8 +481,8 @@ export default function TerritoriesPageClient() {
         </form>
     );
 
-    const [mountedState, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
+    const [mountedState, setMountedState] = useState(false);
+    useEffect(() => setMountedState(true), []);
 
     if (!mountedState) return null;
 
@@ -507,7 +507,7 @@ export default function TerritoriesPageClient() {
                     </Button>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-start gap-4 shadow-inner text-left">
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-start gap-4 shadow-inner text-left">
                     <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1 text-left">
                         <Target className="h-6 w-6 text-white text-left" />
                     </div>
@@ -583,13 +583,11 @@ export default function TerritoriesPageClient() {
                     </Drawer>
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
                                 <DialogHeader className="p-0 text-left text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                        <Globe className="h-4 w-4 text-primary text-left text-left text-left">
-                                            <Globe className="h-4 w-4 text-primary text-left text-left text-left" />
-                                        </Globe>
+                                        <Globe className="h-4 w-4 text-primary text-left text-left text-left" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Registration</span>
                                     </div>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Regional Challenge</DialogTitle>

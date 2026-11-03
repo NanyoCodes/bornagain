@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useUser, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { collection, query, addDoc, serverTimestamp, doc, updateDoc, where, arrayUnion, arrayRemove, orderBy } from 'firebase/firestore';
 import type { RegionalChallenge, ChallengeSolution } from '@/lib/types';
@@ -40,6 +40,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { CommentSection } from '../testimonies/comment-section';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 function SolutionItem({ solution, challengeId }: { solution: ChallengeSolution, challengeId: string }) {
     const { user } = useUser();
@@ -188,12 +189,21 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                                 </div>
                             </div>
                             
-                            <Button asChild variant="outline" size="sm" className="h-8 px-4 rounded-full font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-md group/launch">
-                                <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`}>
-                                    <Target className="mr-1.5 h-3.5 w-3.5 text-left" />
-                                    LAUNCH MISSION
-                                </Link>
-                            </Button>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-primary/20 text-primary hover:bg-primary/10 shadow-md bg-background">
+                                            <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`}>
+                                                <Target className="h-5 w-5" />
+                                                <span className="sr-only">Launch Mission</span>
+                                            </Link>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="bottom" className="rounded-xl border-primary/20 shadow-xl">
+                                        <p className="text-[10px] font-black uppercase">Launch Mission</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
                         
                         <div className="flex flex-wrap items-center gap-4 mb-6 text-left">
@@ -225,12 +235,6 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                     <div className="p-6 rounded-[2rem] bg-muted/20 border-2 border-dashed border-primary/10 space-y-4 text-left">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60 ml-2 text-left">Propose a Word or Solution</Label>
-                            <Button asChild variant="link" className="h-auto p-0 text-[10px] font-black uppercase text-primary/60 hover:text-primary transition-colors gap-1.5">
-                                <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`}>
-                                    <Target className="h-3 w-3" />
-                                    OR LAUNCH MISSION CAMPAIGN
-                                </Link>
-                            </Button>
                         </div>
                         <Textarea 
                             placeholder="Share a strategy, scripture, or practical step for this territory..."
