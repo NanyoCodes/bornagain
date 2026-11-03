@@ -463,13 +463,6 @@ export default function TerritoriesPageClient() {
                           cropAspect={4/3}
                       />
                     </div>
-
-                    <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left text-left">
-                        <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
-                        <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left">
-                            A challenge can be posted without a photo. However, visual evidence is critical for global intervention. Challenges with clear photo proof receive prioritized Kingdom response.
-                        </p>
-                    </div>
                 </div>
             </div>
             <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 text-left text-left">
@@ -568,7 +561,7 @@ export default function TerritoriesPageClient() {
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Registration</span>
                                     </div>
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Post Regional Challenge</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Detail the needs of your territory with evidence.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Detail the needs of your territory with evidence.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -606,7 +599,7 @@ export default function TerritoriesPageClient() {
                     <Drawer open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left p-0 text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left">
                                         <Edit className="h-4 w-4 text-primary text-left" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Refinement</span>
@@ -651,10 +644,10 @@ export default function TerritoriesPageClient() {
                             Are you sure you want to delete this territorial challenge? All proposed solutions will also be removed. This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel className="rounded-xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-12 font-bold text-left text-left">Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDeleteChallenge} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">
-                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}
+                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>

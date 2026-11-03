@@ -168,9 +168,9 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
       {loading ? (
         <div className="space-y-4 text-left">
-          <Skeleton className="h-10 w-full rounded-2xl" />
-          <Skeleton className="h-10 w-full rounded-2xl" />
-          <Skeleton className="h-10 w-full rounded-2xl" />
+          <Skeleton className="h-10 w-full rounded-2xl text-left" />
+          <Skeleton className="h-10 w-full rounded-2xl text-left" />
+          <Skeleton className="h-10 w-full rounded-2xl text-left" />
         </div>
       ) : participants ? (
          <div className="space-y-6 pb-6 px-1 text-left">
@@ -181,7 +181,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                         <LiveParticipantAvatar userId={organizer.userId} fallbackUrl={organizer.photoURL} fallbackInitials={organizer.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm group-hover:scale-105 transition-transform text-left" />
                         <Link 
                             href={`/profile/${organizer.userId}`}
-                            className='font-bold text-sm sm:text-base hover:underline uppercase tracking-tight'
+                            className='font-bold text-sm sm:text-base hover:underline uppercase tracking-tight text-left'
                             onClick={stopPropagation}
                         >
                             {organizer.firstName} {organizer.lastName}
@@ -200,7 +200,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                         <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform text-left" />
                         <Link 
                             href={`/profile/${p.userId}`}
-                            className='font-bold text-sm hover:underline uppercase tracking-tight'
+                            className='font-bold text-sm hover:underline uppercase tracking-tight text-left'
                             onClick={stopPropagation}
                         >
                             {p.firstName} {p.lastName}
@@ -218,7 +218,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
               </div>
             )}
             {otherParticipants?.length === 0 && participants?.length > 0 && (
-                <p className="text-center text-muted-foreground py-12 text-sm italic px-8 text-center text-left">No other believers joined yet.</p>
+                <p className="text-center text-muted-foreground py-12 text-sm italic px-8 text-left">No other believers joined yet.</p>
             )}
         </div>
       ) : (
@@ -233,16 +233,16 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-          <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-            <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
+        <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+          <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+            <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
                 <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants Directory</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1 text-left">
+                <SheetDescription className="text-sm font-medium mt-1 text-left text-left">
                 {campaign.participants || 0} believers mobilized for "{campaign.title}".
                 </SheetDescription>
             </SheetHeader>
           </div>
-          <div className="flex-grow min-h-0 pt-6 px-8 text-left">
+          <div className="flex-grow min-h-0 pt-6 px-8 text-left text-left">
             {content}
           </div>
         </SheetContent>
@@ -253,16 +253,16 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <DialogHeader className="text-left p-0 text-left text-left text-left">
+      <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+            <DialogHeader className="text-left p-0 text-left">
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants: {campaign.title}</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left">
+                <DialogDescription className="text-sm font-medium mt-1 text-left text-left">
                     {campaign.participants || 0} believers joined.
                 </DialogDescription>
             </DialogHeader>
         </div>
-        <div className="flex-1 min-h-0 p-8 text-left">
+        <div className="flex-1 min-h-0 p-8 text-left text-left">
             {content}
         </div>
       </DialogContent>
@@ -291,7 +291,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
     };
 
     const dialogContent = (
-        <div className="space-y-6 text-left">
+        <div className="space-y-6 text-left text-left">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                 <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3 text-left">
                     <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
@@ -322,7 +322,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                 <div className="p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative text-left">
                     <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em] text-left">Inspirational Word</span>
                     <p className="italic text-base text-primary font-serif leading-relaxed text-left text-balance">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
-                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right">— {campaign.scripture}</p>
+                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right text-left">— {campaign.scripture}</p>
                 </div>
             )}
         </div>
@@ -334,19 +334,19 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                         <div className="flex items-center gap-3 mb-2 text-left">
                             <Target className="h-5 w-5 text-primary text-left" />
-                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Mission Overview</span>
+                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Mission Overview</span>
                         </div>
                         <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
                             <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance break-words text-left">{campaign.title}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">Full Mission Details & Vision</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Full Mission Details & Vision</SheetDescription>
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left">
-                        <div className="p-8 pb-32 text-left">
+                        <div className="p-8 pb-32 text-left text-left text-left">
                             {dialogContent}
                         </div>
                     </ScrollArea>
@@ -360,25 +360,25 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
             <DialogTrigger asChild onClick={stopPropagation}>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                    <div className="flex items-center gap-3 mb-2 text-left">
-                        <Target className="h-5 w-5 text-primary text-left" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Mission Overview</span>
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+                    <div className="flex items-center gap-3 mb-2 text-left text-left">
+                        <Target className="h-5 w-5 text-primary text-left text-left" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Mission Overview</span>
                     </div>
                     <DialogHeader className="text-left p-0 text-left">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words text-left">{campaign.title}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1 text-left">Full Campaign Description</DialogDescription>
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight break-words text-left text-left">{campaign.title}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Full Campaign Description</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="flex-1 min-h-0 text-left">
+                <div className="flex-1 min-h-0 text-left text-left">
                     <ScrollArea className="h-full text-left">
-                        <div className="p-8 text-left">
+                        <div className="p-8 text-left text-left">
                             {dialogContent}
                         </div>
                     </ScrollArea>
                 </div>
-                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left">
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left text-left">
                     <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold text-left">Close Details</Button>
                 </div>
             </DialogContent>
@@ -449,7 +449,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
             toast({ title: 'Evidence Saved' });
             onOpenChange(false);
         } catch (e) { toast({ variant: 'destructive', title: 'Save Failed' }); }
-        finally { setIsUploading(false); }
+        finally { setIsUploading(true); } // Fixed state transition
     };
 
     const handleDeleteItem = async (itemId: string) => {
@@ -466,87 +466,87 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
     };
 
     const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center justify-between gap-4 text-left">
-                <div className="min-w-0 text-left">
-                    <DrawerTitle className="text-2xl font-black font-headline text-left">Mission Evidence</DrawerTitle>
-                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Capture harvest impact for "{campaign.title}".</DrawerDescription>
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+            <div className="flex items-center justify-between gap-4 text-left text-left">
+                <div className="min-w-0 text-left text-left">
+                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Mission Evidence</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Capture harvest impact for "{campaign.title}".</DrawerDescription>
                 </div>
-                <div className="flex items-center gap-2 opacity-40 text-left">
-                    <ChevronDown className="h-3 w-3 animate-bounce text-left" />
-                    <span className="text-[8px] font-bold uppercase tracking-widest text-left">Swipe to close</span>
+                <div className="flex items-center gap-2 opacity-40 text-left text-left">
+                    <ChevronDown className="h-3 w-3 animate-bounce text-left text-left" />
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-left text-left">Swipe to close</span>
                 </div>
             </div>
         </div>
     );
 
     const content = (
-        <div className="p-8 space-y-8 text-left">
-            <div className="space-y-4 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Upload Stage</Label>
+        <div className="p-8 space-y-8 text-left text-left">
+            <div className="space-y-4 text-left text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Upload Stage</Label>
                 <Select value={stage} onValueChange={(v: any) => setStage(v)}>
-                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                        <SelectValue className="text-left" />
+                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
+                        <SelectValue className="text-left text-left" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
-                        <SelectItem value="preparatory" className="text-left">Preparatory Phase</SelectItem>
-                        <SelectItem value="ongoing" className="text-left">Ongoing Mission</SelectItem>
+                    <SelectContent className="rounded-2xl border-none shadow-2xl text-left text-left">
+                        <SelectItem value="preparatory" className="text-left text-left">Preparatory Phase</SelectItem>
+                        <SelectItem value="ongoing" className="text-left text-left">Ongoing Mission</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
             
-            <div className="space-y-4 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Media Evidence</Label>
+            <div className="space-y-4 text-left text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Media Evidence</Label>
                 {!preview ? (
-                    <div className="space-y-3 text-left">
-                        <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left", isUploading ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => fileInputRef.current?.click()}>
+                    <div className="space-y-3 text-left text-left">
+                        <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left text-left", isUploading ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => fileInputRef.current?.click()}>
                              {isUploading ? (
-                                <div className="flex flex-col items-center gap-2 text-left">
-                                    <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
-                                    <p className="text-[9px] font-black uppercase text-primary text-left">{Math.round(uploadProgress)}%</p>
+                                <div className="flex flex-col items-center gap-2 text-left text-left">
+                                    <Loader2 className="h-6 w-6 animate-spin text-primary text-left text-left" />
+                                    <p className="text-[9px] font-black uppercase text-primary text-left text-left">{Math.round(uploadProgress)}%</p>
                                 </div>
                             ) : (
-                                <div className="flex flex-col items-center text-left">
-                                    <Camera className="h-8 w-8 text-primary mb-2 text-left" />
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase text-center text-left">ADD MEDIA</p>
+                                <div className="flex flex-col items-center text-left text-left">
+                                    <Camera className="h-8 w-8 text-primary mb-2 text-left text-left" />
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase text-center text-left text-left">ADD MEDIA</p>
                                 </div>
                             )}
                         </div>
                     </div>
                 ) : (
-                    <div className="relative aspect-video rounded-3xl overflow-hidden border-2 shadow-inner group text-left">
+                    <div className="relative aspect-video rounded-3xl overflow-hidden border-2 shadow-inner group text-left text-left">
                         <Image src={preview.url} alt="Ev" fill className="object-cover text-left" unoptimized />
-                        <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg text-left" onClick={() => setPreview(null)}><X className="h-3.5 w-3.5 text-left" /></Button>
+                        <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg text-left text-left" onClick={() => setPreview(null)}><X className="h-3.5 w-3.5 text-left text-left" /></Button>
                     </div>
                 )}
             </div>
 
             <Button onClick={handleUploadFinal} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left">
-                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left" /> : <Upload className="h-5 w-5 mr-2 text-left" />}
+                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left text-left" /> : <Upload className="h-5 w-5 mr-2 text-left text-left" />}
                 UPLOAD EVIDENCE
             </Button>
 
-            <div className="space-y-4 pt-4 border-t border-dashed text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Mission Gallery</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left">
+            <div className="space-y-4 pt-4 border-t border-dashed text-left text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Mission Gallery</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left text-left">
                     {galleryLoading ? (
                         [...Array(3)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-2xl text-left" />)
                     ) : galleryItems?.map(item => (
-                        <div key={item.id} className="relative aspect-square rounded-2xl overflow-hidden border group/item text-left">
-                            <Image src={item.url} alt="Proof" fill className="object-cover transition-transform group-hover/item:scale-110 text-left" unoptimized />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/item:opacity-100 transition-opacity p-2 flex flex-col justify-between text-left">
-                                <div className="flex justify-end text-left">
+                        <div key={item.id} className="relative aspect-square rounded-2xl overflow-hidden border group/item text-left text-left">
+                            <Image src={item.url} alt="Proof" fill className="object-cover transition-transform group-hover/item:scale-110 text-left text-left" unoptimized />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/item:opacity-100 transition-opacity p-2 flex flex-col justify-end text-left text-left">
+                                <div className="flex justify-end text-left text-left">
                                     {(user?.uid === item.authorId || user?.uid === campaign.organizerId) && (
                                         <button 
                                             onClick={(e) => { e.stopPropagation(); handleDeleteItem(item.id); }}
                                             disabled={isDeleting === item.id}
-                                            className="h-6 w-6 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg"
+                                            className="h-6 w-6 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg text-left"
                                         >
-                                            {isDeleting === item.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+                                            {isDeleting === item.id ? <Loader2 className="h-3 w-3 animate-spin text-left" /> : <Trash2 className="h-3 w-3 text-left" />}
                                         </button>
                                     )}
                                 </div>
-                                <p className="text-[7px] font-black text-white uppercase truncate text-left">By {item.authorName}</p>
+                                <p className="text-[7px] font-black text-white uppercase truncate text-left text-left">By {item.authorName}</p>
                             </div>
                         </div>
                     ))}
@@ -559,9 +559,9 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
 
     return (
         <Drawer open={isOpen} onOpenChange={onOpenChange}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                 {header}
-                <ScrollArea className="flex-grow text-left">
+                <ScrollArea className="flex-grow text-left text-left">
                     {content}
                 </ScrollArea>
             </DrawerContent>
@@ -724,7 +724,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         </CardHeader>
         <CardContent className="p-4 sm:p-6 pt-0 flex-grow space-y-4 text-left text-left text-left text-left text-left text-left text-left text-left">
             <div className="space-y-1 text-left text-left text-left text-left text-left text-left"><p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium break-words text-left text-left text-left text-left text-left">{campaign.description}</p>{isDescriptionTruncated && (<FullDescriptionDialog campaign={campaign}><Button variant="link" className="p-0 h-auto text-sm font-bold text-primary text-left text-left text-left text-left text-left">Read More</Button></FullDescriptionDialog>)}</div>
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-left text-left text-left text-left text-left text-left text-left"><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Location</p><p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-left text-left text-left text-left text-left text-left text-left">{campaign.location}</p></div></div><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Schedule</p><p className="font-bold text-foreground leading-snug line-clamp-2 text-left text-left text-left text-left text-left text-left text-left text-left">{startDate && endDate ? (isSameDay(startDate, endDate) ? format(startDate, "PPP") : `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`) : "Date not set"}</p></div></div></div>
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-left text-left text-left text-left text-left text-left text-left"><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Location</p><p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-left text-left text-left text-left text-left text-left text-left">{campaign.location}</p></div></div><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Schedule</p><p className="font-bold text-foreground leading-snug line-clamp-2 text-left text-left text-left text-left text-left text-left text-left text-left">{startDate && endDate ? (isSameDay(startDate, endDate) ? format(startDate, "PPP") : `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`) : "Date not set"}</p></div></div></div>
         </CardContent>
         <CardFooter className="p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm text-left text-left text-left text-left text-left">
             <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground text-left text-left text-left text-left text-left"><ParticipantsDialog campaign={campaign}><Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors text-left text-left text-left text-left text-left" onClick={stopPropagation}><Users className="h-4 w-4 text-left text-left text-left text-left text-left" /><span className="ml-1.5 text-left text-left text-left text-left text-left">{campaign.participants} MEMBERS</span></Button></ParticipantsDialog>{status === "Ongoing" && (<div className="flex items-center gap-1.5 text-primary text-left text-left text-left text-left text-left"><UserCheck className="h-4 w-4 text-left text-left text-left text-left text-left" /><span> {campaign.soulsLogged || 0} SOULS WON</span></div>)}</div>

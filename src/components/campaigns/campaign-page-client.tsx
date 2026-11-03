@@ -61,7 +61,6 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { ManageCampaignForm } from './manage-campaign-form';
-import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import Link from 'next/link';
@@ -75,6 +74,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ImageUpload } from '@/components/common/image-upload';
 import NextImage from 'next/image';
+import dynamic from 'next/dynamic';
+
+const LogSoulFormLazy = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
 
 function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: string, isMember: boolean, isOrganizer: boolean }) {
     const { user } = useUser();
@@ -653,7 +655,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <DrawerTitle className="text-2xl font-black font-headline text-left">Share Victory</DrawerTitle>
                         </DrawerHeader>
                     </div>
-                    <div className="flex-1 overflow-y-auto no-scrollbar">
+                    <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
                         <div className="p-8 text-left">
                             {userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyOpen(false)} campaign={campaign} />}
                         </div>
