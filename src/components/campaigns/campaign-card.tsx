@@ -188,7 +188,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
         <SheetTrigger asChild>{children}</SheetTrigger>
         <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-            <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left">
+            <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
                 <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left text-left">Participants Directory</SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1 text-left text-left">
                 {campaign.participants || 0} believers mobilized for "{campaign.title}".
@@ -314,12 +314,12 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                    <div className="flex items-center gap-3 mb-2 text-left text-left">
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
+                    <div className="flex items-center gap-3 mb-2 text-left text-left text-left">
                         <Target className="h-5 w-5 text-primary text-left text-left" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left">Mission Overview</span>
                     </div>
-                    <DialogHeader className="text-left p-0 text-left">
+                    <DialogHeader className="text-left p-0 text-left text-left">
                         <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words text-left text-left">{campaign.title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full Campaign Description</DialogDescription>
                     </DialogHeader>
@@ -401,7 +401,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                 className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left text-left text-left"
             >
                 {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Upload className="h-5 w-5 mr-2" />}
-                TRANSMIT EVIDENCE
+                WHY IS UPLOAD FAILED
             </Button>
         </div>
     );

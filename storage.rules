@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Updated for Territories and Regional Hub access - 2025-03-14T10:00:00Z
+    // Deployment trigger: Unified policy for territories and mission evidence - 2025-03-15T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
