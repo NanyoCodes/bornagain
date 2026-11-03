@@ -504,7 +504,7 @@ export default function LandingPage() {
                   <motion.div 
                     key={t.id}
                     initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
                   >
