@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Resolution for storage/unauthorized on event uploads - 2025-03-16T11:00:00Z
+    // Deployment trigger: Integrated and hardened write permissions - 2025-03-16T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;

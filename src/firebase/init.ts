@@ -19,7 +19,7 @@ let firebaseServices: FirebaseServices | null = null;
 /**
  * initializeFirebase
  * Implements a robust singleton pattern to prevent "INTERNAL ASSERTION FAILED" errors.
- * Forces long-polling for compatibility with proxied workstation environments.
+ * Forces long-polling and disables auto-detection for compatibility with proxied workstation environments.
  */
 export function initializeFirebase(): FirebaseServices {
   // Return existing services if already initialized on the client.
