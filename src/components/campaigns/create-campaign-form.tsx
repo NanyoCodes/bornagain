@@ -279,7 +279,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
     try {
       (e.target as any).showPicker?.();
     } catch (err) {
-      console.warn("Native date picker could not be triggered automatically in this environment.");
+      console.warn("Native date picker blocked or unsupported.");
     }
   };
 

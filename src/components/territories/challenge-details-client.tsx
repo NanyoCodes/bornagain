@@ -67,13 +67,13 @@ function SolutionItem({ solution, challengeId }: { solution: ChallengeSolution, 
     return (
         <Card className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden text-left">
             <CardContent className="p-4 sm:p-6 space-y-4 text-left">
-                <div className="flex items-center justify-between text-left">
+                <div className="flex items-center justify-between text-left text-left">
                     <div className="flex items-center gap-3 text-left">
                         <Avatar className="h-8 w-8 border shadow-sm text-left">
                             <AvatarImage src={solution.authorPhotoURL} />
                             <AvatarFallback className="font-bold text-[10px] text-left">{solution.authorName?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <div className="text-left">
+                        <div className="text-left text-left">
                             <p className="text-xs font-black uppercase tracking-tight text-left">{solution.authorName}</p>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
                         </div>
@@ -81,7 +81,7 @@ function SolutionItem({ solution, challengeId }: { solution: ChallengeSolution, 
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap text-left">{solution.text}</p>
             </CardContent>
-            <CardFooter className="p-2 bg-muted/5 border-t flex items-center justify-end text-left">
+            <CardFooter className="p-2 bg-muted/5 border-t flex items-center justify-end text-left text-left">
                 <Button 
                     variant="ghost" 
                     size="sm" 
@@ -151,7 +151,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-24 text-left">
                 <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
-                <p className="mt-4 text-sm text-muted-foreground font-medium uppercase tracking-widest text-[10px] animate-pulse text-left">Connecting to Territory Hub...</p>
+                <p className="mt-4 text-sm text-muted-foreground font-medium uppercase tracking-widest text-[10px] animate-pulse text-center text-left">Connecting to Territory Hub...</p>
             </div>
         );
     }
@@ -159,8 +159,8 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
     const createdAt = safeToDate(challenge.createdAt);
 
     return (
-        <div className="max-w-4xl mx-auto space-y-10 pb-32 px-4 sm:px-6 text-left">
-            <header className="space-y-6 pt-4 text-left">
+        <div className="max-w-4xl mx-auto space-y-10 pb-32 px-4 sm:px-6 text-left text-left">
+            <header className="space-y-6 pt-4 text-left text-left">
                 <div className="flex items-center gap-4 text-left">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
                         <ArrowLeft className="h-6 w-6 text-left" />
@@ -182,7 +182,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                                     <AvatarImage src={challenge.authorPhotoURL} />
                                     <AvatarFallback className="font-bold bg-primary/10 text-primary text-xs text-left">{challenge.authorName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <div className="text-left">
+                                <div className="text-left text-left">
                                     <p className="text-xs font-black uppercase tracking-tight text-left">Reporter: {challenge.authorName}</p>
                                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
                                 </div>
@@ -191,9 +191,9 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-primary/20 text-primary hover:bg-primary/10 shadow-md bg-background">
-                                            <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`}>
-                                                <Target className="h-5 w-5" />
+                                        <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-primary/20 text-primary hover:bg-primary/10 shadow-md bg-background text-left">
+                                            <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`} className="text-left">
+                                                <Target className="h-5 w-5 text-left" />
                                                 <span className="sr-only text-left">Launch Mission</span>
                                             </Link>
                                         </Button>
@@ -224,7 +224,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
 
             <div className="space-y-8 text-left">
                 <div className="flex items-center gap-3 px-1 text-left">
-                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
+                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left text-left">
                         <Sparkles className="h-5 w-5 text-primary text-left" />
                     </div>
                     <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Kingdom Solutions</h3>
@@ -232,19 +232,19 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
 
                 <div className="space-y-4 text-left">
                     <div className="p-6 rounded-[2rem] bg-muted/20 border-2 border-dashed border-primary/10 space-y-4 text-left">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left text-left">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60 ml-2 text-left">Propose a Word or Solution</Label>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button asChild variant="ghost" size="icon" className="h-9 w-9 rounded-full border border-primary/20 text-primary hover:bg-primary/5 shadow-sm group/launch">
-                                            <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`} className="text-center">
-                                                <Target className="h-5 w-5" />
-                                                <span className="sr-only">LAUNCH MISSION</span>
+                                        <Button asChild variant="ghost" size="icon" className="h-9 w-9 rounded-full border border-primary/20 text-primary hover:bg-primary/5 shadow-sm group/launch text-left">
+                                            <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`} className="text-center text-left">
+                                                <Target className="h-5 w-5 text-left" />
+                                                <span className="sr-only text-left">LAUNCH MISSION</span>
                                             </Link>
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left">
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left text-left">
                                         <p className="text-[10px] font-bold uppercase text-left">Create campaign from this report</p>
                                     </TooltipContent>
                                 </Tooltip>
@@ -269,14 +269,14 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
 
                 <div className="space-y-6 text-left">
                     {solutionsLoading ? (
-                        <div className="flex justify-center py-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left" /></div>
+                        <div className="flex justify-center py-20 text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left" /></div>
                     ) : solutions && solutions.length > 0 ? (
                         solutions.map(sol => (
                             <SolutionItem key={sol.id} solution={sol} challengeId={challengeId} />
                         ))
                     ) : (
-                        <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left">
-                            <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
+                        <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left text-left">
+                            <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left">
                                 <MessageSquare className="h-10 w-10 text-primary opacity-10 text-left" />
                             </div>
                             <h3 className="text-xl font-black font-headline uppercase tracking-tight text-center opacity-40 text-left">No Solutions Yet</h3>
@@ -286,7 +286,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                 </div>
             </div>
 
-            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left">
+            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left text-left">
                 <p className="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center text-left">
                     "Thy kingdom come, Thy will be done in earth, as it is in heaven." — Matthew 6:10
                 </p>

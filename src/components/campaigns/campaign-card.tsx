@@ -235,7 +235,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
         <SheetTrigger asChild>{children}</SheetTrigger>
         <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
           <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-            <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
+            <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left">
                 <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants Directory</SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1 text-left text-left">
                 {campaign.participants || 0} believers mobilized for "{campaign.title}".
@@ -255,7 +255,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-            <DialogHeader className="text-left p-0 text-left">
+            <DialogHeader className="text-left p-0 text-left text-left">
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants: {campaign.title}</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1 text-left text-left">
                     {campaign.participants || 0} believers joined.
@@ -321,8 +321,8 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
             {campaign.scripture && (
                 <div className="p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative text-left">
                     <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em] text-left">Inspirational Word</span>
-                    <p className="italic text-base text-primary font-serif leading-relaxed text-left text-balance">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
-                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right text-left">— {campaign.scripture}</p>
+                    <p className="italic text-base text-primary font-serif leading-relaxed text-left text-balance text-left">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right text-left text-left">— {campaign.scripture}</p>
                 </div>
             )}
         </div>
@@ -336,17 +336,17 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                        <div className="flex items-center gap-3 mb-2 text-left">
-                            <Target className="h-5 w-5 text-primary text-left" />
-                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Mission Overview</span>
+                        <div className="flex items-center gap-3 mb-2 text-left text-left text-left">
+                            <Target className="h-5 w-5 text-primary text-left text-left" />
+                            <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Mission Overview</span>
                         </div>
-                        <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
-                            <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance break-words text-left">{campaign.title}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Full Mission Details & Vision</SheetDescription>
+                        <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
+                            <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance break-words text-left text-left">{campaign.title}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full Mission Details & Vision</SheetDescription>
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow text-left">
-                        <div className="p-8 pb-32 text-left text-left text-left">
+                        <div className="p-8 pb-32 text-left text-left text-left text-left">
                             {dialogContent}
                         </div>
                     </ScrollArea>
@@ -360,26 +360,26 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
             <DialogTrigger asChild onClick={stopPropagation}>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                    <div className="flex items-center gap-3 mb-2 text-left text-left">
-                        <Target className="h-5 w-5 text-primary text-left text-left" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Mission Overview</span>
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left text-left">
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
+                    <div className="flex items-center gap-3 mb-2 text-left text-left text-left">
+                        <Target className="h-5 w-5 text-primary text-left text-left text-left" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Mission Overview</span>
                     </div>
-                    <DialogHeader className="text-left p-0 text-left">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight break-words text-left text-left">{campaign.title}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Full Campaign Description</DialogDescription>
+                    <DialogHeader className="text-left p-0 text-left text-left text-left">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight break-words text-left text-left text-left">{campaign.title}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full Campaign Description</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="flex-1 min-h-0 text-left text-left">
+                <div className="flex-1 min-h-0 text-left text-left text-left">
                     <ScrollArea className="h-full text-left">
-                        <div className="p-8 text-left text-left">
+                        <div className="p-8 text-left text-left text-left">
                             {dialogContent}
                         </div>
                     </ScrollArea>
                 </div>
-                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left text-left">
-                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold text-left">Close Details</Button>
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left text-left text-left">
+                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold text-left text-left">Close Details</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -449,7 +449,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
             toast({ title: 'Evidence Saved' });
             onOpenChange(false);
         } catch (e) { toast({ variant: 'destructive', title: 'Save Failed' }); }
-        finally { setIsUploading(true); } // Fixed state transition
+        finally { setIsUploading(false); }
     };
 
     const handleDeleteItem = async (itemId: string) => {
@@ -474,81 +474,92 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                 </div>
                 <div className="flex items-center gap-2 opacity-40 text-left text-left">
                     <ChevronDown className="h-3 w-3 animate-bounce text-left text-left" />
-                    <span className="text-[8px] font-bold uppercase tracking-widest text-left text-left">Swipe to close</span>
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-left text-left text-left">Swipe to close</span>
                 </div>
             </div>
         </div>
     );
 
     const content = (
-        <div className="p-8 space-y-8 text-left text-left">
-            <div className="space-y-4 text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Upload Stage</Label>
+        <div className="p-8 space-y-8 text-left text-left text-left">
+            <div className="space-y-4 text-left text-left text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Upload Stage</Label>
                 <Select value={stage} onValueChange={(v: any) => setStage(v)}>
-                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
-                        <SelectValue className="text-left text-left" />
+                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left">
+                        <SelectValue className="text-left text-left text-left" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-2xl border-none shadow-2xl text-left text-left">
-                        <SelectItem value="preparatory" className="text-left text-left">Preparatory Phase</SelectItem>
-                        <SelectItem value="ongoing" className="text-left text-left">Ongoing Mission</SelectItem>
+                    <SelectContent className="rounded-2xl border-none shadow-2xl text-left text-left text-left text-left">
+                        <SelectItem value="preparatory" className="text-left text-left text-left">Preparatory Phase</SelectItem>
+                        <SelectItem value="ongoing" className="text-left text-left text-left">Ongoing Mission</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
             
-            <div className="space-y-4 text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Media Evidence</Label>
+            <div className="space-y-4 text-left text-left text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Media Evidence</Label>
                 {!preview ? (
-                    <div className="space-y-3 text-left text-left">
-                        <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left text-left", isUploading ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => fileInputRef.current?.click()}>
+                    <div className="space-y-3 text-left text-left text-left">
+                        <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left text-left text-left", isUploading ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => fileInputRef.current?.click()}>
                              {isUploading ? (
-                                <div className="flex flex-col items-center gap-2 text-left text-left">
-                                    <Loader2 className="h-6 w-6 animate-spin text-primary text-left text-left" />
-                                    <p className="text-[9px] font-black uppercase text-primary text-left text-left">{Math.round(uploadProgress)}%</p>
+                                <div className="flex flex-col items-center gap-2 text-left text-left text-left">
+                                    <Loader2 className="h-6 w-6 animate-spin text-primary text-left text-left text-left" />
+                                    <p className="text-[9px] font-black uppercase text-primary text-left text-left text-left">{Math.round(uploadProgress)}%</p>
                                 </div>
                             ) : (
-                                <div className="flex flex-col items-center text-left text-left">
-                                    <Camera className="h-8 w-8 text-primary mb-2 text-left text-left" />
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase text-center text-left text-left">ADD MEDIA</p>
+                                <div className="flex flex-col items-center text-left text-left text-left">
+                                    <Camera className="h-8 w-8 text-primary mb-2 text-left text-left text-left" />
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase text-center text-left text-left text-left">ADD MEDIA</p>
                                 </div>
                             )}
                         </div>
                     </div>
                 ) : (
-                    <div className="relative aspect-video rounded-3xl overflow-hidden border-2 shadow-inner group text-left text-left">
-                        <Image src={preview.url} alt="Ev" fill className="object-cover text-left" unoptimized />
-                        <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg text-left text-left" onClick={() => setPreview(null)}><X className="h-3.5 w-3.5 text-left text-left" /></Button>
+                    <div className="relative aspect-video rounded-3xl overflow-hidden border-2 shadow-inner group text-left text-left text-left">
+                        <Image src={preview.url} alt="Ev" fill className="object-cover text-left text-left" unoptimized />
+                        <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg text-left text-left text-left" onClick={() => setPreview(null)}><X className="h-3.5 w-3.5 text-left text-left text-left" /></Button>
                     </div>
                 )}
             </div>
 
-            <Button onClick={handleUploadFinal} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left">
-                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left text-left" /> : <Upload className="h-5 w-5 mr-2 text-left text-left" />}
+            <Button onClick={handleUploadFinal} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left text-left">
+                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left text-left text-left" /> : <Upload className="h-5 w-5 mr-2 text-left text-left text-left" />}
                 UPLOAD EVIDENCE
             </Button>
 
-            <div className="space-y-4 pt-4 border-t border-dashed text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Mission Gallery</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left text-left">
+            <div className="space-y-4 pt-4 border-t border-dashed text-left text-left text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Mission Gallery</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left text-left text-left text-left">
                     {galleryLoading ? (
-                        [...Array(3)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-2xl text-left" />)
+                        [...Array(3)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-2xl text-left text-left" />)
                     ) : galleryItems?.map(item => (
-                        <div key={item.id} className="relative aspect-square rounded-2xl overflow-hidden border group/item text-left text-left">
-                            <Image src={item.url} alt="Proof" fill className="object-cover transition-transform group-hover/item:scale-110 text-left text-left" unoptimized />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/item:opacity-100 transition-opacity p-2 flex flex-col justify-end text-left text-left">
-                                <div className="flex justify-end text-left text-left">
-                                    {(user?.uid === item.authorId || user?.uid === campaign.organizerId) && (
-                                        <button 
-                                            onClick={(e) => { e.stopPropagation(); handleDeleteItem(item.id); }}
-                                            disabled={isDeleting === item.id}
-                                            className="h-6 w-6 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg text-left"
-                                        >
-                                            {isDeleting === item.id ? <Loader2 className="h-3 w-3 animate-spin text-left" /> : <Trash2 className="h-3 w-3 text-left" />}
-                                        </button>
-                                    )}
+                        <Dialog key={item.id}>
+                            <DialogTrigger asChild>
+                                <div className="relative aspect-square rounded-2xl overflow-hidden border group/item text-left text-left text-left text-left cursor-pointer">
+                                    <Image src={item.url} alt="Proof" fill className="object-cover transition-transform group-hover/item:scale-110 text-left text-left text-left" unoptimized />
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/item:opacity-100 transition-opacity p-2 flex flex-col justify-end text-left text-left text-left">
+                                        <div className="flex justify-end text-left text-left text-left">
+                                            {(user?.uid === item.authorId || user?.uid === campaign.organizerId) && (
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); handleDeleteItem(item.id); }}
+                                                    disabled={isDeleting === item.id}
+                                                    className="h-6 w-6 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg text-left text-left"
+                                                >
+                                                    {isDeleting === item.id ? <Loader2 className="h-3 w-3 animate-spin text-left text-left" /> : <Trash2 className="h-3 w-3 text-left text-left" />}
+                                                </button>
+                                            )}
+                                        </div>
+                                        <p className="text-[7px] font-black text-white uppercase truncate text-left text-left text-left text-left">By {item.authorName}</p>
+                                    </div>
                                 </div>
-                                <p className="text-[7px] font-black text-white uppercase truncate text-left text-left">By {item.authorName}</p>
-                            </div>
-                        </div>
+                            </DialogTrigger>
+                            <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                <div className="relative h-full w-full flex items-center justify-center p-4">
+                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                                        <NextImage src={item.url} alt="Full view" fill className="object-contain" unoptimized />
+                                    </div>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                     ))}
                 </div>
             </div>
@@ -559,9 +570,9 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
 
     return (
         <Drawer open={isOpen} onOpenChange={onOpenChange}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                 {header}
-                <ScrollArea className="flex-grow text-left text-left">
+                <ScrollArea className="flex-grow text-left text-left text-left text-left">
                     {content}
                 </ScrollArea>
             </DrawerContent>
