@@ -8,8 +8,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
-  title: 'About Our Mission - Caring for the Kingdom',
-  description: 'Learn about Born Again Global, the number one app to care for family, friends, souls and the kingdom. Empowering believers with compassionate technology.',
+  title: 'Our Vision - The New Birth Mission',
+  description: 'Learn about BornAgain Global, the premier platform for the new creation in Christ. Are you BornAgain?',
 };
 
 export default function AboutPage() {
@@ -20,8 +20,8 @@ export default function AboutPage() {
             <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Heart className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase tracking-tight">Born Again Global</h1>
-            <p className="text-muted-foreground italic font-medium">The #1 App to care for family, friends, souls and the Kingdom.</p>
+            <h1 className="text-3xl sm:text-4xl font-black font-headline uppercase tracking-tight">BornAgain Global</h1>
+            <p className="text-muted-foreground italic font-medium">The most important question of your life: Are you BornAgain?</p>
         </header>
 
         <Separator />
@@ -29,22 +29,22 @@ export default function AboutPage() {
         <section className="space-y-4">
             <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><Globe className="h-5 w-5 text-primary" /> Our Core Mission</h2>
             <p className="text-muted-foreground leading-relaxed font-medium">
-                Born Again is built as a heart center for believers. We exist to share the greatness of Jesus Christ while providing a compassionate framework to care for family, friends, and every soul God entrusts to us. We believe that technology should be an instrument of love, helping us reconcile the world to God through intentional, compassionate follow up.
+                BornAgain is built as a sanctuary for the redeemed. We exist to share the greatness of Jesus Christ while providing a framework for the new creation to care for family, friends, and every soul added to the Kingdom. We believe that technology should be an instrument of divine connection.
             </p>
         </section>
 
         <section className="space-y-4">
-            <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> A Vision of Care</h2>
+            <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> Spiritual Legacy</h2>
             <p className="text-muted-foreground leading-relaxed font-medium">
-                We believe that lasting spiritual growth is nurtured in community. Born Again helps believers look after their own by tracking disciplines and shared history. Our vision is a global body of Christ where no one is left behind, and where we follow up on those we care about with the same love Christ showed us.
+                We believe that the new birth is the beginning of a lifelong journey of transformation. BornAgain helps you look after your spiritual lineage by tracking disciplines and shared history. Our vision is a global body of Christ where the question "Are you BornAgain?" leads to a life of fruitfulness and unity.
             </p>
         </section>
 
         <section className="space-y-4">
-            <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><Award className="h-5 w-5 text-primary" /> The Ebenezer of Care</h2>
+            <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><Award className="h-5 w-5 text-primary" /> The Mandate</h2>
             <Card className="border-l-4 border-l-primary rounded-2xl bg-primary/5 shadow-none border-none">
                 <CardContent className="pt-6 italic text-muted-foreground leading-relaxed font-medium">
-                    "I believe that the greatest move of God in our time will be marked by a return to genuine care. Born Again was birthed to ensure that when a soul is won, they are nurtured. It is the platform for the laborer who loves—the one who cares enough to follow up, to pray, and to support their brethren as they walk into the light. This is our offering to the King." - by Nanyo Theophilus
+                    "I believe that the greatest move of God in our time is marked by the intentionality of the redeemed. BornAgain was birthed to ensure that when a soul enters the light, they are nurtured. It is the platform for the new creation—the one who cares enough to follow up, to pray, and to support their brethren." - by Nanyo Theophilus
                 </CardContent>
             </Card>
         </section>
@@ -52,37 +52,37 @@ export default function AboutPage() {
         <section className="grid gap-6 sm:grid-cols-2">
             <Card className="rounded-2xl shadow-none">
                 <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2 font-black uppercase"><ShieldCheck className="h-4 w-4 text-primary" /> Safe Sanctuary</CardTitle>
+                    <CardTitle className="text-lg flex items-center gap-2 font-black uppercase"><ShieldCheck className="h-4 w-4 text-primary" /> Kingdom Safety</CardTitle>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground font-medium leading-relaxed">
-                    To maintain an edifying environment, all content is screened for faith alignment and compassion. We strictly prohibit hate speech, ensuring the platform remains a safe space to care for others.
+                    To maintain an edifying environment, all content is screened for faith alignment. We ensure that BornAgain remains a safe space for the redeemed to share their journey.
                 </CardContent>
             </Card>
             <Card className="rounded-2xl shadow-none">
                 <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2 font-black uppercase"><Zap className="h-4 w-4 text-primary" /> Active Following</CardTitle>
+                    <CardTitle className="text-lg flex items-center gap-2 font-black uppercase"><Zap className="h-4 w-4 text-primary" /> Active Nurturing</CardTitle>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground font-medium leading-relaxed">
-                    We leverage community insights to provide compassionate follow up strategies. Our tools help you track the spiritual health of your loved ones and friends with ease.
+                    We use AI-powered insights to provide strategies for nurturing those who have just been BornAgain, ensuring their foundation in Christ is solid.
                 </CardContent>
             </section>
 
         <section className="space-y-4">
-            <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><HeartHandshake className="h-5 w-5 text-primary" /> Caring Partnerships</h2>
+            <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><HeartHandshake className="h-5 w-5 text-primary" /> Kingdom Alliances</h2>
             <p className="text-sm text-muted-foreground font-medium">
-                We partner with ministries that prioritize the 'One'—those dedicated to individual growth and long term spiritual care.
+                We partner with ministries globally to ensure that every 'New Creation' has the resources and community they need to thrive.
             </p>
             <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary" className="font-bold uppercase text-[9px]">Soul Care Networks</Badge>
-                <Badge variant="secondary" className="font-bold uppercase text-[9px]">Compassion Ministries</Badge>
-                <Badge variant="secondary" className="font-bold uppercase text-[9px]">Discipleship Squads</Badge>
-                <Badge variant="secondary" className="font-bold uppercase text-[9px]">Family Altar Support</Badge>
+                <Badge variant="secondary" className="font-bold uppercase text-[9px]">Redeemed Networks</Badge>
+                <Badge variant="secondary" className="font-bold uppercase text-[9px]">Great Commission Hubs</Badge>
+                <Badge variant="secondary" className="font-bold uppercase text-[9px]">New Birth Support</Badge>
+                <Badge variant="secondary" className="font-bold uppercase text-[9px]">Alliance of the Spirit</Badge>
             </div>
         </section>
 
         <footer className="pt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild variant="outline" className="rounded-xl h-11 px-8 font-bold">
-                <Link href="/contact">Partner with Love</Link>
+                <Link href="/contact">Connect with our Station</Link>
             </Button>
         </footer>
       </div>

@@ -1,18 +1,16 @@
 import { NextResponse } from 'next/server';
 
 /**
- * @fileOverview Dynamically generates the Web App Manifest.
- * Ensures the PWA icon is always synchronized with the current app logo.
- * Implements both 'any' and 'maskable' icon support for high-fidelity OS integration on Android and iOS.
+ * @fileOverview Dynamically generates the Web App Manifest for BornAgain.
  */
 
 export async function GET() {
   const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
 
   const manifest = {
-    name: 'Born Again Global',
-    short_name: 'Born Again',
-    description: 'The global platform for sharing Christian testimonies and organizing the harvest.',
+    name: 'BornAgain Global',
+    short_name: 'BornAgain',
+    description: 'The global platform for the new creation in Christ. Share testimonies and organize the harvest.',
     start_url: '/',
     display: 'standalone',
     background_color: '#09090b',

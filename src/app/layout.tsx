@@ -19,16 +19,17 @@ const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
 export const metadata: Metadata = {
   metadataBase: new URL('https://testifyglobal.com'),
   title: {
-    default: 'Born Again | Global Christian Testimony & Evangelism Platform',
-    template: '%s | Born Again',
+    default: 'BornAgain | Global Christian Identity & Evangelism Platform',
+    template: '%s | BornAgain',
   },
   description:
-    'Born Again is the global platform for believers to share the greatness of GOD in their lives, join soul-winning campaigns, and track the harvest. Join Born Again today.',
+    'BornAgain is the global platform for the new creation in Christ. Share the greatness of GOD, join soul-winning campaigns, and track the harvest of the redeemed.',
   keywords: [
-    'Born Again',
-    'Born Again Global',
-    'Born Again App',
+    'BornAgain',
+    'BornAgain Global',
+    'BornAgain App',
     'Christian Testimonies',
+    'New Creation',
     'Miracle Stories',
     'Soul Winning',
     'Great Commission',
@@ -37,25 +38,25 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Born Again',
+    title: 'BornAgain',
   },
-  authors: [{ name: 'Born Again Team' }],
-  creator: 'Born Again',
-  publisher: 'Born Again',
+  authors: [{ name: 'BornAgain Team' }],
+  creator: 'BornAgain',
+  publisher: 'BornAgain',
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'Born Again - Share Your Story, Join the Harvest',
-    description: 'Born Again is empowering the Great Commission through technology. Share testimonies and track souls won globally.',
+    title: 'BornAgain - Are you BornAgain?',
+    description: 'BornAgain is empowering the Great Commission through technology. Share testimonies and track souls won globally as a new creation.',
     url: 'https://testifyglobal.com',
-    siteName: 'Born Again',
+    siteName: 'BornAgain',
     images: [
       {
         url: testifyLogoUrl,
         width: 1200,
         height: 630,
-        alt: 'Born Again - Christian Testimony Platform',
+        alt: 'BornAgain - Christian Identity Platform',
       },
     ],
     locale: 'en_US',
@@ -63,8 +64,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Born Again | Global Evangelism Platform',
-    description: 'The premier platform for Christian miracle stories and soul-winning campaigns.',
+    title: 'BornAgain | Global Evangelism Platform',
+    description: 'The premier platform for the new creation. Record miracle stories and manage soul-winning campaigns.',
     images: [testifyLogoUrl],
     creator: '@bornagainglobal',
   },

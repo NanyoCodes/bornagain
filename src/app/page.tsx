@@ -57,24 +57,24 @@ import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 
 const features = [
   {
-    title: "COMPASSIONATE TESTIMONIES",
-    description: "Share miracles that inspire hope. Your testimony is a weapon of love that encourages family and friends to trust in God.",
+    title: "NEW CREATION TESTIMONIES",
+    description: "Share the miracles that confirm your new life. Your testimony is the evidence of being BornAgain, encouraging others to seek the light.",
     icon: Newspaper,
     color: "text-orange-500",
     bgColor: "bg-orange-500/10",
     link: "/testimonies",
   },
   {
-    title: "Mission Care",
-    description: "Launch evangelism campaigns with heart. Coordinate your squad to compassionately follow up on every soul won in the field.",
+    title: "Kingdom Missions",
+    description: "Launch campaigns to bring others into the family. Coordinate your workforce to ensure every soul is nurtured into a deep relationship with Christ.",
     icon: Target,
     color: "text-emerald-500",
     bgColor: "bg-emerald-500/10",
     link: "/campaigns",
   },
   {
-    title: "Regions Hub",
-    description: "Identify and solve regional challenges. Connect with the global Body to provide Kingdom solutions for specific territories.",
+    title: "Strategic Territories",
+    description: "Identify regional hurdles to the Gospel. Connect with the global Body to provide Kingdom solutions for specific lands and cities.",
     icon: Map,
     color: "text-indigo-500",
     bgColor: "bg-indigo-500/10",
@@ -82,7 +82,7 @@ const features = [
   },
   {
     title: "Victory Circles",
-    description: "A sanctuary for transparency. Find community-driven solutions and support for the people you care about most.",
+    description: "A sanctuary for transparency. Find community-driven solutions for the struggles that keep believers from walking in their full power.",
     icon: ShieldCheck,
     color: "text-indigo-600",
     bgColor: "bg-indigo-600/10",
@@ -90,7 +90,7 @@ const features = [
   },
   {
     title: "Provision Hub",
-    description: "Practical compassion. Support the brethren and those in need with physical meals through the Meals Center. Connect with local Kingdom vendors.",
+    description: "Practical love for the brethren. Coordinate physical support and meals through verified Kingdom vendors for those in the new birth journey.",
     icon: Utensils,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
@@ -98,23 +98,23 @@ const features = [
   },
   {
     title: "Kindness Center",
-    description: "Gifts of love. Send Bibles, spiritual tokens, and care packages to nurture the souls in your unique harvest.",
+    description: "Tokens of love. Send Bibles, spiritual care packages, and gifts to nurture the souls you have lead to being BornAgain.",
     icon: Gift,
     color: "text-purple-600",
     bgColor: "bg-purple-600/10",
     link: "/marketplace/gifts",
   },
   {
-    title: "Daily Love Walk",
-    description: "Consistency in care. Track your Prayer and Word study habits to stay spiritually equipped to love others better.",
+    title: "The Daily Altar",
+    description: "Walk in the Spirit daily. Track your Prayer and Word study habits to stay equipped for the Great Commission.",
     icon: Zap,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
     link: "/growth",
   },
   {
-    title: "The Heart Alliance",
-    description: "Partner with believers you love for high-fidelity growth and mutual accountability in the Kingdom.",
+    title: "Identity Alliance",
+    description: "Partner with other BornAgain believers for high-fidelity growth and mutual accountability in the Kingdom.",
     icon: HeartHandshake,
     color: "text-blue-600",
     bgColor: "bg-blue-600/10",
@@ -124,29 +124,29 @@ const features = [
 
 const historicalFacts = [
   {
-    title: "Ebenezer Stones",
-    description: "Thus far the Lord has helped us. We record every miracle as a monument to God's faithful hand in our journey.",
+    title: "The New Birth",
+    description: "Jesus answered, 'Truly, truly, I say to you, unless one is born of water and the Spirit, he cannot enter the kingdom of God.'",
     icon: Award,
-    ref: "1 Samuel 7:12"
+    ref: "John 3:5"
   },
   {
-    title: "The Care Protocol",
-    description: "Early believers established patterns of deep care—ensuring no one was left behind in their spiritual journey.",
+    title: "A New Creation",
+    description: "Therefore, if anyone is in Christ, he is a new creation. The old has passed away; behold, the new has come.",
     icon: History,
-    ref: "Acts 2:44-45"
+    ref: "2 Corinthians 5:17"
   },
   {
-    title: "Compassionate Reach",
-    description: "The 1st-century church exploded because believers didn't just preach; they cared for the souls they won.",
+    title: "The Care Mandate",
+    description: "The 1st-century church exploded because they cared for one another as brothers and sisters in the new birth.",
     icon: Globe,
-    ref: "1 Thess 2:8"
+    ref: "Acts 2:44-45"
   }
 ];
 
 const stats = [
-    { label: "The Global Grid", value: "190+ Nations", desc: "Caring Across Borders", icon: Globe },
-    { label: "Miracle Velocity", value: "UNLIMITED", desc: "Daily Proclamations", icon: Flame },
-    { label: "Love Index", value: "Unlimited", desc: "Open to All Hearts", icon: HeartHandshake },
+    { label: "Global Presence", value: "190+ Nations", desc: "One Body, One Spirit", icon: Globe },
+    { label: "New Life Velocity", value: "UNLIMITED", desc: "Redeemed Daily", icon: Flame },
+    { label: "Love Index", value: "Infinite", desc: "The Bond of Perfection", icon: HeartHandshake },
 ];
 
 export default function LandingPage() {
@@ -192,7 +192,7 @@ export default function LandingPage() {
               <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9">
-              <Link href="/signup">Join Movement</Link>
+              <Link href="/signup">Accept the Call</Link>
             </Button>
           </div>
         </div>
@@ -209,26 +209,26 @@ export default function LandingPage() {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                 <div className="flex justify-center mb-4">
                   <Badge className="bg-primary text-primary-foreground px-6 py-2 rounded-full font-black uppercase tracking-[0.2em] text-[10px] shadow-lg shadow-primary/20 border-none">
-                    PROCLAIMING GOD'S GOODNESS
+                    ENTER THE NEW LIFE
                   </Badge>
                 </div>
                 <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] tracking-tighter text-balance text-center">
-                  Born Again.
+                  Are you BornAgain?
                 </h1>
                 <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center">
-                   The premier relationship platform for nurturing and managing your connections with family, friends, souls, and the Kingdom of God.
+                   The platform for the new creation. Organize the harvest, share the glory, and manage your spiritual legacy.
                 </span>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-xl mx-auto italic leading-relaxed text-pretty text-center">
-                  "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
+                  "Truly, truly, I say to you, unless one is born again he cannot see the kingdom of God." — John 3:3
                 </p>
               </motion.div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center text-center">
-                <Button asChild size="sm" className="h-10 px-8 text-[11px] font-black rounded-2xl shadow-xl shadow-primary/20 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center text-center">
-                  <Link href="/signup">GET STARTED <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                <Button asChild size="sm" className="h-10 px-8 text-[11px] font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center text-center">
+                  <Link href="/signup">I AM READY <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
                 <Button asChild variant="outline" size="sm" className="h-10 px-8 text-[11px] font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 flex items-center justify-center text-center">
-                  <Link href="/about">THE VISION</Link>
+                  <Link href="/about">THE TRANSFORMATION</Link>
                 </Button>
               </div>
             </div>
@@ -246,25 +246,24 @@ export default function LandingPage() {
                         className="space-y-8 max-w-4xl text-center"
                     >
                         <Badge className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 px-4 py-1.5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] mx-auto">
-                            THE COMPASSIONATE NETWORK
+                            ONE FAITH. ONE BODY.
                         </Badge>
                         <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-[0.9] tracking-tighter text-balance text-center">
-                            Nurture the Harvest.<br/>
-                            <span className="text-primary">With Love.</span>
+                            A New Creation.<br/>
+                            <span className="text-primary">A New Connection.</span>
                         </h2>
                         <div className="space-y-6 text-center">
                             <p className="text-lg sm:text-2xl text-muted-foreground font-medium leading-relaxed italic border-x-4 border-primary/20 px-8 text-center text-balance">
-                                We are here to help you look after those you lead to Christ. Born Again provides the heartbeat of care for your family, your friends, and the souls God places in your path. 
-                                We offer men the tools for spiritual legacy. We provide women a community of radiant restoration. We guard the dreams of our children through intentional spiritual follow-up.
+                                Being BornAgain is more than a title; it is an assignment. We provide the infrastructure for the redeemed to look after their own—nurturing the harvest with the same love that Christ poured into us.
                             </p>
                         </div>
                         <div className="group relative p-8 rounded-[2.5rem] bg-muted/30 border-2 border-dashed border-primary/20 transition-all hover:bg-muted/40 max-w-2xl mx-auto text-center">
                             <h3 className="text-xl font-black uppercase tracking-tight flex items-center justify-center gap-3 mb-4">
                                 <Sparkles className="h-6 w-6 text-primary" />
-                                Care Factor: Unmatched
+                                Transformed for Service
                             </h3>
                             <p className="text-muted-foreground leading-relaxed font-medium text-pretty text-center">
-                                In this digital age, your care is your testimony. We provide the tools to ensure no one is forgotten. Follow up on the people you love with strategic compassion, logging every milestone of their journey into the light.
+                                Use the BornAgain toolkit to coordinate follow-up, share miracles, and stay accountable. We ensure that no new life in Christ is forgotten in the vast field of the harvest.
                             </p>
                         </div>
                     </motion.div>
@@ -304,77 +303,17 @@ export default function LandingPage() {
                     <div className="space-y-8 max-w-3xl mx-auto text-center">
                         <div className="space-y-4">
                             <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto block w-fit">Kingdom Arena</Badge>
-                            <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center">Empower Your Loved Ones</h2>
-                            <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center">
-                                Use the Word Arena to challenge and sharpen those you care about. Bible study becomes a collaborative act of love.
+                            <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center">Exercise Your New Mind</h2>
+                            <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center text-balance">
+                                Spiritual fitness is essential for the redeemed. Use the Word Arena to challenge your brethren and strengthen your grasp of Kingdom truth.
                             </p>
                         </div>
                         <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center text-center mx-auto">
-                            <Link href="/signup" className="text-center">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4" /></Link>
+                            <Link href="/signup" className="text-center">ENTER THE ARENA <ChevronRight className="ml-2 h-4 w-4" /></Link>
                         </Button>
                     </div>
                     <div className="w-full max-w-2xl mx-auto">
                          <BibleGameCard />
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section className="py-24 bg-background relative overflow-hidden text-left">
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div className="space-y-8 text-center lg:text-left">
-                        <div className="space-y-4 text-center lg:text-left">
-                            <Badge variant="outline" className="text-blue-500 border-blue-500/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 block w-fit">Provision Hubs</Badge>
-                            <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center lg:text-left text-balance">Practical Love in Action</h2>
-                            <p className="text-muted-foreground text-lg leading-relaxed italic font-medium text-center lg:text-left text-balance">
-                                Faith without works is dead. We provide the infrastructure to turn spiritual care into physical provision for those you lead to Christ through our verified Kingdom hubs.
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
-                            <Card className="rounded-3xl border-none shadow-xl bg-blue-500 text-white overflow-hidden group hover:scale-[1.02] transition-transform">
-                                <CardHeader className="p-8 pb-4">
-                                    <Utensils className="h-10 w-10 mb-4 opacity-80" />
-                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Meals Center</CardTitle>
-                                    <CardDescription className="text-blue-100 font-medium">Coordinate physical meals for converts and the needy through local Kingdom food vendors.</CardDescription>
-                                </CardHeader>
-                                <CardFooter className="px-8 pb-8 pt-0">
-                                    <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-center">
-                                        <Link href="/marketplace">EXPLORE MEALS</Link>
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-
-                            <Card className="rounded-3xl border-none shadow-xl bg-indigo-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform">
-                                <CardHeader className="p-8 pb-4">
-                                    <Gift className="h-10 w-10 mb-4 opacity-80" />
-                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Kindness Center</CardTitle>
-                                    <CardDescription className="text-indigo-100 font-medium">Send Bibles, spiritual tokens, and care packages as a tangible touch of God's love to your harvest.</CardDescription>
-                                </CardHeader>
-                                <CardFooter className="px-8 pb-8 pt-0">
-                                    <Button asChild variant="ghost" className="w-full h-11 rounded-xl text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-center">
-                                        <Link href="/marketplace/gifts" >SEND A GIFT</Link>
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        </div>
-                    </div>
-
-                    <div className="relative hidden lg:block">
-                        <div className="absolute inset-0 bg-primary/10 rounded-[3rem] -rotate-3 scale-105" />
-                        <Card className="rounded-[3rem] border-none shadow-2xl overflow-hidden relative z-10 aspect-square flex items-center justify-center bg-[#1c1c21]">
-                             <ShoppingBag className="h-48 w-48 text-primary opacity-20" />
-                             <div className="absolute inset-0 flex items-center justify-center">
-                                 <div className="text-center space-y-4 px-12">
-                                     <h4 className="text-2xl font-black uppercase tracking-tight text-white">Verified Kingdom Vendors</h4>
-                                     <p className="text-zinc-400 font-medium italic">Empowering Kingdom commerce to support the Great Commission.</p>
-                                     <Button asChild className="rounded-full px-8 h-12 font-black uppercase tracking-widest text-xs shadow-xl mx-auto block text-center">
-                                         <Link href="/marketplace">REGISTER AS VENDOR</Link>
-                                     </Button>
-                                 </div>
-                             </div>
-                        </Card>
                     </div>
                 </div>
             </div>
@@ -389,11 +328,11 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4 mx-auto"
               >
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Mission Critical Care</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Redeemed Workforce</span>
               </motion.div>
-              <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center">The Caretaker Toolkit</h2>
+              <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center">BornAgain Toolkit</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium italic text-center">
-                Equipping you to follow up and look after your harvest with professional intentionality.
+                Equipping you to build the Body and maintain the unity of the Spirit.
               </p>
             </div>
 
@@ -437,8 +376,8 @@ export default function LandingPage() {
         <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-20 space-y-4">
-                    <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter text-center">Legacy of Compassion</h2>
-                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto italic font-medium text-center">"Carry each other’s burdens, and in this way you will fulfill the law of Christ."</p>
+                    <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter text-center">Legacy of the Redeemed</h2>
+                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto italic font-medium text-center">"Old things have passed away; behold, all things have become new."</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
@@ -458,18 +397,18 @@ export default function LandingPage() {
 
                 <div className="mt-24 p-8 sm:p-16 rounded-[3rem] bg-gradient-to-br from-primary/20 to-zinc-900 border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.1),transparent_70%)]" />
-                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl relative z-10">
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center mx-auto shadow-xl relative z-10 text-center">
                         <Heart className="h-8 w-8 text-white" />
                     </div>
                     <div className="space-y-4 relative z-10 text-center">
-                        <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-center">Caring for the One</h3>
+                        <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-center">BornAgain to Nurture</h3>
                         <p className="text-zinc-400 max-w-2xl mx-auto text-sm sm:text-lg leading-relaxed font-medium italic text-pretty text-center">
-                            True spiritual success is measured by the depth of your care. Born Again makes it easy to stay present in the lives of your family and friends, ensuring they grow deep in the Word and established in the Kingdom.
+                            The heartbeat of our community is the care for the 'One'. BornAgain makes it easy to stay present in the lives of your family and friends, ensuring they are established in their new identity in Christ.
                         </p>
                     </div>
                     <div className="flex justify-center relative z-10 items-center">
                         <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center">
-                            <Link href="/signup" className="text-center">JOIN THE MISSION OF LOVE</Link>
+                            <Link href="/signup" className="text-center">CLAIM YOUR NEW IDENTITY</Link>
                         </Button>
                     </div>
                 </div>
@@ -483,10 +422,10 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="space-y-10 text-center lg:text-left">
                 <div className="space-y-6 text-center lg:text-left">
-                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit">The Compassionate Altar</Badge>
-                  <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left">Witness the Care</h2>
+                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit">Glory Feed</Badge>
+                  <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center lg:text-left">Miracles of the Redeemed</h2>
                   <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed max-md mx-auto lg:mx-0 italic font-medium text-center lg:text-left">
-                    Explore how believers around the world witness what God is doing in their lives daily.
+                    See what God is doing in the lives of those who have been BornAgain.
                   </p>
                 </div>
                 
@@ -546,15 +485,14 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
             <div className="max-w-3xl mx-auto space-y-10 text-center">
               <h2 className="text-4xl sm:text-6xl font-black font-headline leading-[0.9] uppercase tracking-tighter text-balance text-center">
-                Ready to Look After Your Own?
+                Ready to Lead Others to the New Life?
               </h2>
               <p className="text-lg sm:text-2xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-center">
-                Join the app dedicated to caring for family, friends, souls, and the Kingdom.
-                Follow up on those you love and record the greatness of God together.
+                Join BornAgain—the app dedicated to the redeemed. Manage your spiritual influence and record the greatness of God together.
               </p>
               <div className="flex justify-center pt-4 items-center">
                 <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center">
-                  <Link href="/signup" className="text-center">START CARING TODAY <ArrowRight className="ml-3 h-6 w-6" /></Link>
+                  <Link href="/signup" className="text-center">CLAIM YOUR CALL <ArrowRight className="ml-3 h-6 w-6" /></Link>
                 </Button>
               </div>
             </div>
@@ -575,27 +513,27 @@ export default function LandingPage() {
                 )}
               </Link>
               <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-sm">
-                Born Again is the heart center for believers to care for family, friends, and the global harvest while sharing the greatness of Jesus Christ.
+                BornAgain is the heart center for the redeemed to care for family, friends, and the global harvest.
               </p>
             </div>
 
             <div className="space-y-6 text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Platform</h4>
               <ul className="space-y-4 text-left">
-                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Miracle Feed</Link></li>
-                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Care Missions</Link></li>
-                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Love Growth</Link></li>
-                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Community Hubs</Link></li>
+                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Glory Feed</Link></li>
+                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Mission Hub</Link></li>
+                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Spiritual Growth</Link></li>
+                <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Body Directory</Link></li>
               </ul>
             </div>
 
             <div className="space-y-6 text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Ministry</h4>
               <ul className="space-y-4 text-left">
-                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Vision</Link></li>
-                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Partner with us</Link></li>
-                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Care Guide</Link></li>
-                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Growth Assets</Link></li>
+                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">The Vision</Link></li>
+                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Partner Station</Link></li>
+                <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">App Manual</Link></li>
+                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Kingdom Library</Link></li>
                 <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Terms</Link></li>
                 <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Privacy</Link></li>
               </ul>
@@ -605,7 +543,7 @@ export default function LandingPage() {
           <div className="h-px w-full bg-muted opacity-50 mb-10" />
           
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left">
-            <p className="text-center md:text-left uppercase">© {new Date().getFullYear()} BORN AGAIN GLOBAL. Caring for the Harvest.</p>
+            <p className="text-center md:text-left uppercase">© {new Date().getFullYear()} BornAgain Global. Caring for the Redeemed.</p>
             <div className="flex gap-8">
               <Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms</Link>
               <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy</Link>

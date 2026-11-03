@@ -8,16 +8,15 @@ import { Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const splashScriptures = [
-  "Give praise to the Lord, proclaim his name; make known among the nations what he has done.",
-  "I will speak of your statutes before kings and will not be put to shame.",
-  "Publish his glorious deeds among the nations. Tell everyone about the amazing things he does.",
+  "Are you BornAgain? Make known among the nations what He has done.",
+  "I will speak of Your statutes before kings and will not be put to shame.",
+  "Publish His glorious deeds among the nations. Tell everyone about the amazing things He does.",
   "For we cannot help speaking about what we have seen and heard.",
   "Go home to your own people and tell them how much the Lord has done for you."
 ];
 
 /**
- * @fileOverview A high-fidelity splash screen for the Born Again platform.
- * Displays the logo, mission statement, and a call to action.
+ * @fileOverview A high-fidelity splash screen for the BornAgain platform.
  */
 
 interface SplashScreenProps {
@@ -30,7 +29,6 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
   const [activeScripture, setActiveScripture] = useState(splashScriptures[0]);
 
   useEffect(() => {
-    // Picking a random scripture on mount to ensure freshness and avoid hydration mismatch
     const randomIndex = Math.floor(Math.random() * splashScriptures.length);
     setActiveScripture(splashScriptures[randomIndex]);
   }, []);
@@ -57,7 +55,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
                 <Avatar className="h-32 w-32 sm:h-48 sm:w-48 shadow-2xl ring-8 ring-primary/10 border-4 border-background text-left">
-                  <AvatarImage src={logoUrl} alt="Born Again Logo" className="text-left" />
+                  <AvatarImage src={logoUrl} alt="BornAgain Logo" className="text-left" />
                   <AvatarFallback className="text-4xl bg-primary/10 text-primary font-black text-left">B</AvatarFallback>
                 </Avatar>
             </motion.div>
@@ -98,7 +96,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
               onClick={onDismiss}
               className="w-auto h-11 px-10 rounded-full font-black tracking-widest uppercase shadow-xl shadow-primary/20 text-[10px] group text-left border-2 border-primary/20 hover:scale-105 transition-transform"
             >
-              Share the Greatness of GOD
+              WITNESS THE GLORY
             </Button>
           </motion.div>
         )}
@@ -120,7 +118,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
           </div>
           <p className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] flex items-center gap-2 text-left">
             <Sparkles className="h-3 w-3 text-left" />
-            Kingdom Network Active
+            BornAgain Network Active
           </p>
       </div>
     </motion.div>
