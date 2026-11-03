@@ -209,8 +209,8 @@ export default function TerritoriesPageClient() {
             return;
         }
 
-        if (!mediaUrl1 || !mediaUrl2) {
-            toast({ variant: 'destructive', title: 'Evidence Required', description: 'Please provide at least two photo evidences for this challenge.' });
+        if (!mediaUrl1) {
+            toast({ variant: 'destructive', title: 'Evidence Required', description: 'Please provide at least one photo as evidence.' });
             return;
         }
 
@@ -230,7 +230,7 @@ export default function TerritoriesPageClient() {
             solutionCount: 0,
             createdAt: serverTimestamp(),
             mediaUrl: mediaUrl1,
-            mediaUrl2: mediaUrl2
+            mediaUrl2: mediaUrl2 || null
         };
 
         try {
@@ -322,7 +322,7 @@ export default function TerritoriesPageClient() {
 
                 <div className="space-y-8 text-left">
                     <div className="space-y-4 text-left">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Primary Evidence Photo</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Evidence Photo (Required)</Label>
                       <ImageUpload 
                           initialImageUrl={mediaUrl1} 
                           onUploadComplete={setMediaUrl1} 
@@ -332,7 +332,7 @@ export default function TerritoriesPageClient() {
                     </div>
 
                     <div className="space-y-4 text-left">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Secondary Evidence Photo</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Additional Proof (Optional)</Label>
                       <ImageUpload 
                           initialImageUrl={mediaUrl2} 
                           onUploadComplete={setMediaUrl2} 
@@ -344,7 +344,7 @@ export default function TerritoriesPageClient() {
                     <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
                         <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                         <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
-                            Visual evidence is critical for global intervention. Challenges with clear photo proof receive prioritized Kingdom response.
+                            one photo is enough with another as optional. Visual evidence is critical for global intervention. Challenges with clear photo proof receive prioritized Kingdom response.
                         </p>
                     </div>
                 </div>
@@ -450,11 +450,11 @@ export default function TerritoriesPageClient() {
                 isMobile ? (
                     <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DrawerHeader className="text-left p-0 text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left">
                                         <Globe className="h-4 w-4 text-primary text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Registration</span>
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Registration</span>
                                     </div>
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Post Regional Challenge</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Detail the needs of your territory with evidence.</DrawerDescription>
@@ -475,7 +475,7 @@ export default function TerritoriesPageClient() {
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Registration</span>
                                     </div>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Regional Challenge</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Share hurdles in your region with at least two photo evidences to mobilize global solutions.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Share hurdles in your region with at least one photo evidence to mobilize global solutions.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -488,4 +488,3 @@ export default function TerritoriesPageClient() {
         </div>
     );
 }
-
