@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, addDoc, serverTimestamp, doc, orderBy, where, updateDoc, deleteDoc } from 'firebase/firestore';
 import type { RegionalChallenge, UserProfile, ChallengeType } from '@/lib/types';
@@ -16,7 +17,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
     Loader2, 
-    PlusCircle, 
     Globe, 
     MessageSquare, 
     ArrowRight, 
@@ -32,7 +32,8 @@ import {
     Info,
     Edit,
     Trash2,
-    MoreVertical
+    MoreVertical,
+    PlusCircle
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -131,11 +132,11 @@ function ChallengeCard({
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-xl shadow-xl">
                                     <DropdownMenuItem onClick={onEdit} className="rounded-lg">
-                                        <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Challenge
+                                        <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit Challenge
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive rounded-lg">
-                                        <Trash2 className="mr-2 h-4 w-4" /> Delete Challenge
+                                        <Trash2 className="mr-2 h-4 w-4 text-left" /> Delete Challenge
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -185,8 +186,8 @@ export default function TerritoriesPageClient() {
     const firestore = useFirestore();
     const { toast } = useToast();
     const isMobile = useIsMobile();
-    const [mounted, setMounted] = useState(false);
-
+    const router = useRouter();
+    
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -482,7 +483,10 @@ export default function TerritoriesPageClient() {
         </form>
     );
 
-    if (!mounted) return null;
+    const [mountedState, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+
+    if (!mountedState) return null;
 
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left">
@@ -541,7 +545,7 @@ export default function TerritoriesPageClient() {
                     [...Array(4)].map((_, i) => (
                         <Card key={i} className="h-48 rounded-[2rem] animate-pulse bg-muted/30 border-none text-left" />
                     ))
-                ) : filteredOrgs.length > 0 ? (
+                ) : filteredChallenges.length > 0 ? (
                     filteredChallenges.map(challenge => (
                         <ChallengeCard 
                             key={challenge.id} 
@@ -603,7 +607,7 @@ export default function TerritoriesPageClient() {
             {challengeToEdit && (
                 isMobile ? (
                     <Drawer open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DrawerHeader className="text-left p-0 text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
@@ -658,3 +662,4 @@ export default function TerritoriesPageClient() {
         </div>
     );
 }
+
