@@ -223,7 +223,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             });
     }, [user, firestore, partnerId, activeGameType, invitation, toast]);
 
-    const handleStart = (type: GameSessionType = activeGameType) => {
+    const handleStart = useCallback((type: GameSessionType = activeGameType, duration?: number) => {
         const pool = BIBLE_GAME_DATA[type];
         const storageKey = `seen_questions_quick_${type}_${user?.uid || 'guest'}`;
         const seenIndices = JSON.parse(localStorage.getItem(storageKey) || '[]');
@@ -245,11 +245,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
         setWrongCount(0);
         correctCountRef.current = 0;
         wrongCountRef.current = 0;
-        setTimeLeft(selectedTimer);
+        
+        const finalDuration = duration !== undefined ? duration : selectedTimer;
+        setTimeLeft(finalDuration);
+        
         setGameState('playing');
         setIsGameActive(true);
         setSelectedOption(null);
-    };
+    }, [activeGameType, user?.uid, selectedTimer]);
 
     const resetToSelection = () => {
         setIsGameActive(false);
@@ -277,12 +280,11 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             if (acceptedAt && differenceInMinutes(now, acceptedAt) < 1) {
                 const duration = invitation.timerDuration || 60;
                 setActiveGameType(invitation.gameType || 'word');
-                setTimeLeft(duration);
                 setSelectedTimer(duration);
-                handleStart(invitation.gameType || 'word');
+                handleStart(invitation.gameType || 'word', duration);
             }
         }
-    }, [invitation?.status, isGameActive, gameState, invitation?.acceptedAt, now]);
+    }, [invitation?.status, isGameActive, gameState, invitation?.acceptedAt, now, handleStart]);
 
     useEffect(() => {
         let timer: any;
@@ -342,8 +344,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
             const type = invitation.gameType || 'word';
             setActiveGameType(type);
             setSelectedTimer(duration);
-            setTimeLeft(duration);
-            handleStart(type);
+            handleStart(type, duration);
         });
     };
 
@@ -455,30 +456,30 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-center shrink-0 text-left text-left">
-                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-xl backdrop-blur-md text-left text-left text-left">
-                                <span className="text-xs font-black text-primary italic text-left text-left text-left">VS</span>
+                        <div className="flex items-center justify-center shrink-0 text-left text-left text-left">
+                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-xl backdrop-blur-md text-left text-left text-left text-left">
+                                <span className="text-xs font-black text-primary italic text-left text-left text-left text-left">VS</span>
                             </div>
                         </div>
 
                         <div className="flex flex-col items-center gap-3 flex-1 min-w-0 text-left text-left text-left">
-                            <div className="relative text-left text-left">
-                                <Avatar className="h-16 w-16 sm:h-24 sm:w-24 border-4 border-background shadow-2xl ring-2 ring-muted-foreground/10 text-left text-left text-left">
-                                    <AvatarImage src={partnerProfile?.photoURL || undefined} className="object-cover text-left text-left text-left" />
-                                    <AvatarFallback className="font-black bg-muted text-muted-foreground text-left text-left">{partnerName.charAt(0)}</AvatarFallback>
+                            <div className="relative text-left text-left text-left">
+                                <Avatar className="h-16 w-16 sm:h-24 sm:w-24 border-4 border-background shadow-2xl ring-2 ring-muted-foreground/10 text-left text-left text-left text-left">
+                                    <AvatarImage src={partnerProfile?.photoURL || undefined} className="object-cover text-left text-left text-left text-left" />
+                                    <AvatarFallback className="font-black bg-muted text-muted-foreground text-left text-left text-left">{partnerName.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 {isPartnerOnline && (
-                                    <div className="absolute -bottom-1 -left-1 flex h-4 w-4 text-left">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left text-left text-left"></span>
-                                        <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-background text-left text-left text-left"></span>
+                                    <div className="absolute -bottom-1 -left-1 flex h-4 w-4 text-left text-left">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 text-left text-left text-left text-left"></span>
+                                        <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-background text-left text-left text-left text-left"></span>
                                     </div>
                                 )}
                             </div>
-                            <div className="text-center min-w-0 w-full px-2 text-left text-left text-left">
-                                <p className="text-[10px] sm:text-xs font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-center w-full text-left">
+                            <div className="text-center min-w-0 w-full px-2 text-left text-left text-left text-left">
+                                <p className="text-[10px] sm:text-xs font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-center w-full text-left text-left">
                                     {partnerName}
                                 </p>
-                                <p className="text-2xl sm:text-4xl font-black tracking-tighter leading-none text-muted-foreground text-center text-left">
+                                <p className="text-2xl sm:text-4xl font-black tracking-tighter leading-none text-muted-foreground text-center text-left text-left">
                                     {headToHeadStats.them}
                                 </p>
                             </div>
@@ -528,7 +529,7 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
                                         </div>
                                     </div>
                                     <Button onClick={handleSendChallenge} disabled={isRequesting} size="lg" className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-center text-left">
-                                        {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Send className="mr-2 h-4 w-4 text-left" />}
+                                        {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Send className="mr-2 h-4 w-4 text-left text-left" />}
                                         ISSUE CHALLENGE
                                     </Button>
                                 </div>
