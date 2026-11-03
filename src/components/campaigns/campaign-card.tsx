@@ -898,7 +898,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
           campaign={campaign}
           userProfile={userProfile}
           isOpen={isJoinDialogOpen}
-          onValueChange={setIsJoinDialogOpen}
+          onOpenChange={setIsJoinDialogOpen}
           onCampaignJoined={() => {}}
         />
       )}
