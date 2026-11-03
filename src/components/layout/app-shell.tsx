@@ -225,7 +225,7 @@ function CartButton() {
                         <ShoppingCart className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
                     </div>
-                    <DrawerHeader className="text-left flex-shrink-0 p-0">
+                    <DrawerHeader className="text-left p-0">
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1">Review selection for gifting.</DrawerDescription>
                     </DrawerHeader>
