@@ -181,9 +181,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             {logo && (
-              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95">
-                <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-                <AvatarFallback>T</AvatarFallback>
+              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 text-left">
+                <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
+                <AvatarFallback className="text-left">T</AvatarFallback>
               </Avatar>
             )}
           </Link>
