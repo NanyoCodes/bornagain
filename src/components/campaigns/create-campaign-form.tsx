@@ -23,7 +23,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser, useFirestore } from "@/firebase";
-import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore";
+import { collection, serverTimestamp, doc, writeBatch, increment } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { format, differenceInDays, isSameDay } from "date-fns";
@@ -115,9 +115,6 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
     },
   });
 
-  const startDate = form.watch('startDate');
-  const endDate = form.watch('endDate');
-
   useEffect(() => {
     const source = searchParams.get('source');
     if (source === 'territory') {
@@ -150,6 +147,9 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
   }, [ideas]);
 
   let durationText: string | null = null;
+  const startDate = form.watch('startDate');
+  const endDate = form.watch('endDate');
+
   if (startDate && endDate && endDate >= startDate) {
       const diffInDays = differenceInDays(endDate, startDate);
       if (diffInDays === 0) {
@@ -177,10 +177,23 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
 
   const handleCreateCampaign = async () => {
     const finalName = selectedName === 'custom' ? customName : selectedName;
-     if (!finalName) {
+    const values = form.getValues();
+
+    if (!finalName) {
         toast({ variant: 'destructive', title: 'Missing Name', description: 'Please select or enter a campaign name.' });
         return;
     }
+    
+    // Safety check for Firebase Batch set - ensure required dates are not undefined
+    if (!values.startDate || !values.endDate) {
+        toast({ 
+            variant: 'destructive', 
+            title: 'Dates Required', 
+            description: 'Please ensure both start and end dates are selected before launching.' 
+        });
+        return;
+    }
+
     if (!user || !firestore) {
         toast({ variant: 'destructive', title: 'Not Authenticated', description: 'You must be logged in to create a campaign.' });
         return;
@@ -189,7 +202,6 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
     setIsCreating(true);
 
     try {
-        const values = form.getValues();
         const goal = values.goal === 'Custom' && values.customGoal ? values.customGoal : values.goal;
         const campaignData = {
             title: finalName,
@@ -237,23 +249,20 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
         };
         batch.set(participantRef, participantPayload);
 
-        await batch.commit().catch((serverError) => {
-            const permissionError = new FirestorePermissionError({
-            path: `BATCH_WRITE:CREATE_CAMPAIGN:${campaignDocRef.id}`,
-            operation: 'write',
-            requestResourceData: { action: 'User creating campaign', userId: user.uid }
-            }, user);
-            errorEmitter.emit('permission-error', permissionError);
-            throw permissionError;
-        });
+        await batch.commit();
         
         toast({ title: 'Campaign Created!', description: `The "${finalName}" campaign is now ready.` });
         onCampaignCreated();
 
     } catch (error: any) {
         console.error("Error creating campaign: ", error);
-        if (error.name !== 'FirestorePermissionError') {
-            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not create campaign. Please check your connection and try again.' });
+        if (error.code === 'permission-denied') {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: `campaigns`,
+                operation: 'create'
+            }, user));
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not create campaign.' });
         }
     } finally {
         setIsCreating(false);
@@ -267,7 +276,7 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
   return (
     <>
       <Form {...form}>
-        <form className="space-y-4">
+        <form className="space-y-4 text-left">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
             <FormField
               control={form.control}

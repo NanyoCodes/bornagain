@@ -125,7 +125,7 @@ const getFullEndDate = (campaign: { _endDate: Date | null, endTime?: string}) =>
 };
 
 
-function CampaignsPageContent() {
+function CampaignPageContentInner() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -417,7 +417,8 @@ function CampaignsPageContent() {
                     </div>
                     <div className="flex-1 min-h-0 overflow-y-auto text-left text-left text-left text-left">
                         <div className="p-8 text-left text-left">
-                            {campaignForSoul && <LogSoulForm onSoulLogged={handleSoulLogged} defaultCampaign={campaignForSoul} fellowships={[]} campaigns={[]} />}
+                            {campaignForSoul && <LogSoulForm onSoulLogged={handleSoulLogged} defaultCampaign={campaignForSoul} fellowships={[]} campaigns={[]} />
+                            }
                         </div>
                     </div>
                 </DrawerContent>
@@ -427,7 +428,7 @@ function CampaignsPageContent() {
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                         <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Manage Mission</DrawerTitle>
+                            <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left">Manage Mission</DrawerTitle>
                             <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Update mission progress and details.</DrawerDescription>
                         </DrawerHeader>
                     </div>
@@ -444,12 +445,18 @@ function CampaignsPageContent() {
   );
 }
 
+function CampaignPageContent() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-20 text-left text-left text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary text-left" /></div>}>
+      <CampaignPageContentInner />
+    </Suspense>
+  )
+}
+
 export default function CampaignsStandalonePage() {
   return (
     <AppShell>
-      <Suspense fallback={<div className="flex justify-center p-20 text-left text-left text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary text-left" /></div>}>
-        <CampaignsPageContent />
-      </Suspense>
+      <CampaignPageContent />
     </AppShell>
   );
 }

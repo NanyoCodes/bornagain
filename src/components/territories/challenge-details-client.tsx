@@ -195,12 +195,12 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                                         <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-primary/20 text-primary hover:bg-primary/10 shadow-md bg-background">
                                             <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`}>
                                                 <Target className="h-5 w-5" />
-                                                <span className="sr-only">Launch Mission</span>
+                                                <span className="sr-only text-left">Launch Mission</span>
                                             </Link>
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent side="bottom" className="rounded-xl border-primary/20 shadow-xl">
-                                        <p className="text-[10px] font-black uppercase">Launch Mission</p>
+                                    <TooltipContent side="bottom" className="rounded-xl border-primary/20 shadow-xl text-left">
+                                        <p className="text-[10px] font-black uppercase text-left">Launch Mission</p>
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
@@ -213,7 +213,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                             </div>
                         </div>
 
-                        <div className="relative pl-6 border-l-4 border-primary/20 py-2 text-left">
+                        <div className="relative pl-6 border-l-4 border-primary/20 py-2 text-left text-left">
                             <Quote className="absolute top-0 right-0 h-16 w-16 opacity-[0.03] pointer-events-none text-left" />
                             <p className="text-base sm:text-xl font-medium leading-relaxed italic text-balance text-left">
                                 &ldquo;{challenge.description}&rdquo;
@@ -233,8 +233,22 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
 
                 <div className="space-y-4 text-left">
                     <div className="p-6 rounded-[2rem] bg-muted/20 border-2 border-dashed border-primary/10 space-y-4 text-left">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60 ml-2 text-left">Propose a Word or Solution</Label>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button asChild variant="ghost" size="sm" className="h-8 px-3 rounded-full font-black uppercase tracking-widest text-[9px] border border-primary/20 text-primary hover:bg-primary/5 shadow-sm group/launch text-center">
+                                            <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`} className="text-center">
+                                                <Target className="mr-1.5 h-3.5 w-3.5" /> LAUNCH MISSION
+                                            </Link>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left">
+                                        <p className="text-[10px] font-bold uppercase text-left">Create campaign from this report</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
                         <Textarea 
                             placeholder="Share a strategy, scripture, or practical step for this territory..."
