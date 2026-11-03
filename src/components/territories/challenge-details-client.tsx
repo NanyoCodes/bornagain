@@ -40,6 +40,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CommentSection } from '../testimonies/comment-section';
+import { Label } from '@/components/ui/label';
 
 function SolutionItem({ solution, challengeId }: { solution: ChallengeSolution, challengeId: string }) {
     const { user } = useUser();
@@ -75,7 +76,7 @@ function SolutionItem({ solution, challengeId }: { solution: ChallengeSolution, 
                         </Avatar>
                         <div className="text-left">
                             <p className="text-xs font-black uppercase tracking-tight text-left">{solution.authorName}</p>
-                            <p className="text-[9px] text-muted-foreground font-bold text-left">{createdAt ? format(createdAt, 'MMM d, p') : 'Recently'}</p>
+                            <p className="text-[9px] text-muted-foreground font-bold text-left">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
                         </div>
                     </div>
                 </div>
@@ -225,7 +226,7 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                             disabled={isSubmitting || !newSolution.trim() || !user}
                             className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center"
                         >
-                            {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin text-left" /> : <Send className="mr-2 h-5 w-5 text-left" />}
+                            {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : <Send className="mr-2 h-4 w-4 text-left" />}
                             PUBLISH SOLUTION
                         </Button>
                     </div>
