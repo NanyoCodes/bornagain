@@ -6,7 +6,7 @@ import { useStorage, useUser } from '@/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Camera, X, Loader2, Crop as CropIcon, Trash2, Sparkles } from 'lucide-react';
+import { Camera, X, Loader2, Crop as CropIcon, Trash2, Sparkles, FileUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import Image from 'next/image';
@@ -125,8 +125,9 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     const photoAspect = naturalWidth / naturalHeight;
     const aspectToUse = cropAspect || (circularCrop ? 1 : photoAspect);
     
+    // EXPAND initial crop to full width
     const crop = centerCrop(
-      makeAspectCrop({ unit: '%', width: 90 }, aspectToUse, width, height),
+      makeAspectCrop({ unit: '%', width: 100 }, aspectToUse, width, height),
       width,
       height
     );
@@ -209,8 +210,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             </div>
           )}
           {!previewUrl && (
-            <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shadow-lg border-2 border-background animate-bounce whitespace-nowrap">
-                always approve photo uploads like events hub
+            <div className="absolute -top-2 -right-2 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg border-2 border-background animate-bounce whitespace-nowrap">
+                SIGNED IN USER CAN ACCESS EVENTS FOLDER AND MEDIA
             </div>
           )}
         </div>
@@ -255,7 +256,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
       <Dialog open={isCropModalOpen} onOpenChange={(open) => { if (!isLoading) setIsCropModalOpen(open); }}>
         <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
           <div className="p-6 sm:p-10 border-b bg-muted/10 shrink-0 relative overflow-hidden text-left">
-            <DialogHeader className="text-left relative z-10 p-0">
+            <DialogHeader className="text-left relative z-10 p-0 text-left">
                 <div className="flex items-center gap-2 mb-2 text-left">
                     <CropIcon className="h-4 w-4 text-primary text-left" />
                     <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Identity Hub</span>
@@ -287,23 +288,23 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             </div>
           </ScrollArea>
           <DialogFooter className="p-6 sm:p-10 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0 text-left">
-            <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12">Cancel</Button>
-            <div className="flex-1 flex flex-col gap-2">
+            <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12 text-left">Cancel</Button>
+            <div className="flex-1 flex flex-col gap-2 text-left">
                 {user ? (
                     <Button 
                         onClick={handleCrop} 
                         disabled={!completedCrop || isLoading} 
-                        className="w-full h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center"
+                        className="w-full h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left"
                     >
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Sparkles className="mr-2 h-4 w-4 text-left" />}
                         {isLoading ? 'OPTIMIZING...' : 'ACTIVATE IDENTITY'}
                     </Button>
                 ) : (
-                    <div className="space-y-2">
-                        <p className="text-[9px] text-destructive font-black uppercase tracking-widest text-center animate-pulse">
+                    <div className="space-y-2 text-left">
+                        <p className="text-[9px] text-destructive font-black uppercase tracking-widest text-center animate-pulse text-left">
                             Sign in to upload photo
                         </p>
-                        <Button disabled className="w-full h-12 rounded-xl font-black uppercase tracking-widest text-center opacity-50">
+                        <Button disabled className="w-full h-12 rounded-xl font-black uppercase tracking-widest text-center opacity-50 text-left">
                             SIGN IN REQUIRED
                         </Button>
                     </div>

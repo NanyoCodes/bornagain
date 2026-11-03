@@ -13,7 +13,7 @@ type FirebaseServices = {
   messaging: Messaging | null;
 };
 
-// Use a module-level variable to store the initialized services.
+// Use a module-level variable to store the initialized services as a singleton.
 let firebaseServices: FirebaseServices | null = null;
 
 /**
@@ -22,7 +22,7 @@ let firebaseServices: FirebaseServices | null = null;
  * Forces long-polling and disables auto-detection for compatibility with proxied workstation environments.
  */
 export function initializeFirebase(): FirebaseServices {
-  // Return existing services if already initialized on the client.
+  // Return existing services if already initialized on the client to avoid "ID: ca9" assertion failures.
   if (typeof window !== 'undefined' && firebaseServices) {
     return firebaseServices;
   }
