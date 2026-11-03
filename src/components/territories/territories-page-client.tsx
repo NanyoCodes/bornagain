@@ -209,11 +209,6 @@ export default function TerritoriesPageClient() {
             return;
         }
 
-        if (!mediaUrl1) {
-            toast({ variant: 'destructive', title: 'Evidence Required', description: 'Please provide at least one photo as evidence.' });
-            return;
-        }
-
         setIsSubmitting(true);
         const challengeData = {
             title,
@@ -229,7 +224,7 @@ export default function TerritoriesPageClient() {
             status: 'open',
             solutionCount: 0,
             createdAt: serverTimestamp(),
-            mediaUrl: mediaUrl1,
+            mediaUrl: mediaUrl1 || null,
             mediaUrl2: mediaUrl2 || null
         };
 
@@ -322,7 +317,7 @@ export default function TerritoriesPageClient() {
 
                 <div className="space-y-8 text-left">
                     <div className="space-y-4 text-left">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Evidence Photo (Required)</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Evidence Photo (Optional)</Label>
                       <ImageUpload 
                           initialImageUrl={mediaUrl1} 
                           onUploadComplete={setMediaUrl1} 
@@ -344,7 +339,7 @@ export default function TerritoriesPageClient() {
                     <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4 text-left">
                         <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                         <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
-                            one photo is enough with another as optional. Visual evidence is critical for global intervention. Challenges with clear photo proof receive prioritized Kingdom response.
+                            challenge can be posted without photo. Visual evidence is critical for global intervention. Challenges with clear photo proof receive prioritized Kingdom response.
                         </p>
                     </div>
                 </div>
