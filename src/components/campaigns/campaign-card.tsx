@@ -356,43 +356,12 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
     const [stage, setStage] = useState<'preparatory' | 'ongoing'>('ongoing');
     
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const videoPreviewRef = useRef<HTMLVideoElement>(null);
-    const [isRecorderOpen, setIsRecorderOpen] = useState(false);
-    const [recorderMode, setRecorderMode] = useState<'video' | 'audio'>('video');
-    const [isRecording, setIsRecording] = useState(false);
-    const [recordingTime, setRecordingTime] = useState(0);
-    const [stream, setStream] = useState<MediaStream | null>(null);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const chunksRef = useRef<Blob[]>([]);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const MAX_RECORDING_SECONDS = 120;
-
-    const getSupportedMimeType = (mode: 'video' | 'audio') => {
-        if (typeof MediaRecorder === 'undefined') return '';
-        const types = mode === 'video' ? ['video/mp4', 'video/webm'] : ['audio/mp4', 'audio/webm'];
-        for (const type of types) { if (MediaRecorder.isTypeSupported(type)) return type; }
-        return mode === 'video' ? 'video/webm' : 'audio/webm';
-    };
-
-    const startRecorder = async (mode: 'video' | 'audio') => {
-        setRecorderMode(mode);
-        try {
-            const constraints = mode === 'video' ? { video: { facingMode: 'user' }, audio: true } : { audio: true };
-            const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-            setStream(mediaStream);
-            setIsRecorderOpen(true);
-            if (mode === 'video') setTimeout(() => { if (videoPreviewRef.current) videoPreviewRef.current.srcObject = mediaStream; }, 100);
-        } catch (err) { toast({ variant: 'destructive', title: 'Access Blocked' }); }
-    };
-
-    const stopRecording = () => {
-        if (mediaRecorderRef.current && isRecording) {
-            mediaRecorderRef.current.stop();
-            setIsRecording(false);
-            if (timerRef.current) clearInterval(timerRef.current);
-        }
-    };
+    const galleryQuery = React.useMemo(() => {
+        if (!isOpen || !firestore || !campaign.id) return null;
+        return query(collection(firestore, 'campaigns', campaign.id, 'gallery'), orderBy('createdAt', 'desc'));
+    }, [isOpen, firestore, campaign.id]);
+    const { data: galleryItems, loading: galleryLoading } = useCollection<CampaignGalleryItem>(galleryQuery);
 
     const handleUploadProcessedFile = async (file: File | Blob, type: 'video' | 'audio' | 'image') => {
         if (!user || !storage) return;
@@ -416,27 +385,6 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                 }
             );
         } catch (err) { setIsUploading(false); }
-    };
-
-    const startRecording = () => {
-        if (!stream) return;
-        chunksRef.current = [];
-        const recorder = new MediaRecorder(stream, { mimeType: getSupportedMimeType(recorderMode) });
-        mediaRecorderRef.current = recorder;
-        recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-        recorder.onstop = async () => {
-            const blob = new Blob(chunksRef.current, { type: recorder.mimeType });
-            await handleUploadProcessedFile(blob, recorderMode as any);
-            setIsRecorderOpen(false);
-            if (stream) stream.getTracks().forEach(t => t.stop());
-            setStream(null);
-            setRecordingTime(0);
-        };
-        recorder.start();
-        setIsRecording(true);
-        timerRef.current = setInterval(() => {
-            setRecordingTime(prev => { if (prev >= MAX_RECORDING_SECONDS - 1) { stopRecording(); return MAX_RECORDING_SECONDS; } return prev + 1; });
-        }, 1000);
     };
 
     const handleUploadFinal = async () => {
@@ -466,12 +414,10 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                     <h2 className="text-2xl font-black font-headline text-left text-left text-left">Mission Evidence</h2>
                     <p className="text-sm font-medium mt-1 text-left text-left">Capture the harvest impact of "{campaign.title}".</p>
                 </div>
-                {isMobile && (
-                    <div className="flex items-center gap-2 opacity-40 text-left">
-                        <ChevronDown className="h-3 w-3 animate-bounce text-left" />
-                        <span className="text-[8px] font-bold uppercase tracking-widest text-left">Swipe down to close</span>
-                    </div>
-                )}
+                <div className="flex items-center gap-2 opacity-40 text-left">
+                    <ChevronDown className="h-3 w-3 animate-bounce text-left" />
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-left">Swipe to close</span>
+                </div>
             </div>
         </div>
     );
@@ -492,7 +438,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
             </div>
             
             <div className="space-y-4 text-left text-left text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Photo/Media Evidence</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Photo Evidence</Label>
                 {!preview ? (
                     <div className="space-y-3 text-left text-left text-left">
                         <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left text-left", isUploading ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => fileInputRef.current?.click()}>
@@ -504,18 +450,14 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                             ) : (
                                 <div className="flex flex-col items-center text-left text-left">
                                     <FileUp className="h-8 w-8 text-primary mb-2 text-left text-left" />
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase text-center text-left text-left text-left text-left">IT CAN COVER ENTIRE PHOTO</p>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase text-center text-left text-left text-left text-left">ADD MEDIA</p>
                                 </div>
                             )}
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-left text-left">
-                            <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest text-left text-left" onClick={() => startRecorder('video')} disabled={isUploading}><Video className="h-3 w-3 mr-2 text-left text-left" />VIDEO</Button>
-                            <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest text-left text-left" onClick={() => startRecorder('audio')} disabled={isUploading}><Mic className="h-3 w-3 mr-2 text-left text-left" />AUDIO</Button>
                         </div>
                     </div>
                 ) : (
                     <div className="relative aspect-video rounded-3xl overflow-hidden border-2 shadow-inner group text-left text-left text-left">
-                        {preview.type === 'image' ? <Image src={preview.url} alt="Ev" fill className="object-cover text-left" unoptimized /> : preview.type === 'video' ? <video src={preview.url} className="w-full h-full object-cover text-left" controls /> : <div className="p-8 bg-muted flex items-center justify-center h-full text-left text-left text-left"><audio src={preview.url} controls /></div>}
+                        <Image src={preview.url} alt="Ev" fill className="object-cover text-left" unoptimized />
                         <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg text-left" onClick={() => setPreview(null)}><X className="h-3.5 w-3.5 text-left" /></Button>
                     </div>
                 )}
@@ -523,57 +465,21 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
 
             <Button onClick={handleUploadFinal} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left">
                 {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left" /> : <Upload className="h-5 w-5 mr-2 text-left" />}
-                always approve photo uploads on the app
+                UPLOAD EVIDENCE
             </Button>
-            <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*,audio/*" onChange={(e) => { const f = e.target.files?.[0]; if(f) handleUploadProcessedFile(f, f.type.startsWith('image/') ? 'image' : f.type.startsWith('video/') ? 'video' : 'audio'); }} />
+            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if(f) handleUploadProcessedFile(f, 'image'); }} />
         </div>
     );
 
-    if (isMobile) {
-        return (
-            <Drawer open={isOpen} onOpenChange={onOpenChange}>
-                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                    {header}
-                    <ScrollArea className="flex-grow text-left text-left">
-                        {content}
-                    </ScrollArea>
-                </DrawerContent>
-            </Drawer>
-        );
-    }
-
     return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
+        <Drawer open={isOpen} onOpenChange={onOpenChange}>
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                 {header}
-                {content}
-                <Dialog open={isRecorderOpen} onOpenChange={setIsRecorderOpen}>
-                    <DialogContent className="sm:max-w-xl bg-black border-none rounded-[2rem] p-0 overflow-hidden text-left text-left">
-                         <div className="p-8 border-b border-white/10 bg-zinc-900 flex items-center justify-between text-left text-left">
-                            <h3 className="text-xl font-black uppercase text-white text-left text-left">Record Evidence</h3>
-                            <Button variant="ghost" size="icon" className="rounded-full text-white text-left text-left" onClick={() => setIsRecorderOpen(false)}><X className="h-6 w-6 text-left text-left" /></Button>
-                         </div>
-                         {recorderMode === 'video' ? (
-                             <div className="relative aspect-video w-full bg-zinc-950 text-left text-left">
-                                 <video ref={videoPreviewRef} autoPlay muted playsInline className="w-full h-full object-cover scale-x-[-1] text-left" />
-                                 <div className="absolute inset-0 flex flex-col justify-between p-8 text-left text-left">
-                                     <Badge className="w-fit bg-red-600 text-white border-none font-black text-left text-left">{Math.floor(recordingTime/60)}:{(recordingTime%60).toString().padStart(2,'0')}</Badge>
-                                     <div className="flex justify-center text-left">
-                                         {!isRecording ? <Button onClick={startRecording} size="lg" className="h-16 w-16 rounded-full bg-red-600 hover:bg-red-700 p-0 shadow-2xl ring-4 ring-white/20 text-left"><div className="h-6 w-6 rounded-full bg-white text-left"/></Button> : <Button onClick={stopRecording} size="lg" className="h-16 w-16 rounded-full bg-white p-0 shadow-2xl ring-4 ring-white/20 text-red-600 text-left"><Square className="h-6 w-6 fill-current text-left"/></Button>}
-                                     </div>
-                                 </div>
-                             </div>
-                         ) : (
-                             <div className="p-20 flex flex-col items-center gap-6 text-left text-left text-left">
-                                 <Mic className={cn("h-16 w-16 text-primary text-left", isRecording && "animate-pulse")} />
-                                 <span className="text-2xl font-black text-white text-left text-left">{Math.floor(recordingTime/60)}:{(recordingTime%60).toString().padStart(2,'0')}</span>
-                                 {!isRecording ? <Button onClick={startRecording} className="h-14 px-10 rounded-xl font-black uppercase text-center text-left text-left">START RECORDING</Button> : <Button onClick={stopRecording} variant="destructive" className="h-14 px-10 rounded-xl font-black uppercase text-center text-left text-left">STOP</Button>}
-                             </div>
-                         )}
-                    </DialogContent>
-                </Dialog>
-            </DialogContent>
-        </Dialog>
+                <ScrollArea className="flex-grow text-left text-left">
+                    {content}
+                </ScrollArea>
+            </DrawerContent>
+        </Drawer>
     );
 }
 
@@ -723,7 +629,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-none pt-3 sm:pt-0 text-left text-left">
               <div className="flex items-center gap-2 text-left text-left">
                 {(isJoined || isOwner) && (
-                    <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background text-left text-left" onClick={(e) => { e.stopPropagation(); setIsUploadOpen(true); }}><Camera className="h-4 w-4 sm:h-5 w-5 text-left text-left" /><span className="sr-only text-left text-left">Add Evidence</span></Button></TooltipTrigger><TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left">IT CAN COVER ENTIRE PHOTO</p></TooltipContent></Tooltip></TooltipProvider>
+                    <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background text-left text-left" onClick={(e) => { e.stopPropagation(); setIsUploadOpen(true); }}><Camera className="h-4 w-4 sm:h-5 w-5 text-left text-left" /><span className="sr-only text-left text-left">Add Evidence</span></Button></TooltipTrigger><TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left">Add Media</p></TooltipContent></Tooltip></TooltipProvider>
                 )}
                 <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background text-left text-left" onClick={(e) => { e.stopPropagation(); router.push(`/campaigns/${campaign.id}`); }}><BarChart3 className="h-4 w-4 sm:h-5 w-5 text-left text-left" /><span className="sr-only text-left text-left">View Insights</span></Button></TooltipTrigger><TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left">Kingdom Insights</p></TooltipContent></Tooltip></TooltipProvider>
               </div>
@@ -732,7 +638,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         </CardHeader>
         <CardContent className="p-4 sm:p-6 pt-0 flex-grow space-y-4 text-left text-left text-left">
             <div className="space-y-1 text-left text-left text-left text-left text-left"><p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium break-words text-left text-left text-left text-left">{campaign.description}</p>{isDescriptionTruncated && (<FullDescriptionDialog campaign={campaign}><Button variant="link" className="p-0 h-auto text-sm font-bold text-primary text-left text-left text-left text-left">Read More</Button></FullDescriptionDialog>)}</div>
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-left text-left text-left text-left"><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left"><MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left">Location</p><p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-left text-left text-left text-left text-left text-left">{campaign.location}</p></div></div><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left"><CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left">Schedule</p><p className="font-bold text-foreground leading-snug line-clamp-2 text-left text-left text-left text-left text-left text-left text-left">{startDate && endDate ? (isSameDay(startDate, endDate) ? format(startDate, "PPP") : `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`) : "Date not set"}</p></div></div></div>
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-left text-left text-left text-left text-left text-left"><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left"><MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left">Location</p><p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-left text-left text-left text-left text-left text-left">{campaign.location}</p></div></div><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left"><CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left">Schedule</p><p className="font-bold text-foreground leading-snug line-clamp-2 text-left text-left text-left text-left text-left text-left text-left">{startDate && endDate ? (isSameDay(startDate, endDate) ? format(startDate, "PPP") : `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`) : "Date not set"}</p></div></div></div>
         </CardContent>
         <CardFooter className="p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm text-left text-left text-left text-left">
             <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground text-left text-left text-left text-left"><ParticipantsDialog campaign={campaign}><Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors text-left text-left text-left text-left" onClick={stopPropagation}><Users className="h-4 w-4 text-left text-left text-left text-left" /><span className="ml-1.5 text-left text-left text-left text-left">{campaign.participants} MEMBERS</span></Button></ParticipantsDialog>{status === "Ongoing" && (<div className="flex items-center gap-1.5 text-primary text-left text-left text-left text-left"><UserCheck className="h-4 w-4 text-left text-left text-left text-left" /><span> {campaign.soulsLogged || 0} SOULS WON</span></div>)}</div>
