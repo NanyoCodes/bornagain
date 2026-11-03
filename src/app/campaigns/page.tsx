@@ -341,41 +341,41 @@ function CampaignsPageContent() {
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                     <DrawerHeader className="text-left p-0 text-left">
                         <div className="flex items-center gap-2 mb-4 text-left text-left">
-                            <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left" />
-                            <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left">SWIPE DOWN TO CLOSE</span>
+                            <ChevronDown className="h-4 w-4 text-muted-foreground animate-bounce text-left text-left" />
+                            <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">SWIPE DOWN TO CLOSE</span>
                         </div>
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Launch New Mission</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Mobilize for the harvest.</DrawerDescription>
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Launch New Mission</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Mobilize for the harvest.</DrawerDescription>
                     </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1 text-left text-left">
+                    <div className="flex-1 overflow-y-auto text-left text-left">
                         <div className="p-8 text-left text-left text-left text-left">
                             {formContent}
                         </div>
-                    </ScrollArea>
+                    </div>
                 </DrawerContent>
                 </Drawer>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                 <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl rounded-3xl text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                        <DialogHeader className="text-left p-0 text-left text-left">
-                            <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Create a New Mission</DialogTitle>
-                            <DialogDescription className="text-sm font-medium text-left">Fill in the details below.</DialogDescription>
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
+                        <DialogHeader className="text-left p-0 text-left text-left text-left">
+                            <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">Create a New Mission</DialogTitle>
+                            <DialogDescription className="text-sm font-medium text-left text-left">Fill in the details below.</DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left text-left">
+                    <div className="flex-1 min-h-0 overflow-y-auto text-left text-left">
                         <div className="p-8 text-left text-left">
                             {formContent}
                         </div>
-                    </ScrollArea>
+                    </div>
                 </DialogContent>
                 </Dialog>
             )}
 
             <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
             <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
-                <AlertDialogHeader className="text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Mission?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">This will permanently remove the campaign.</AlertDialogDescription></AlertDialogHeader>
+                <AlertDialogHeader className="text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left">Delete Mission?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">This will permanently remove the campaign.</AlertDialogDescription></AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 text-left">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Confirm Deletion</AlertDialogAction>
@@ -391,11 +391,11 @@ function CampaignsPageContent() {
                             <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">What has God done during "{campaignForTestimony?.title}"?</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
+                    <div className="flex-1 min-h-0 overflow-y-auto text-left text-left text-left">
                         <div className="p-8 text-left text-left text-left">
                             {campaignForTestimony && userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={handleTestimonyCreated} campaign={campaignForTestimony} />}
                         </div>
-                    </ScrollArea>
+                    </div>
                 </DrawerContent>
             </Drawer>
 
@@ -407,11 +407,11 @@ function CampaignsPageContent() {
                             <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Record a soul won in "{campaignForSoul?.title}".</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left">
+                    <div className="flex-1 min-h-0 overflow-y-auto text-left text-left text-left text-left">
                         <div className="p-8 text-left text-left">
                             {campaignForSoul && <LogSoulForm onSoulLogged={handleSoulLogged} defaultCampaign={campaignForSoul} fellowships={[]} campaigns={[]} />}
                         </div>
-                    </ScrollArea>
+                    </div>
                 </DrawerContent>
             </Drawer>
 
@@ -423,11 +423,11 @@ function CampaignsPageContent() {
                             <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Update mission progress and details.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left text-left">
+                    <div className="flex-1 min-h-0 overflow-y-auto text-left text-left text-left text-left text-left">
                         <div className="p-8 text-left text-left">
                             {campaignToManage && <ManageCampaignForm campaign={campaignToManage} onCampaignUpdated={() => setCampaignToManage(null)} onDelete={() => { const c = campaignToManage; setCampaignToManage(null); setTimeout(() => setCampaignToDelete(c), 150); }} />}
                         </div>
-                    </ScrollArea>
+                    </div>
                 </DrawerContent>
             </Drawer>
         </>

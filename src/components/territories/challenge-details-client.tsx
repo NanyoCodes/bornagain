@@ -94,7 +94,7 @@ function SolutionItem({ solution, challengeId }: { solution: ChallengeSolution, 
                         hasUpvoted ? "text-primary bg-primary/10" : "text-muted-foreground"
                     )}
                 >
-                    {isUpvoting ? <Loader2 className="h-3 w-3 animate-spin text-left" /> : <HandHeart className={cn("h-3.5 w-3.5 text-left", hasUpvoted && "fill-current")} />}
+                    {isUpvoting ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <HandHeart className={cn("h-3.5 w-3.5 text-left", hasUpvoted && "fill-current")} />}
                     AMEN {solution.upvotes?.length || 0}
                 </Button>
             </CardFooter>
