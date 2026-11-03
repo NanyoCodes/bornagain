@@ -28,7 +28,8 @@ import {
     CheckCircle2,
     Calendar,
     Award,
-    X
+    X,
+    Target
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -76,7 +77,7 @@ function SolutionItem({ solution, challengeId }: { solution: ChallengeSolution, 
                         </Avatar>
                         <div className="text-left">
                             <p className="text-xs font-black uppercase tracking-tight text-left">{solution.authorName}</p>
-                            <p className="text-[9px] text-muted-foreground font-bold text-left">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
                         </div>
                     </div>
                 </div>
@@ -190,10 +191,20 @@ export default function ChallengeDetailsClient({ challengeId }: { challengeId: s
                             </div>
                             <Badge variant="outline" className="h-6 px-3 bg-primary/5 text-primary border-primary/20 font-black uppercase text-[8px] tracking-widest text-left">Open Challenge</Badge>
                         </div>
-                        <div className="flex items-center gap-3 mb-6 bg-muted/20 p-3 rounded-2xl border border-dashed w-fit text-left">
-                            <MapPin className="h-4 w-4 text-primary text-left" />
-                            <span className="text-xs font-black uppercase tracking-widest text-left">Location: {challenge.city || challenge.state}, {challenge.country}</span>
+                        
+                        <div className="flex flex-wrap items-center gap-4 mb-6 text-left">
+                            <div className="flex items-center gap-3 bg-muted/20 p-3 rounded-2xl border border-dashed w-fit text-left">
+                                <MapPin className="h-4 w-4 text-primary text-left" />
+                                <span className="text-xs font-black uppercase tracking-widest text-left">Location: {challenge.city || challenge.state}, {challenge.country}</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 animate-in fade-in zoom-in duration-500 shadow-inner">
+                                <Sparkles className="h-3.5 w-3.5" />
+                                <span className="text-[9px] font-black uppercase tracking-widest leading-tight">
+                                    either solutions or a campaign can be run from this
+                                </span>
+                            </div>
                         </div>
+
                         <div className="relative pl-6 border-l-4 border-primary/20 py-2 text-left">
                             <Quote className="absolute top-0 right-0 h-16 w-16 opacity-[0.03] pointer-events-none text-left" />
                             <p className="text-base sm:text-xl font-medium leading-relaxed italic text-balance text-left">

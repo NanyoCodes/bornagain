@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { collection, query, addDoc, serverTimestamp, doc, orderBy, where, updateDoc, deleteDoc } from 'firebase/firestore';
 import type { RegionalChallenge, UserProfile, ChallengeType } from '@/lib/types';
 import { 
@@ -206,8 +206,6 @@ export default function TerritoriesPageClient() {
     const [subCategory, setSubCategory] = useState('');
     const [mediaUrl1, setMediaUrl1] = useState('');
     const [mediaUrl2, setMediaUrl2] = useState('');
-
-    useEffect(() => { setMounted(true); }, []);
 
     const challengesQuery = useMemo(() => {
         if (!firestore) return null;
@@ -587,9 +585,11 @@ export default function TerritoriesPageClient() {
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
-                                <DialogHeader className="p-0 text-left text-left text-left">
+                                <DialogHeader className="p-0 text-left text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                        <Globe className="h-4 w-4 text-primary text-left text-left text-left" />
+                                        <Globe className="h-4 w-4 text-primary text-left text-left text-left">
+                                            <Globe className="h-4 w-4 text-primary text-left text-left text-left" />
+                                        </Globe>
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Registration</span>
                                     </div>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Regional Challenge</DialogTitle>
@@ -662,4 +662,3 @@ export default function TerritoriesPageClient() {
         </div>
     );
 }
-
