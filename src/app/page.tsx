@@ -325,16 +325,16 @@ export default function LandingPage() {
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <motion.div 
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="space-y-8"
+                        className="space-y-8 flex flex-col items-center text-center lg:items-start lg:text-left"
                     >
-                        <div className="space-y-4">
+                        <div className="space-y-4 flex flex-col items-center lg:items-start text-center lg:text-left">
                             <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 w-fit">Redeem the Scroll</Badge>
                             <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter">Trade the Void for <span className="text-primary">Living Rhema.</span></h2>
                         </div>
-                        <div className="space-y-6 text-muted-foreground text-lg font-medium leading-relaxed italic">
+                        <div className="space-y-6 text-muted-foreground text-lg font-medium leading-relaxed italic text-center lg:text-left">
                             <p>
                                 In an era where hours are lost to the vacuum of mindless scrolling, the believer's digital habit requires a spiritual upgrade. We consume content that often leaves our spirits dry and our focus scattered.
                             </p>
@@ -345,7 +345,7 @@ export default function LandingPage() {
                                 On this platform, every scroll is a drop of Rhema—a living word, a shared miracle, or a mission call. Each flick of your thumb is no longer a waste of time, but an investment in eternity. We are saturating the digital landscape with the glory of God, ensuring your attention is anchored in truth.
                             </p>
                         </div>
-                        <div className="flex items-center gap-4 pt-4">
+                        <div className="flex items-center justify-center lg:justify-start gap-4 pt-4">
                             <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
                                 <Zap className="h-6 w-6 text-primary" />
                             </div>
@@ -586,7 +586,7 @@ export default function LandingPage() {
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left text-left">
                 {logo && (
                   <Avatar className="h-14 w-14 border-2 border-primary/20">
-                    <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
+                    <AvatarImage src={logo.imageUrl} alt="BornAgain" className="object-cover text-left" />
                     <AvatarFallback>B</AvatarFallback>
                   </Avatar>
                 )}
