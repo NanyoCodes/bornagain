@@ -70,6 +70,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import Image from 'next/image';
+import { ImageUpload } from '@/components/common/image-upload';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -405,31 +406,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left">
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
                     <div className="flex items-center justify-between gap-4 text-left">
-                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
-                            <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left">
-                                <AvatarImage src={vendor.photoURL || undefined} className="object-cover text-left" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary uppercase text-left text-left"> {vendor.businessName?.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <div className="min-w-0 flex-1 text-left">
-                                <div className="flex items-center gap-2 mb-1 text-left">
-                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left" />}
-                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">{centerLabel}</span>
-                                </div>
-                                <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase leading-tight text-left">{vendor.businessName}</h1>
-                                {isOwner && (
-                                    <Button 
-                                        variant="outline" 
-                                        size="icon" 
-                                        onClick={() => setIsEditVendorOpen(true)} 
-                                        className="h-8 w-8 rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background mt-2 text-left"
-                                    >
-                                        <Edit className="h-4 w-4 text-left" />
-                                        <span className="sr-only text-left text-left">Manage Store</span>
-                                    </Button>
-                                )}
-                            </div>
-                        </div>
+                        <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left text-left"><Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button><Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0 text-left"><AvatarImage src={vendor.photoURL || undefined} className="object-cover text-left" /><AvatarFallback className="font-black bg-primary/10 text-primary uppercase text-left text-left"> {vendor.businessName?.charAt(0)}</AvatarFallback></Avatar><div className="min-w-0 flex-1 text-left"><div className="flex items-center gap-2 mb-1 text-left">{isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left" />}<span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">{centerLabel}</span></div><h1 className="text-2xl sm:text-4xl font-black font-headline uppercase leading-tight text-left">{vendor.businessName}</h1>{isOwner && (<Button variant="outline" size="icon" onClick={() => setIsEditVendorOpen(true)} className="h-8 w-8 rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background mt-2 text-left"><Edit className="h-4 w-4 text-left" /><span className="sr-only text-left text-left">Manage Store</span></Button>)}</div></div>
                         <div className="flex items-center gap-2 shrink-0 text-left">
                             <Button variant="outline" size="icon" className="h-10 w-10 rounded-full shadow-lg border-primary/20 text-primary/60 hover:text-primary text-left" onClick={handleShare}>
                                 <Share2 className="h-4 w-4 shrink-0 text-left" />
