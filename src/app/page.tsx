@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -217,7 +216,7 @@ export default function LandingPage() {
                   Are you BornAgain?
                 </h1>
                 <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center">
-                   The platform for the new creation. Organize the harvest, share the glory, and manage your spiritual legacy.
+                   SHARE MIRACLES. WIN SOULS. NURTURE THE HARVEST.
                 </span>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "Truly, truly, I say to you, unless one is born again he cannot see the kingdom of God." — John 3:3
