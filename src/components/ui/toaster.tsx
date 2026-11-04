@@ -18,21 +18,21 @@ export function Toaster() {
   const { toasts } = useToast()
 
   return (
-    <ToastProvider duration={1000}>
+    <ToastProvider duration={3000}>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast key={id} {...props}>
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-4 text-left">
               {logo && (
-                <Avatar className="h-6 w-6 mt-1">
-                  <AvatarImage src={logo.imageUrl} alt={logo.description} />
-                  <AvatarFallback>T</AvatarFallback>
+                <Avatar className="h-7 w-7 mt-1 shrink-0">
+                  <AvatarImage src={logo.imageUrl} alt="BornAgain" />
+                  <AvatarFallback className="font-black text-[10px]">B</AvatarFallback>
                 </Avatar>
               )}
               <div className="grid gap-1">
-                {title && <ToastTitle>{title}</ToastTitle>}
+                {title && <ToastTitle className="text-sm font-black uppercase tracking-tight">{title}</ToastTitle>}
                 {description && (
-                  <ToastDescription>{description}</ToastDescription>
+                  <ToastDescription className="text-xs font-medium text-muted-foreground leading-relaxed">{description}</ToastDescription>
                 )}
               </div>
             </div>

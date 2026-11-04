@@ -99,8 +99,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                     <div className="flex justify-start w-full mb-8 text-left">
                     <Link href="/">
                         <Avatar className="h-20 w-20 border shadow-sm ring-4 ring-primary/10 text-left">
-                        <AvatarImage src={logo.imageUrl} alt={logo.description} className="text-left" />
-                        <AvatarFallback className="text-left">T</AvatarFallback>
+                        <AvatarImage src={logo.imageUrl} alt="BornAgain" className="text-left" />
+                        <AvatarFallback className="text-left font-black">B</AvatarFallback>
                         </Avatar>
                     </Link>
                     </div>
@@ -108,7 +108,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                 
                 {children}
                 
-                <div className="mt-8 space-y-4 text-left text-left">
+                <div className="mt-8 space-y-4 text-left">
                     <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 text-center">GLOBAL TESTIMONIES</h3>
                     <div className="space-y-3 text-left">
                         {loading ? (
@@ -133,18 +133,18 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                         <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
                         <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left">Privacy</Link>
                     </div>
-                    <p className="text-left">© {new Date().getFullYear()} TESTIFY GLOBAL</p>
+                    <p className="text-left">© {new Date().getFullYear()} BornAgain GLOBAL</p>
                 </footer>
             </div>
             </div>
             
-            <div className="hidden lg:flex flex-col items-center justify-center p-12 text-foreground relative overflow-hidden bg-black/40 backdrop-blur-sm border-l border-white/5 text-left text-left">
+            <div className="hidden lg:flex flex-col items-center justify-center p-12 text-foreground relative overflow-hidden bg-black/40 backdrop-blur-sm border-l border-white/5 text-left">
             <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-transparent text-left" />
             
             <div className="space-y-4 mb-12 z-10 text-center text-left">
-                <h1 className="text-5xl font-bold font-headline text-white shadow-sm text-left">Testify</h1>
-                <p className="text-white/80 max-w-md text-lg text-left">Share Testimonies. Win Souls. Spread Jesus Christ.</p>
-                <p className="text-primary font-black tracking-[0.3em] uppercase text-xs text-left">GLORIFYING GOD</p>
+                <h1 className="text-5xl font-bold font-headline text-white shadow-sm text-left text-center">BornAgain</h1>
+                <p className="text-white/80 max-w-md text-lg text-left text-center">Share Testimonies. Win Souls. Spread Jesus Christ.</p>
+                <p className="text-primary font-black tracking-[0.3em] uppercase text-xs text-left text-center">GLORIFYING GOD</p>
             </div>
 
             <Carousel plugins={[plugin.current]} className="w-full max-w-lg z-10 text-left">
@@ -153,8 +153,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                     <CarouselItem key={index} className="text-left">
                     <div className="bg-white/5 backdrop-blur-md border border-white/10 p-10 rounded-3xl text-center space-y-6 shadow-2xl text-left">
                         <Quote className="h-8 w-8 text-primary opacity-50 mx-auto text-left" />
-                        <p className="text-2xl font-medium italic text-white text-left">"{scripture.text}"</p>
-                        <p className="text-white/60 font-bold tracking-wider text-left">— {scripture.reference}</p>
+                        <p className="text-2xl font-medium italic text-white text-left text-center">"{scripture.text}"</p>
+                        <p className="text-white/60 font-bold tracking-wider text-left text-center">— {scripture.reference}</p>
                     </div>
                     </CarouselItem>
                 ))}
