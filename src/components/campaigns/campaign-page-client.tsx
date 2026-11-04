@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -546,14 +547,14 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </div>
 
                     <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden mx-4 sm:mx-0 text-left">
-                        <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left">
+                        <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left text-left">
                             <CardTitle className="flex items-center justify-between text-lg font-black uppercase tracking-tight text-left text-left text-left text-left text-left">
                                 <span className="flex items-center gap-2 text-left text-left text-left text-left"><Users className="h-5 w-5 text-primary text-left text-left text-left text-left" /> Participants</span>
                                 <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold text-left text-left text-left text-left">{(participants?.length || 0)}</Badge>
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="p-8 text-left text-left text-left">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left text-left text-left">
+                        <CardContent className="p-8 text-left text-left text-left text-left text-left">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left text-left text-left text-left">
                                 {participants?.map(p => (
                                     <Link key={p.id} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-all text-left text-left text-left text-left">
                                         <Avatar className="h-9 w-9 border shadow-sm text-left text-left text-left text-left"><AvatarImage src={p.photoURL} className="text-left text-left text-left text-left" /><AvatarFallback className="font-bold text-xs text-left text-left text-left text-left"> {p.firstName?.charAt(0)}</AvatarFallback></Avatar>
@@ -656,7 +657,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                        <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
+                        <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
                             <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Log Harvest</DrawerTitle>
                         </DrawerHeader>
                     </div>
@@ -691,8 +692,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         </DrawerHeader>
                     </div>
                     <div className="flex-1 overflow-y-auto no-scrollbar text-left text-left text-left">
-                        <div className="p-8 text-left text-left text-left">
-                            <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { }} />
+                        <div className="p-8 text-left text-left text-left text-left">
+                            {isManageOpen && <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { }} />}
                         </div>
                     </div>
                 </DrawerContent>
@@ -700,15 +701,15 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
             <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
                 <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left">
-                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left">Delete Mission?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left text-left">
+                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left text-left">Delete Mission?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left">
                             This will permanently remove the mission from the global record. This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left">
                         <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left text-left">
+                        <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left text-left text-left">
                             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
