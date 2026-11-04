@@ -27,7 +27,8 @@ import {
   Sparkles,
   Quote,
   MoreVertical,
-  Trash2
+  Trash2,
+  LogOut
 } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile, CampaignGalleryItem, Chat } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -83,15 +84,17 @@ import {
   getDoc, 
   updateDoc, 
   arrayUnion, 
+  arrayRemove,
   orderBy,
-  deleteDoc
+  deleteDoc,
+  runTransaction
 } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { cn, safeToDate, haversineDistance } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
@@ -142,7 +145,9 @@ function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, classNam
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
   const firestore = useFirestore();
   const { user } = useUser();
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
 
@@ -162,6 +167,36 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
 
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
+  };
+
+  const handleLeave = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user || !firestore || campaign.organizerId === user.uid) return;
+    setIsLeaving(true);
+
+    const campaignRef = doc(firestore, 'campaigns', campaign.id);
+    const joinedRef = doc(firestore, `users/${user.uid}/joinedCampaigns/${campaign.id}`);
+    const participantRef = doc(firestore, `campaigns/${campaign.id}/participants/${user.uid}`);
+
+    try {
+      await runTransaction(firestore, async (transaction) => {
+        const snap = await transaction.get(campaignRef);
+        if (!snap.exists()) throw new Error("Campaign missing");
+        
+        transaction.update(campaignRef, { 
+            participants: Math.max(0, (snap.data().participants || 0) - 1),
+            participantIds: arrayRemove(user.uid)
+        });
+        transaction.delete(joinedRef);
+        transaction.delete(participantRef);
+      });
+      toast({ title: 'Left Mission' });
+      setIsOpen(false);
+    } catch (e: any) {
+      toast({ variant: 'destructive', title: 'Action Failed', description: e.message });
+    } finally {
+      setIsLeaving(false);
+    }
   };
 
   const content = (
@@ -205,7 +240,21 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                         >
                             {p.firstName} {p.lastName}
                         </Link>
-                        {p.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60 text-left">You</span>}
+                        {p.userId === user?.uid && (
+                            <div className="ml-auto flex items-center gap-2">
+                                <span className="text-[10px] text-muted-foreground opacity-60 text-left">You</span>
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-7 px-2 text-[9px] font-black text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                                    onClick={handleLeave}
+                                    disabled={isLeaving}
+                                >
+                                    {isLeaving ? <Loader2 className="h-3 w-3 animate-spin" /> : <LogOut className="h-3 w-3 mr-1" />}
+                                    LEAVE
+                                </Button>
+                            </div>
+                        )}
                       </div>
                       {p.joinReason && (
                         <blockquote className="border-l-4 border-primary/20 pl-4 text-xs italic text-muted-foreground bg-primary/[0.02] py-2 rounded-r-xl text-left">
@@ -217,9 +266,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                 </div>
               </div>
             )}
-            {otherParticipants?.length === 0 && participants?.length > 0 && (
-                <p className="text-center text-muted-foreground py-12 text-sm italic px-8 text-left">No other believers joined yet.</p>
-            )}
+            {otherParticipants?.length === 0 && participants?.length > 0 && (<p className="text-center text-muted-foreground py-12 text-sm italic px-8">No other believers joined yet.</p>)}
         </div>
       ) : (
         <div className="text-center py-16 bg-muted/20 rounded-[2rem] border-2 border-dashed mx-1 text-left">
@@ -337,7 +384,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                         <div className="flex items-center gap-3 mb-2 text-left text-left text-left">
-                            <Target className="h-5 w-5 text-primary text-left text-left" />
+                            <Target className="h-5 w-5 text-primary text-left text-left text-left" />
                             <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Mission Overview</span>
                         </div>
                         <SheetHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
@@ -522,11 +569,11 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
             </div>
 
             <Button onClick={handleUploadFinal} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-center text-left text-left">
-                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left text-left text-left" /> : <Upload className="h-5 w-5 mr-2 text-left text-left text-left" />}
+                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left text-left text-left" /> : <Upload className="mr-2 h-5 w-5 text-left text-left text-left" />}
                 UPLOAD EVIDENCE
             </Button>
 
-            <div className="space-y-4 pt-4 border-t border-dashed text-left text-left text-left">
+            <div className="space-y-4 pt-4 border-t border-dashed text-left text-left text-left text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Mission Gallery</Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left text-left text-left text-left">
                     {galleryLoading ? (
@@ -555,7 +602,7 @@ function QuickEvidenceDialog({ campaign, isOpen, onOpenChange }: { campaign: Cam
                             <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
                                 <div className="relative h-full w-full flex items-center justify-center p-4">
                                     <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                                        <NextImage src={item.url} alt="Full view" fill className="object-contain" unoptimized />
+                                        <Image src={item.url} alt="Full view" fill className="object-contain" unoptimized />
                                     </div>
                                 </div>
                             </DialogContent>
@@ -602,6 +649,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
 
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
@@ -714,6 +762,35 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     catch (err: any) { if (err.name === 'AbortError') return; try { await navigator.clipboard.writeText(`${shareData.title} ${shareUrl}`); toast({ title: 'Link Copied!' }); } catch (clipErr) {} }
   };
 
+  const handleLeave = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user || !firestore || isOwner || !isJoined) return;
+    setIsLeaving(true);
+
+    const campaignRef = doc(firestore, 'campaigns', campaign.id);
+    const joinedRef = doc(firestore, `users/${user.uid}/joinedCampaigns/${campaign.id}`);
+    const participantRef = doc(firestore, `campaigns/${campaign.id}/participants/${user.uid}`);
+
+    try {
+      await runTransaction(firestore, async (transaction) => {
+        const snap = await transaction.get(campaignRef);
+        if (!snap.exists()) throw new Error("Campaign missing");
+        
+        transaction.update(campaignRef, { 
+            participants: Math.max(0, (snap.data().participants || 0) - 1),
+            participantIds: arrayRemove(user.uid)
+        });
+        transaction.delete(joinedRef);
+        transaction.delete(participantRef);
+      });
+      toast({ title: 'Left Mission' });
+    } catch (e: any) {
+      toast({ variant: 'destructive', title: 'Action Failed', description: e.message });
+    } finally {
+      setIsLeaving(false);
+    }
+  };
+
   return (
     <>
       <Card id={campaign.id} className={cn("flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 border-t-4 cursor-pointer rounded-2xl border shadow-md sm:shadow-lg bg-card/50 backdrop-blur-sm text-left text-left", borderColorClass)} onClick={handleCardClick}>
@@ -735,7 +812,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         </CardHeader>
         <CardContent className="p-4 sm:p-6 pt-0 flex-grow space-y-4 text-left text-left text-left text-left text-left text-left text-left text-left">
             <div className="space-y-1 text-left text-left text-left text-left text-left text-left"><p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium break-words text-left text-left text-left text-left text-left">{campaign.description}</p>{isDescriptionTruncated && (<FullDescriptionDialog campaign={campaign}><Button variant="link" className="p-0 h-auto text-sm font-bold text-primary text-left text-left text-left text-left text-left">Read More</Button></FullDescriptionDialog>)}</div>
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-left text-left text-left text-left text-left text-left text-left"><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Location</p><p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-left text-left text-left text-left text-left text-left text-left">{campaign.location}</p></div></div><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Schedule</p><p className="font-bold text-foreground leading-snug line-clamp-2 text-left text-left text-left text-left text-left text-left text-left text-left">{startDate && endDate ? (isSameDay(startDate, endDate) ? format(startDate, "PPP") : `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`) : "Date not set"}</p></div></div></div>
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-left text-left text-left text-left text-left text-left text-left"><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Location</p><p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-left text-left text-left text-left text-left text-left text-left">{campaign.location}</p></div></div><div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto text-left text-left text-left text-left text-left text-left text-left"><CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left text-left text-left text-left text-left text-left text-left text-left" /><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left"><p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left text-left">Schedule</p><p className="font-bold text-foreground leading-snug line-clamp-2 text-left text-left text-left text-left text-left text-left text-left text-left">{startDate && endDate ? (isSameDay(startDate, endDate) ? format(startDate, "PPP") : `${format(startDate, "MMM d")} - ${format(endDate, "MMM d, yyyy")}`) : "Date not set"}</p></div></div></div>
         </CardContent>
         <CardFooter className="p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm text-left text-left text-left text-left text-left">
             <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground text-left text-left text-left text-left text-left"><ParticipantsDialog campaign={campaign}><Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors text-left text-left text-left text-left text-left" onClick={stopPropagation}><Users className="h-4 w-4 text-left text-left text-left text-left text-left" /><span className="ml-1.5 text-left text-left text-left text-left text-left">{campaign.participants} MEMBERS</span></Button></ParticipantsDialog>{status === "Ongoing" && (<div className="flex items-center gap-1.5 text-primary text-left text-left text-left text-left text-left"><UserCheck className="h-4 w-4 text-left text-left text-left text-left text-left" /><span> {campaign.soulsLogged || 0} SOULS WON</span></div>)}</div>
@@ -757,7 +834,31 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 ) : (
                     <div onClick={stopPropagation} className="flex items-center gap-2 text-left text-left text-left text-left text-left">
                         {!isJoined && status !== 'Past' && (<Button className="font-black rounded-xl shadow-lg h-9 text-center text-left text-left text-left text-left" onClick={(e) => { e.stopPropagation(); if (!userProfile) { toast({ variant: 'destructive', title: 'Please log in' }); return; } setIsJoinDialogOpen(true); }}>JOIN MISSION</Button>)}
-                        {isJoined && (<Badge variant="secondary" className="flex items-center gap-2 py-1.5 px-3 h-9 font-black rounded-xl bg-primary/10 text-primary border-primary/20 shrink-0 text-left text-left text-left text-left text-left"><UserCheck className="h-4 w-4 text-left text-left text-left text-left text-left" /> JOINED</Badge>)}
+                        
+                        {isJoined && !isOwner && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild onClick={stopPropagation}>
+                                    <Badge variant="secondary" className="flex items-center gap-2 py-1.5 px-3 h-9 font-black rounded-xl bg-primary/10 text-primary border-primary/20 shrink-0 cursor-pointer hover:bg-primary/20 transition-all text-left text-left text-left text-left text-left">
+                                        <UserCheck className="h-4 w-4 text-left text-left text-left text-left text-left" /> 
+                                        JOINED 
+                                        <ChevronDown className="h-3 w-3 opacity-50 ml-1" />
+                                    </Badge>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
+                                    <DropdownMenuItem onClick={handleLeave} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
+                                        {isLeaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />}
+                                        Leave Mission
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
+                        {isJoined && isOwner && (
+                            <Badge variant="secondary" className="flex items-center gap-2 py-1.5 px-3 h-9 font-black rounded-xl bg-primary/10 text-primary border-primary/20 shrink-0 text-left text-left text-left text-left text-left">
+                                <UserCheck className="h-4 w-4 text-left text-left text-left text-left text-left" /> 
+                                ORGANIZER
+                            </Badge>
+                        )}
+
                         {isJoined && status === "Ongoing" && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left text-left text-left" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}><UserPlus className="h-4 w-4 text-left text-left text-left text-left text-left" /></Button></TooltipTrigger><TooltipContent className="text-left text-left text-left text-left"><p className="text-left text-left text-left text-left">Log Soul Won</p></TooltipContent></Tooltip></TooltipProvider>)}
                         {isJoined && (status === 'Ongoing' || status === 'Past') && (<TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left text-left text-left" onClick={(e) => { e.stopPropagation(); onShareTestimony(); }}><Newspaper className="h-4 w-4 text-left text-left text-left text-left text-left" /></Button></TooltipTrigger><TooltipContent className="text-left text-left text-left text-left"><p className="text-left text-left text-left text-left">Share Testimony</p></TooltipContent></Tooltip></TooltipProvider>)}
                         <TooltipProvider><Tooltip><TooltipTrigger asChild><Button onClick={handleInitiateChat} variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm text-left text-left text-left text-left text-left" disabled={!userId || isChatLoading}>{isChatLoading ? <Loader2 className="h-4 w-4 animate-spin text-left text-left text-left text-left text-left" /> : <MessagesSquare className="h-4 w-4 text-left text-left text-left text-left text-left" />}</Button></TooltipTrigger><TooltipContent className="text-left text-left text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left text-left text-left text-left">Chat with Organizer</p></TooltipContent></Tooltip></TooltipProvider>
