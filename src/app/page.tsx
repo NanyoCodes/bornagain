@@ -193,7 +193,7 @@ export default function LandingPage() {
               <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9">
-              <Link href="/signup">Accept the Call</Link>
+              <Link href="/signup">Experience New Birth</Link>
             </Button>
           </div>
         </div>
@@ -322,79 +322,77 @@ export default function LandingPage() {
 
         <section className="py-24 relative overflow-hidden bg-background border-y border-primary/10 text-left">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(249,116,22,0.1),transparent_50%)]" />
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="space-y-8 flex flex-col items-center text-center lg:items-start lg:text-left"
-                    >
-                        <div className="space-y-4 flex flex-col items-center lg:items-start text-center lg:text-left">
-                            <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 w-fit">Redeem the Scroll</Badge>
-                            <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter">Trade the Void for <span className="text-primary">Living Rhema.</span></h2>
+            <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="space-y-8 flex flex-col items-center text-center"
+                >
+                    <div className="space-y-4 flex flex-col items-center text-center">
+                        <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 w-fit">Redeem the Scroll</Badge>
+                        <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center">Trade the Void for <span className="text-primary">Living Rhema.</span></h2>
+                    </div>
+                    <div className="space-y-6 text-muted-foreground text-lg font-medium leading-relaxed italic text-center max-w-3xl">
+                        <p>
+                            In an era where hours are lost to the vacuum of mindless scrolling, the believer's digital habit requires a spiritual upgrade. We consume content that often leaves our spirits dry and our focus scattered.
+                        </p>
+                        <p className="border-x-4 border-primary/40 px-6 text-foreground font-semibold">
+                            BornAgain is necessary today because it reclaims the technology of the 'scroll' for the Kingdom. We turn passive distraction into active spiritual saturation.
+                        </p>
+                        <p>
+                            On this platform, every scroll is a drop of Rhema—a living word, a shared miracle, or a mission call. Each flick of your thumb is no longer a waste of time, but an investment in eternity. We are saturating the digital landscape with the glory of God, ensuring your attention is anchored in truth.
+                        </p>
+                    </div>
+                    <div className="flex items-center justify-center gap-4 pt-4">
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                            <Zap className="h-6 w-6 text-primary" />
                         </div>
-                        <div className="space-y-6 text-muted-foreground text-lg font-medium leading-relaxed italic text-center lg:text-left">
-                            <p>
-                                In an era where hours are lost to the vacuum of mindless scrolling, the believer's digital habit requires a spiritual upgrade. We consume content that often leaves our spirits dry and our focus scattered.
-                            </p>
-                            <p className="border-l-4 border-primary/40 pl-6 text-foreground font-semibold">
-                                BornAgain is necessary today because it reclaims the technology of the 'scroll' for the Kingdom. We turn passive distraction into active spiritual saturation.
-                            </p>
-                            <p>
-                                On this platform, every scroll is a drop of Rhema—a living word, a shared miracle, or a mission call. Each flick of your thumb is no longer a waste of time, but an investment in eternity. We are saturating the digital landscape with the glory of God, ensuring your attention is anchored in truth.
-                            </p>
-                        </div>
-                        <div className="flex items-center justify-center lg:justify-start gap-4 pt-4">
-                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                                <Zap className="h-6 w-6 text-primary" />
+                        <p className="text-sm font-black uppercase tracking-widest text-primary">Every scroll is an encounter.</p>
+                    </div>
+                </motion.div>
+                
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="relative mt-16 w-full max-w-xl"
+                >
+                    <div className="absolute -inset-4 bg-primary/20 rounded-[3rem] blur-3xl opacity-20 animate-pulse" />
+                    <Card className="rounded-[2rem] sm:rounded-[3rem] border-none shadow-2xl overflow-hidden bg-card/50 backdrop-blur-xl border-t-8 border-t-primary/20 relative z-10">
+                        <CardHeader className="p-8 sm:p-10 pb-0">
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
+                                <Target className="h-6 w-6 text-primary" />
                             </div>
-                            <p className="text-sm font-black uppercase tracking-widest text-primary">Every scroll is an encounter.</p>
-                        </div>
-                    </motion.div>
-                    
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        className="relative"
-                    >
-                        <div className="absolute -inset-4 bg-primary/20 rounded-[3rem] blur-3xl opacity-20 animate-pulse" />
-                        <Card className="rounded-[2rem] sm:rounded-[3rem] border-none shadow-2xl overflow-hidden bg-card/50 backdrop-blur-xl border-t-8 border-t-primary/20 relative z-10">
-                            <CardHeader className="p-8 sm:p-10 pb-0">
-                                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
-                                    <Target className="h-6 w-6 text-primary" />
-                                </div>
-                                <CardTitle className="text-2xl font-black uppercase tracking-tight">The Digital Sanctuary</CardTitle>
-                                <CardDescription className="text-sm font-medium">Why BornAgain is vital in this age.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="p-8 sm:p-10 pt-6 space-y-6">
-                                <div className="space-y-4">
-                                    {[
-                                        { title: "Spiritual Saturation", desc: "Drown out the noise of the world with the manifest goodness of God." },
-                                        { title: "Purposeful Habits", desc: "Turn idle moments into a purposeful walk through the harvest field." },
-                                        { title: "Collective Vigilance", desc: "Stay sensitive to the Spirit's move in territories and lives globally." }
-                                    ].map((item, i) => (
-                                        <div key={i} className="flex gap-4 group text-left">
-                                            <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-white transition-all">
-                                                <Check className="h-3 w-3" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-black uppercase tracking-tight">{item.title}</p>
-                                                <p className="text-xs text-muted-foreground font-medium leading-relaxed">{item.desc}</p>
-                                            </div>
+                            <CardTitle className="text-2xl font-black uppercase tracking-tight">The Digital Sanctuary</CardTitle>
+                            <CardDescription className="text-sm font-medium">Why BornAgain is vital in this age.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-8 sm:p-10 pt-6 space-y-6">
+                            <div className="space-y-4">
+                                {[
+                                    { title: "Spiritual Saturation", desc: "Drown out the noise of the world with the manifest goodness of God." },
+                                    { title: "Purposeful Habits", desc: "Turn idle moments into a purposeful walk through the harvest field." },
+                                    { title: "Collective Vigilance", desc: "Stay sensitive to the Spirit's move in territories and lives globally." }
+                                ].map((item, i) => (
+                                    <div key={i} className="flex gap-4 group text-left">
+                                        <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-white transition-all">
+                                            <Check className="h-3 w-3" />
                                         </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                            <CardFooter className="p-8 sm:p-10 pt-0">
-                                <Button asChild variant="outline" className="w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md">
-                                    <Link href="/about">BORNAGAIN VISION</Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    </motion.div>
-                </div>
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-black uppercase tracking-tight">{item.title}</p>
+                                            <p className="text-xs text-muted-foreground font-medium leading-relaxed">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="p-8 sm:p-10 pt-0">
+                            <Button asChild variant="outline" className="w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md">
+                                <Link href="/about">BORNAGAIN VISION</Link>
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </motion.div>
             </div>
         </section>
 

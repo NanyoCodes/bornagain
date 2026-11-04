@@ -54,7 +54,6 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -563,7 +562,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
               <Link href="/login" className="text-left">Sign In</Link>
             </Button>
             <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
-              <Link href="/signup" className="text-left">Join Movement</Link>
+              <Link href="/signup" className="text-left">Experience New Birth</Link>
             </Button>
           </div>
         ) : (
