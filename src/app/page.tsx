@@ -181,7 +181,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             {logo && (
-              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 text-left text-left">
+              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 text-left">
                 <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
                 <AvatarFallback className="text-left font-black">B</AvatarFallback>
               </Avatar>
@@ -216,7 +216,7 @@ export default function LandingPage() {
                   Are you BornAgain?
                 </h1>
                 <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center">
-                   SHARE MIRACLES. WIN SOULS. NURTURE THE HARVEST.
+                   Experience the joy of caring for your family, friends, and souls! It's God's heart to bring everyone back home.
                 </span>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "Truly, truly, I say to you, unless one is born again he cannot see the kingdom of God." — John 3:3
@@ -503,7 +503,7 @@ export default function LandingPage() {
       <footer className="bg-muted/50 border-t py-20 text-left">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16">
-            <div className="col-span-1 sm:col-span-2 space-y-8 text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-8 text-left text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
                 {logo && (
                   <Avatar className="h-14 w-14 border-2 border-primary/20">
@@ -517,7 +517,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="space-y-6 text-left">
+            <div className="space-y-6 text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Platform</h4>
               <ul className="space-y-4 text-left">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Glory Feed</Link></li>
@@ -527,7 +527,7 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div className="space-y-6 text-left">
+            <div className="space-y-6 text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Ministry</h4>
               <ul className="space-y-4 text-left">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">The Vision</Link></li>
