@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -48,7 +48,14 @@ import {
     Plus,
     ChevronRight,
     MoreVertical,
-    ChevronDown
+    ChevronDown,
+    Video,
+    Book,
+    FileText,
+    Mic,
+    ExternalLink,
+    MoreHorizontal,
+    User
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -85,7 +92,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ImageUpload } from '@/components/common/image-upload';
 import { Country, State } from 'country-state-city';
 import Link from 'next/link';
-import type { RegionalChallenge, ChallengeType } from '@/lib/types';
+import type { RegionalChallenge, ChallengeType, CircleResource } from '@/lib/types';
 
 const challengeTypeOptions: { label: string; value: ChallengeType }[] = [
     { label: 'Physical', value: 'Physical' },
@@ -198,15 +205,14 @@ function ChallengeCard({
     );
 }
 
-export function TerritoriesPageClient() {
+export default function TerritoriesPageClient() {
+    const router = useRouter();
+    const firestore = useFirestore();
     const { user } = useUser();
     const { userProfile } = useUserProfile();
-    const firestore = useFirestore();
     const { toast } = useToast();
     const isMobile = useIsMobile();
-    const router = useRouter();
     
-    // State definitions first
     const [mounted, setMounted] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -229,7 +235,6 @@ export function TerritoriesPageClient() {
 
     useEffect(() => { setMounted(true); }, []);
 
-    // Memoized values depending on state
     const challengesQuery = useMemo(() => {
         if (!firestore) return null;
         return query(collection(firestore, 'regionalChallenges'), orderBy('createdAt', 'desc'));
@@ -286,13 +291,6 @@ export function TerritoriesPageClient() {
             setSubCategory(challengeToEdit.subCategory || '');
             setMediaUrl1(challengeToEdit.mediaUrl || '');
             setMediaUrl2(challengeToEdit.mediaUrl2 || '');
-        } else {
-            setRegCountry('');
-            setRegState('');
-            setChallengeType('Physical');
-            setSubCategory('');
-            setMediaUrl1('');
-            setMediaUrl2('');
         }
     }, [challengeToEdit]);
 
@@ -396,7 +394,9 @@ export function TerritoriesPageClient() {
         }
     };
 
-    const creationForm = (onSubmit: any, isEdit = false) => (
+    if (!mounted) return null;
+
+    const creationFormElement = (onSubmit: any, isEdit = false) => (
         <form onSubmit={onSubmit}>
             <div className="p-8 space-y-6 text-left">
                 <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex items-center gap-3">
@@ -498,8 +498,6 @@ export function TerritoriesPageClient() {
         </form>
     );
 
-    if (!mounted) return null;
-
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
@@ -591,7 +589,7 @@ export function TerritoriesPageClient() {
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow">
-                                {creationForm(handleCreateChallenge)}
+                                {creationFormElement(handleCreateChallenge)}
                             </ScrollArea>
                         </DrawerContent>
                     </Drawer>
@@ -609,7 +607,7 @@ export function TerritoriesPageClient() {
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-1 min-h-0">
-                                {creationForm(handleCreateChallenge)}
+                                {creationFormElement(handleCreateChallenge)}
                             </ScrollArea>
                         </DialogContent>
                     </Dialog>
@@ -620,7 +618,7 @@ export function TerritoriesPageClient() {
                 isMobile ? (
                     <Drawer open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Edit className="h-4 w-4 text-primary" />
@@ -630,7 +628,7 @@ export function TerritoriesPageClient() {
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow">
-                                {creationForm(handleUpdateChallenge, true)}
+                                {creationFormElement(handleUpdateChallenge, true)}
                             </ScrollArea>
                         </DrawerContent>
                     </Drawer>
@@ -647,7 +645,7 @@ export function TerritoriesPageClient() {
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-1 min-h-0">
-                                {creationForm(handleUpdateChallenge, true)}
+                                {creationFormElement(handleUpdateChallenge, true)}
                             </ScrollArea>
                         </DialogContent>
                     </Dialog>
