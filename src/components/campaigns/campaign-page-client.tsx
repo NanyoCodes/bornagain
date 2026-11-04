@@ -214,7 +214,7 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
                                             </div>
                                         </div>
                                     </DialogTrigger>
-                                    <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                    <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex flex-col items-center justify-center">
                                         <div className="sr-only">
                                             <DialogHeader>
                                                 <DialogTitle>Mission Evidence</DialogTitle>
@@ -260,7 +260,7 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
                                             </div>
                                         </div>
                                     </DialogTrigger>
-                                    <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                    <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex flex-col items-center justify-center">
                                         <div className="sr-only">
                                             <DialogHeader>
                                                 <DialogTitle>Mission Impact</DialogTitle>
@@ -498,7 +498,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 <div className="mt-8 p-6 bg-primary/5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative text-left text-left">
                                     <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 text-left text-left text-left" />
                                     <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-left text-balance text-left text-left">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
-                                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right text-left text-left">— {campaign.scripture}</p>
+                                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right text-left text-left text-left">— {campaign.scripture}</p>
                                 </div>
                             )}
                         </CardContent>
@@ -562,7 +562,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         ) : (
                             <div className="py-20 text-center bg-muted/10 rounded-[2rem] border-2 border-dashed text-left">
                                 <Loader2 className="h-8 w-8 animate-spin text-primary/20 mx-auto mb-3 text-left" />
-                                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center text-left text-left">Crunching Harvest Data...</p>
+                                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center text-left text-left text-left">Crunching Harvest Data...</p>
                             </div>
                         )}
                     </div>
@@ -722,9 +722,9 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             <Drawer open={isTestimonyOpen} onOpenChange={setIsTestimonyOpen}>
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                        <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Share Victory</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1">What has God done during "{campaign.title}"?</DrawerDescription>
+                        <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Share Victory</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">What has God done during "{campaign.title}"?</DrawerDescription>
                         </DrawerHeader>
                     </div>
                     <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar text-left text-left text-left text-left">
@@ -740,7 +740,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
                         <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left">
                             <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Manage Mission</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1">Update mission details for participants.</DrawerDescription>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Update mission details for participants.</DrawerDescription>
                         </DrawerHeader>
                     </div>
                     <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar text-left text-left text-left text-left">
@@ -760,7 +760,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left">
-                        <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogCancel className="rounded-2xl h-12 font-bold text-left text-left text-left text-left">Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left text-left text-left text-left">
                             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" />}
                             Confirm Removal
@@ -771,4 +771,3 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         </div>
     );
 }
-
