@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -182,8 +183,8 @@ export default function LandingPage() {
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             {logo && (
               <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 text-left text-left">
-                <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-                <AvatarFallback>B</AvatarFallback>
+                <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
+                <AvatarFallback className="text-left font-black">B</AvatarFallback>
               </Avatar>
             )}
           </Link>
