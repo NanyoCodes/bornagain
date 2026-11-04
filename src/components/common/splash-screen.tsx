@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from 'framer-motion';
@@ -45,26 +44,23 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
-        className="flex flex-col items-center gap-8 w-full max-w-sm text-left"
+        className="flex flex-col items-center gap-8 w-full max-sm text-left"
       >
         <div className="relative text-left">
+            <div className="absolute inset-0 bg-primary/30 rounded-full blur-3xl animate-pulse" />
             <motion.div 
                 animate={{ 
                     scale: [1, 1.05, 1],
                     rotate: [0, 2, -2, 0]
                 }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="relative z-10"
             >
                 <Avatar className="h-32 w-32 sm:h-48 sm:w-48 shadow-2xl ring-8 ring-primary/10 border-4 border-background text-left">
                   <AvatarImage src={logoUrl} alt="BornAgain Logo" className="text-left" />
                   <AvatarFallback className="text-4xl bg-primary/10 text-primary font-black text-left">B</AvatarFallback>
                 </Avatar>
             </motion.div>
-            <motion.div 
-                className="absolute -top-4 -right-4 h-12 w-12 bg-primary/20 rounded-full blur-2xl animate-pulse text-left"
-                animate={{ scale: [1, 1.5, 1] }}
-                transition={{ duration: 3, repeat: Infinity }}
-            />
         </div>
         
         <div className="text-center space-y-4 text-left">

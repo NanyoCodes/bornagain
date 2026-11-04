@@ -97,10 +97,11 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             <div className="mx-auto w-full max-w-[340px] space-y-6 text-left">
                 {logo && (
                     <div className="flex justify-start w-full mb-8 text-left">
-                    <Link href="/">
-                        <Avatar className="h-20 w-20 border shadow-sm ring-4 ring-primary/10 text-left">
-                        <AvatarImage src={logo.imageUrl} alt="BornAgain" className="text-left" />
-                        <AvatarFallback className="text-left font-black">B</AvatarFallback>
+                    <Link href="/" className="relative group">
+                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse group-hover:bg-primary/30 transition-colors" />
+                        <Avatar className="h-20 w-20 border shadow-sm ring-4 ring-primary/10 text-left relative z-10">
+                          <AvatarImage src={logo.imageUrl} alt="BornAgain" className="text-left" />
+                          <AvatarFallback className="text-left font-black">B</AvatarFallback>
                         </Avatar>
                     </Link>
                     </div>

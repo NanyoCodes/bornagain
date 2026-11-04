@@ -182,10 +182,13 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             {logo && (
-              <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 text-left">
-                <AvatarImage src={logo.imageUrl} alt="BornAgain" className="object-cover text-left" />
-                <AvatarFallback className="text-left font-black">B</AvatarFallback>
-              </Avatar>
+              <div className="relative group">
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg animate-pulse" />
+                <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 text-left relative z-10">
+                  <AvatarImage src={logo.imageUrl} alt="BornAgain" className="object-cover text-left" />
+                  <AvatarFallback className="text-left font-black">B</AvatarFallback>
+                </Avatar>
+              </div>
             )}
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
@@ -583,10 +586,13 @@ export default function LandingPage() {
             <div className="col-span-1 sm:col-span-2 space-y-8 text-left text-left text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left text-left">
                 {logo && (
-                  <Avatar className="h-14 w-14 border-2 border-primary/20">
-                    <AvatarImage src={logo.imageUrl} alt="BornAgain" className="object-cover text-left" />
-                    <AvatarFallback>B</AvatarFallback>
-                  </Avatar>
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg" />
+                    <Avatar className="h-14 w-14 border-2 border-primary/20 text-left relative z-10">
+                      <AvatarImage src={logo.imageUrl} alt="BornAgain" className="object-cover text-left" />
+                      <AvatarFallback>B</AvatarFallback>
+                    </Avatar>
+                  </div>
                 )}
               </Link>
               <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty max-sm">
