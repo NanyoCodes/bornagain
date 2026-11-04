@@ -1,9 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection, useDoc, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -15,7 +15,6 @@ import {
     deleteDoc,
     where 
 } from 'firebase/firestore';
-import type { RegionalChallenge, ChallengeSolution, ChallengeType } from '@/lib/types';
 import { 
     Card, 
     CardContent, 
@@ -69,6 +68,16 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -76,6 +85,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ImageUpload } from '@/components/common/image-upload';
 import { Country, State } from 'country-state-city';
 import Link from 'next/link';
+import type { RegionalChallenge, ChallengeType } from '@/lib/types';
 
 const challengeTypeOptions: { label: string; value: ChallengeType }[] = [
     { label: 'Physical', value: 'Physical' },
@@ -188,7 +198,7 @@ function ChallengeCard({
     );
 }
 
-export default function TerritoriesPageClient() {
+export function TerritoriesPageClient() {
     const { user } = useUser();
     const { userProfile } = useUserProfile();
     const firestore = useFirestore();
@@ -196,7 +206,7 @@ export default function TerritoriesPageClient() {
     const isMobile = useIsMobile();
     const router = useRouter();
     
-    // 1. State definitions
+    // State definitions first
     const [mounted, setMounted] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -219,7 +229,7 @@ export default function TerritoriesPageClient() {
 
     useEffect(() => { setMounted(true); }, []);
 
-    // 2. Computed values and queries
+    // Memoized values depending on state
     const challengesQuery = useMemo(() => {
         if (!firestore) return null;
         return query(collection(firestore, 'regionalChallenges'), orderBy('createdAt', 'desc'));
@@ -594,7 +604,7 @@ export default function TerritoriesPageClient() {
                                         <Globe className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Registration</span>
                                     </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Regional Challenge</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Regional Challenge</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1">Share hurdles in your region with photo evidence to mobilize global solutions.</DialogDescription>
                                 </DialogHeader>
                             </div>
