@@ -13,7 +13,9 @@ import {
     orderBy,
     updateDoc,
     deleteDoc,
-    where 
+    where,
+    arrayUnion,
+    arrayRemove
 } from 'firebase/firestore';
 import { 
     Card, 
@@ -30,6 +32,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { 
     Loader2, 
     ArrowLeft, 
+    ArrowRight,
     MessageSquare, 
     Sparkles, 
     ShieldCheck, 
@@ -92,7 +95,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ImageUpload } from '@/components/common/image-upload';
 import { Country, State } from 'country-state-city';
 import Link from 'next/link';
-import type { RegionalChallenge, ChallengeType, CircleResource } from '@/lib/types';
+import type { RegionalChallenge, ChallengeType } from '@/lib/types';
+import { useDoc } from '@/firebase/firestore/use-doc';
 
 const challengeTypeOptions: { label: string; value: ChallengeType }[] = [
     { label: 'Physical', value: 'Physical' },
@@ -213,6 +217,7 @@ export default function TerritoriesPageClient() {
     const { toast } = useToast();
     const isMobile = useIsMobile();
     
+    // State declarations must come before hooks that use them
     const [mounted, setMounted] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
