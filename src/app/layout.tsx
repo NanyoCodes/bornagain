@@ -15,7 +15,7 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const bornAgainLogoUrl = 'https://i.postimg.cc/bDJtXtj1/Born-Again-Mountain-Sunrise-Badge.png';
+const bornAgainLogoUrl = 'https://i.postimg.cc/p9pgrPzm/Born-Again-Logo.png';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://testifyglobal.com'),
@@ -95,7 +95,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn(inter.variable)} suppressHydrationWarning>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased text-left">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

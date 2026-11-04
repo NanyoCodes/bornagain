@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
  */
 
 export async function GET() {
-  const bornAgainLogoUrl = 'https://i.postimg.cc/bDJtXtj1/Born-Again-Mountain-Sunrise-Badge.png';
+  const bornAgainLogoUrl = 'https://i.postimg.cc/p9pgrPzm/Born-Again-Logo.png';
 
   const manifest = {
     name: 'BornAgain Global',
