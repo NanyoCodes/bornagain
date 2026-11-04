@@ -15,7 +15,7 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const bornAgainLogoUrl = 'https://i.postimg.cc/p9pgrPzm/Born-Again-Logo.png';
+const bornAgainLogoUrl = 'https://i.postimg.cc/cJmZDHJB/Whats-App-Image-2026-11-04-at-09-31-55.jpg';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://testifyglobal.com'),
@@ -73,11 +73,11 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [
-      { url: bornAgainLogoUrl, type: 'image/png', sizes: '192x192' },
-      { url: bornAgainLogoUrl, type: 'image/png', sizes: '512x512' }
+      { url: bornAgainLogoUrl, type: 'image/jpeg', sizes: '192x192' },
+      { url: bornAgainLogoUrl, type: 'image/jpeg', sizes: '512x512' }
     ],
     shortcut: bornAgainLogoUrl,
-    apple: [{ url: bornAgainLogoUrl, sizes: '180x180', type: 'image/png' }],
+    apple: [{ url: bornAgainLogoUrl, sizes: '180x180', type: 'image/jpeg' }],
   },
 };
 

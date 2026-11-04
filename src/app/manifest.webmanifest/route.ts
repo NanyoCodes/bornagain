@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
  */
 
 export async function GET() {
-  const bornAgainLogoUrl = 'https://i.postimg.cc/p9pgrPzm/Born-Again-Logo.png';
+  const bornAgainLogoUrl = 'https://i.postimg.cc/cJmZDHJB/Whats-App-Image-2026-11-04-at-09-31-55.jpg';
 
   const manifest = {
     name: 'BornAgain Global',
@@ -20,25 +20,25 @@ export async function GET() {
       {
         src: bornAgainLogoUrl,
         sizes: '192x192',
-        type: 'image/png',
+        type: 'image/jpeg',
         purpose: 'any'
       },
       {
         src: bornAgainLogoUrl,
         sizes: '192x192',
-        type: 'image/png',
+        type: 'image/jpeg',
         purpose: 'maskable'
       },
       {
         src: bornAgainLogoUrl,
         sizes: '512x512',
-        type: 'image/png',
+        type: 'image/jpeg',
         purpose: 'any'
       },
       {
         src: bornAgainLogoUrl,
         sizes: '512x512',
-        type: 'image/png',
+        type: 'image/jpeg',
         purpose: 'maskable'
       },
     ],
