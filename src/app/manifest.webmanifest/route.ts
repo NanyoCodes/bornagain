@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 
 /**
@@ -5,7 +6,7 @@ import { NextResponse } from 'next/server';
  */
 
 export async function GET() {
-  const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
+  const bornAgainLogoUrl = 'https://i.postimg.cc/bDJtXtj1/Born-Again-Mountain-Sunrise-Badge.png';
 
   const manifest = {
     name: 'BornAgain Global',
@@ -17,25 +18,25 @@ export async function GET() {
     theme_color: '#f97416',
     icons: [
       {
-        src: testifyLogoUrl,
+        src: bornAgainLogoUrl,
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any'
       },
       {
-        src: testifyLogoUrl,
+        src: bornAgainLogoUrl,
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable'
       },
       {
-        src: testifyLogoUrl,
+        src: bornAgainLogoUrl,
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any'
       },
       {
-        src: testifyLogoUrl,
+        src: bornAgainLogoUrl,
         sizes: '512x512',
         type: 'image/png',
         purpose: 'maskable'

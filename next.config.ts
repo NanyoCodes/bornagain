@@ -1,12 +1,13 @@
+
 import type {NextConfig} from 'next';
 
-const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
+const bornAgainLogoUrl = 'https://i.postimg.cc/bDJtXtj1/Born-Again-Mountain-Sunrise-Badge.png';
 
 const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline' https://maps.googleapis.com https://*.firebaseapp.com https://apis.google.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    img-src 'self' blob: data: https://*.unsplash.com https://i.ibb.co https://picsum.photos https://*.firebasestorage.googleapis.com https://lh3.googleusercontent.com https://maps.gstatic.com https://*.googleapis.com https://*.ggpht.com;
+    img-src 'self' blob: data: https://*.unsplash.com https://i.ibb.co https://i.postimg.cc https://picsum.photos https://*.firebasestorage.googleapis.com https://lh3.googleusercontent.com https://maps.gstatic.com https://*.googleapis.com https://*.ggpht.com;
     font-src 'self' https://fonts.gstatic.com;
     object-src 'none';
     base-uri 'self';
@@ -79,6 +80,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
     remotePatterns: [
       { protocol: 'https', hostname: 'i.ibb.co' },
+      { protocol: 'https', hostname: 'i.postimg.cc' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'picsum.photos' },
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },

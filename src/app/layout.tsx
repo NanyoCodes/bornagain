@@ -1,3 +1,4 @@
+
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -14,7 +15,7 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
+const bornAgainLogoUrl = 'https://i.postimg.cc/bDJtXtj1/Born-Again-Mountain-Sunrise-Badge.png';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://testifyglobal.com'),
@@ -53,7 +54,7 @@ export const metadata: Metadata = {
     siteName: 'BornAgain',
     images: [
       {
-        url: testifyLogoUrl,
+        url: bornAgainLogoUrl,
         width: 1200,
         height: 630,
         alt: 'BornAgain - Christian Identity Platform',
@@ -66,17 +67,17 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'BornAgain | Global Evangelism Platform',
     description: 'The premier platform for the new creation. Record miracle stories and manage soul-winning campaigns.',
-    images: [testifyLogoUrl],
+    images: [bornAgainLogoUrl],
     creator: '@bornagainglobal',
   },
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [
-      { url: testifyLogoUrl, type: 'image/png', sizes: '192x192' },
-      { url: testifyLogoUrl, type: 'image/png', sizes: '512x512' }
+      { url: bornAgainLogoUrl, type: 'image/png', sizes: '192x192' },
+      { url: bornAgainLogoUrl, type: 'image/png', sizes: '512x512' }
     ],
-    shortcut: testifyLogoUrl,
-    apple: [{ url: testifyLogoUrl, sizes: '180x180', type: 'image/png' }],
+    shortcut: bornAgainLogoUrl,
+    apple: [{ url: bornAgainLogoUrl, sizes: '180x180', type: 'image/png' }],
   },
 };
 
