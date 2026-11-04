@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -42,6 +43,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -58,6 +60,13 @@ import {
     DrawerTitle,
     DrawerDescription,
 } from "@/components/ui/drawer";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { useCollection, useFirestore, useUser, useDoc, useUserProfile, useStorage } from "@/firebase";
 import { 
   collection, 
@@ -72,6 +81,7 @@ import {
   orderBy
 } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -98,7 +108,7 @@ interface EventCardProps {
 
 function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
-    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
     const { data: profile } = useDoc<UserProfile>(userRef);
     const currentPhotoUrl = profile?.photoURL || fallbackUrl;
     
@@ -112,7 +122,12 @@ function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, classNam
             </DialogTrigger>
             {currentPhotoUrl && (
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                    <div className="sr-only text-left"><DialogHeader className="text-left"><DialogTitle className="text-left">Profile Photo</DialogTitle></DialogHeader></div>
+                    <div className="sr-only text-left">
+                        <DialogHeader className="text-left">
+                            <DialogTitle className="text-left">Profile Photo</DialogTitle>
+                            <DialogDescription className="text-left">Full screen view of participant's photo.</DialogDescription>
+                        </DialogHeader>
+                    </div>
                     <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
                         <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                             <Image src={currentPhotoUrl} alt="Participant" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
@@ -320,7 +335,27 @@ function EventEvidenceDialog({ event, isOpen, onOpenChange }: { event: Event, is
                 )}
                 <Button onClick={handleFinalize} disabled={!preview || isUploading} className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl">{isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="mr-2 h-5 w-5" />}SAVE TO GALLERY</Button>
             </div>
-            <div className="space-y-4 text-left"><div className="flex items-center gap-2 px-1"><Users className="h-4 w-4 text-primary" /><h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">EVENT GALLERY</h3></div><div className="grid grid-cols-2 sm:grid-cols-3 gap-4">{galleryLoading ? [...Array(4)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-2xl" />) : galleryItems?.map(item => (<div key={item.id} className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group"><Image src={item.url} alt="Proof" fill className="object-cover transition-transform group-hover:scale-110" unoptimized /><div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end"><p className="text-[8px] font-black text-white uppercase truncate">By {item.authorName}</p></div></div>))}</div></div>
+            <div className="space-y-4 text-left"><div className="flex items-center gap-2 px-1"><Users className="h-4 w-4 text-primary" /><h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">EVENT GALLERY</h3></div><div className="grid grid-cols-2 sm:grid-cols-3 gap-4">{galleryLoading ? [...Array(4)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-2xl" />) : galleryItems?.map(item => (<Dialog key={item.id}>
+                <DialogTrigger asChild>
+                    <div className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group cursor-pointer">
+                        <Image src={item.url} alt="Proof" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end"><p className="text-[8px] font-black text-white uppercase truncate">By {item.authorName}</p></div>
+                    </div>
+                </DialogTrigger>
+                <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                    <div className="sr-only">
+                        <DialogHeader>
+                            <DialogTitle>Event Evidence</DialogTitle>
+                            <DialogDescription>Full screen view of gathering photo.</DialogDescription>
+                        </DialogHeader>
+                    </div>
+                    <div className="relative h-full w-full flex items-center justify-center p-4">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                            <Image src={item.url} alt="Full view" fill className="object-contain" unoptimized />
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>))}</div></div>
             <input type="file" ref={fileInputRef} className="hidden" onChange={e => { const f = e.target.files?.[0]; if(f) handleUploadProcessedFile(f, f.type.startsWith('image/') ? 'image' : f.type.startsWith('video/') ? 'video' : 'audio'); }} />
         </div>
     );
@@ -571,3 +606,4 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
     </>
   );
 }
+

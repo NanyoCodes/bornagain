@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Campaign, UserProfile, CampaignParticipant, Testimony, Fellowship, AccountabilityRequest, Soul, CampaignGalleryItem } from '@/lib/types';
@@ -9,6 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
@@ -152,7 +154,7 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Upload Stage</Label>
                                 <Select value={uploadStage} onValueChange={(v: any) => setUploadStage(v)}>
-                                    <SelectTrigger className="h-11 rounded-xl bg-background border-none shadow-sm font-bold">
+                                    <SelectTrigger className="h-12 rounded-xl bg-background border-none shadow-sm font-bold">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl">
@@ -213,6 +215,12 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
                                         </div>
                                     </DialogTrigger>
                                     <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                        <div className="sr-only">
+                                            <DialogHeader>
+                                                <DialogTitle>Mission Evidence</DialogTitle>
+                                                <DialogDescription>Full screen view of mission photo.</DialogDescription>
+                                            </DialogHeader>
+                                        </div>
                                         <div className="relative h-full w-full flex items-center justify-center p-4">
                                             <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                                                 <NextImage src={item.url} alt="Full view" fill className="object-contain" unoptimized />
@@ -253,6 +261,12 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
                                         </div>
                                     </DialogTrigger>
                                     <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                        <div className="sr-only">
+                                            <DialogHeader>
+                                                <DialogTitle>Mission Impact</DialogTitle>
+                                                <DialogDescription>Full screen view of impact photo.</DialogDescription>
+                                            </DialogHeader>
+                                        </div>
                                         <div className="relative h-full w-full flex items-center justify-center p-4">
                                             <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                                                 <NextImage src={item.url} alt="Full view" fill className="object-contain" unoptimized />
@@ -723,7 +737,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 <DrawerContent className="sm:max-w-2xl h-[95dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left">
                     <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
                         <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Manage Mission</DrawerTitle>
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Manage Mission</DrawerTitle>
                         </DrawerHeader>
                     </div>
                     <div className="flex-1 overflow-y-auto no-scrollbar text-left text-left text-left text-left">
@@ -754,3 +768,4 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         </div>
     );
 }
+
