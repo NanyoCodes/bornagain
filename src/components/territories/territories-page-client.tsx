@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -16,7 +15,7 @@ import {
     deleteDoc,
     where 
 } from 'firebase/firestore';
-import type { RegionalChallenge, ChallengeSolution, UserProfile, ChallengeType, CircleResource } from '@/lib/types';
+import type { RegionalChallenge, ChallengeSolution, ChallengeType } from '@/lib/types';
 import { 
     Card, 
     CardContent, 
@@ -194,6 +193,7 @@ export default function TerritoriesPageClient() {
     const isMobile = useIsMobile();
     const router = useRouter();
     
+    // State declarations MUST come before useMemo/useEffect calls that depend on them
     const [mounted, setMounted] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -210,6 +210,9 @@ export default function TerritoriesPageClient() {
     const [subCategory, setSubCategory] = useState('');
     const [mediaUrl1, setMediaUrl1] = useState('');
     const [mediaUrl2, setMediaUrl2] = useState('');
+
+    const [filterCountry, setFilterCountry] = useState<string>('all');
+    const [filterState, setFilterState] = useState<string>('all');
 
     useEffect(() => { setMounted(true); }, []);
 
@@ -229,9 +232,6 @@ export default function TerritoriesPageClient() {
         const country = countriesList.find(c => c.name === filterCountry);
         return country ? State.getStatesOfCountry(country.isoCode) : [];
     }, [filterCountry, countriesList]);
-
-    const [filterCountry, setFilterCountry] = useState<string>('all');
-    const [filterState, setFilterState] = useState<string>('all');
 
     const filteredChallenges = useMemo(() => {
         if (!allChallenges) return [];
@@ -531,7 +531,7 @@ export default function TerritoriesPageClient() {
                             placeholder="Search territories..." 
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full"
+                            className="h-12 pl-11 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full"
                         />
                     </div>
                 </div>
@@ -626,7 +626,7 @@ export default function TerritoriesPageClient() {
                                 <DialogHeader>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Edit className="h-4 w-4 text-primary" />
-                                        <span className="text-[10px) font-black uppercase text-primary tracking-[0.3em]">Refinement</span>
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Refinement</span>
                                     </div>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Update Hub Report</DialogTitle>
                                 </DialogHeader>
@@ -659,41 +659,3 @@ export default function TerritoriesPageClient() {
         </div>
     );
 }
-
-const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
-  insecurity: [
-    { verse: "Psalm 91:1-2", text: "Whoever dwells in the shelter of the Most High will rest in the shadow of the Almighty. I will say of the Lord, 'He is my refuge and my fortress, my God, in whom I trust.'", prayer: "Lord, I refuse to live in fear. You are my refuge and my safe house. I rest secure under Your wings today. Amen." },
-    { verse: "Proverbs 3:25-26", text: "Have no fear of sudden disaster... for the Lord will be at your side and will keep your foot from being snared.", prayer: "Father, I trust You to be my constant companion. Guard my steps and preserve my peace in every season. Amen." },
-    { verse: "Isaiah 54:14", text: "In righteousness you will be established: Tyranny will be far from you; you will have nothing to fear. Terror will be far removed; it will not come near you.", prayer: "I declare that terror and fear have no place in my heart or my home. I am established in Your righteousness. Amen." }
-  ],
-  kidnapping: [
-    { verse: "Psalm 124:7", text: "We have escaped like a bird from the fowler’s snare; the snare has been broken, and we have escaped.", prayer: "Lord, I speak a total break of every snare of captivity. Deliver the innocent and lead them to safety by Your mighty hand. Amen." },
-    { verse: "Isaiah 49:25", text: "But this is what the Lord says: 'Yes, captives will be taken from warriors, and plunder retrieved from the fierce; I will contend with those who contend with you, and your children I will save.'", prayer: "I stand on Your promise to contend with the fierce. Rescue the captives and save our children, O God. Amen." },
-    { verse: "Psalm 18:48", text: "He delivers me from my enemies; You exalt me above those who rise up against me; You rescue me from the violent man.", prayer: "Thank You for being a Rescuer. Deliver us from the hands of violent men and establish our safety. Amen." }
-  ],
-  violent_crime: [
-    { verse: "Psalm 34:17", text: "The righteous cry out, and the Lord hears them; he delivers them from all their troubles.", prayer: "We cry out for our land, Lord. Deliver us from the plague of violence and murder. Let Your peace reign. Amen." },
-    { verse: "Psalm 55:9", text: "Lord, confuse the wicked, confound their words, for I see violence and strife in the city.", prayer: "Confuse the plans of the wicked, Father. Frustrate the counsel of those who plot destruction in our cities. Amen." },
-    { verse: "Matthew 10:28", text: "Do not be afraid of those who kill the body but cannot kill the soul.", prayer: "I refuse to be intimidated by the spirit of death. My life is hidden in Christ, and my eternity is secure. Amen." }
-  ],
-  pride: [
-    { verse: "Proverbs 16:18", text: "Pride goes before destruction, a haughty spirit before a fall.", prayer: "Lord, strip away my pride and clothe me in Your humility. Let me never forget that You are the source of my strength. Amen." },
-    { verse: "James 4:6", text: "God opposes the proud but shows favor to the humble.", prayer: "I choose to humble myself before You today, Lord. May Your favor rest upon me as I decrease and You increase. Amen." },
-    { verse: "1 Peter 5:5", text: "Clothe yourselves, all of you, with humility toward one another.", prayer: "Holy Spirit, help me to serve others with a genuine heart, free from the need for recognition or praise. Amen." }
-  ],
-  anxiety: [
-    { verse: "1 Peter 5:7", text: "Cast all your anxiety on him because he cares for you.", prayer: "Lord, I release every heavy burden and anxious thought to You. I trust that You care for me deeply. Amen." },
-    { verse: "Philippians 4:6-7", text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.", prayer: "I trade my worry for Your peace that surpasses understanding. Guard my heart and mind in Christ Jesus. Amen." },
-    { verse: "Matthew 6:34", text: "Therefore do not worry about tomorrow, for tomorrow will worry about itself.", prayer: "Help me to live fully in today, trusting Your provision for every moment. Amen." }
-  ],
-  lust: [
-    { verse: "1 Corinthians 10:13", text: "No temptation has overtaken you except what is common to mankind. And God is faithful; he will not let you be tempted beyond what you can bear.", prayer: "Lord, I thank You for providing a way out. I choose Your path of escape and declare my freedom in Christ. Amen." },
-    { verse: "Matthew 5:28", text: "But I tell you that anyone who looks at a woman lustfully has already committed adultery with her in his heart.", prayer: "Father, purify my vision and my heart. Let my eyes see only what is holy and honoring to You. Amen." },
-    { verse: "1 John 2:16", text: "For everything in the world—the lust of the flesh, the lust of the eyes, and the pride of life—comes not from the Father but from the world.", prayer: "I reject the cravings of this world. I feast my soul on Your presence and Your Word. Amen." }
-  ],
-  other: [
-    { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "I cast out fear today. You are my God, and You are holding my hand. Amen." },
-    { verse: "Philippians 4:13", text: "I can do all this through him who gives me strength.", prayer: "Whatever I face today, I have the victory through Your power, Jesus. Amen." },
-    { verse: "Romans 8:37", text: "No, in all these things we are more than conquerors through him who loved us.", prayer: "I am more than a conqueror! I walk in the victory of Your love today. Amen." }
-  ]
-};
