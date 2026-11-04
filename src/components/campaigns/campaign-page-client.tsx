@@ -187,8 +187,8 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
 
                 <Tabs defaultValue="preparatory" className="w-full">
                     <TabsList className="grid w-full grid-cols-2 h-11 bg-muted/30 p-1 rounded-2xl mb-6">
-                        <TabsTrigger value="preparatory" className="rounded-xl font-black text-[10px] uppercase tracking-widest">Preparatory ({groupedItems.preparatory.length})</TabsTrigger>
-                        <TabsTrigger value="ongoing" className="rounded-xl font-black text-[10px] uppercase tracking-widest">Ongoing ({groupedItems.ongoing.length})</TabsTrigger>
+                        <TabsTrigger value="preparatory" className="rounded-xl font-black text-[10px] uppercase tracking-widest text-center">Preparatory ({groupedItems.preparatory.length})</TabsTrigger>
+                        <TabsTrigger value="ongoing" className="rounded-xl font-black text-[10px] uppercase tracking-widest text-center">Ongoing ({groupedItems.ongoing.length})</TabsTrigger>
                     </TabsList>
                     
                     <TabsContent value="preparatory">
