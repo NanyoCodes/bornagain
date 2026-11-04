@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useCollection, useDoc, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -26,6 +26,8 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
     Loader2, 
     ArrowLeft, 
@@ -47,32 +49,33 @@ import {
     Plus,
     ChevronRight,
     MoreVertical,
+    ChevronDown
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { CommentSection } from '../testimonies/comment-section';
-import { Label } from '@/components/ui/label';
-import Link from 'next/link';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ImageUpload } from '@/components/common/image-upload';
-import { Country, State } from 'country-state-city';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ImageUpload } from '@/components/common/image-upload';
+import { Country, State } from 'country-state-city';
+import Link from 'next/link';
 
 const challengeTypeOptions: { label: string; value: ChallengeType }[] = [
     { label: 'Physical', value: 'Physical' },
@@ -193,7 +196,7 @@ export default function TerritoriesPageClient() {
     const isMobile = useIsMobile();
     const router = useRouter();
     
-    // State declarations MUST come before useMemo/useEffect calls that depend on them
+    // 1. State definitions
     const [mounted, setMounted] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -216,6 +219,7 @@ export default function TerritoriesPageClient() {
 
     useEffect(() => { setMounted(true); }, []);
 
+    // 2. Computed values and queries
     const challengesQuery = useMemo(() => {
         if (!firestore) return null;
         return query(collection(firestore, 'regionalChallenges'), orderBy('createdAt', 'desc'));
@@ -223,6 +227,7 @@ export default function TerritoriesPageClient() {
     const { data: allChallenges, loading } = useCollection<RegionalChallenge>(challengesQuery);
 
     const countriesList = useMemo(() => Country.getAllCountries(), []);
+
     const regStatesList = useMemo(() => {
         const country = countriesList.find(c => c.name === regCountry);
         return country ? State.getStatesOfCountry(country.isoCode) : [];
@@ -565,14 +570,14 @@ export default function TerritoriesPageClient() {
                 isMobile ? (
                     <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Globe className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Registration</span>
                                     </div>
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Post Regional Challenge</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1">Detail the needs of your territory with evidence.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Detail the needs of your territory with evidence.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow">
