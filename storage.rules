@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Hardened write permissions for Territories, Events, and Campaigns - 2025-03-16T18:00:00Z
+    // Deployment trigger: Public read access for mission-critical evidence - 2025-03-18T22:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -25,7 +25,8 @@ service firebase.storage {
 
     // Unified policy for mission-critical folders
     match /{folder}/{userId}/{allPaths=**} {
-      allow read: if isAuthenticated();
+      // Allow public read for these mission-critical folders to ensure global visibility of God's work
+      allow read: if true;
       
       allow write: if isOwner(userId) && (
         folder in [
