@@ -43,7 +43,7 @@ export default function AboutPage() {
         <section className="space-y-4">
             <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><Award className="h-5 w-5 text-primary" /> The Mandate</h2>
             <Card className="border-l-4 border-l-primary rounded-2xl bg-primary/5 shadow-none border-none">
-                <CardContent className="pt-6 italic text-muted-foreground leading-relaxed font-medium">
+                <CardContent className="pt-6 italic text-muted-foreground leading-relaxed font-medium text-left">
                     "I believe that the greatest move of God in our time is marked by the intentionality of the redeemed. BornAgain was birthed to ensure that when a soul enters the light, they are nurtured. It is the platform for the new creation—the one who cares enough to follow up, to pray, and to support their brethren." - by Nanyo Theophilus
                 </CardContent>
             </Card>
@@ -65,7 +65,8 @@ export default function AboutPage() {
                 <CardContent className="text-xs text-muted-foreground font-medium leading-relaxed">
                     We use AI-powered insights to provide strategies for nurturing those who have just been BornAgain, ensuring their foundation in Christ is solid.
                 </CardContent>
-            </section>
+            </Card>
+        </section>
 
         <section className="space-y-4">
             <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><HeartHandshake className="h-5 w-5 text-primary" /> Kingdom Alliances</h2>
