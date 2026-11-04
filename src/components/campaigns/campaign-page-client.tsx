@@ -141,143 +141,144 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
 
     return (
         <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden text-left">
-            <CardHeader className="p-8 border-b bg-muted/5">
-                <CardTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-tight">
-                    <Camera className="h-5 w-5 text-primary" /> Mission Gallery
+            <CardHeader className="p-8 border-b bg-muted/5 text-left">
+                <CardTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-tight text-left">
+                    <Camera className="h-5 w-5 text-primary text-left" /> Mission Gallery
                 </CardTitle>
-                <CardDescription>Visual record of preparatory work and ongoing mission impact.</CardDescription>
+                <CardDescription className="text-left">Visual record of preparatory work and ongoing mission impact.</CardDescription>
             </CardHeader>
-            <CardContent className="p-8 space-y-8">
+            <CardContent className="p-8 space-y-8 text-left">
                 {isMember && (
-                    <div className="space-y-6 p-6 sm:p-8 rounded-3xl bg-muted/20 border-2 border-dashed flex flex-col items-center">
-                        <div className="w-full space-y-6">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Upload Stage</Label>
+                    <div className="space-y-6 p-6 sm:p-8 rounded-3xl bg-muted/20 border-2 border-dashed flex flex-col items-center text-left">
+                        <div className="w-full space-y-6 text-left">
+                            <div className="space-y-2 text-left">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Upload Stage</Label>
                                 <Select value={uploadStage} onValueChange={(v: any) => setUploadStage(v)}>
-                                    <SelectTrigger className="h-12 rounded-xl bg-background border-none shadow-sm font-bold">
+                                    <SelectTrigger className="h-12 rounded-xl bg-background border-none shadow-sm font-bold text-left">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl">
-                                        <SelectItem value="preparatory">Preparatory Phase</SelectItem>
-                                        <SelectItem value="ongoing">Ongoing Mission</SelectItem>
+                                    <SelectContent className="rounded-xl text-left">
+                                        <SelectItem value="preparatory" className="text-left">Preparatory Phase</SelectItem>
+                                        <SelectItem value="ongoing" className="text-left">Ongoing Mission</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Photo Evidence</Label>
+                            <div className="space-y-2 text-left">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Photo Evidence</Label>
                                 <ImageUpload 
+                                    initialImageUrl={photoUrl}
                                     onUploadComplete={setPhotoUrl} 
                                     storagePath="campaign-assets" 
                                     cropAspect={4/3}
                                 />
                             </div>
                         </div>
-                        <div className="w-full flex justify-center">
+                        <div className="w-full flex justify-center text-left">
                             <Button 
                                 onClick={handleUpload} 
                                 disabled={!photoUrl || isUploading}
-                                className="h-14 px-12 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95"
+                                className="h-14 px-12 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95 text-center text-left"
                             >
-                                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Upload className="h-5 w-5 mr-2" />}
+                                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left" /> : <Upload className="h-5 w-5 mr-2 text-left" />}
                                 SAVE PHOTO
                             </Button>
                         </div>
                     </div>
                 )}
 
-                <Tabs defaultValue="preparatory" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 h-11 bg-muted/30 p-1 rounded-2xl mb-6">
+                <Tabs defaultValue="preparatory" className="w-full text-left">
+                    <TabsList className="grid w-full grid-cols-2 h-11 bg-muted/30 p-1 rounded-2xl mb-6 text-left">
                         <TabsTrigger value="preparatory" className="rounded-xl font-black text-[10px] uppercase tracking-widest text-center">Preparatory ({groupedItems.preparatory.length})</TabsTrigger>
                         <TabsTrigger value="ongoing" className="rounded-xl font-black text-[10px] uppercase tracking-widest text-center">Ongoing ({groupedItems.ongoing.length})</TabsTrigger>
                     </TabsList>
                     
-                    <TabsContent value="preparatory">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <TabsContent value="preparatory" className="text-left">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-left">
                             {groupedItems.preparatory.map(item => (
                                 <Dialog key={item.id}>
                                     <DialogTrigger asChild>
-                                        <div className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group cursor-pointer bg-muted">
+                                        <div className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group cursor-pointer bg-muted text-left">
                                             <Image src={item.url} alt="Prep" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
-                                                <div className="flex items-center justify-between gap-2">
-                                                    <p className="text-[8px] font-black text-white uppercase truncate">By {item.authorName}</p>
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end text-left">
+                                                <div className="flex items-center justify-between gap-2 text-left">
+                                                    <p className="text-[8px] font-black text-white uppercase truncate text-left">By {item.authorName}</p>
                                                     {(isOrganizer || item.authorId === user?.uid) && (
                                                         <button 
                                                             onClick={(e) => { e.stopPropagation(); handleDeleteItem(item.id); }}
                                                             disabled={isDeleting === item.id}
-                                                            className="h-6 w-6 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg"
+                                                            className="h-6 w-6 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg text-left"
                                                         >
-                                                            {isDeleting === item.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+                                                            {isDeleting === item.id ? <Loader2 className="h-3 w-3 animate-spin text-left" /> : <Trash2 className="h-3 w-3 text-left" />}
                                                         </button>
                                                     )}
                                                 </div>
                                             </div>
                                         </div>
                                     </DialogTrigger>
-                                    <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex flex-col items-center justify-center">
-                                        <div className="sr-only">
-                                            <DialogHeader>
-                                                <DialogTitle>Mission Evidence</DialogTitle>
-                                                <DialogDescription>Full screen view of mission photo.</DialogDescription>
+                                    <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex flex-col items-center justify-center text-center">
+                                        <div className="sr-only text-left">
+                                            <DialogHeader className="text-left">
+                                                <DialogTitle className="text-left">Mission Evidence</DialogTitle>
+                                                <DialogDescription className="text-left">Full screen view of mission photo.</DialogDescription>
                                             </DialogHeader>
                                         </div>
-                                        <div className="relative h-full w-full flex items-center justify-center p-4">
-                                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                                                <Image src={item.url} alt="Full view" fill className="object-contain" unoptimized />
+                                        <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                                                <Image src={item.url} alt="Full view" fill className="object-contain text-left" unoptimized />
                                             </div>
                                         </div>
                                     </DialogContent>
                                 </Dialog>
                             ))}
                             {groupedItems.preparatory.length === 0 && !loading && (
-                                <div className="col-span-full py-12 text-center border-2 border-dashed rounded-3xl opacity-40">
-                                    <p className="text-xs font-bold uppercase italic text-center">No preparatory records yet</p>
+                                <div className="col-span-full py-12 text-center border-2 border-dashed rounded-3xl opacity-40 text-left">
+                                    <p className="text-xs font-bold uppercase italic text-center text-left">No preparatory records yet</p>
                                 </div>
                             )}
                         </div>
                     </TabsContent>
                     
-                    <TabsContent value="ongoing">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <TabsContent value="ongoing" className="text-left">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-left">
                             {groupedItems.ongoing.map(item => (
                                 <Dialog key={item.id}>
                                     <DialogTrigger asChild>
-                                        <div className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group cursor-pointer bg-muted">
+                                        <div className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group cursor-pointer bg-muted text-left">
                                             <Image src={item.url} alt="Ongoing" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
-                                                <div className="flex items-center justify-between gap-2">
-                                                    <p className="text-[8px] font-black text-white uppercase truncate">By {item.authorName}</p>
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end text-left">
+                                                <div className="flex items-center justify-between gap-2 text-left">
+                                                    <p className="text-[8px] font-black text-white uppercase truncate text-left">By {item.authorName}</p>
                                                     {(isOrganizer || item.authorId === user?.uid) && (
                                                         <button 
                                                             onClick={(e) => { e.stopPropagation(); handleDeleteItem(item.id); }}
                                                             disabled={isDeleting === item.id}
-                                                            className="h-6 w-6 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg"
+                                                            className="h-6 w-6 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-lg text-left"
                                                         >
-                                                            {isDeleting === item.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+                                                            {isDeleting === item.id ? <Loader2 className="h-3 w-3 animate-spin text-left" /> : <Trash2 className="h-3 w-3 text-left" />}
                                                         </button>
                                                     )}
                                                 </div>
                                             </div>
                                         </div>
                                     </DialogTrigger>
-                                    <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex flex-col items-center justify-center">
-                                        <div className="sr-only">
-                                            <DialogHeader>
-                                                <DialogTitle>Mission Impact</DialogTitle>
-                                                <DialogDescription>Full screen view of impact photo.</DialogDescription>
+                                    <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex flex-col items-center justify-center text-center">
+                                        <div className="sr-only text-left">
+                                            <DialogHeader className="text-left">
+                                                <DialogTitle className="text-left">Mission Impact</DialogTitle>
+                                                <DialogDescription className="text-left">Full screen view of impact photo.</DialogDescription>
                                             </DialogHeader>
                                         </div>
-                                        <div className="relative h-full w-full flex items-center justify-center p-4">
-                                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                                                <Image src={item.url} alt="Full view" fill className="object-contain" unoptimized />
+                                        <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                                                <Image src={item.url} alt="Full view" fill className="object-contain text-left" unoptimized />
                                             </div>
                                         </div>
                                     </DialogContent>
                                 </Dialog>
                             ))}
                             {groupedItems.ongoing.length === 0 && !loading && (
-                                <div className="col-span-full py-12 text-center border-2 border-dashed rounded-3xl opacity-40">
-                                    <p className="text-xs font-bold uppercase italic text-center">No mission impact photos yet</p>
+                                <div className="col-span-full py-12 text-center border-2 border-dashed rounded-3xl opacity-40 text-left">
+                                    <p className="text-xs font-bold uppercase italic text-center text-left">No mission impact photos yet</p>
                                 </div>
                             )}
                         </div>
@@ -514,7 +515,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
                         {demographics ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
-                                <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10 text-left text-left">
+                                <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10 text-left text-left text-left">
                                     <CardHeader className="p-6 pb-3 text-left text-left">
                                         <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left text-left">
                                             <Users className="h-3.5 w-3.5 text-left text-left" /> Gender Distribution
@@ -536,7 +537,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                     </CardContent>
                                 </Card>
 
-                                <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10 text-left text-left">
+                                <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10 text-left text-left text-left">
                                     <CardHeader className="p-6 pb-3 text-left text-left">
                                         <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left text-left">
                                             <Activity className="h-3.5 w-3.5 text-left text-left" /> Age Groups

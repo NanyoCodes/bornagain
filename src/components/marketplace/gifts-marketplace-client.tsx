@@ -66,7 +66,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import { ImageUpload } from '@/components/common/image-upload';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -381,7 +381,7 @@ export default function GiftsMarketplaceClient() {
                             </p>
                         </div>
                     </div>
-                    <div className="flex gap-2 shrink-0 text-left">
+                    <div className="flex gap-2 shrink-0 text-left text-left text-left text-left">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -435,7 +435,7 @@ export default function GiftsMarketplaceClient() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-2xl border-none p-2 text-left text-left">
-                                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2 text-left text-left">Select Category</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2 text-left text-left text-left">Select Category</DropdownMenuLabel>
                                 <DropdownMenuSeparator className="text-left text-left" />
                                 <DropdownMenuItem onSelect={() => setFilterCategory('all')} className="rounded-xl py-2.5 text-left text-left">All Products</DropdownMenuItem>
                                 {giftStoreCategories.map(cat => (
@@ -460,7 +460,7 @@ export default function GiftsMarketplaceClient() {
                                 <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
                                     <SelectValue placeholder="Country" className="text-left" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left text-left">
+                                <SelectContent className="max-h-[300px] text-left">
                                     <SelectItem value="all" className="text-left">All Countries</SelectItem>
                                     {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
                                 </SelectContent>
@@ -509,7 +509,7 @@ export default function GiftsMarketplaceClient() {
                         >
                             <div className="aspect-[2/1] relative bg-muted text-left">
                                 {vendor.photoURL ? (
-                                    <NextImage src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left" unoptimized />
+                                    <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left" unoptimized />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-left">
                                         <Package className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
@@ -524,7 +524,7 @@ export default function GiftsMarketplaceClient() {
                                 </div>
                                 <div className="absolute top-4 left-4 text-left">
                                     {vendor.category && (
-                                        <Badge className="bg-primary text-white font-black uppercase text-[7px] px-2 h-5 border-none shadow-sm text-left text-left">
+                                        <Badge className="bg-primary text-white font-black uppercase text-[7px] px-2 h-5 border-none shadow-sm text-left text-left text-left">
                                             {vendor.category}
                                         </Badge>
                                     )}
@@ -588,7 +588,7 @@ export default function GiftsMarketplaceClient() {
                     <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left p-0 text-left">
+                                <SheetHeader className="text-left p-0 text-left text-left">
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</SheetTitle>
                                     <SheetDescription className="text-sm font-medium mt-1 text-left">Register your gift storefront.</SheetDescription>
                                 </SheetHeader>
@@ -601,7 +601,7 @@ export default function GiftsMarketplaceClient() {
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DialogHeader className="p-0 text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Register your gift storefront and start providing physical tokens of kindness.</DialogDescription>
