@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -58,12 +57,13 @@ import {
     Trash2,
     Camera,
     PlusCircle,
-    LogOut
+    LogOut,
+    Upload
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ManageCampaignForm } from './manage-campaign-form';
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
@@ -77,7 +77,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ImageUpload } from '@/components/common/image-upload';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
 const LogSoulFormLazy = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
@@ -178,7 +178,7 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
                                 disabled={!photoUrl || isUploading}
                                 className="h-14 px-12 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95"
                             >
-                                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <PlusCircle className="h-5 w-5 mr-2" />}
+                                {isUploading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Upload className="h-5 w-5 mr-2" />}
                                 SAVE PHOTO
                             </Button>
                         </div>
@@ -196,8 +196,8 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
                             {groupedItems.preparatory.map(item => (
                                 <Dialog key={item.id}>
                                     <DialogTrigger asChild>
-                                        <div className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group cursor-pointer">
-                                            <NextImage src={item.url} alt="Prep" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
+                                        <div className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group cursor-pointer bg-muted">
+                                            <Image src={item.url} alt="Prep" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
                                                 <div className="flex items-center justify-between gap-2">
                                                     <p className="text-[8px] font-black text-white uppercase truncate">By {item.authorName}</p>
@@ -223,7 +223,7 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
                                         </div>
                                         <div className="relative h-full w-full flex items-center justify-center p-4">
                                             <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                                                <NextImage src={item.url} alt="Full view" fill className="object-contain" unoptimized />
+                                                <Image src={item.url} alt="Full view" fill className="object-contain" unoptimized />
                                             </div>
                                         </div>
                                     </DialogContent>
@@ -242,8 +242,8 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
                             {groupedItems.ongoing.map(item => (
                                 <Dialog key={item.id}>
                                     <DialogTrigger asChild>
-                                        <div className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group cursor-pointer">
-                                            <NextImage src={item.url} alt="Ongoing" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
+                                        <div className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group cursor-pointer bg-muted">
+                                            <Image src={item.url} alt="Ongoing" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
                                                 <div className="flex items-center justify-between gap-2">
                                                     <p className="text-[8px] font-black text-white uppercase truncate">By {item.authorName}</p>
@@ -269,7 +269,7 @@ function CampaignGallery({ campaignId, isMember, isOrganizer }: { campaignId: st
                                         </div>
                                         <div className="relative h-full w-full flex items-center justify-center p-4">
                                             <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                                                <NextImage src={item.url} alt="Full view" fill className="object-contain" unoptimized />
+                                                <Image src={item.url} alt="Full view" fill className="object-contain" unoptimized />
                                             </div>
                                         </div>
                                     </DialogContent>
@@ -476,7 +476,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <ArrowLeft className="h-5 w-5 text-left text-left"/>
                 </Button>
                 <div className="min-w-0 flex-1 text-left">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight truncate uppercase text-balance text-left text-left">{campaign.title}</h1>
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight truncate uppercase text-balance break-words text-left text-left">{campaign.title}</h1>
                     <div className="flex items-center gap-2 mt-1 text-left text-left text-left">
                         <Badge variant={status === 'Ongoing' ? 'default' : 'outline'} className="uppercase font-bold tracking-widest text-[10px] text-left text-left">
                             {status}
@@ -489,16 +489,16 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
                 <div className="lg:col-span-2 space-y-8 text-left text-left text-left">
                     <Card className="rounded-none sm:rounded-[2rem] border-none shadow-sm bg-muted/20 text-left">
-                        <CardHeader className="p-8 text-left text-left">
-                            <CardTitle className="text-lg font-black uppercase tracking-widest text-muted-foreground text-left text-left">About this Mission</CardTitle>
+                        <CardHeader className="p-8 text-left text-left text-left">
+                            <CardTitle className="text-lg font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">About this Mission</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-8 pb-8 text-left text-left">
-                            <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-medium text-left text-left">{campaign.description}</p>
+                        <CardContent className="px-8 pb-8 text-left text-left text-left">
+                            <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-medium text-left text-left text-left">{campaign.description}</p>
                             {campaign.scripture && (
                                 <div className="mt-8 p-6 bg-primary/5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative text-left text-left">
-                                    <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 text-left text-left" />
-                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-left text-balance text-left">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
-                                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right text-left">— {campaign.scripture}</p>
+                                    <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 text-left text-left text-left" />
+                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-left text-balance text-left text-left">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-right text-left text-left">— {campaign.scripture}</p>
                                 </div>
                             )}
                         </CardContent>
@@ -567,7 +567,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         )}
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0 text-left text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0 text-left text-left text-left">
                         <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 text-left text-left text-left">
                             <CardHeader className="pb-3 text-left text-left text-left">
                                 <CardTitle className="text-sm font-bold flex items-center gap-2 uppercase tracking-widest text-muted-foreground text-left text-left text-left">
@@ -593,7 +593,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
                     <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden mx-4 sm:mx-0 text-left">
                         <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left text-left">
-                            <CardTitle className="flex items-center justify-between text-lg font-black uppercase tracking-tight text-left text-left text-left text-left text-left">
+                            <CardTitle className="flex items-center justify-between text-lg font-black uppercase tracking-tight text-left text-left text-left text-left text-left text-left">
                                 <span className="flex items-center gap-2 text-left text-left text-left text-left"><Users className="h-5 w-5 text-primary text-left text-left text-left text-left" /> Participants</span>
                                 <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold text-left text-left text-left text-left">{(participants?.length || 0)}</Badge>
                             </CardTitle>
@@ -602,7 +602,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left text-left text-left text-left">
                                 {participants?.map(p => (
                                     <Link key={p.id} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-all text-left text-left text-left text-left">
-                                        <Avatar className="h-9 w-9 border shadow-sm text-left text-left text-left text-left"><AvatarImage src={p.photoURL} className="text-left text-left text-left text-left" /><AvatarFallback className="font-bold text-xs text-left text-left text-left text-left"> {p.firstName?.charAt(0)}</AvatarFallback></Avatar>
+                                        <Avatar className="h-9 w-9 border shadow-sm text-left text-left text-left text-left text-left"><AvatarImage src={p.photoURL} className="text-left text-left text-left text-left" /><AvatarFallback className="font-bold text-xs text-left text-left text-left text-left"> {p.firstName?.charAt(0)}</AvatarFallback></Avatar>
                                         <div className="min-w-0 flex-1 text-left text-left text-left text-left"><p className="font-bold text-sm truncate uppercase tracking-tight text-left text-left text-left text-left">{p.firstName} {p.lastName}</p></div>
                                     </Link>
                                 ))}
@@ -637,9 +637,9 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 </div>
 
                 <div className="space-y-8 flex flex-col px-4 sm:px-0 text-left text-left text-left text-left">
-                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-indigo-600 text-white overflow-hidden text-left text-left text-left">
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-indigo-600 text-white overflow-hidden text-left text-left text-left text-left">
                         <CardHeader className="pb-4 text-left text-left text-left text-left text-left">
-                            <div className="flex items-center justify-between mb-2 text-left text-left text-left text-left text-left">
+                            <div className="flex items-center justify-between mb-2 text-left text-left text-left text-left text-left text-left">
                                 <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center text-left text-left text-left text-left">
                                     <Target className="h-5 w-5 text-white text-left text-left text-left text-left" />
                                 </div>
@@ -647,7 +647,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             </div>
                             <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Harvest Impact</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4 text-left text-left text-left text-left">
+                        <CardContent className="space-y-4 text-left text-left text-left text-left text-left">
                             <div className="flex items-center justify-between p-4 rounded-2xl bg-white/10 border border-white/10 text-left text-left text-left text-left">
                                 <div className="space-y-1 text-left text-left text-left text-left">
                                     <p className="text-[10px] font-bold uppercase tracking-widest opacity-70 text-left text-left text-left text-left">Souls Won</p>
@@ -661,7 +661,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </Card>
 
                     <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-primary text-primary-foreground text-left text-left text-left text-left">
-                        <CardHeader className="pb-4 text-left text-left text-left text-left"><CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80 text-left text-left text-left text-left">Mission Hub</CardTitle></CardHeader>
+                        <CardHeader className="pb-4 text-left text-left text-left text-left text-left"><CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80 text-left text-left text-left text-left">Mission Hub</CardTitle></CardHeader>
                         <CardContent className="flex flex-col gap-3 text-left text-left text-left text-left">
                             {isJoined && status === 'Ongoing' && (
                                 <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20 text-left text-left text-left text-left" onClick={() => setIsLogSoulOpen(true)}>
@@ -674,14 +674,14 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 </Button>
                             )}
                             {isOwner ? (
-                                <React.Fragment>
+                                <div className="flex flex-col gap-2">
                                   <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-black/10 text-white hover:bg-black/20 border-white/10 text-left text-left text-left text-left" onClick={() => setIsManageOpen(true)}>
                                       <Edit className="mr-2 h-4 w-4 text-left text-left text-left text-left" /> MANAGE MISSION
                                   </Button>
                                   <Button variant="destructive" className="w-full h-12 font-black rounded-2xl shadow-lg uppercase tracking-widest text-xs text-center text-left text-left text-left text-left" onClick={() => setIsDeleteAlertOpen(true)}>
                                       <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left" /> DELETE MISSION
                                   </Button>
-                                </React.Fragment>
+                                </div>
                             ) : isJoined && (
                                 <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/20 text-left text-left text-left text-left" onClick={handleLeave} disabled={isLeaving}>
                                     {isLeaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin text-left text-left text-left" /> : <LogOut className="mr-2 h-5 w-5 text-left text-left text-left" />} LEAVE MISSION
@@ -691,10 +691,10 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </Card>
 
                     <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 text-left text-left text-left text-left">
-                        <CardHeader className="pb-3 text-left text-left text-left text-left"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Organizer</CardTitle></CardHeader>
-                        <CardContent className="text-left text-left text-left text-left">
+                        <CardHeader className="pb-3 text-left text-left text-left text-left text-left"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Organizer</CardTitle></CardHeader>
+                        <CardContent className="text-left text-left text-left text-left text-left">
                             <Link href={isOwner ? '/profile' : `/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-all text-left text-left text-left text-left">
-                                <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-xl text-left text-left text-left text-left"><AvatarFallback className="font-black text-left text-left text-left text-left text-left"> {campaign.organizerFirstName?.charAt(0)}</AvatarFallback></Avatar>
+                                <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-xl text-left text-left text-left text-left text-left"><AvatarFallback className="font-black text-left text-left text-left text-left text-left"> {campaign.organizerFirstName?.charAt(0)}</AvatarFallback></Avatar>
                                 <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left"><span className="font-black text-base group-hover:text-primary transition-colors block truncate uppercase text-left text-left text-left text-left"> {campaign.organizerFirstName} {campaign.organizerLastName}</span><span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left text-left text-left text-left">Mission Leader</span></div>
                             </Link>
                         </CardContent>
@@ -705,9 +705,10 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             {/* Managed Dialogs */}
             <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                         <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
                             <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Log Harvest</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1">Record a soul won in "{campaign.title}".</DrawerDescription>
                         </DrawerHeader>
                     </div>
                     <div className="flex-1 overflow-y-auto no-scrollbar text-left text-left text-left text-left">
@@ -723,6 +724,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                         <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
                             <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Share Victory</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1">What has God done during "{campaign.title}"?</DrawerDescription>
                         </DrawerHeader>
                     </div>
                     <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar text-left text-left text-left text-left">
@@ -736,11 +738,12 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             <Drawer open={isManageOpen} onOpenChange={setIsManageOpen}>
                 <DrawerContent className="sm:max-w-2xl h-[95dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left">
                     <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
-                        <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left">
+                        <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left text-left text-left">
                             <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Manage Mission</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1">Update mission details for participants.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <div className="flex-1 overflow-y-auto no-scrollbar text-left text-left text-left text-left">
+                    <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar text-left text-left text-left text-left">
                         <div className="p-8 text-left text-left text-left text-left">
                             {isManageOpen && <ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { }} />}
                         </div>
