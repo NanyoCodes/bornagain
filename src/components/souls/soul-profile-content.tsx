@@ -267,7 +267,7 @@ export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-center text-left">
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
         {headerContent}
         {contentBody}
       </DialogContent>
@@ -493,7 +493,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
       } catch (e) { toast({ variant: 'destructive', title: 'Share Failed' }); }
   };
 
-  const handleHelpNeedConfirm = (note: string) => { if (!soul) return; finalizeLog(soul, 'helped_with_need', `Service: ${note}`); setIsHelpNeedDialogOpen(false); setCustomMessageText(''); }
+  const handleHelpNeedConfirm = (note: string) => { if (!soul) return; finalizeLog(soul, 'helped_with_need', `Health: ${note}`); setIsHelpNeedDialogOpen(false); setCustomMessageText(''); }
 
   const uniquePartners = React.useMemo(() => { 
     const partners = currentUserProfile?.accountabilityPartners || []; 
@@ -702,6 +702,28 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
         <IntercessionHubDialog isOpen={isPrayerDialogOpen} onOpenChange={setIsPrayerDialogOpen} soul={soul} onComplete={(msg) => { setCustomMessageText(msg); setIsPrayerDialogOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} />
         <MessageHubDialog isOpen={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen} soul={soul} onChannelSelect={(c) => handleCommChoice(c)} />
         <ShareWordDialog isOpen={isStudyWordOpen} onOpenChange={setIsStudyWordOpen} soul={soul} onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} />
+
+        <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                <div className="p-8 border-b bg-muted/10">
+                    <DialogHeader className="text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Health Status</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">Record a health-related update for {soul?.firstName}.</DialogDescription>
+                    </DialogHeader>
+                </div>
+                <div className="p-8 space-y-6">
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Update Details</Label>
+                        <Textarea 
+                            placeholder="e.g. Visited for checkup, confirmed recovery, prayed for healing..." 
+                            onChange={e => setCustomMessageText(e.target.value)}
+                            className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
+                        />
+                    </div>
+                    <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-14 rounded-2xl font-black shadow-lg uppercase tracking-widest">CONFIRM UPDATE</Button>
+                </div>
+            </DialogContent>
+        </Dialog>
     </React.Fragment>
   );
 }
