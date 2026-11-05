@@ -72,6 +72,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogFooter,
@@ -651,7 +652,7 @@ export default function TerritoriesPageClient() {
                         </SheetContent>
                     </Sheet>
                 ) : (
-                    <Dialog open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
+                    <Dialog open={!!challengeToEdit} onOpenChange={(open) => !open && setChallengeToEdit(null)}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b bg-muted/10 text-left">
                                 <DialogHeader>
