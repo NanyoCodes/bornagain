@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Public read access for mission-critical evidence - 2025-03-18T22:00:00Z
+    // Deployment trigger: Universal public read and strict owner write for all mission folders - 2025-03-18T23:45:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -23,27 +23,21 @@ service firebase.storage {
              request.resource.contentType == 'application/pdf';
     }
 
-    // Unified policy for mission-critical folders
+    // Unified policy for user-partitioned folders
+    // Pattern: {folder}/{userId}/{filename}
     match /{folder}/{userId}/{allPaths=**} {
-      // Allow public read for these mission-critical folders to ensure global visibility of God's work
+      // Allow public read for all folders to ensure global visibility of God's work
       allow read: if true;
       
-      allow write: if isOwner(userId) && (
-        folder in [
-          'profile-pictures', 
-          'vendor-branding', 
-          'marketplace-items', 
-          'meals-center', 
-          'kindness-center', 
-          'campaign-assets', 
-          'testimonies', 
-          'souls', 
-          'events',
-          'territories'
-        ]
-      ) && isValidSize() && (request.resource == null || isAllowedType());
-
+      // Allow write and delete only if the user is the owner of the directory
+      allow write: if isOwner(userId) && isValidSize() && (request.resource == null || isAllowedType());
       allow delete: if isOwner(userId);
+    }
+
+    // Fallback for non-partitioned or root paths
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidSize() && (request.resource == null || isAllowedType());
     }
   }
 }
