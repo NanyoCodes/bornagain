@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useUser, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -395,99 +395,101 @@ export default function TerritoriesPageClient() {
     };
 
     const creationFormElement = (onSubmit: any, isEdit = false) => (
-        <form onSubmit={onSubmit}>
-            <div className="p-8 space-y-6 text-left">
-                <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex items-center gap-3">
-                    <Target className="h-5 w-5 text-primary" />
-                    <p className="text-xs font-bold text-primary uppercase tracking-widest">{isEdit ? 'Refining Territorial Intervention' : 'Mobilizing Territorial Intervention'}</p>
-                </div>
-
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1" htmlFor="title">Challenge Title</Label>
-                    <Input id="title" name="title" defaultValue={challengeToEdit?.title || ''} placeholder="e.g., Spiritual Insecurity in North Lagos" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
-                </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Domain</Label>
-                        <Select onValueChange={(val: any) => setChallengeType(val)} value={challengeType}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
-                                <SelectValue placeholder="Select Type" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-none shadow-2xl">
-                                {challengeTypeOptions.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold">{opt.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+        <form onSubmit={onSubmit} className="flex flex-col h-full overflow-hidden">
+            <ScrollArea className="flex-grow">
+                <div className="p-8 space-y-8">
+                    <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex items-center gap-3">
+                        <Target className="h-5 w-5 text-primary" />
+                        <p className="text-xs font-bold text-primary uppercase tracking-widest">{isEdit ? 'Refining Territorial Intervention' : 'Mobilizing Territorial Intervention'}</p>
                     </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
-                        <Select onValueChange={setSubCategory} value={subCategory}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
-                                <SelectValue placeholder="Select Category" />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-[300px] rounded-2xl border-none shadow-2xl">
-                                {subCategories[challengeType].map(cat => (
-                                    <SelectItem key={cat} value={cat} className="rounded-xl font-bold">{cat}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
 
-                <div className="space-y-4">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Territory Location</Label>
-                    <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
-                            <SelectValue placeholder="Select Country" />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-[300px]">
-                            {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1" htmlFor="title">Challenge Title</Label>
+                        <Input id="title" name="title" defaultValue={challengeToEdit?.title || ''} placeholder="e.g., Spiritual Insecurity in North Lagos" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
+                    </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
-                        <Select onValueChange={setRegState} value={regState} disabled={!regCountry || regStatesList.length === 0}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Domain</Label>
+                            <Select onValueChange={(val: any) => setChallengeType(val)} value={challengeType}>
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                                    <SelectValue placeholder="Select Type" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-2xl border-none shadow-2xl">
+                                    {challengeTypeOptions.map(opt => (
+                                        <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold">{opt.label}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
+                            <Select onValueChange={setSubCategory} value={subCategory}>
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                                    <SelectValue placeholder="Select Category" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px] rounded-2xl border-none shadow-2xl">
+                                    {subCategories[challengeType].map(cat => (
+                                        <SelectItem key={cat} value={cat} className="rounded-xl font-bold">{cat}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Territory Location</Label>
+                        <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                <SelectValue placeholder="State/Region" />
+                                <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                             <SelectContent className="max-h-[300px]">
-                                {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
+                                {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
-                        <Input name="city" defaultValue={challengeToEdit?.city || ''} placeholder="City (Optional)" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
-                    </div>
-                </div>
-
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1" htmlFor="description">Description of Challenge</Label>
-                    <Textarea id="description" name="description" defaultValue={challengeToEdit?.description || ''} placeholder="Detail the regional challenges and spiritual hurdles..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" required />
-                </div>
-
-                <div className="space-y-8">
-                    <div className="space-y-4">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Evidence Photo (Optional)</Label>
-                      <ImageUpload 
-                          initialImageUrl={mediaUrl1} 
-                          onUploadComplete={setMediaUrl1} 
-                          storagePath="territories" 
-                          cropAspect={4/3}
-                      />
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            <Select onValueChange={setRegState} value={regState} disabled={!regCountry || regStatesList.length === 0}>
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                                    <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "State/Region"} />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px]">
+                                    {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                            <Input name="city" defaultValue={challengeToEdit?.city || ''} placeholder="City (Optional)" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                        </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Additional Proof (Optional)</Label>
-                      <ImageUpload 
-                          initialImageUrl={mediaUrl2} 
-                          onUploadComplete={setMediaUrl2} 
-                          storagePath="territories" 
-                          cropAspect={4/3}
-                      />
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1" htmlFor="description">Description of Challenge</Label>
+                        <Textarea id="description" name="description" defaultValue={challengeToEdit?.description || ''} placeholder="Detail the regional challenges and spiritual hurdles..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" required />
+                    </div>
+
+                    <div className="space-y-8">
+                        <div className="space-y-4">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Evidence Photo (Optional)</Label>
+                          <ImageUpload 
+                              initialImageUrl={mediaUrl1} 
+                              onUploadComplete={setMediaUrl1} 
+                              storagePath="territories" 
+                              cropAspect={4/3}
+                          />
+                        </div>
+
+                        <div className="space-y-4">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Additional Proof (Optional)</Label>
+                          <ImageUpload 
+                              initialImageUrl={mediaUrl2} 
+                              onUploadComplete={setMediaUrl2} 
+                              storagePath="territories" 
+                              cropAspect={4/3}
+                          />
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
+            </ScrollArea>
+            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0">
                 <Button type="button" variant="outline" onClick={() => { setIsCreateOpen(false); setChallengeToEdit(null); }} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (isEdit ? 'SAVE CHANGES' : 'POST CHALLENGE')}
@@ -550,7 +552,7 @@ export default function TerritoriesPageClient() {
                 <div className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                         <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
-                            <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider">
+                            <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
                                 <SelectValue placeholder="Country" />
                             </SelectTrigger>
                             <SelectContent className="max-h-[300px]">
@@ -560,7 +562,7 @@ export default function TerritoriesPageClient() {
                         </Select>
 
                         <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
-                            <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider">
+                            <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
                                 <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "State/Region"} />
                             </SelectTrigger>
                             <SelectContent className="max-h-[300px]">
@@ -572,7 +574,7 @@ export default function TerritoriesPageClient() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 sm:px-0">
                 {loading ? (
                     [...Array(6)].map((_, i) => (
                         <Card key={i} className="h-48 rounded-[2rem] animate-pulse bg-muted/30 border-none" />
@@ -591,7 +593,7 @@ export default function TerritoriesPageClient() {
                     <div className="col-span-full py-32 text-center flex flex-col items-center">
                         <Globe className="h-16 w-16 text-muted-foreground opacity-10 mb-6" />
                         <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center">Territory Silence</h3>
-                        <p className="text-xs text-muted-foreground italic mt-2 max-w-xs mx-auto text-balance text-center">No regional challenges recorded for this filter. Start one to mobilize solutions.</p>
+                        <p className="text-sm text-muted-foreground italic mt-2 max-w-xs mx-auto text-balance text-center">No regional challenges recorded for this filter. Start one to mobilize solutions.</p>
                     </div>
                 )}
             </div>
@@ -604,38 +606,34 @@ export default function TerritoriesPageClient() {
             {isCreateOpen && (
                 isMobile ? (
                     <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <DrawerHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Globe className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Registration</span>
                                     </div>
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Post Regional Challenge</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Detail the needs of your territory with evidence.</DrawerDescription>
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Post Regional Challenge</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1">Detail the needs of your territory with evidence.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow">
+                            <div className="flex-grow min-h-0">
                                 {creationFormElement(handleCreateChallenge)}
-                            </ScrollArea>
+                            </div>
                         </DrawerContent>
                     </Drawer>
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DialogHeader className="text-left">
-                                    <div className="flex items-center gap-2 mb-2 text-left">
-                                        <Globe className="h-4 w-4 text-primary text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Registration</span>
-                                    </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Regional Challenge</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Share hurdles in your region with photo evidence to mobilize global solutions.</DialogDescription>
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Regional Challenge</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1">Share hurdles in your region with photo evidence to mobilize global solutions.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 text-left">
+                            <div className="flex-1 min-h-0">
                                 {creationFormElement(handleCreateChallenge)}
-                            </ScrollArea>
+                            </div>
                         </DialogContent>
                     </Dialog>
                 )
@@ -644,53 +642,53 @@ export default function TerritoriesPageClient() {
             {challengeToEdit && (
                 isMobile ? (
                     <Drawer open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <DrawerHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Edit className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Refinement</span>
                                     </div>
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Update Hub Report</DrawerTitle>
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Update Hub Report</DrawerTitle>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow">
+                            <div className="flex-grow min-h-0">
                                 {creationFormElement(handleUpdateChallenge, true)}
-                            </ScrollArea>
+                            </div>
                         </DrawerContent>
                     </Drawer>
                 ) : (
                     <Dialog open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b bg-muted/10 text-left">
-                                <DialogHeader className="text-left">
-                                    <div className="flex items-center gap-2 mb-2 text-left">
-                                        <Edit className="h-4 w-4 text-primary text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Refinement</span>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+                            <div className="p-8 border-b bg-muted/10">
+                                <DialogHeader>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Edit className="h-4 w-4 text-primary" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Refinement</span>
                                     </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Update Hub Report</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Update Hub Report</DialogTitle>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 text-left">
+                            <div className="flex-1 min-h-0">
                                 {creationFormElement(handleUpdateChallenge, true)}
-                            </ScrollArea>
+                            </div>
                         </DialogContent>
                     </Dialog>
                 )
             )}
 
             <AlertDialog open={!!challengeToDelete} onOpenChange={open => !open && setChallengeToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left">
-                        <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">Remove Report?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Remove Report?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed">
                             Are you sure you want to delete this territorial challenge? All proposed solutions will also be removed. This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel className="rounded-xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteChallenge} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">
-                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}
+                    <AlertDialogFooter className="gap-3 mt-6">
+                        <AlertDialogCancel className="rounded-xl h-12 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteChallenge} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">
+                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>
