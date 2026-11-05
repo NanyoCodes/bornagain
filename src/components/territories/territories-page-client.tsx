@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -49,15 +49,21 @@ import {
     Plus,
     ChevronDown,
     Camera,
-    Upload
+    Upload,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogFooter
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
   DropdownMenu,
@@ -67,16 +73,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogFooter,
-} from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -141,6 +138,22 @@ function ChallengeCard({
                         </Badge>
                     </div>
                     <div className="flex items-center gap-2">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-primary/20 text-primary hover:bg-primary/10 shadow-md bg-background">
+                                        <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`}>
+                                            <Target className="h-5 w-5" />
+                                            <span className="sr-only">Check this</span>
+                                        </Link>
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="bottom" className="rounded-xl border-primary/20 shadow-xl">
+                                    <p className="text-[10px] font-black uppercase">Check this</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+
                         {isAuthor && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -159,7 +172,6 @@ function ChallengeCard({
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )}
-                        {!isAuthor && <Flag className="h-4 w-4 text-primary opacity-20" />}
                     </div>
                 </div>
                 <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight group-hover:text-primary transition-colors">
@@ -187,10 +199,10 @@ function ChallengeCard({
                     <p className="text-[9px] font-bold text-muted-foreground uppercase">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
                 </div>
             </CardContent>
-            <CardFooter className="p-2 border-t mt-auto bg-muted/5">
-                <Button asChild variant="ghost" className="w-full h-10 rounded-xl group/btn hover:bg-primary/10 hover:text-primary transition-all">
-                    <Link href={`/territories/${challenge.id}`} className="flex items-center justify-center w-full">
-                        <ArrowRight className="h-5 w-5 text-primary/60 transition-all group-hover/btn:text-primary group-hover/btn:translate-x-1" />
+            <CardFooter className="p-0 border-t mt-auto bg-muted/5">
+                <Button asChild variant="ghost" className="w-full h-14 rounded-none group/btn hover:bg-primary/5 hover:text-primary transition-all">
+                    <Link href={`/territories/${challenge.id}`} className="flex items-center justify-center w-full h-full">
+                        <ArrowRight className="h-6 w-6 text-primary/60 transition-transform group-hover/btn:translate-x-1" />
                     </Link>
                 </Button>
             </CardFooter>
@@ -389,9 +401,9 @@ export default function TerritoriesPageClient() {
     };
 
     const creationFormElement = (onSubmit: any, isEdit = false) => (
-        <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden text-left">
+        <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
             <ScrollArea className="flex-1">
-                <div className="p-8 space-y-8 text-left">
+                <div className="p-8 space-y-8">
                     <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex items-center gap-3">
                         <Target className="h-5 w-5 text-primary" />
                         <p className="text-xs font-bold text-primary uppercase tracking-widest">{isEdit ? 'Refining Territorial Intervention' : 'Mobilizing Territorial Intervention'}</p>
@@ -494,9 +506,9 @@ export default function TerritoriesPageClient() {
 
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left min-h-full">
-            <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
+            <header className="px-4 sm:px-0 space-y-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="space-y-1 text-left">
+                    <div className="space-y-1">
                         <div className="flex items-center gap-2 mb-1">
                             <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                             <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Territories Hub</span>
@@ -518,14 +530,14 @@ export default function TerritoriesPageClient() {
                         <Target className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left">Mapping Kingdom Solutions</h3>
+                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1">Mapping Kingdom Solutions</h3>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance">
                             Identify territories requiring spiritual or practical intervention. Share regional hurdles with evidence and collaborate with the global workforce to provide effective Kingdom solutions.
                         </p>
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left">
+                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
                         <TabsList className="grid w-full grid-cols-2 h-12 bg-muted/40 p-1 rounded-2xl">
                             <TabsTrigger value="all" className="font-black text-[10px] uppercase tracking-widest rounded-xl">Discover</TabsTrigger>
@@ -600,15 +612,15 @@ export default function TerritoriesPageClient() {
             {isCreateOpen && (
                 isMobile ? (
                     <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Globe className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Registration</span>
                                     </div>
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Post Regional Challenge</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Detail the needs of your territory with evidence.</SheetDescription>
+                                    <SheetDescription className="text-sm font-medium mt-1">Detail the needs of your territory with evidence.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <div className="flex-grow min-h-0">
@@ -618,8 +630,8 @@ export default function TerritoriesPageClient() {
                     </Sheet>
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Regional Challenge</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1">Share hurdles in your region with photo evidence to mobilize global solutions.</DialogDescription>
@@ -636,8 +648,8 @@ export default function TerritoriesPageClient() {
             {challengeToEdit && (
                 isMobile ? (
                     <Sheet open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Edit className="h-4 w-4 text-primary" />
@@ -653,13 +665,15 @@ export default function TerritoriesPageClient() {
                     </Sheet>
                 ) : (
                     <Dialog open={!!challengeToEdit} onOpenChange={(open) => !open && setChallengeToEdit(null)}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b bg-muted/10 text-left">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Edit className="h-4 w-4 text-primary" />
-                                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Refinement</span>
-                                </div>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Update Hub Report</DialogTitle>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl">
+                            <div className="p-8 border-b bg-muted/10">
+                                <DialogHeader>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Edit className="h-4 w-4 text-primary" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Refinement</span>
+                                    </div>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Update Hub Report</DialogTitle>
+                                </DialogHeader>
                             </div>
                             <div className="flex-1 min-h-0">
                                 {creationFormElement(handleUpdateChallenge, true)}
@@ -670,7 +684,7 @@ export default function TerritoriesPageClient() {
             )}
 
             <AlertDialog open={!!challengeToDelete} onOpenChange={open => !open && setChallengeToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Remove Report?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium leading-relaxed">
