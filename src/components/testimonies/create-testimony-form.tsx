@@ -16,6 +16,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
 import { Loader2, Camera, X, FileUp, Sparkles, Info, Newspaper, HandHeart, Video, Mic, Square } from "lucide-react";
@@ -337,7 +338,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       ) : (
                           <div className="flex flex-col items-center">
                               <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><FileUp className="h-4 w-4 text-primary" /></div>
-                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">DUPLICATE THIS PHOTO UPLOAD FOR CAMPAIGNS AND EVENTS</p>
+                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">ADD PROOF</p>
                           </div>
                       )}
                   </div>
