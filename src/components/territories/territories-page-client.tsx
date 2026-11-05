@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -35,7 +35,6 @@ import {
     Sparkles, 
     ShieldCheck, 
     Send,
-    HandHeart,
     MapPin,
     Quote,
     X,
@@ -67,7 +66,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import {
@@ -86,8 +84,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ImageUpload } from '@/components/common/image-upload';
 import { Country, State } from 'country-state-city';
-import Image from 'next/image';
-import Link from 'next/link';
 import type { RegionalChallenge, ChallengeType } from '@/lib/types';
 import { KingdomAdSpot } from '@/components/testimonies/kingdom-ad-spot';
 import { BibleGameCard } from '@/components/testimonies/bible-game-card';
@@ -187,7 +183,7 @@ function ChallengeCard({
                 <div className="mt-6 pt-6 border-t border-dashed flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <MessageSquare className="h-3.5 w-3.5 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{challenge.solutionCount || 0} Solutions</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{challenge.solutionCount || 0}</span>
                     </div>
                     <p className="text-[9px] font-bold text-muted-foreground uppercase">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
                 </div>
@@ -495,8 +491,6 @@ export default function TerritoriesPageClient() {
         </form>
     );
 
-    if (!mounted) return null;
-
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left min-h-full">
             <header className="px-4 sm:px-0 space-y-6 pt-4">
@@ -518,7 +512,7 @@ export default function TerritoriesPageClient() {
                     </Button>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-start gap-4 shadow-inner">
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-start gap-4 shadow-inner">
                     <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1">
                         <Target className="h-6 w-6 text-white" />
                     </div>
