@@ -34,7 +34,6 @@ import {
     ArrowLeft, 
     ArrowRight,
     MessageSquare, 
-    Sparkles, 
     ShieldCheck, 
     Send,
     MapPin,
@@ -48,11 +47,7 @@ import {
     Trash2,
     Flag,
     Plus,
-    ChevronRight,
-    MoreVertical,
     ChevronDown,
-    Building2,
-    Users,
     Camera,
     Upload
 } from 'lucide-react';
@@ -61,7 +56,6 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { CommentSection } from '../testimonies/comment-section';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -81,7 +75,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogFooter,
-  AlertDialogDescription
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
@@ -134,7 +127,7 @@ function ChallengeCard({
     const isAuthor = userId === challenge.authorId;
 
     return (
-        <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5">
+        <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5 text-left">
             <CardHeader className="p-6 sm:p-8 pb-4">
                 <div className="flex justify-between items-start mb-4">
                     <div className="flex gap-1.5 flex-wrap">
@@ -395,9 +388,9 @@ export default function TerritoriesPageClient() {
     };
 
     const creationFormElement = (onSubmit: any, isEdit = false) => (
-        <form onSubmit={onSubmit} className="flex flex-col h-full overflow-hidden">
-            <ScrollArea className="flex-grow">
-                <div className="p-8 space-y-8">
+        <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden text-left">
+            <ScrollArea className="flex-1">
+                <div className="p-8 space-y-8 text-left">
                     <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex items-center gap-3">
                         <Target className="h-5 w-5 text-primary" />
                         <p className="text-xs font-bold text-primary uppercase tracking-widest">{isEdit ? 'Refining Territorial Intervention' : 'Mobilizing Territorial Intervention'}</p>
@@ -457,7 +450,7 @@ export default function TerritoriesPageClient() {
                                     {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
-                            <Input name="city" defaultValue={challengeToEdit?.city || ''} placeholder="City (Optional)" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                            <Input name="city" defaultValue={challengeToEdit?.city || ''} placeholder="City (Optional)" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                         </div>
                     </div>
 
@@ -500,7 +493,7 @@ export default function TerritoriesPageClient() {
 
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left min-h-full">
-            <header className="px-4 sm:px-0 space-y-6 pt-4">
+            <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -605,26 +598,26 @@ export default function TerritoriesPageClient() {
 
             {isCreateOpen && (
                 isMobile ? (
-                    <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                <DrawerHeader className="text-left p-0">
+                    <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                                <SheetHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Globe className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Registration</span>
                                     </div>
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Post Regional Challenge</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1">Detail the needs of your territory with evidence.</DrawerDescription>
-                                </DrawerHeader>
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Post Regional Challenge</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Detail the needs of your territory with evidence.</SheetDescription>
+                                </SheetHeader>
                             </div>
                             <div className="flex-grow min-h-0">
                                 {creationFormElement(handleCreateChallenge)}
                             </div>
-                        </DrawerContent>
-                    </Drawer>
+                        </SheetContent>
+                    </Sheet>
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Regional Challenge</DialogTitle>
@@ -641,26 +634,26 @@ export default function TerritoriesPageClient() {
 
             {challengeToEdit && (
                 isMobile ? (
-                    <Drawer open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                <DrawerHeader className="text-left p-0">
+                    <Sheet open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                                <SheetHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Edit className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Refinement</span>
                                     </div>
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Update Hub Report</DrawerTitle>
-                                </DrawerHeader>
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Update Hub Report</SheetTitle>
+                                </SheetHeader>
                             </div>
                             <div className="flex-grow min-h-0">
                                 {creationFormElement(handleUpdateChallenge, true)}
                             </div>
-                        </DrawerContent>
-                    </Drawer>
+                        </SheetContent>
+                    </Sheet>
                 ) : (
                     <Dialog open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-                            <div className="p-8 border-b bg-muted/10">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                            <div className="p-8 border-b bg-muted/10 text-left">
                                 <DialogHeader>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Edit className="h-4 w-4 text-primary" />
@@ -678,7 +671,7 @@ export default function TerritoriesPageClient() {
             )}
 
             <AlertDialog open={!!challengeToDelete} onOpenChange={open => !open && setChallengeToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Remove Report?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium leading-relaxed">
