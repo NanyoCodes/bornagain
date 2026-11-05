@@ -10,7 +10,7 @@ export const actionItems = [
   { id: 'matchmaking', label: 'Propose Matchmaking' },
   { id: 'phone_call', label: 'Call' },
   { id: 'text_message', label: 'Message' },
-  { id: 'helped_with_need', label: 'Help with a need' },
+  { id: 'helped_with_need', label: 'Check' },
   { id: 'invited_to_event', label: 'Invite to an event' },
 ];
 
