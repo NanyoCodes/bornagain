@@ -80,12 +80,12 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
-  SheetDescription 
-} from "@/components/ui/sheet";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription
+} from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -125,8 +125,6 @@ import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import type { Soul, FollowUpStatus, UserProfile, Chat } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
-import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 
 const ACTION_ICON_MAP: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -169,11 +167,13 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
   const isMobile = useIsMobile();
   useEffect(() => { if(isOpen && soul) { setText(prayerTemplates[0].text.replace(/{name}/g, soul.firstName)); } }, [isOpen, soul]);
   
-  const header = (
+  const headerContent = (
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
         <div className="min-w-0">
-            <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</h2>
-            <p className="text-sm font-medium mt-1">Draft a powerful prayer for {soul?.firstName}.</p>
+            <DialogHeader className="p-0 text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+            </DialogHeader>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -199,21 +199,44 @@ export function IntercessionHubDialog({ isOpen, onOpenChange, soul, onComplete }
     </div>
   );
 
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow">{contentBody}</ScrollArea></SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">{header}<ScrollArea className="flex-1 min-h-0">{contentBody}</ScrollArea></DialogContent></Dialog>;
+  if (isMobile) return (
+    <Sheet open={isOpen} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+        <DrawerHeader className="p-0 text-left">
+          {headerContent}
+        </DrawerHeader>
+        <ScrollArea className="flex-grow">
+          {contentBody}
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
+  );
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+        {headerContent}
+        <ScrollArea className="flex-1 min-h-0">
+          {contentBody}
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }: { isOpen: boolean; onOpenChange: (open: boolean) => void; soul: Soul | null; onChannelSelect: (channel: 'whatsapp' | 'sms') => void; }) {
   const isMobile = useIsMobile();
-  const header = (
+  const headerContent = (
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
         <div className="min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-                <MessageSquare className="h-4 w-4 text-primary" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
-            </div>
-            <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Message Hub</h2>
-            <p className="text-sm font-medium mt-1">Encourage {soul?.firstName} via mobile.</p>
+            <DialogHeader className="p-0 text-left">
+                <div className="flex items-center gap-2 mb-2">
+                    <MessageSquare className="h-4 w-4 text-primary" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Channel Select</span>
+                </div>
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Message Hub</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1">Encourage {soul?.firstName} via mobile.</DialogDescription>
+            </DialogHeader>
         </div>
         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-muted-foreground/60 hover:text-foreground" onClick={() => onOpenChange(false)}>
             <X className="h-5 w-5" />
@@ -230,8 +253,26 @@ export function MessageHubDialog({ isOpen, onOpenChange, soul, onChannelSelect }
         </Button>
     </div>
   );
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">{header}{contentBody}</SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">{header}{contentBody}</DialogContent></Dialog>;
+
+  if (isMobile) return (
+    <Sheet open={isOpen} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
+        <DrawerHeader className="p-0 text-left">
+          {headerContent}
+        </DrawerHeader>
+        {contentBody}
+      </SheetContent>
+    </Sheet>
+  );
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-center text-left">
+        {headerContent}
+        {contentBody}
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: { isOpen: boolean; onOpenChange: (open: boolean) => void; soul: Soul | null; onSelectVerse: (verse: string) => void; }) {
@@ -280,19 +321,21 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
     onSelectVerse(`"${selectedTexts.trim()}" — ${reference}\n\nJoin the harvest at Testify! Visit: ${window.location.origin}/bible`);
   };
 
-  const header = (
+  const headerContent = (
     <div className="p-8 border-b bg-muted/10 shrink-0 flex items-center justify-between gap-4 text-left">
       <div className="min-w-0">
-        <div className="flex items-center gap-3 mb-2">
-          {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4" /></Button>}
-          <Target className="h-5 w-5 text-primary" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
-        </div>
-        <h2 className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
-            {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}
-        </h2>
-        <p className="text-xs sm:text-sm font-medium">
-            {view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBook || 'Bible'}...`}
-        </p>
+        <DialogHeader className="p-0 text-left">
+          <div className="flex items-center gap-3 mb-2">
+            {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4" /></Button>}
+            <Target className="h-5 w-5 text-primary" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
+          </div>
+          <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
+              {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Chapter` : `${selectedBook} ${selectedChapter}`}
+          </DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm font-medium">
+              {view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBook || 'Bible'}...`}
+          </DialogDescription>
+        </DialogHeader>
       </div>
       {view !== 'hub' && <Button variant="outline" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}><X className="h-5 w-5" /></Button>}
     </div>
@@ -332,8 +375,29 @@ export function ShareWordDialog({ isOpen, onOpenChange, soul, onSelectVerse }: {
 
   const footer = view === 'verses' && <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0"><Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold">Clear</Button><Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-[2] font-black uppercase tracking-widest shadow-lg shadow-primary/20">SHARE SELECTED ({selectedVerses.length})</Button></div>;
 
-  if (isMobile) return <Sheet open={isOpen} onOpenChange={onOpenChange}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">{header}<ScrollArea className="flex-grow">{contentBody}</ScrollArea>{footer}</SheetContent></Sheet>;
-  return <Dialog open={isOpen} onOpenChange={onOpenChange}><DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">{header}<ScrollArea className="flex-1 min-h-0">{contentBody}</ScrollArea>{footer}</DialogContent></Dialog>;
+  if (isMobile) return (
+    <Sheet open={isOpen} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+        <DrawerHeader className="p-0 text-left">
+          {headerContent}
+        </DrawerHeader>
+        <ScrollArea className="flex-grow">{contentBody}</ScrollArea>
+        {footer}
+      </SheetContent>
+    </Sheet>
+  );
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+        {headerContent}
+        <ScrollArea className="flex-1 min-h-0">
+          {contentBody}
+        </ScrollArea>
+        {footer}
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, onAssess, onOpenAssignDialog, onExportSingle, onDelete }: { soul: Soul; onFollowUp: (s: Soul) => void; onViewHistory: (s: Soul) => void; onEdit: (s: Soul) => void; onAssess: (s: Soul) => void; onOpenAssignDialog: (s: Soul) => void; onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void; onDelete: (s: Soul) => void; }) {
@@ -447,7 +511,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
         <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
             <CardHeader className="p-8 pb-4 text-center">
                 <div className="relative inline-block mx-auto mb-4">
-                    <Dialog><DialogTrigger asChild disabled={!soul.photoURL}><div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-105", soul.photoURL && "cursor-pointer hover:scale-105")}><Avatar className="h-full w-full border shadow-sm"><AvatarImage src={soul.photoURL || undefined} className="object-cover" /><AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl"> {soul.firstName?.charAt(0)}</AvatarFallback></Avatar></div></DialogTrigger>{soul.photoURL && (<DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center"><div className="sr-only"><DialogHeader><DialogTitle>Profile Photo</DialogTitle></DialogHeader></div><div className="relative h-full w-full flex items-center justify-center p-4 text-center"><div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center"><Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized /></div></div></DialogContent>)}</Dialog>
+                    <Dialog><DialogTrigger asChild disabled={!soul.photoURL}><div className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-105", soul.photoURL && "cursor-pointer hover:scale-105")}><Avatar className="h-full w-full border shadow-sm"><AvatarImage src={soul.photoURL || undefined} className="object-cover" /><AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-3xl"> {soul.firstName?.charAt(0)}</AvatarFallback></Avatar></div></DialogTrigger>{soul.photoURL && (<DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center"><div className="sr-only"><DialogHeader><DialogTitle>Profile Photo</DialogTitle><DialogDescription>Previewing profile photo.</DialogDescription></DialogHeader></div><div className="relative h-full w-full flex items-center justify-center p-4 text-center"><div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center"><Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized /></div></div></DialogContent>)}</Dialog>
                 </div>
                 <div className="flex flex-col items-center gap-2 text-center"><CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center w-full">{soul.firstName} {soul.lastName}</CardTitle><div className="flex gap-2 justify-center items-center"><Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge><MutualConnectBadge soul={soul} /></div></div>
             </CardHeader>
