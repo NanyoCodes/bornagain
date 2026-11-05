@@ -187,10 +187,10 @@ function ChallengeCard({
                     <p className="text-[9px] font-bold text-muted-foreground uppercase">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
                 </div>
             </CardContent>
-            <CardFooter className="p-0 border-t mt-auto">
-                <Button asChild variant="ghost" className="w-full h-14 rounded-none gap-2 font-black uppercase tracking-widest text-[11px] group/btn hover:bg-primary/5 hover:text-primary transition-all text-center">
-                    <Link href={`/territories/${challenge.id}`} className="flex items-center justify-center w-full h-full text-center">
-                        PROVIDE SOLUTION <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 ml-2" />
+            <CardFooter className="p-2 border-t mt-auto bg-muted/5">
+                <Button asChild variant="ghost" className="w-full h-10 rounded-xl group/btn hover:bg-primary/10 hover:text-primary transition-all">
+                    <Link href={`/territories/${challenge.id}`} className="flex items-center justify-center w-full">
+                        <ArrowRight className="h-5 w-5 text-primary/60 transition-all group-hover/btn:text-primary group-hover/btn:translate-x-1" />
                     </Link>
                 </Button>
             </CardFooter>
@@ -496,7 +496,7 @@ export default function TerritoriesPageClient() {
         <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left min-h-full">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="space-y-1">
+                    <div className="space-y-1 text-left">
                         <div className="flex items-center gap-2 mb-1">
                             <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                             <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Territories Hub</span>
@@ -518,14 +518,14 @@ export default function TerritoriesPageClient() {
                         <Target className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1">Mapping Kingdom Solutions</h3>
+                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left">Mapping Kingdom Solutions</h3>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance">
                             Identify territories requiring spiritual or practical intervention. Share regional hurdles with evidence and collaborate with the global workforce to provide effective Kingdom solutions.
                         </p>
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
+                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
                         <TabsList className="grid w-full grid-cols-2 h-12 bg-muted/40 p-1 rounded-2xl">
                             <TabsTrigger value="all" className="font-black text-[10px] uppercase tracking-widest rounded-xl">Discover</TabsTrigger>
@@ -568,7 +568,7 @@ export default function TerritoriesPageClient() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 sm:px-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
                 {loading ? (
                     [...Array(6)].map((_, i) => (
                         <Card key={i} className="h-48 rounded-[2rem] animate-pulse bg-muted/30 border-none" />
@@ -619,7 +619,7 @@ export default function TerritoriesPageClient() {
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Regional Challenge</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1">Share hurdles in your region with photo evidence to mobilize global solutions.</DialogDescription>
@@ -653,15 +653,13 @@ export default function TerritoriesPageClient() {
                     </Sheet>
                 ) : (
                     <Dialog open={!!challengeToEdit} onOpenChange={(open) => !open && setChallengeToEdit(null)}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b bg-muted/10 text-left">
-                                <DialogHeader>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Edit className="h-4 w-4 text-primary" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Refinement</span>
-                                    </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Update Hub Report</DialogTitle>
-                                </DialogHeader>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Edit className="h-4 w-4 text-primary" />
+                                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Refinement</span>
+                                </div>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Update Hub Report</DialogTitle>
                             </div>
                             <div className="flex-1 min-h-0">
                                 {creationFormElement(handleUpdateChallenge, true)}
