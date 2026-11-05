@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -50,15 +50,19 @@ import {
     ChevronDown,
     Camera,
     Upload,
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogFooter
+    MoreVertical,
+    Filter
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -125,7 +129,7 @@ function ChallengeCard({
     const isAuthor = userId === challenge.authorId;
 
     return (
-        <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5 text-left">
+        <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5">
             <CardHeader className="p-6 sm:p-8 pb-4">
                 <div className="flex justify-between items-start mb-4">
                     <div className="flex gap-1.5 flex-wrap">
@@ -199,8 +203,8 @@ function ChallengeCard({
                     <p className="text-[9px] font-bold text-muted-foreground uppercase">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
                 </div>
             </CardContent>
-            <CardFooter className="p-0 border-t mt-auto bg-muted/5">
-                <Button asChild variant="ghost" className="w-full h-14 rounded-none group/btn hover:bg-primary/5 hover:text-primary transition-all">
+            <CardFooter className="p-0 border-t mt-auto">
+                <Button asChild variant="ghost" className="w-full h-14 rounded-none gap-2 font-black uppercase tracking-widest text-[11px] group/btn hover:bg-primary/5 hover:text-primary transition-all">
                     <Link href={`/territories/${challenge.id}`} className="flex items-center justify-center w-full h-full">
                         <ArrowRight className="h-6 w-6 text-primary/60 transition-transform group-hover/btn:translate-x-1" />
                     </Link>
@@ -505,7 +509,7 @@ export default function TerritoriesPageClient() {
     );
 
     return (
-        <div className="space-y-10 max-w-4xl mx-auto pb-32 text-left min-h-full">
+        <div className="space-y-10 max-w-4xl mx-auto pb-32 min-h-full">
             <header className="px-4 sm:px-0 space-y-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="space-y-1">
@@ -572,7 +576,6 @@ export default function TerritoriesPageClient() {
                                 <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "State/Region"} />
                             </SelectTrigger>
                             <SelectContent className="max-h-[300px]">
-                                <SelectItem value="all">All States</SelectItem>
                                 {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
