@@ -364,7 +364,7 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
     const batch = writeBatch(firestore);
     const soulRef = doc(firestore, `users/${s.userId}/souls`, s.id);
     const globalSoulRef = doc(firestore, 'souls', s.id);
-    const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+    const memberName = `${currentUserProfile?.firstName || ''} ${currentUserProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = { date: new Date(), note: `Logged via Identity Hub: ${action?.label}${noteAddendum ? ` - ${noteAddendum}` : ''}`, actions: [aId], memberId: user.uid, memberName: memberName };
     batch.update(soulRef, { followUpLog: arrayUnion(logEntry), lastUpdatedAt: serverTimestamp() });
     batch.update(globalSoulRef, { followUpLog: arrayUnion(logEntry), lastUpdatedAt: serverTimestamp() });
@@ -431,7 +431,14 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
 
   const handleHelpNeedConfirm = (note: string) => { if (!soul) return; finalizeLog(soul, 'helped_with_need', `Service: ${note}`); setIsHelpNeedDialogOpen(false); setCustomMessageText(''); }
 
-  const uniquePartners = React.useMemo(() => { const partners = userProfile?.accountabilityPartners || []; const uniqueMap = new Map(); partners.forEach(p => { if (p.userId && !uniqueMap.has(p.userId)) uniqueMap.set(p.userId, p); }); return Array.from(uniqueMap.values()); }, [currentUserProfile?.accountabilityPartners]);
+  const uniquePartners = React.useMemo(() => { 
+    const partners = currentUserProfile?.accountabilityPartners || []; 
+    const uniqueMap = new Map(); 
+    partners.forEach(p => { 
+      if (p.userId && !uniqueMap.has(p.userId)) uniqueMap.set(p.userId, p); 
+    }); 
+    return Array.from(uniqueMap.values()); 
+  }, [currentUserProfile?.accountabilityPartners]);
 
   const isRestrictedForMatchmaking = soul.age && soul.age < 20;
 
@@ -634,4 +641,3 @@ export function SoulProfileContent({ soul, onFollowUp, onViewHistory, onEdit, on
     </React.Fragment>
   );
 }
-
