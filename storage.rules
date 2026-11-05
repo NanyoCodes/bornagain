@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Universal public read and strict owner write for all mission folders - 2025-03-18T23:45:00Z
+    // Deployment trigger: Reinforced public read and strict owner write for all mission folders - 2025-03-20T08:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -23,20 +23,25 @@ service firebase.storage {
              request.resource.contentType == 'application/pdf';
     }
 
-    // Unified policy for user-partitioned folders
+    // Unified policy for user-partitioned mission folders (testimonies, events, campaigns, territories)
     // Pattern: {folder}/{userId}/{filename}
     match /{folder}/{userId}/{allPaths=**} {
       // Allow public read for all folders to ensure global visibility of God's work
       allow read: if true;
       
-      // Allow write and delete only if the user is the owner of the directory
+      // Allow write only if the user is the owner of the directory
       allow write: if isOwner(userId) && isValidSize() && (request.resource == null || isAllowedType());
+      
+      // Allow delete only if the user is the owner
       allow delete: if isOwner(userId);
     }
 
-    // Fallback for non-partitioned or root paths
+    // Global fallback for any other paths
     match /{allPaths=**} {
+      // Ensure all evidence of miracles is publicly readable
       allow read: if true;
+      
+      // Require authentication for any other write operations
       allow write: if isAuthenticated() && isValidSize() && (request.resource == null || isAllowedType());
     }
   }
