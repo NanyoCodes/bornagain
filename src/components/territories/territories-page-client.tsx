@@ -1,8 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 import { useUser, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { 
     collection, 
@@ -50,14 +52,17 @@ import {
     MoreVertical,
     ChevronDown,
     Building2,
-    Users
+    Users,
+    Camera,
+    Upload
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { CommentSection } from '../testimonies/comment-section';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
@@ -129,11 +134,11 @@ function ChallengeCard({
     const isAuthor = userId === challenge.authorId;
 
     return (
-        <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5 text-left">
+        <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5">
             <CardHeader className="p-6 sm:p-8 pb-4">
                 <div className="flex justify-between items-start mb-4">
                     <div className="flex gap-1.5 flex-wrap">
-                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 h-5 px-2 font-black uppercase text-[8px] tracking-widest"> {challenge.country}</Badge>
+                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 h-5 px-2 font-black uppercase text-[8px] tracking-widest">{challenge.country}</Badge>
                         <Badge className={cn(
                             "h-5 px-2 font-black uppercase text-[8px] tracking-widest border-none",
                             isSpiritual ? "bg-indigo-500 text-white" : "bg-emerald-500 text-white"
@@ -505,7 +510,7 @@ export default function TerritoriesPageClient() {
                     <Button 
                         onClick={() => setIsCreateOpen(true)} 
                         size="icon"
-                        className="rounded-full font-black uppercase tracking-widest h-12 w-12 shadow-xl shadow-primary/20 shrink-0 text-center"
+                        className="rounded-full font-black uppercase tracking-widest h-12 w-12 shadow-xl shadow-primary/20 shrink-0"
                     >
                         <PlusCircle className="h-6 w-6" />
                         <span className="sr-only">Share Challenge</span>
