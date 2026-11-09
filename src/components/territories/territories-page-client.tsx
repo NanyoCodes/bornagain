@@ -51,8 +51,7 @@ import {
     Camera,
     Upload,
     MoreVertical,
-    Filter,
-    MoreHorizontal
+    Filter
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -406,9 +405,9 @@ export default function TerritoriesPageClient() {
     };
 
     const creationFormElement = (onSubmit: any, isEdit = false) => (
-        <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
-            <ScrollArea className="flex-1">
-                <div className="p-8 space-y-8">
+        <form onSubmit={onSubmit} className="flex flex-col h-full overflow-hidden">
+            <ScrollArea className="flex-1 w-full h-full">
+                <div className="p-8 space-y-8 pb-32">
                     <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 flex items-center gap-3">
                         <Target className="h-5 w-5 text-primary" />
                         <p className="text-xs font-bold text-primary uppercase tracking-widest">{isEdit ? 'Refining Territorial Intervention' : 'Mobilizing Territorial Intervention'}</p>
@@ -423,7 +422,7 @@ export default function TerritoriesPageClient() {
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Domain</Label>
                             <Select onValueChange={(val: any) => setChallengeType(val)} value={challengeType}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                                     <SelectValue placeholder="Select Type" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl border-none shadow-2xl">
@@ -436,7 +435,7 @@ export default function TerritoriesPageClient() {
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
                             <Select onValueChange={setSubCategory} value={subCategory}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                                     <SelectValue placeholder="Select Category" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px] rounded-2xl border-none shadow-2xl">
@@ -451,7 +450,7 @@ export default function TerritoriesPageClient() {
                     <div className="space-y-4">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Territory Location</Label>
                         <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                                 <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                             <SelectContent className="max-h-[300px]">
@@ -461,7 +460,7 @@ export default function TerritoriesPageClient() {
                         
                         <div className="grid grid-cols-2 gap-4">
                             <Select onValueChange={setRegState} value={regState} disabled={!regCountry || regStatesList.length === 0}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                                     <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "State/Region"} />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px]">
@@ -500,7 +499,7 @@ export default function TerritoriesPageClient() {
                     </div>
                 </div>
             </ScrollArea>
-            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0">
+            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0 absolute bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md">
                 <Button type="button" variant="outline" onClick={() => { setIsCreateOpen(false); setChallengeToEdit(null); }} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center">
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (isEdit ? 'SAVE CHANGES' : 'POST CHALLENGE')}
@@ -618,7 +617,7 @@ export default function TerritoriesPageClient() {
                     <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                <SheetHeader className="text-left p-0">
+                                <SheetHeader className="text-left flex-shrink-0 p-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Globe className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Registration</span>
