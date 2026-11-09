@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -481,7 +481,7 @@ export default function TerritoriesPageClient() {
                           <ImageUpload 
                               initialImageUrl={mediaUrl1} 
                               onUploadComplete={setMediaUrl1} 
-                              storagePath="territories" 
+                              storagePath="regions" 
                               cropAspect={4/3}
                           />
                         </div>
@@ -491,7 +491,7 @@ export default function TerritoriesPageClient() {
                           <ImageUpload 
                               initialImageUrl={mediaUrl2} 
                               onUploadComplete={setMediaUrl2} 
-                              storagePath="territories" 
+                              storagePath="regions" 
                               cropAspect={4/3}
                           />
                         </div>
@@ -614,7 +614,7 @@ export default function TerritoriesPageClient() {
             {isCreateOpen && (
                 isMobile ? (
                     <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left flex-shrink-0 p-0">
                                     <div className="flex items-center gap-2 mb-2">
@@ -650,7 +650,7 @@ export default function TerritoriesPageClient() {
             {challengeToEdit && (
                 isMobile ? (
                     <Sheet open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
