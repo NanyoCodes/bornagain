@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Explicitly authorized 'regions hub' path for territorial evidence - 2025-03-25T09:00:00Z
+    // Deployment trigger: Explicitly authorized 'regions hub' path for territorial evidence - 2025-03-25T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -24,6 +24,7 @@ service firebase.storage {
     }
 
     // Specific policy for Regions Hub (Territories)
+    // Matches the folder name with a space as requested
     match /regions hub/{userId}/{allPaths=**} {
       // Public read for global visibility of territorial challenges
       allow read: if true;
