@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Fixed startsWith validation and ownership path matching - 2025-03-24T13:00:00Z
+    // Deployment trigger: Explicitly authorized 'regions hub' path for territorial evidence - 2025-03-25T09:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -23,8 +23,17 @@ service firebase.storage {
              request.resource.contentType == 'application/pdf';
     }
 
-    // Unified policy for user-partitioned mission folders
-    // Pattern: {folder}/{userId}/{allPaths=**}
+    // Specific policy for Regions Hub (Territories)
+    match /regions hub/{userId}/{allPaths=**} {
+      // Public read for global visibility of territorial challenges
+      allow read: if true;
+      
+      // Strict owner-only write/delete
+      allow write: if isOwner(userId) && isValidSize() && (request.resource == null || isAllowedType());
+      allow delete: if isOwner(userId);
+    }
+
+    // Unified policy for other user-partitioned mission folders (testimonies, campaigns, etc.)
     match /{folder}/{userId}/{allPaths=**} {
       // Public read for global visibility of God's work
       allow read: if true;
