@@ -247,7 +247,7 @@ export default function TerritoriesPageClient() {
         if (!firestore) return null;
         return query(collection(firestore, 'regionalChallenges'), orderBy('createdAt', 'desc'));
     }, [firestore]);
-    const { data: allChallenges, loading } = useCollection<RegionalChallenge>(challengesQuery);
+    const { data: allChallenges, loading: loadingChallenges } = useCollection<RegionalChallenge>(challengesQuery);
 
     const countriesList = useMemo(() => Country.getAllCountries(), []);
 
@@ -285,12 +285,7 @@ export default function TerritoriesPageClient() {
         return list;
     }, [allChallenges, activeTab, searchTerm, filterCountry, filterState, user?.uid]);
 
-    useEffect(() => {
-        if (!challengeToEdit) {
-            setSubCategory(subCategories[challengeType][0]);
-        }
-    }, [challengeType, challengeToEdit]);
-
+    // Handle initial state and cleanup for forms
     useEffect(() => {
         if (challengeToEdit) {
             setRegCountry(challengeToEdit.country || '');
@@ -299,8 +294,15 @@ export default function TerritoriesPageClient() {
             setSubCategory(challengeToEdit.subCategory || '');
             setMediaUrl1(challengeToEdit.mediaUrl || '');
             setMediaUrl2(challengeToEdit.mediaUrl2 || '');
+        } else if (!isCreateOpen) {
+            setRegCountry('');
+            setRegState('');
+            setChallengeType('Physical');
+            setSubCategory('');
+            setMediaUrl1('');
+            setMediaUrl2('');
         }
-    }, [challengeToEdit]);
+    }, [challengeToEdit, isCreateOpen]);
 
     const handleCreateChallenge = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -340,11 +342,6 @@ export default function TerritoriesPageClient() {
             await addDoc(collection(firestore, 'regionalChallenges'), challengeData);
             toast({ title: 'Challenge Published', description: 'The global community has been notified.' });
             setIsCreateOpen(false);
-            setRegCountry('');
-            setRegState('');
-            setMediaUrl1('');
-            setMediaUrl2('');
-            setSubCategory('');
         } catch (error) {
             toast({ variant: 'destructive', title: 'Action Failed' });
         } finally {
@@ -548,7 +545,7 @@ export default function TerritoriesPageClient() {
                         </TabsList>
                     </Tabs>
                     <div className="relative flex-1 sm:max-w-sm">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                         <Input 
                             placeholder="Search territories..." 
                             value={searchTerm}
@@ -583,7 +580,7 @@ export default function TerritoriesPageClient() {
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
-                {loading ? (
+                {loadingChallenges ? (
                     [...Array(6)].map((_, i) => (
                         <Card key={i} className="h-48 rounded-[2rem] animate-pulse bg-muted/30 border-none" />
                     ))
@@ -614,7 +611,7 @@ export default function TerritoriesPageClient() {
             {isCreateOpen && (
                 isMobile ? (
                     <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left flex-shrink-0 p-0">
                                     <div className="flex items-center gap-2 mb-2">
@@ -650,7 +647,7 @@ export default function TerritoriesPageClient() {
             {challengeToEdit && (
                 isMobile ? (
                     <Sheet open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
@@ -668,7 +665,7 @@ export default function TerritoriesPageClient() {
                 ) : (
                     <Dialog open={!!challengeToEdit} onOpenChange={(open) => !open && setChallengeToEdit(null)}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2rem] border-none shadow-2xl">
-                            <div className="p-8 border-b bg-muted/10">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Edit className="h-4 w-4 text-primary" />
