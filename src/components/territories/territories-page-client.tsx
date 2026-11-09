@@ -45,7 +45,6 @@ import {
     Globe,
     Edit,
     Trash2,
-    Flag,
     Plus,
     ChevronDown,
     Camera,

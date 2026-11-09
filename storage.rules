@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Reinforced public read and strict owner write for all mission folders - 2025-03-20T08:00:00Z
+    // Deployment trigger: Fixed startsWith validation and ownership path matching - 2025-03-24T13:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -13,35 +13,30 @@ service firebase.storage {
     }
 
     function isValidSize() {
-      return request.resource.size < 100 * 1024 * 1024; // 100MB limit
+      return request.resource.size < 50 * 1024 * 1024; // 50MB limit
     }
 
     function isAllowedType() {
-      return request.resource.contentType.matches('image/.*') || 
-             request.resource.contentType.matches('video/.*') ||
-             request.resource.contentType.matches('audio/.*') ||
+      return request.resource.contentType.startsWith('image/') || 
+             request.resource.contentType.startsWith('video/') ||
+             request.resource.contentType.startsWith('audio/') ||
              request.resource.contentType == 'application/pdf';
     }
 
-    // Unified policy for user-partitioned mission folders (testimonies, events, campaigns, territories)
-    // Pattern: {folder}/{userId}/{filename}
+    // Unified policy for user-partitioned mission folders
+    // Pattern: {folder}/{userId}/{allPaths=**}
     match /{folder}/{userId}/{allPaths=**} {
-      // Allow public read for all folders to ensure global visibility of God's work
+      // Public read for global visibility of God's work
       allow read: if true;
       
-      // Allow write only if the user is the owner of the directory
+      // Strict owner-only write/delete
       allow write: if isOwner(userId) && isValidSize() && (request.resource == null || isAllowedType());
-      
-      // Allow delete only if the user is the owner
       allow delete: if isOwner(userId);
     }
 
-    // Global fallback for any other paths
+    // Global fallback
     match /{allPaths=**} {
-      // Ensure all evidence of miracles is publicly readable
       allow read: if true;
-      
-      // Require authentication for any other write operations
       allow write: if isAuthenticated() && isValidSize() && (request.resource == null || isAllowedType());
     }
   }
