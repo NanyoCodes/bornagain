@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -27,8 +27,6 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { 
     Loader2, 
     ArrowLeft, 
@@ -62,6 +60,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { 
+    Dialog, 
+    DialogContent, 
+    DialogHeader, 
+    DialogTitle, 
+    DialogTrigger, 
+    DialogDescription 
+} from '@/components/ui/dialog';
+import { 
+    Sheet, 
+    SheetContent, 
+    SheetHeader, 
+    SheetTitle, 
+    SheetDescription,
+    SheetTrigger
+} from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -75,9 +91,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -147,12 +161,12 @@ function ChallengeCard({
                                     <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-primary/20 text-primary hover:bg-primary/10 shadow-md bg-background">
                                         <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`}>
                                             <Target className="h-5 w-5" />
-                                            <span className="sr-only">check this</span>
+                                            <span className="sr-only">Check this</span>
                                         </Link>
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent side="bottom" className="rounded-xl border-primary/20 shadow-xl">
-                                    <p className="text-[10px] font-black uppercase">check this</p>
+                                    <p className="text-[10px] font-black uppercase">Check this</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -285,7 +299,6 @@ export default function TerritoriesPageClient() {
         return list;
     }, [allChallenges, activeTab, searchTerm, filterCountry, filterState, user?.uid]);
 
-    // Handle initial state and cleanup for forms
     useEffect(() => {
         if (challengeToEdit) {
             setRegCountry(challengeToEdit.country || '');
@@ -507,7 +520,7 @@ export default function TerritoriesPageClient() {
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32 min-h-full">
             <header className="px-4 sm:px-0 space-y-6 pt-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="flex items-center justify-between gap-4">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 mb-1">
                             <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
