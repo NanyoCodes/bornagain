@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -51,7 +51,8 @@ import {
     Camera,
     Upload,
     MoreVertical,
-    Filter
+    Filter,
+    MoreHorizontal
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -76,8 +77,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -148,12 +149,12 @@ function ChallengeCard({
                                     <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-primary/20 text-primary hover:bg-primary/10 shadow-md bg-background">
                                         <Link href={`/campaigns?source=territory&title=${encodeURIComponent(challenge.title)}&location=${encodeURIComponent(challenge.city || challenge.state)}, ${encodeURIComponent(challenge.country)}&description=${encodeURIComponent(challenge.description)}`}>
                                             <Target className="h-5 w-5" />
-                                            <span className="sr-only">Check this</span>
+                                            <span className="sr-only">check this</span>
                                         </Link>
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent side="bottom" className="rounded-xl border-primary/20 shadow-xl">
-                                    <p className="text-[10px] font-black uppercase">Check this</p>
+                                    <p className="text-[10px] font-black uppercase">check this</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
