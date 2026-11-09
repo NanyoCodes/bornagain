@@ -481,7 +481,7 @@ export default function TerritoriesPageClient() {
                           <ImageUpload 
                               initialImageUrl={mediaUrl1} 
                               onUploadComplete={setMediaUrl1} 
-                              storagePath="regions" 
+                              storagePath="regions hub" 
                               cropAspect={4/3}
                           />
                         </div>
@@ -491,7 +491,7 @@ export default function TerritoriesPageClient() {
                           <ImageUpload 
                               initialImageUrl={mediaUrl2} 
                               onUploadComplete={setMediaUrl2} 
-                              storagePath="regions" 
+                              storagePath="regions hub" 
                               cropAspect={4/3}
                           />
                         </div>
@@ -667,7 +667,7 @@ export default function TerritoriesPageClient() {
                     </Sheet>
                 ) : (
                     <Dialog open={!!challengeToEdit} onOpenChange={(open) => !open && setChallengeToEdit(null)}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2rem] border-none shadow-2xl">
                             <div className="p-8 border-b bg-muted/10">
                                 <DialogHeader>
                                     <div className="flex items-center gap-2 mb-2">
