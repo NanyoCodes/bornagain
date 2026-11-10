@@ -43,9 +43,9 @@ export default function SignUpPage() {
     setIsGoogleLoading(true);
     if (!auth || !firestore) {
       toast({
-        variant: 'destructive',
-        title: 'System not ready',
-        description: 'Please wait a moment and try again.',
+        variant: "destructive",
+        title: "System not ready",
+        description: "Please wait a moment and try again.",
       });
       setIsGoogleLoading(false);
       return;
@@ -92,8 +92,8 @@ export default function SignUpPage() {
       const authError = error as AuthError;
       if (authError.code !== 'auth/popup-closed-by-user') {
         toast({
-          variant: 'destructive',
-          title: 'Sign Up Failed',
+          variant: "destructive",
+          title: "Sign Up Failed",
           description: authError.message || 'An unexpected error occurred.',
         });
       }

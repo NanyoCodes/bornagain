@@ -194,7 +194,7 @@ export default function LandingPage() {
               <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9">
-              <Link href="/signup">Experience New Birth</Link>
+              <Link href="/signup">Join Movement</Link>
             </Button>
           </div>
         </div>
@@ -486,7 +486,7 @@ export default function LandingPage() {
                     </div>
                     <div className="flex justify-center relative z-10 items-center">
                         <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center">
-                            <Link href="/signup" className="text-center">CLAIM YOUR NEW IDENTITY</Link>
+                            <Link href="/signup" className="text-center">JOIN MOVEMENT</Link>
                         </Button>
                     </div>
                 </div>
@@ -570,7 +570,7 @@ export default function LandingPage() {
               </p>
               <div className="flex justify-center pt-4 items-center">
                 <Button asChild size="sm" className="h-10 px-8 text-[10px] font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto mx-auto flex items-center justify-center text-center">
-                  <Link href="/signup" className="text-center">CLAIM YOUR CALL <ArrowRight className="ml-3 h-6 w-6" /></Link>
+                  <Link href="/signup" className="text-center">JOIN MOVEMENT <ArrowRight className="ml-3 h-6 w-6" /></Link>
                 </Button>
               </div>
             </div>
