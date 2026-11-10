@@ -4,7 +4,6 @@ import * as React from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
@@ -28,7 +27,6 @@ import {
     CardFooter 
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { 
     Loader2, 
     ArrowLeft, 
@@ -37,7 +35,6 @@ import {
     ShieldCheck, 
     Send,
     MapPin,
-    Quote,
     X,
     Target,
     PlusCircle,
@@ -47,8 +44,6 @@ import {
     Trash2,
     Plus,
     ChevronDown,
-    Camera,
-    Upload,
     MoreVertical,
     Filter,
     HandHeart
@@ -77,7 +72,6 @@ import {
     SheetHeader, 
     SheetTitle, 
     SheetDescription,
-    SheetTrigger
 } from '@/components/ui/sheet';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -98,7 +92,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { ImageUpload } from '@/components/common/image-upload';
 import { Country, State } from 'country-state-city';
 import type { RegionalChallenge, ChallengeType } from '@/lib/types';
 import { KingdomAdSpot } from '@/components/testimonies/kingdom-ad-spot';
@@ -167,7 +160,7 @@ function ChallengeCard({
 
         try {
             await updateDoc(challengeRef, updatePayload);
-            toast({ title: "Prayer Established", description: "Your spiritual support has been anchored for this territory." });
+            toast({ title: "Prayer Established", description: "Your spiritual support has been anchored." });
         } catch (error: any) {
             errorEmitter.emit('permission-error', new FirestorePermissionError({
                 path: challengeRef.path,
@@ -307,8 +300,6 @@ export default function TerritoriesPageClient() {
     const [regState, setRegState] = useState('');
     const [challengeType, setChallengeType] = useState<ChallengeType>('Physical');
     const [subCategory, setSubCategory] = useState('');
-    const [mediaUrl1, setMediaUrl1] = useState('');
-    const [mediaUrl2, setMediaUrl2] = useState('');
 
     const [filterCountry, setFilterCountry] = useState<string>('all');
     const [filterState, setFilterState] = useState<string>('all');
@@ -363,15 +354,11 @@ export default function TerritoriesPageClient() {
             setRegState(challengeToEdit.state || '');
             setChallengeType(challengeToEdit.challengeType || 'Physical');
             setSubCategory(challengeToEdit.subCategory || '');
-            setMediaUrl1(challengeToEdit.mediaUrl || '');
-            setMediaUrl2(challengeToEdit.mediaUrl2 || '');
         } else if (!isCreateOpen) {
             setRegCountry('');
             setRegState('');
             setChallengeType('Physical');
             setSubCategory('');
-            setMediaUrl1('');
-            setMediaUrl2('');
         }
     }, [challengeToEdit, isCreateOpen]);
 
@@ -405,8 +392,6 @@ export default function TerritoriesPageClient() {
             solutionCount: 0,
             usersWhoPrayed: [],
             createdAt: serverTimestamp(),
-            mediaUrl: mediaUrl1 || null,
-            mediaUrl2: mediaUrl2 || null,
             visibility: 'public'
         };
 
@@ -442,8 +427,6 @@ export default function TerritoriesPageClient() {
             country: regCountry,
             state: regState,
             city,
-            mediaUrl: mediaUrl1 || null,
-            mediaUrl2: mediaUrl2 || null,
             updatedAt: serverTimestamp(),
         };
 
@@ -542,28 +525,6 @@ export default function TerritoriesPageClient() {
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1" htmlFor="description">Description of Challenge</Label>
                         <Textarea id="description" name="description" defaultValue={challengeToEdit?.description || ''} placeholder="Detail the regional challenges and spiritual hurdles..." className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" required />
-                    </div>
-
-                    <div className="space-y-8">
-                        <div className="space-y-4">
-                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Evidence Photo (Optional)</Label>
-                          <ImageUpload 
-                              initialImageUrl={mediaUrl1} 
-                              onUploadComplete={setMediaUrl1} 
-                              storagePath="regions hub" 
-                              cropAspect={4/3}
-                          />
-                        </div>
-
-                        <div className="space-y-4">
-                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Additional Proof (Optional)</Label>
-                          <ImageUpload 
-                              initialImageUrl={mediaUrl2} 
-                              onUploadComplete={setMediaUrl2} 
-                              storagePath="regions hub" 
-                              cropAspect={4/3}
-                          />
-                        </div>
                     </div>
                 </div>
             </ScrollArea>
@@ -682,7 +643,7 @@ export default function TerritoriesPageClient() {
             {isCreateOpen && (
                 isMobile ? (
                     <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left flex-shrink-0 p-0">
                                     <div className="flex items-center gap-2 mb-2">
@@ -690,7 +651,7 @@ export default function TerritoriesPageClient() {
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Registration</span>
                                     </div>
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Post Regional Challenge</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1">Detail the needs of your territory with evidence.</SheetDescription>
+                                    <SheetDescription className="text-sm font-medium mt-1">Detail the needs of your territory.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <div className="flex-grow min-h-0">
@@ -701,10 +662,10 @@ export default function TerritoriesPageClient() {
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                            <div className="p-8 border-b bg-muted/10 shrink-0">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Regional Challenge</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1">Share hurdles in your region with photo evidence to mobilize global solutions.</DialogDescription>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Regional Challenge</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1">Share hurdles in your region to mobilize global solutions.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <div className="flex-1 min-h-0">
@@ -718,7 +679,7 @@ export default function TerritoriesPageClient() {
             {challengeToEdit && (
                 isMobile ? (
                     <Sheet open={!!challengeToEdit} onOpenChange={open => !open && setChallengeToEdit(null)}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
