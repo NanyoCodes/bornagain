@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Correcting events directory permissions - 2025-03-26T10:00:00Z
+    // Deployment trigger: Universal Mission Folder Access - 2025-03-27T14:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -13,20 +13,19 @@ service firebase.storage {
     }
 
     function isValidSize() {
-      // Increased to 100MB to support video evidence
+      // Supporting up to 100MB for high-fidelity miracle proof (video/photo)
       return request.resource.size < 100 * 1024 * 1024;
     }
 
-    // Global read access for mission visibility across the Body of Christ
+    // Global read access to ensure the Body of Christ can witness all shared miracles
     allow read: if true;
 
-    // Explicitly handle the 'events' folder for gather evidence
+    // Permissions for user-partitioned mission evidence folders
     match /events/{userId}/{allPaths=**} {
       allow write: if isOwner(userId) && isValidSize();
       allow delete: if isOwner(userId);
     }
 
-    // Explicitly handle other mission-critical folders
     match /testimonies/{userId}/{allPaths=**} {
       allow write: if isOwner(userId) && isValidSize();
       allow delete: if isOwner(userId);
@@ -42,13 +41,17 @@ service firebase.storage {
       allow delete: if isOwner(userId);
     }
 
-    // Catch-all for any other user-partitioned mission folders
-    match /{folder}/{userId}/{allPaths=**} {
+    match /vendor-branding/{userId}/{allPaths=**} {
       allow write: if isOwner(userId) && isValidSize();
       allow delete: if isOwner(userId);
     }
 
-    // Fallback for root level or other patterns
+    match /marketplace-items/{userId}/{allPaths=**} {
+      allow write: if isOwner(userId) && isValidSize();
+      allow delete: if isOwner(userId);
+    }
+
+    // Generic fallback for any other mission-critical uploads
     match /{allPaths=**} {
       allow write: if isAuthenticated() && isValidSize();
     }

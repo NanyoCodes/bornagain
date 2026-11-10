@@ -191,11 +191,11 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
       const recorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
 
-      recorder.ondataavailable = (e) => {
+      recorder.onDataAvailable = (e) => {
           if (e.data.size > 0) chunksRef.current.push(e.data);
       };
 
-      recorder.onstop = async () => {
+      recorder.onStop = async () => {
           const actualMimeType = mediaRecorderRef.current?.mimeType || getSupportedMimeType(recorderMode);
           const extension = actualMimeType.includes('mp4') ? 'mp4' : actualMimeType.includes('webm') ? 'webm' : 'bin';
           const blob = new Blob(chunksRef.current, { type: actualMimeType });
@@ -308,7 +308,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     const isAudio = preview?.type === 'audio';
     return (
       <div className="space-y-4 flex-1 text-left">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2"><Camera className="h-3.5 w-3.5 text-primary" /> Evidence {slot}</Label>
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2"><Camera className="h-3.5 w-3.5 text-primary text-left" /> Evidence {slot}</Label>
           {!preview ? (
               <div className="space-y-3 text-left">
                   <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left", isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
@@ -330,7 +330,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                   </div>
               </div>
           ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 text-left">
                 <div className={cn("relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group", isAudio ? "h-auto min-h-[100px]" : "aspect-square")}>
                     {preview.type === 'image' ? (
                         <Image src={preview.localUrl || preview.url} alt={`Evidence ${slot}`} fill className="object-cover" unoptimized />
@@ -339,7 +339,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                     ) : (
                         <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
                             <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Sparkles className="h-5 w-5 text-primary" /></div></div>
-                            <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" /></div>
+                            <div className="min-w-0 flex-1 text-left"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" /></div>
                         </div>
                     )}
                     <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg opacity-100 transition-opacity" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}><X className="h-3.5 w-3.5" /></Button>
@@ -355,8 +355,8 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     <div className="space-y-8 text-left">
         <div className="flex items-center gap-3 px-1 text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Edit Testimony</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Refine your shared miracle</p></div></div>
         <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left"><FormField control={form.control} name="category" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl border-2 text-left"><SelectValue placeholder="What is the nature of this miracle?" /></SelectTrigger></FormControl><SelectContent className="rounded-2xl">{testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /><FormField control={form.control} name="content" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Testimony</FormLabel><FormControl><Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} /></FormControl><FormMessage /></FormItem>)} />
-            <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-6">
+            <div className="space-y-4 text-left">
+                <div className="flex flex-col sm:flex-row gap-6 text-left">
                     {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
                     {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
                 </div>
@@ -378,15 +378,15 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
         </form></Form>
 
         <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
-            <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black">
+            <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left">
                 <div className="sr-only"><DialogHeader><DialogTitle>Recorder</DialogTitle><DialogDescription>Capture live proof.</DialogDescription></DialogHeader></div>
                 <div className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
                   <div className="flex items-center justify-between gap-4 text-left">
-                    <div className="min-w-0">
+                    <div className="min-w-0 text-left">
                         <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white">Miracle Recorder</div>
                         <p className="text-sm font-medium text-zinc-400 mt-1">Capture your {recorderMode} proof.</p>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10" onClick={closeRecorder}><X className="h-6 w-6" /></Button>
+                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/5 text-white hover:bg-white/10 text-left" onClick={closeRecorder}><X className="h-6 w-6" /></Button>
                   </div>
                 </div>
                 
@@ -437,7 +437,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                                 <motion.div className="h-full bg-primary text-left" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} />
                             </div>
                         </div>
-                        <div className="flex gap-4 w-full text-left">
+                        <div className="flex gap-4 w-full text-left text-left">
                                 {!isRecording ? (<Button onClick={startRecording} className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center text-left"><Mic className="mr-3 h-6 w-6 text-left" /> START</Button>) : (<Button onClick={stopRecording} variant="destructive" className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center text-left"><Square className="mr-3 h-6 w-6 fill-current text-left" /> STOP</Button>)}
                         </div>
                     </div>
