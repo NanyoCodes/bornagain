@@ -634,6 +634,7 @@ export type RegionalChallenge = {
     createdAt: Timestamp;
     mediaUrl?: string;
     mediaUrl2?: string;
+    usersWhoPrayed?: string[];
 };
 
 export type ChallengeSolution = {

@@ -15,7 +15,9 @@ import {
     orderBy,
     updateDoc,
     deleteDoc,
-    where 
+    where,
+    arrayUnion,
+    arrayRemove
 } from 'firebase/firestore';
 import { 
     Card, 
@@ -48,7 +50,8 @@ import {
     Camera,
     Upload,
     MoreVertical,
-    Filter
+    Filter,
+    HandHeart
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -100,6 +103,8 @@ import { Country, State } from 'country-state-city';
 import type { RegionalChallenge, ChallengeType } from '@/lib/types';
 import { KingdomAdSpot } from '@/components/testimonies/kingdom-ad-spot';
 import { BibleGameCard } from '@/components/testimonies/bible-game-card';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const challengeTypeOptions: { label: string; value: ChallengeType }[] = [
     { label: 'Physical', value: 'Physical' },
@@ -137,9 +142,42 @@ function ChallengeCard({
     onEdit: () => void, 
     onDelete: () => void 
 }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isPraying, setIsPraying] = useState(false);
+
     const createdAt = safeToDate(challenge.createdAt);
     const isSpiritual = challenge.challengeType === 'Spiritual';
     const isAuthor = userId === challenge.authorId;
+    
+    const usersWhoPrayed = challenge.usersWhoPrayed || [];
+    const hasPrayed = user ? usersWhoPrayed.includes(user.uid) : false;
+
+    const handlePray = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!user || !firestore || hasPrayed || isPraying) return;
+        
+        setIsPraying(true);
+        const challengeRef = doc(firestore, 'regionalChallenges', challenge.id);
+        const updatePayload = {
+            usersWhoPrayed: arrayUnion(user.uid)
+        };
+
+        try {
+            await updateDoc(challengeRef, updatePayload);
+            toast({ title: "Prayer Established", description: "Your spiritual support has been anchored for this territory." });
+        } catch (error: any) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: challengeRef.path,
+                operation: 'update',
+                requestResourceData: updatePayload
+            }, user));
+        } finally {
+            setIsPraying(false);
+        }
+    };
 
     return (
         <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5">
@@ -209,27 +247,42 @@ function ChallengeCard({
                     &ldquo;{challenge.description}&rdquo;
                 </p>
                 <div className="mt-6 pt-6 border-t border-dashed flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <MessageSquare className="h-3.5 w-3.5 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{challenge.solutionCount || 0}</span>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <MessageSquare className="h-3.5 w-3.5 text-primary" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{challenge.solutionCount || 0}</span>
+                        </div>
+                        {usersWhoPrayed.length > 0 && (
+                            <div className="flex items-center gap-2">
+                                <HandHeart className="h-3.5 w-3.5 text-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{usersWhoPrayed.length}</span>
+                            </div>
+                        )}
                     </div>
                     <p className="text-[9px] font-bold text-muted-foreground uppercase">{createdAt ? format(createdAt, 'PPP') : 'Recently'}</p>
                 </div>
             </CardContent>
-            <CardFooter className="p-0 border-t mt-auto">
-                <Button asChild variant="ghost" className="w-full h-14 rounded-none gap-2 font-black uppercase tracking-widest text-[11px] group/btn hover:bg-primary/5 hover:text-primary transition-all">
+            <CardFooter className="p-0 border-t mt-auto flex divide-x">
+                <Button 
+                    variant="ghost" 
+                    className={cn(
+                        "flex-[2] h-14 rounded-none gap-2 font-black uppercase tracking-widest text-[10px] transition-all",
+                        hasPrayed ? "text-primary bg-primary/5" : "hover:bg-primary/5 hover:text-primary"
+                    )}
+                    onClick={handlePray}
+                    disabled={isPraying || !user || hasPrayed}
+                >
+                    {isPraying ? <Loader2 className="h-4 w-4 animate-spin" /> : <HandHeart className={cn("h-4 w-4", hasPrayed && "fill-current")} />}
+                    {hasPrayed ? "ESTABLISHED IN PRAYER" : "PRAY THEN REACT"}
+                </Button>
+                <Button asChild variant="ghost" className="flex-1 h-14 rounded-none group/btn hover:bg-primary/5 hover:text-primary transition-all">
                     <Link href={`/territories/${challenge.id}`} className="flex items-center justify-center w-full h-full">
-                        <ArrowRight className="h-6 w-6 text-primary/60 transition-transform group-hover/btn:translate-x-1" />
+                        <ArrowRight className="h-6 w-6 text-primary/60 transition-transform group-hover:translate-x-1" />
                     </Link>
                 </Button>
             </CardFooter>
         </Card>
     );
-}
-
-export function StrongholdCategoryClient({ category }: { category: string }) {
-    // This is a placeholder since the requested rephrase was for the landing page
-    return null;
 }
 
 export default function TerritoriesPageClient() {
@@ -350,6 +403,7 @@ export default function TerritoriesPageClient() {
             authorPhotoURL: userProfile.photoURL || '',
             status: 'open',
             solutionCount: 0,
+            usersWhoPrayed: [],
             createdAt: serverTimestamp(),
             mediaUrl: mediaUrl1 || null,
             mediaUrl2: mediaUrl2 || null,
