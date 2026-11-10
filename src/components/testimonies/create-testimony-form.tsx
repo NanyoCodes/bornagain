@@ -333,7 +333,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       {isUploadingMedia === slot ? (
                           <div className="flex flex-col items-center gap-2">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                              <div className="space-y-1 text-center"><p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p><p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p></div>
+                              <div className="space-y-1 text-center text-left"><p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p><p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p></div>
                           </div>
                       ) : (
                           <div className="flex flex-col items-center">
@@ -356,8 +356,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                         <video key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls preload="metadata" />
                     ) : (
                         <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
-                            <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Sparkles className="h-5 w-5 text-primary" /></div></div>
-                            <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" /></div>
+                            <div className="relative shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-left"><Sparkles className="h-5 w-5 text-primary text-left" /></div></div>
+                            <div className="min-w-0 flex-1 text-left"><p className="text-[10px] font-black uppercase text-primary tracking-widest mb-3">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" /></div>
                         </div>
                     )}
                     <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 transition-opacity">
@@ -453,7 +453,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               <div className="sr-only"><DialogHeader><DialogTitle>Miracle Recorder</DialogTitle><DialogDescription>Capture live proof of God's goodness.</DialogDescription></DialogHeader></div>
               <DialogHeader className="p-8 border-b border-white/5 bg-zinc-900 shrink-0 text-left">
                   <div className="flex items-center justify-between gap-4">
-                    <div className="min-w-0">
+                    <div className="min-w-0 text-left">
                         <div className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-white">Miracle Recorder</div>
                         <p className="text-sm font-medium text-zinc-400 mt-1">Capture your {recorderMode} proof.</p>
                     </div>

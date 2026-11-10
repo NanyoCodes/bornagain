@@ -41,7 +41,6 @@ import {
   Trophy,
   Droplets,
   Map,
-  ShoppingBag,
   Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -53,7 +52,6 @@ import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { Testimony } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
 import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 
 const features = [
@@ -170,23 +168,23 @@ export default function LandingPage() {
 
   if (authLoading || user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-left">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative text-left">
+    <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative">
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             {logo && (
               <div className="relative group">
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg animate-pulse" />
-                <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 text-left relative z-10">
-                  <AvatarImage src={logo.imageUrl} alt="BornAgain" className="object-cover text-left" />
-                  <AvatarFallback className="text-left font-black">B</AvatarFallback>
+                <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-2 border-primary/20 shadow-sm transition-transform hover:scale-105 active:scale-95 relative z-10">
+                  <AvatarImage src={logo.imageUrl} alt="BornAgain" className="object-cover" />
+                  <AvatarFallback className="font-black">B</AvatarFallback>
                 </Avatar>
               </div>
             )}
@@ -220,14 +218,14 @@ export default function LandingPage() {
                   Are you BornAgain?
                 </h1>
                 <span className="text-primary text-sm sm:text-lg md:text-xl block mt-6 uppercase tracking-wider font-black px-4 text-center">
-                   EXPERIENCE THE JOY OF CARING! GOD IS RECONCILING THE WORLD TO HIMSELF THROUGH US.
+                   The premier caring app for the new creation. Experience the joy of God reconciling the world to Himself through our collective love.
                 </span>
                 <p className="mt-8 text-sm sm:text-lg text-white/60 font-medium max-xl mx-auto italic leading-relaxed text-pretty text-center">
                   "Truly, truly, I say to you, unless one is born again he cannot see the kingdom of God." — John 3:3
                 </p>
               </motion.div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center text-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button asChild size="sm" className="h-10 px-8 text-[11px] font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest bg-primary hover:bg-primary/90 flex items-center justify-center text-center">
                   <Link href="/signup">I AM READY <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
@@ -239,7 +237,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24 relative overflow-hidden bg-background text-left">
+        <section className="py-24 relative overflow-hidden bg-background">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,116,22,0.05),transparent_40%)]" />
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="flex flex-col items-center gap-12">
@@ -298,7 +296,7 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left">
+        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
                 <Gamepad2 className="h-[40rem] w-[40rem] text-primary" />
             </div>
@@ -323,7 +321,7 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section className="py-24 relative overflow-hidden bg-background border-y border-primary/10 text-left">
+        <section className="py-24 relative overflow-hidden bg-background border-y border-primary/10">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(249,116,22,0.1),transparent_50%)]" />
             <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center">
                 <motion.div 
@@ -377,7 +375,7 @@ export default function LandingPage() {
                                     { title: "Purposeful Habits", desc: "Turn idle moments into a purposeful walk through the harvest field." },
                                     { title: "Collective Vigilance", desc: "Stay sensitive to the Spirit's move in territories and lives globally." }
                                 ].map((item, i) => (
-                                    <div key={i} className="flex gap-4 group text-left">
+                                    <div key={i} className="flex gap-4">
                                         <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-white transition-all">
                                             <Check className="h-3 w-3" />
                                         </div>
@@ -399,7 +397,7 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section className="py-24 bg-muted/30 text-left">
+        <section className="py-24 bg-muted/30">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-20 space-y-4">
               <motion.div
@@ -426,7 +424,7 @@ export default function LandingPage() {
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
                         >
-                            <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group border-b-8 border-b-primary/5 text-left">
+                            <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full overflow-hidden bg-card/50 backdrop-blur-sm group border-b-8 border-b-primary/5">
                                 <CardHeader className="p-8 pb-4 flex flex-col items-center text-center">
                                     <div className={cn("h-14 w-14 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500", feature.bgColor)}>
                                         <feature.icon className={cn("h-7 w-7", feature.color)} />
@@ -453,7 +451,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden text-left">
+        <section className="py-24 bg-zinc-950 text-white relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-20 space-y-4">
                     <h2 className="text-4xl sm:text-6xl font-black font-headline uppercase tracking-tighter text-center">Legacy of the Redeemed</h2>
@@ -495,7 +493,7 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section className="py-24 relative overflow-hidden bg-background text-left">
+        <section className="py-24 relative overflow-hidden bg-background">
           <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary" />
           
           <div className="max-w-7xl mx-auto px-6">
@@ -527,20 +525,20 @@ export default function LandingPage() {
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
                   >
-                    <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left">
+                    <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden">
                       <CardContent className="p-8 flex gap-6 text-left">
                         <Quote className="h-10 w-10 text-primary opacity-20 shrink-0 mt-1" />
-                        <div className="min-w-0 flex-1 text-left">
-                          <p className="text-sm sm:text-lg italic text-muted-foreground line-clamp-3 leading-relaxed mb-6 font-medium text-left">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm sm:text-lg italic text-muted-foreground line-clamp-3 leading-relaxed mb-6 font-medium">
                             "{t.content}"
                           </p>
-                          <div className="flex items-center gap-4 text-left">
+                          <div className="flex items-center gap-4">
                             <Avatar className="h-11 w-11 border-2 border-background shadow-md shrink-0">
                                 <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary font-black uppercase"> {t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 flex-1 text-left">
-                              <p className="text-[11px] font-black uppercase tracking-tight truncate text-left">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
-                              <p className="text-[9px] font-bold text-primary uppercase tracking-widest truncate text-left">{t.category}</p>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[11px] font-black uppercase tracking-tight truncate">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
+                              <p className="text-[9px] font-bold text-primary uppercase tracking-widest truncate">{t.category}</p>
                             </div>
                           </div>
                         </div>
@@ -553,7 +551,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden text-left">
+        <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden">
           <div className="absolute inset-0 opacity-10 pointer-events-none">
             <div className="absolute inset-0 grid grid-cols-6 gap-8 rotate-12 -translate-y-1/4">
               {[...Array(24)].map((_, i) => (
@@ -580,16 +578,16 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-muted/50 border-t py-20 text-left">
+      <footer className="bg-muted/50 border-t py-20">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 mb-16">
-            <div className="col-span-1 sm:col-span-2 space-y-8 text-left text-left text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-8 text-left">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 {logo && (
                   <div className="relative group">
                     <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg" />
-                    <Avatar className="h-14 w-14 border-2 border-primary/20 text-left relative z-10">
-                      <AvatarImage src={logo.imageUrl} alt="BornAgain" className="object-cover text-left" />
+                    <Avatar className="h-14 w-14 border-2 border-primary/20 relative z-10">
+                      <AvatarImage src={logo.imageUrl} alt="BornAgain" className="object-cover" />
                       <AvatarFallback>B</AvatarFallback>
                     </Avatar>
                   </div>
@@ -600,9 +598,9 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="space-y-6 text-left text-left text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Platform</h4>
-              <ul className="space-y-4 text-left text-left">
+            <div className="space-y-6 text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Platform</h4>
+              <ul className="space-y-4">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Glory Feed</Link></li>
                 <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Mission Hub</Link></li>
                 <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Spiritual Growth</Link></li>
@@ -610,9 +608,9 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div className="space-y-6 text-left text-left text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Ministry</h4>
-              <ul className="space-y-4 text-left text-left">
+            <div className="space-y-6 text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Ministry</h4>
+              <ul className="space-y-4">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">The Vision</Link></li>
                 <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Partner Station</Link></li>
                 <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">App Manual</Link></li>
@@ -625,7 +623,7 @@ export default function LandingPage() {
           
           <div className="h-px w-full bg-muted opacity-50 mb-10" />
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
             <p className="text-center md:text-left uppercase">© {new Date().getFullYear()} BornAgain Global. Caring for the Redeemed.</p>
             <div className="flex gap-8">
               <Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms</Link>

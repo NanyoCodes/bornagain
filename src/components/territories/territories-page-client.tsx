@@ -227,6 +227,11 @@ function ChallengeCard({
     );
 }
 
+export function StrongholdCategoryClient({ category }: { category: string }) {
+    // This is a placeholder since the requested rephrase was for the landing page
+    return null;
+}
+
 export default function TerritoriesPageClient() {
     const router = useRouter();
     const { user } = useUser();
@@ -431,7 +436,7 @@ export default function TerritoriesPageClient() {
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Domain</Label>
                             <Select onValueChange={(val: any) => setChallengeType(val)} value={challengeType}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                     <SelectValue placeholder="Select Type" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl border-none shadow-2xl">
@@ -444,7 +449,7 @@ export default function TerritoriesPageClient() {
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
                             <Select onValueChange={setSubCategory} value={subCategory}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                     <SelectValue placeholder="Select Category" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px] rounded-2xl border-none shadow-2xl">
@@ -459,7 +464,7 @@ export default function TerritoriesPageClient() {
                     <div className="space-y-4">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Territory Location</Label>
                         <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
-                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                 <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                             <SelectContent className="max-h-[300px]">
@@ -469,7 +474,7 @@ export default function TerritoriesPageClient() {
                         
                         <div className="grid grid-cols-2 gap-4">
                             <Select onValueChange={setRegState} value={regState} disabled={!regCountry || regStatesList.length === 0}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                     <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "State/Region"} />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px]">
@@ -575,7 +580,6 @@ export default function TerritoriesPageClient() {
                                 <SelectValue placeholder="Country" />
                             </SelectTrigger>
                             <SelectContent className="max-h-[300px]">
-                                <SelectItem value="all">All Countries</SelectItem>
                                 {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
@@ -667,7 +671,7 @@ export default function TerritoriesPageClient() {
                                         <Edit className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Refinement</span>
                                     </div>
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Update Hub Report</SheetTitle>
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Update Hub Report</SheetTitle>
                                 </SheetHeader>
                             </div>
                             <div className="flex-grow min-h-0">
@@ -699,7 +703,7 @@ export default function TerritoriesPageClient() {
                 <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Remove Report?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+                        <AlertDialogDescription>
                             Are you sure you want to delete this territorial challenge? All proposed solutions will also be removed. This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
