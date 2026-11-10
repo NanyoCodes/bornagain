@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Enhanced security for events and mission-critical folders - 2025-03-25T14:30:00Z
+    // Deployment trigger: Correcting events directory permissions - 2025-03-26T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -13,38 +13,43 @@ service firebase.storage {
     }
 
     function isValidSize() {
-      return request.resource.size < 50 * 1024 * 1024; // 50MB limit
+      // Increased to 100MB to support video evidence
+      return request.resource.size < 100 * 1024 * 1024;
     }
 
-    function isAllowedType() {
-      return request.resource.contentType.startsWith('image/') || 
-             request.resource.contentType.startsWith('video/') ||
-             request.resource.contentType.startsWith('audio/') ||
-             request.resource.contentType == 'application/pdf';
+    // Global read access for mission visibility across the Body of Christ
+    allow read: if true;
+
+    // Explicitly handle the 'events' folder for gather evidence
+    match /events/{userId}/{allPaths=**} {
+      allow write: if isOwner(userId) && isValidSize();
+      allow delete: if isOwner(userId);
     }
 
-    // High-fidelity matching for user-partitioned mission folders
-    // This covers 'events', 'testimonies', 'campaigns', 'profile-pictures', 'marketplace-items' etc.
+    // Explicitly handle other mission-critical folders
+    match /testimonies/{userId}/{allPaths=**} {
+      allow write: if isOwner(userId) && isValidSize();
+      allow delete: if isOwner(userId);
+    }
+
+    match /campaigns/{userId}/{allPaths=**} {
+      allow write: if isOwner(userId) && isValidSize();
+      allow delete: if isOwner(userId);
+    }
+
+    match /profile-pictures/{userId}/{allPaths=**} {
+      allow write: if isOwner(userId) && isValidSize();
+      allow delete: if isOwner(userId);
+    }
+
+    // Catch-all for any other user-partitioned mission folders
     match /{folder}/{userId}/{allPaths=**} {
-      // Public read for global visibility of God's work
-      allow read: if true;
-      
-      // Strict owner-only write/delete
-      // Note: request.resource == null handles deletions in some SDK versions
       allow write: if isOwner(userId) && isValidSize();
       allow delete: if isOwner(userId);
     }
 
-    // Specific policy for 'regions hub' to handle the space character explicitly
-    match /regions hub/{userId}/{allPaths=**} {
-      allow read: if true;
-      allow write: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
-    }
-
-    // Global fallback for any other files
+    // Fallback for root level or other patterns
     match /{allPaths=**} {
-      allow read: if true;
       allow write: if isAuthenticated() && isValidSize();
     }
   }
