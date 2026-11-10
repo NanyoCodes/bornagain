@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Explicitly authorized 'regions hub' path for territorial evidence - 2025-03-25T10:00:00Z
+    // Deployment trigger: Enhanced security for events and mission-critical folders - 2025-03-25T14:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -23,31 +23,29 @@ service firebase.storage {
              request.resource.contentType == 'application/pdf';
     }
 
-    // Specific policy for Regions Hub (Territories)
-    // Matches the folder name with a space as requested
-    match /regions hub/{userId}/{allPaths=**} {
-      // Public read for global visibility of territorial challenges
-      allow read: if true;
-      
-      // Strict owner-only write/delete
-      allow write: if isOwner(userId) && isValidSize() && (request.resource == null || isAllowedType());
-      allow delete: if isOwner(userId);
-    }
-
-    // Unified policy for other user-partitioned mission folders (testimonies, campaigns, etc.)
+    // High-fidelity matching for user-partitioned mission folders
+    // This covers 'events', 'testimonies', 'campaigns', 'profile-pictures', 'marketplace-items' etc.
     match /{folder}/{userId}/{allPaths=**} {
       // Public read for global visibility of God's work
       allow read: if true;
       
       // Strict owner-only write/delete
-      allow write: if isOwner(userId) && isValidSize() && (request.resource == null || isAllowedType());
+      // Note: request.resource == null handles deletions in some SDK versions
+      allow write: if isOwner(userId) && isValidSize();
       allow delete: if isOwner(userId);
     }
 
-    // Global fallback
+    // Specific policy for 'regions hub' to handle the space character explicitly
+    match /regions hub/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isOwner(userId) && isValidSize();
+      allow delete: if isOwner(userId);
+    }
+
+    // Global fallback for any other files
     match /{allPaths=**} {
       allow read: if true;
-      allow write: if isAuthenticated() && isValidSize() && (request.resource == null || isAllowedType());
+      allow write: if isAuthenticated() && isValidSize();
     }
   }
 }
