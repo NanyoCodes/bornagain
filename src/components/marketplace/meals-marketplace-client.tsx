@@ -327,7 +327,7 @@ export default function MealsMarketplaceClient() {
     return (
         <div className="space-y-6 sm:space-y-10 max-w-4xl mx-auto pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
-                <div className="flex items-center justify-between gap-4 text-left text-left">
+                <div className="flex items-center justify-between gap-4 text-left text-left text-left">
                     <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
                         <div className="space-y-1 min-w-0 text-left text-left">
@@ -383,26 +383,32 @@ export default function MealsMarketplaceClient() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 text-left">
-                        <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar text-left text-left">
-                            <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
-                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
-                                    <SelectValue placeholder="Country" className="text-left" />
-                                </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left text-left">
-                                    <SelectItem value="all" className="text-left">All Countries</SelectItem>
-                                    {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
+                        <div className="flex-1 flex gap-3 overflow-x-auto pb-1 no-scrollbar text-left text-left">
+                            <div className="space-y-1.5 shrink-0">
+                                <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Country</Label>
+                                <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
+                                    <SelectTrigger className="w-[130px] h-9 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
+                                        <SelectValue placeholder="Select" className="text-left" />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-[300px] text-left text-left">
+                                        <SelectItem value="all" className="text-left">All Countries</SelectItem>
+                                        {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
 
-                            <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
-                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
-                                    <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "State/Region"} className="text-left" />
-                                </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left text-left">
-                                    <SelectItem value="all" className="text-left">All States</SelectItem>
-                                    {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
+                            <div className="space-y-1.5 shrink-0">
+                                <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Region</Label>
+                                <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
+                                    <SelectTrigger className="w-[140px] h-9 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
+                                        <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "Select"} className="text-left" />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-[300px] text-left text-left">
+                                        <SelectItem value="all" className="text-left">All States</SelectItem>
+                                        {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                         
                         {soul?.locationWon?.city && (
@@ -423,7 +429,7 @@ export default function MealsMarketplaceClient() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0 text-left text-left text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0 text-left text-left text-left text-left">
                 {loading ? (
                     [...Array(4)].map((_, i) => (
                         <Card key={i} className="rounded-[2rem] border-none shadow-sm animate-pulse h-48 bg-muted/30 text-left" />
@@ -460,7 +466,7 @@ export default function MealsMarketplaceClient() {
                                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 font-medium leading-relaxed italic mb-4 text-left">
                                     &ldquo;{vendor.description || 'Verified Kingdom provision partner.'}&rdquo;
                                 </p>
-                                <Button className="w-full h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center text-left text-left">
+                                <Button className="w-full h-12 rounded-2xl px-6 font-black text-[11px] uppercase tracking-widest group/btn shadow-md shadow-primary/10 hover:shadow-lg transition-all active:scale-[0.98] text-center text-left text-left text-left">
                                     <span className="flex-1 text-left">VIEW MENU & PROVISIONS</span>
                                     <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1 text-left" />
                                 </Button>
@@ -471,7 +477,7 @@ export default function MealsMarketplaceClient() {
                     <div className="col-span-full py-32 text-center flex flex-col items-center text-left text-left text-left">
                         <Utensils className="h-16 w-16 text-muted-foreground opacity-10 mb-6 text-left" />
                         <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-center text-left">No Services Found</h3>
-                        <p className="text-xs text-muted-foreground italic mt-2 text-center text-left">Local meal providers will appear here.</p>
+                        <p className="text-xs text-muted-foreground italic mt-2 text-center text-left text-left">Local meal providers will appear here.</p>
                     </div>
                 )}
             </div>
@@ -508,7 +514,7 @@ export default function MealsMarketplaceClient() {
                 isMobile ? (
                     <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                                 <SheetHeader className="text-left p-0 text-left text-left text-left">
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</SheetTitle>
                                     <SheetDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</SheetDescription>
@@ -522,13 +528,13 @@ export default function MealsMarketplaceClient() {
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DialogHeader className="p-0 text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-grow text-left">
+                            <ScrollArea className="flex-grow text-left text-left">
                                 {registrationForm}
                             </ScrollArea>
                         </DialogContent>
@@ -538,3 +544,4 @@ export default function MealsMarketplaceClient() {
         </div>
     );
 }
+

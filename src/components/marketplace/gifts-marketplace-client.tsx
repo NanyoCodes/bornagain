@@ -263,7 +263,7 @@ export default function GiftsMarketplaceClient() {
                 </div>
 
                 <div className="space-y-4 text-left">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Storefront Photo</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Storefront Photo</Label>
                   <ImageUpload 
                       initialImageUrl={vendorPhotoURL} 
                       onUploadComplete={setVendorPhotoURL} 
@@ -273,12 +273,12 @@ export default function GiftsMarketplaceClient() {
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Business Name</Label>
+                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Business Name</Label>
                     <Input id="businessName" name="businessName" placeholder="e.g., Kingdom Books & Gifts" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Store Category</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Store Category</Label>
                     <Select onValueChange={setSelectedRegCategory} value={selectedRegCategory}>
                         <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                             <SelectValue placeholder="What do you provide?" className="text-left" />
@@ -295,7 +295,7 @@ export default function GiftsMarketplaceClient() {
 
                 <div className="grid grid-cols-2 gap-4 text-left">
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Base Currency</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Base Currency</Label>
                         <Select onValueChange={setSelectedCurrency} value={selectedCurrency}>
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                 <SelectValue placeholder="Select Currency" className="text-left" />
@@ -313,12 +313,12 @@ export default function GiftsMarketplaceClient() {
 
                 <div className="space-y-4 text-left">
                     <div className="space-y-2 text-left">
-                        <Label htmlFor="address" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Street Address</Label>
+                        <Label htmlFor="address" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Street Address</Label>
                         <Input id="address" name="address" placeholder="e.g., 123 Kingdom Way" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left" required />
                     </div>
 
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Country</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Country</Label>
                         <Select onValueChange={(val) => { setRegCountry(val); setRegState(''); }} value={regCountry}>
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                 <SelectValue placeholder="Select Country" className="text-left" />
@@ -331,7 +331,7 @@ export default function GiftsMarketplaceClient() {
 
                     <div className="grid grid-cols-2 gap-4 text-left">
                         <div className="space-y-2 text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">State</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">State</Label>
                             <Select onValueChange={setRegState} value={regState} disabled={!regCountry || regStatesList.length === 0}>
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                     <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "Select State"} className="text-left" />
@@ -342,14 +342,14 @@ export default function GiftsMarketplaceClient() {
                             </Select>
                         </div>
                         <div className="space-y-2 text-left">
-                            <Label htmlFor="city" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">City</Label>
+                            <Label htmlFor="city" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">City</Label>
                             <Input id="city" name="city" placeholder="Enter City" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                         </div>
                     </div>
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">About Your Service</Label>
+                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">About Your Service</Label>
                     <Textarea id="description" name="description" placeholder="Describe your products..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" />
                 </div>
                 <div className="space-y-2 text-left">
@@ -455,41 +455,49 @@ export default function GiftsMarketplaceClient() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 text-left">
-                        <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar text-left text-left text-left">
-                            <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
-                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
-                                    <SelectValue placeholder="Country" className="text-left" />
-                                </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left">
-                                    <SelectItem value="all" className="text-left">All Countries</SelectItem>
-                                    {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
+                        <div className="flex-1 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
+                            <div className="space-y-1.5 shrink-0">
+                                <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Country</Label>
+                                <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
+                                    <SelectTrigger className="w-[130px] h-9 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
+                                        <SelectValue placeholder="Select" />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-[300px] text-left">
+                                        <SelectItem value="all" className="text-left">All Countries</SelectItem>
+                                        {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
 
-                            <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
-                                <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
-                                    <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "State/Region"} className="text-left" />
-                                </SelectTrigger>
-                                <SelectContent className="max-h-[300px] text-left text-left text-left">
-                                    <SelectItem value="all" className="text-left">All States</SelectItem>
-                                    {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
+                            <div className="space-y-1.5 shrink-0">
+                                <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Region</Label>
+                                <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
+                                    <SelectTrigger className="w-[130px] h-9 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
+                                        <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "Select"} />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-[300px] text-left">
+                                        <SelectItem value="all" className="text-left">All States</SelectItem>
+                                        {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                         
                         {soul?.locationWon?.city && (
-                            <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={() => setFilterBySoulLoc(!filterBySoulLoc)}
-                                className={cn(
-                                    "h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] gap-2 transition-all text-left text-left",
-                                    filterBySoulLoc ? "bg-primary text-white border-none shadow-lg ring-2 ring-primary/20" : "border-primary/20 text-primary hover:bg-primary/5"
-                                )}
-                            >
-                                {filterBySoulLoc ? <Check className="h-3 w-3 text-left" /> : <MapPin className="h-3 w-3 text-left" />}
-                                GIFTS NEAR {soul.locationWon.city.toUpperCase()}
-                            </Button>
+                            <div className="pt-4 sm:pt-0">
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={() => setFilterBySoulLoc(!filterBySoulLoc)}
+                                    className={cn(
+                                        "h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] gap-2 transition-all text-left",
+                                        filterBySoulLoc ? "bg-primary text-white border-none shadow-lg ring-2 ring-primary/20" : "border-primary/20 text-primary hover:bg-primary/5"
+                                    )}
+                                >
+                                    {filterBySoulLoc ? <Check className="h-3 w-3 text-left" /> : <MapPin className="h-3 w-3 text-left" />}
+                                    GIFTS NEAR {soul.locationWon.city.toUpperCase()}
+                                </Button>
+                            </div>
                         )}
                     </div>
                 </div>

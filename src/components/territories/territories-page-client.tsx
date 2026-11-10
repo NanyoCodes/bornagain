@@ -559,7 +559,7 @@ export default function TerritoriesPageClient() {
                     </Button>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-start gap-4 shadow-inner">
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-start gap-4 shadow-inner">
                     <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1">
                         <Target className="h-6 w-6 text-white" />
                     </div>
@@ -590,24 +590,31 @@ export default function TerritoriesPageClient() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="flex-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                        <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
-                            <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
-                                <SelectValue placeholder="Country" />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-[300px]">
-                                {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
+                    <div className="flex-1 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
+                        <div className="space-y-1.5 shrink-0">
+                            <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Country</Label>
+                            <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
+                                <SelectTrigger className="w-[130px] h-9 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
+                                    <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px]">
+                                    <SelectItem value="all">All Countries</SelectItem>
+                                    {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                        <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
-                            <SelectTrigger className="w-[140px] h-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
-                                <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "State/Region"} />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-[300px]">
-                                {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
+                        <div className="space-y-1.5 shrink-0">
+                            <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Region</Label>
+                            <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
+                                <SelectTrigger className="w-[130px] h-9 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left">
+                                    <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "Select"} />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px]">
+                                    {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -645,7 +652,7 @@ export default function TerritoriesPageClient() {
                 isMobile ? (
                     <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left flex-shrink-0 p-0">
                                     <div className="flex items-center gap-2 mb-2">
                                         <Globe className="h-4 w-4 text-primary" />
