@@ -1,10 +1,9 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
 import { useUser, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { collection, query, orderBy, where, doc, updateDoc, serverTimestamp, addDoc, collectionGroup } from "firebase/firestore";
-import type { Event, EventGalleryItem } from "@/lib/types";
+import type { Event, EventGalleryItem, UserProfile } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +26,8 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogDescription 
+  DialogDescription,
+  DialogTrigger 
 } from "@/components/ui/dialog";
 import { 
   Sheet, 
@@ -46,6 +46,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { EventCard } from "./event-card";
 import { CreateEventForm } from "./create-event-form";
@@ -60,15 +69,12 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { BibleGameCard } from "@/components/testimonies/bible-game-card";
 import { KingdomAdSpot } from "@/components/testimonies/kingdom-ad-spot";
 import { ImageUpload } from "../common/image-upload";
-import { Label } from "../ui/label";
 import Image from "next/image";
 
 function EvidenceHub() {
     const firestore = useFirestore();
     const { toast } = useToast();
     
-    // We use a collectionGroup query to aggregate all gallery items from all events
-    // This requires a composite index to be deployed.
     const evidenceQuery = useMemo(() => {
         if (!firestore) return null;
         return query(collectionGroup(firestore, 'gallery'), orderBy('createdAt', 'desc'));
@@ -119,8 +125,8 @@ function EvidenceHub() {
                                 <DialogDescription>Full screen view of gathering impact photo.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <div className="relative h-full w-full flex items-center justify-center p-4">
-                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                        <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                                 <Image src={item.url} alt="Full view" fill className="object-contain" unoptimized />
                             </div>
                         </div>
@@ -147,7 +153,6 @@ function GlobalUploadDialog({
     const [selectedEventId, setSelectedEventId] = useState<string>('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Fetch user's joined events to link evidence
     const joinedEventsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
         return query(collection(firestore, 'events'), where('participantIds', 'array-contains', user.uid));
@@ -184,7 +189,7 @@ function GlobalUploadDialog({
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col">
                 <div className="p-8 border-b bg-muted/10 shrink-0">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-2 text-left">
                         <Sparkles className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Proclamation</span>
                     </div>
@@ -198,7 +203,7 @@ function GlobalUploadDialog({
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Gathering</Label>
                             <Select value={selectedEventId} onValueChange={setSelectedEventId}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                     <SelectValue placeholder="Which gathering are you in?" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl border-none shadow-2xl">
@@ -207,7 +212,7 @@ function GlobalUploadDialog({
                                     ))}
                                     {(!myEvents || myEvents.length === 0) && (
                                         <div className="p-4 text-center">
-                                            <p className="text-xs text-muted-foreground italic">You haven't joined any gatherings yet.</p>
+                                            <p className="text-xs text-muted-foreground italic text-left">You haven't joined any gatherings yet.</p>
                                         </div>
                                     )}
                                 </SelectContent>
@@ -226,7 +231,7 @@ function GlobalUploadDialog({
 
                         <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3">
                             <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                            <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                            <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left">
                                 Uploading evidence strengthens the faith of the Body. By posting, you approve the public sharing of this miracle proof within the Kingdom Network.
                             </p>
                         </div>
@@ -275,14 +280,6 @@ export default function EventPageClient() {
     
     const eventsRef = collection(firestore, 'events');
     
-    if (activeTab === 'all') {
-      return query(
-        eventsRef, 
-        where('status', '==', 'active'),
-        where('visibility', '==', 'public')
-      );
-    }
-    
     if (activeTab === 'mine') {
       return query(
         eventsRef, 
@@ -302,7 +299,7 @@ export default function EventPageClient() {
     return query(eventsRef, where('status', '==', 'active'), where('visibility', '==', 'public'));
   }, [firestore, user?.uid, activeTab]);
 
-  const { data: rawEvents, loading } = useCollection<Event>(eventsQuery);
+  const { data: rawEvents, loading: eventsLoading } = useCollection<Event>(eventsQuery);
 
   const filteredEvents = useMemo(() => {
     if (!rawEvents) return [];
@@ -366,7 +363,7 @@ export default function EventPageClient() {
   if (!mounted) return null;
 
   return (
-    <div className="space-y-8 md:space-y-12 max-w-4xl mx-auto pb-32 w-full">
+    <div className="space-y-8 md:space-y-12 max-w-4xl mx-auto pb-32 w-full text-left">
         <header className="px-4 sm:px-0 space-y-6 pt-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
@@ -428,7 +425,7 @@ export default function EventPageClient() {
                 <TabsContent value={activeTab === 'evidence' ? 'evidence' : activeTab} className="mt-0 outline-none">
                     <div className="flex flex-col gap-6 sm:gap-10">
                         {activeTab !== 'evidence' && (
-                            loading ? (
+                            eventsLoading ? (
                                 [...Array(3)].map((_, i) => (
                                     <Card key={i} className="rounded-none sm:rounded-[3rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-none sm:shadow-sm animate-pulse h-[400px]">
                                         <CardContent className="h-full bg-muted/30" />
