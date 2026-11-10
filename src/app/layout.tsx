@@ -1,4 +1,3 @@
-
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -15,7 +14,7 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const bornAgainLogoUrl = 'https://i.postimg.cc/NMWvPrRn/Born-Again-Sunrise-Emblem.png';
+const bornAgainLogoUrl = 'https://i.postimg.cc/K8VD8BYD/Born-Again-Mountain-Sunrise-Emblem.png';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://testifyglobal.com'),
