@@ -147,7 +147,7 @@ export default function LoginPage() {
 
         <div className="text-center text-sm">
           Don&apos;t have an account?{' '}
-          <Link href="/signup" className="underline cursor-pointer font-semibold text-primary">
+          <Link href="/" className="underline cursor-pointer font-semibold text-primary">
             Join Movement
           </Link>
         </div>

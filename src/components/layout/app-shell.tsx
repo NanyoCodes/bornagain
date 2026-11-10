@@ -107,8 +107,6 @@ const SYSTEM_NOTIFICATION_TYPES = [
   'org_invite'
 ];
 
-const OTHER_NOTIFICATION_TYPES = SYSTEM_NOTIFICATION_TYPES;
-
 const inspirationalMessages = [
   "GOD FIRST",
   "SEEK THE KINGDOM",
@@ -565,7 +563,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
               <Link href="/login" className="text-left">Sign In</Link>
             </Button>
             <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
-              <Link href="/signup" className="text-left">Join Movement</Link>
+              <Link href="/" className="text-left">Join Movement</Link>
             </Button>
           </div>
         ) : (
@@ -708,7 +706,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   }, [pathname]);
 
   useEffect(() => {
-    if (!authLoading && !user && !isPublicRoute) router.push('/login');
+    if (!authLoading && !user && !isPublicRoute) router.push('/');
   }, [authLoading, user, router, isPublicRoute]);
 
   useEffect(() => {
