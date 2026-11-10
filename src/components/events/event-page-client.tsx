@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useUser, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { collection, query, orderBy, where, doc, updateDoc, serverTimestamp, addDoc, collectionGroup } from "firebase/firestore";
-import type { Event, EventGalleryItem, UserProfile } from "@/lib/types";
+import type { Event, EventGalleryItem } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -118,7 +118,7 @@ function EvidenceHub() {
                             </div>
                         </div>
                     </DialogTrigger>
-                    <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex flex-col items-center justify-center">
+                    <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex flex-col items-center justify-center text-center">
                         <div className="sr-only">
                             <DialogHeader>
                                 <DialogTitle>Evidence Proclamation</DialogTitle>
@@ -189,11 +189,11 @@ function GlobalUploadDialog({
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col">
                 <div className="p-8 border-b bg-muted/10 shrink-0">
-                    <div className="flex items-center gap-2 mb-2 text-left">
+                    <div className="flex items-center gap-2 mb-2">
                         <Sparkles className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Proclamation</span>
                     </div>
-                    <DialogHeader className="text-left p-0">
+                    <DialogHeader className="p-0">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Approve & Upload Proof</DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1">Capture and share the manifest power of God from your gathering.</DialogDescription>
                     </DialogHeader>
@@ -212,7 +212,7 @@ function GlobalUploadDialog({
                                     ))}
                                     {(!myEvents || myEvents.length === 0) && (
                                         <div className="p-4 text-center">
-                                            <p className="text-xs text-muted-foreground italic text-left">You haven't joined any gatherings yet.</p>
+                                            <p className="text-xs text-muted-foreground italic">You haven't joined any gatherings yet.</p>
                                         </div>
                                     )}
                                 </SelectContent>
@@ -231,7 +231,7 @@ function GlobalUploadDialog({
 
                         <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3">
                             <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                            <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left">
+                            <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
                                 Uploading evidence strengthens the faith of the Body. By posting, you approve the public sharing of this miracle proof within the Kingdom Network.
                             </p>
                         </div>
@@ -375,9 +375,6 @@ export default function EventPageClient() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Button onClick={() => setIsGlobalUploadOpen(true)} variant="outline" className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background">
-                        <Camera className="mr-2 h-4 w-4" /> POST EVIDENCE
-                    </Button>
                     <Button onClick={() => setIsCreateOpen(true)} className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20">
                         <PlusCircle className="mr-2 h-4 w-4" /> HOST EVENT
                     </Button>
@@ -453,7 +450,7 @@ export default function EventPageClient() {
                                     <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
                                         <CalendarDays className="h-10 w-10 text-muted-foreground opacity-10" />
                                     </div>
-                                    <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40">Hub Silence</h3>
+                                    <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center">Hub Silence</h3>
                                     <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto text-balance">No events found here. Why not host one for the Body of Christ?</p>
                                 </div>
                             )
@@ -569,7 +566,7 @@ export default function EventPageClient() {
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12 font-bold">Close</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
+                    <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Confirm Cancellation
                     </AlertDialogAction>
