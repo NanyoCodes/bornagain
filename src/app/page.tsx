@@ -194,7 +194,7 @@ export default function LandingPage() {
               <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9">
-              <Link href="/">Join Movement</Link>
+              <Link href="/signup">Join Movement</Link>
             </Button>
           </div>
         </div>
