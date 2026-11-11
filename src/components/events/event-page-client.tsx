@@ -2,9 +2,27 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useUser, useFirestore, useCollection, useUserProfile } from "@/firebase";
-import { collection, query, orderBy, where, doc, updateDoc, serverTimestamp, addDoc, collectionGroup } from "firebase/firestore";
+import { 
+  collection, 
+  query, 
+  addDoc, 
+  serverTimestamp, 
+  doc, 
+  updateDoc, 
+  writeBatch, 
+  where, 
+  getDocs, 
+  deleteDoc, 
+  collectionGroup 
+} from "firebase/firestore";
 import type { Event, EventGalleryItem } from "@/lib/types";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription 
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -63,6 +81,7 @@ import {
 } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { EventCard } from "./event-card";
 import { CreateEventForm } from "./create-event-form";
@@ -77,7 +96,6 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { BibleGameCard } from "@/components/testimonies/bible-game-card";
 import { KingdomAdSpot } from "@/components/testimonies/kingdom-ad-spot";
 import { ImageUpload } from "../common/image-upload";
-import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
 function EvidenceHub() {
@@ -547,7 +565,7 @@ export default function EventPageClient() {
                                 <DialogDescription className="text-base font-medium text-left text-left text-left">Update event logistics and details.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-1 min-h-0 text-left text-left">
+                        <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
                             <div className="p-8 text-left text-left text-left">
                                 <ManageEventForm 
                                     event={eventToEdit} 
@@ -585,4 +603,3 @@ export default function EventPageClient() {
     </div>
   );
 }
-

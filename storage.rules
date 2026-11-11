@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Universal Mission Folder Access - 2025-03-28T10:00:00Z
+    // Deployment trigger: Strategic Mission Authorization - 2025-03-29T11:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -20,35 +20,33 @@ service firebase.storage {
     // Global read access to ensure the Body of Christ can witness all shared miracles
     allow read: if true;
 
-    // Explicit partitioning for mission hubs
+    // Explicit partitioning for mission hubs using allow write to support resumable uploads
     match /events/{userId}/{allPaths=**} {
-      allow create: if isOwner(userId) && isValidSize();
-      allow update, delete: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidSize();
     }
 
     match /testimonies/{userId}/{allPaths=**} {
-      allow create: if isOwner(userId) && isValidSize();
-      allow update, delete: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidSize();
     }
 
     match /campaigns/{userId}/{allPaths=**} {
-      allow create: if isOwner(userId) && isValidSize();
-      allow update, delete: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidSize();
     }
 
     match /profile-pictures/{userId}/{allPaths=**} {
-      allow create: if isOwner(userId) && isValidSize();
-      allow update, delete: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidSize();
     }
 
     match /vendor-branding/{userId}/{allPaths=**} {
-      allow create: if isOwner(userId) && isValidSize();
-      allow update, delete: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidSize();
     }
 
     match /marketplace-items/{userId}/{allPaths=**} {
-      allow create: if isOwner(userId) && isValidSize();
-      allow update, delete: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidSize();
+    }
+    
+    match /campaign-assets/{userId}/{allPaths=**} {
+      allow write: if isOwner(userId) && isValidSize();
     }
 
     // Generic fallback for any other mission-critical uploads
