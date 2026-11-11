@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Universal Mission Folder Access - 2025-03-27T16:00:00Z
+    // Deployment trigger: Universal Mission Folder Access - 2025-03-28T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -20,36 +20,35 @@ service firebase.storage {
     // Global read access to ensure the Body of Christ can witness all shared miracles
     allow read: if true;
 
-    // Permissions for user-partitioned mission evidence folders
-    // Corrected to explicitly handle the events directory for LD3g8STsV1e4OAgkOkYpJEx4w7g1 and others
+    // Explicit partitioning for mission hubs
     match /events/{userId}/{allPaths=**} {
-      allow write: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidSize();
+      allow update, delete: if isOwner(userId);
     }
 
     match /testimonies/{userId}/{allPaths=**} {
-      allow write: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidSize();
+      allow update, delete: if isOwner(userId);
     }
 
     match /campaigns/{userId}/{allPaths=**} {
-      allow write: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidSize();
+      allow update, delete: if isOwner(userId);
     }
 
     match /profile-pictures/{userId}/{allPaths=**} {
-      allow write: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidSize();
+      allow update, delete: if isOwner(userId);
     }
 
     match /vendor-branding/{userId}/{allPaths=**} {
-      allow write: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidSize();
+      allow update, delete: if isOwner(userId);
     }
 
     match /marketplace-items/{userId}/{allPaths=**} {
-      allow write: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidSize();
+      allow update, delete: if isOwner(userId);
     }
 
     // Generic fallback for any other mission-critical uploads
