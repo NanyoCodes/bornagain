@@ -13,7 +13,8 @@ import {
   where, 
   getDocs, 
   deleteDoc, 
-  collectionGroup 
+  collectionGroup,
+  orderBy
 } from "firebase/firestore";
 import type { Event, EventGalleryItem } from "@/lib/types";
 import { 
@@ -433,14 +434,23 @@ export default function EventPageClient() {
             <Tabs value={activeTab} className="w-full text-left">
                 <TabsContent value="evidence" className="mt-0 outline-none px-4 sm:px-0 text-left">
                     <div className="space-y-8 text-left">
-                        <div className="flex items-center gap-3 px-1 text-left">
-                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
-                                <Sparkles className="h-5 w-5 text-primary text-left" />
+                        <div className="flex items-center justify-between gap-4 px-1 text-left">
+                            <div className="flex items-center gap-3 text-left">
+                                <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
+                                    <Sparkles className="h-5 w-5 text-primary text-left" />
+                                </div>
+                                <div className="text-left text-left">
+                                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Mission Proof</h3>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Visual proclamations of God's work</p>
+                                </div>
                             </div>
-                            <div className="text-left text-left">
-                                <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Mission Proof</h3>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Visual proclamations of God's work</p>
-                            </div>
+                            <Button 
+                                onClick={() => setIsGlobalUploadOpen(true)}
+                                variant="outline"
+                                className="h-10 px-4 rounded-xl font-black uppercase text-[10px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background"
+                            >
+                                <Camera className="mr-2 h-4 w-4" /> UPLOAD PROOF
+                            </Button>
                         </div>
                         <EvidenceHub />
                     </div>
