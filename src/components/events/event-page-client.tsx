@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useMemo, useEffect } from "react";
 import { useUser, useFirestore, useCollection, useUserProfile } from "@/firebase";
@@ -19,7 +19,8 @@ import {
   ChevronDown,
   X,
   Target,
-  Newspaper
+  Newspaper,
+  Filter
 } from "lucide-react";
 import { 
   Dialog, 
@@ -85,7 +86,7 @@ function EvidenceHub() {
 
     if (loading) {
         return (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-left">
                 {[...Array(6)].map((_, i) => (
                     <Skeleton key={i} className="aspect-square rounded-2xl animate-pulse bg-muted/30" />
                 ))}
@@ -108,14 +109,14 @@ function EvidenceHub() {
     }
 
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 text-left">
             {evidence.map((item) => (
                 <Dialog key={item.id}>
                     <DialogTrigger asChild>
                         <div className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm group cursor-pointer bg-muted">
                             <Image src={item.url} alt="Evidence" fill className="object-cover transition-transform group-hover:scale-110" unoptimized />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
-                                <p className="text-[9px] font-black text-white uppercase truncate">By {item.authorName}</p>
+                                <p className="text-[9px] font-black text-white uppercase truncate text-left">By {item.authorName}</p>
                             </div>
                         </div>
                     </DialogTrigger>
@@ -188,40 +189,40 @@ function GlobalUploadDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                    <div className="flex items-center gap-2 mb-2 text-left">
-                        <Sparkles className="h-5 w-5 text-primary text-left" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Proclamation</span>
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col text-left">
+                <div className="p-8 border-b bg-muted/10 shrink-0">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Proclamation</span>
                     </div>
                     <DialogHeader className="p-0 text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Approve & Upload Proof</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1 text-left">Capture and share the manifest power of God from your gathering.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Approve & Upload Proof</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1">Capture and share the manifest power of God from your gathering.</DialogDescription>
                     </DialogHeader>
                 </div>
                 <ScrollArea className="flex-grow">
-                    <div className="p-8 space-y-6 text-left">
-                        <div className="space-y-2 text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Gathering</Label>
+                    <div className="p-8 space-y-6">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Gathering</Label>
                             <Select value={selectedEventId} onValueChange={setSelectedEventId}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                    <SelectValue placeholder="Which gathering are you in?" className="text-left" />
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                    <SelectValue placeholder="Which gathering are you in?" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
+                                <SelectContent className="rounded-2xl border-none shadow-2xl">
                                     {myEvents?.map(e => (
-                                        <SelectItem key={e.id} value={e.id} className="rounded-xl font-bold text-left">{e.title}</SelectItem>
+                                        <SelectItem key={e.id} value={e.id} className="rounded-xl font-bold">{e.title}</SelectItem>
                                     ))}
                                     {(!myEvents || myEvents.length === 0) && (
                                         <div className="p-4 text-center">
-                                            <p className="text-xs text-muted-foreground italic text-center">You haven't joined any gatherings yet.</p>
+                                            <p className="text-xs text-muted-foreground italic">You haven't joined any gatherings yet.</p>
                                         </div>
                                     )}
                                 </SelectContent>
                             </Select>
                         </div>
 
-                        <div className="space-y-2 text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Visual Evidence</Label>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Visual Evidence</Label>
                             <ImageUpload 
                                 initialImageUrl={photoUrl}
                                 onUploadComplete={setPhotoUrl}
@@ -230,22 +231,22 @@ function GlobalUploadDialog({
                             />
                         </div>
 
-                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3 text-left">
-                            <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
-                            <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left">
+                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3">
+                            <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                            <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
                                 Uploading evidence strengthens the faith of the Body. By posting, you approve the public sharing of this miracle proof within the Kingdom Network.
                             </p>
                         </div>
                     </div>
                 </ScrollArea>
-                <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0 text-left">
-                    <Button variant="outline" onClick={() => onOpenChange(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
+                <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0">
+                    <Button variant="outline" onClick={() => onOpenChange(false)} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
                     <Button 
                         onClick={handleUpload} 
                         disabled={!photoUrl || !selectedEventId || isSubmitting}
-                        className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left"
+                        className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center"
                     >
-                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Upload className="mr-2 h-4 w-4 text-left" />}
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
                         POST PROOF
                     </Button>
                 </div>
@@ -366,54 +367,54 @@ export default function EventPageClient() {
   return (
     <div className="space-y-8 md:space-y-12 max-w-4xl mx-auto pb-32 w-full text-left">
         <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
-                <div className="flex items-center gap-4 text-left">
-                    <div className="space-y-1 text-left">
-                        <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">EVENTS HUB</h1>
-                        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
-                            <CalendarDays className="h-4 w-4 text-primary text-left" /> Event Directory
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                    <div className="space-y-1">
+                        <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">EVENTS HUB</h1>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
+                            <CalendarDays className="h-4 w-4 text-primary" /> Event Directory
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 w-full sm:w-auto text-left">
-                    <Button onClick={() => setIsCreateOpen(true)} className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 text-center text-left">
-                        <PlusCircle className="mr-2 h-4 w-4 text-left" /> HOST EVENT
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Button onClick={() => setIsCreateOpen(true)} className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20">
+                        <PlusCircle className="mr-2 h-4 w-4" /> HOST EVENT
                     </Button>
                 </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto text-left">
-                    <TabsList className="grid w-full grid-cols-4 h-12 bg-muted/40 p-1 rounded-2xl text-left">
-                        <TabsTrigger value="all" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center">Global</TabsTrigger>
-                        <TabsTrigger value="mine" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center">My Hubs</TabsTrigger>
-                        <TabsTrigger value="joined" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center">Going</TabsTrigger>
-                        <TabsTrigger value="evidence" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center">Evidence</TabsTrigger>
+                    <TabsList className="flex w-full overflow-x-auto no-scrollbar justify-start sm:grid sm:grid-cols-4 h-12 bg-muted/40 p-1 rounded-2xl text-left">
+                        <TabsTrigger value="all" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink">Global</TabsTrigger>
+                        <TabsTrigger value="mine" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink">My Hubs</TabsTrigger>
+                        <TabsTrigger value="joined" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink">Going</TabsTrigger>
+                        <TabsTrigger value="evidence" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink">Evidence</TabsTrigger>
                     </TabsList>
                 </Tabs>
-                <div className="relative flex-1 w-full sm:max-w-sm text-left">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
+                <div className="relative flex-1 w-full sm:max-w-sm">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
                     <Input 
                         placeholder="Search for gatherings..." 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-left"
+                        className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full"
                     />
                 </div>
             </div>
         </header>
 
-        <div className="px-0 sm:px-0 -mx-4 sm:mx-0 text-left">
+        <div className="px-0 sm:px-0 -mx-4 sm:mx-0">
             <Tabs value={activeTab} className="w-full text-left">
                 <TabsContent value="evidence" className="mt-0 outline-none px-4 sm:px-0 text-left">
                     <div className="space-y-8 text-left">
-                        <div className="flex items-center gap-3 px-1 text-left">
-                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
-                                <Sparkles className="h-5 w-5 text-primary text-left" />
+                        <div className="flex items-center gap-3 px-1">
+                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
+                                <Sparkles className="h-5 w-5 text-primary" />
                             </div>
                             <div className="text-left">
-                                <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Mission Proof</h3>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Visual proclamations of God's work</p>
+                                <h3 className="text-xl font-black font-headline uppercase tracking-tight">Mission Proof</h3>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Visual proclamations of God's work</p>
                             </div>
                         </div>
                         <EvidenceHub />
@@ -432,9 +433,9 @@ export default function EventPageClient() {
                             ) : interleavedEvents.length > 0 ? (
                                 interleavedEvents.map((item: any) => (
                                     item.isGame ? (
-                                        <div key={item.id} className="px-4 sm:px-0 text-left"><BibleGameCard /></div>
+                                        <div key={item.id} className="px-4 sm:px-0"><BibleGameCard /></div>
                                     ) : item.isAd ? (
-                                        <div key={item.id} className="px-4 sm:px-0 text-left"><KingdomAdSpot type={item.adType} /></div>
+                                        <div key={item.id} className="px-4 sm:px-0"><KingdomAdSpot type={item.adType} /></div>
                                     ) : (
                                         <EventCard 
                                             key={item.id} 
@@ -448,11 +449,11 @@ export default function EventPageClient() {
                                 ))
                             ) : (
                                 <div className="col-span-full py-32 text-center flex flex-col items-center px-8 text-left">
-                                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
-                                        <CalendarDays className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
+                                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                                        <CalendarDays className="h-10 w-10 text-muted-foreground opacity-10" />
                                     </div>
-                                    <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">Hub Silence</h3>
-                                    <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto text-balance text-center text-left">No events found here. Why not host one for the Body of Christ?</p>
+                                    <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center">Hub Silence</h3>
+                                    <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto text-balance text-center">No events found here. Why not host one for the Body of Christ?</p>
                                 </div>
                             )
                         )}
@@ -465,7 +466,7 @@ export default function EventPageClient() {
             isMobile ? (
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
                                 <SheetTitle className="text-2xl font-black font-headline text-left">Host for the Kingdom</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1 text-left">Organize a gathering to strengthen the saints.</SheetDescription>
@@ -558,7 +559,7 @@ export default function EventPageClient() {
         )}
 
         <AlertDialog open={!!eventToDelete} onOpenChange={(open) => !open && setEventToDelete(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
                 <AlertDialogHeader className="text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">Cancel Gathering?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
@@ -577,3 +578,4 @@ export default function EventPageClient() {
     </div>
   );
 }
+

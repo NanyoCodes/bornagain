@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Universal Mission Folder Access - 2025-03-27T14:30:00Z
+    // Deployment trigger: Universal Mission Folder Access - 2025-03-27T16:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -21,6 +21,7 @@ service firebase.storage {
     allow read: if true;
 
     // Permissions for user-partitioned mission evidence folders
+    // Corrected to explicitly handle the events directory for LD3g8STsV1e4OAgkOkYpJEx4w7g1 and others
     match /events/{userId}/{allPaths=**} {
       allow write: if isOwner(userId) && isValidSize();
       allow delete: if isOwner(userId);
