@@ -39,7 +39,8 @@ import {
   X,
   Target,
   Newspaper,
-  Filter
+  Filter,
+  Info
 } from "lucide-react";
 import { 
   Dialog, 
@@ -127,7 +128,7 @@ function EvidenceHub() {
                     <Camera className="h-8 w-8 text-primary opacity-10" />
                 </div>
                 <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40">Gallery Silence</h3>
-                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance">
+                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance text-center">
                     Capture the impact of your gatherings and post them here to encourage the global Body.
                 </p>
             </div>
@@ -147,15 +148,15 @@ function EvidenceHub() {
                         </div>
                     </DialogTrigger>
                     <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex flex-col items-center justify-center text-center">
-                        <div className="sr-only">
-                            <DialogHeader>
-                                <DialogTitle>Evidence Proclamation</DialogTitle>
-                                <DialogDescription>Full screen view of gathering impact photo.</DialogDescription>
+                        <div className="sr-only text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                            <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <DialogTitle className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Evidence Proclamation</DialogTitle>
+                                <DialogDescription className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Full screen view of gathering impact photo.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <div className="relative h-full w-full flex items-center justify-center p-4">
-                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                                <Image src={item.url} alt="Full view" fill className="object-contain" unoptimized />
+                        <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <Image src={item.url} alt="Full view" fill className="object-contain text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" unoptimized />
                             </div>
                         </div>
                     </DialogContent>
@@ -215,40 +216,40 @@ function GlobalUploadDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col">
-                <div className="p-8 border-b bg-muted/10 shrink-0">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Sparkles className="h-5 w-5 text-primary" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Proclamation</span>
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col text-left">
+                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="flex items-center gap-2 mb-2 text-left">
+                        <Sparkles className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Proclamation</span>
                     </div>
-                    <DialogHeader className="p-0">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Approve & Upload Proof</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1">Capture and share the manifest power of God from your gathering.</DialogDescription>
+                    <DialogHeader className="p-0 text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Approve & Upload Proof</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left">Capture and share the manifest power of God from your gathering.</DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="flex-grow">
-                    <div className="p-8 space-y-6">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Gathering</Label>
+                <ScrollArea className="flex-grow text-left">
+                    <div className="p-8 space-y-6 text-left">
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Gathering</Label>
                             <Select value={selectedEventId} onValueChange={setSelectedEventId}>
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                     <SelectValue placeholder="Which gathering are you in?" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-none shadow-2xl">
+                                <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
                                     {myEvents?.map(e => (
-                                        <SelectItem key={e.id} value={e.id} className="rounded-xl font-bold">{e.title}</SelectItem>
+                                        <SelectItem key={e.id} value={e.id} className="rounded-xl font-bold text-left">{e.title}</SelectItem>
                                     ))}
                                     {(!myEvents || myEvents.length === 0) && (
-                                        <div className="p-4 text-center">
-                                            <p className="text-xs text-muted-foreground italic">You haven't joined any gatherings yet.</p>
+                                        <div className="p-4 text-center text-left">
+                                            <p className="text-xs text-muted-foreground italic text-left">You haven't joined any gatherings yet.</p>
                                         </div>
                                     )}
                                 </SelectContent>
                             </Select>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Visual Evidence</Label>
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Visual Evidence</Label>
                             <ImageUpload 
                                 initialImageUrl={photoUrl}
                                 onUploadComplete={setPhotoUrl}
@@ -257,22 +258,22 @@ function GlobalUploadDialog({
                             />
                         </div>
 
-                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3">
-                            <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                            <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3 text-left">
+                            <Info className="h-4 w-4 text-primary shrink-0 mt-0.5 text-left" />
+                            <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-left">
                                 Uploading evidence strengthens the faith of the Body. By posting, you approve the public sharing of this miracle proof within the Kingdom Network.
                             </p>
                         </div>
                     </div>
                 </ScrollArea>
-                <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0">
-                    <Button variant="outline" onClick={() => onOpenChange(false)} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
+                <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0 text-left">
+                    <Button variant="outline" onClick={() => onOpenChange(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
                     <Button 
                         onClick={handleUpload} 
                         disabled={!photoUrl || !selectedEventId || isSubmitting}
-                        className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center"
+                        className="flex-1 rounded-xl h-12 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-center text-left"
                     >
-                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Upload className="mr-2 h-4 w-4 text-left" />}
                         POST PROOF
                     </Button>
                 </div>
@@ -391,80 +392,80 @@ export default function EventPageClient() {
   if (!mounted) return null;
 
   return (
-    <div className="space-y-8 md:space-y-12 max-w-4xl mx-auto pb-32 w-full">
-        <header className="px-4 sm:px-0 space-y-6 pt-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
-                    <div className="space-y-1">
-                        <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">EVENTS HUB</h1>
-                        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
-                            <CalendarDays className="h-4 w-4 text-primary" /> Event Directory
+    <div className="space-y-8 md:space-y-12 max-w-4xl mx-auto pb-32 w-full text-left">
+        <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+                <div className="flex items-center gap-4 text-left">
+                    <div className="space-y-1 text-left">
+                        <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">EVENTS HUB</h1>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
+                            <CalendarDays className="h-4 w-4 text-primary text-left" /> Event Directory
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Button onClick={() => setIsGlobalUploadOpen(true)} variant="outline" className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background">
-                        <Camera className="mr-2 h-4 w-4" /> POST PROOF
+                <div className="flex items-center gap-2 w-full sm:w-auto text-left">
+                    <Button onClick={() => setIsGlobalUploadOpen(true)} variant="outline" className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background text-left">
+                        <Camera className="mr-2 h-4 w-4 text-left" /> UPLOAD MISSION PROOF
                     </Button>
-                    <Button onClick={() => setIsCreateOpen(true)} className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20">
-                        <PlusCircle className="mr-2 h-4 w-4" /> HOST EVENT
+                    <Button onClick={() => setIsCreateOpen(true)} className="flex-1 sm:flex-none rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 text-left">
+                        <PlusCircle className="mr-2 h-4 w-4 text-left" /> HOST EVENT
                     </Button>
                 </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                    <TabsList className="flex w-full overflow-x-auto no-scrollbar justify-start sm:grid sm:grid-cols-4 h-12 bg-muted/40 p-1 rounded-2xl">
-                        <TabsTrigger value="all" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink">Global</TabsTrigger>
-                        <TabsTrigger value="mine" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink">My Hubs</TabsTrigger>
-                        <TabsTrigger value="joined" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink">Going</TabsTrigger>
-                        <TabsTrigger value="evidence" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink">Evidence</TabsTrigger>
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto text-left">
+                    <TabsList className="flex w-full overflow-x-auto no-scrollbar justify-start sm:grid sm:grid-cols-4 h-12 bg-muted/40 p-1 rounded-2xl text-left">
+                        <TabsTrigger value="all" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink text-left">Global</TabsTrigger>
+                        <TabsTrigger value="mine" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink text-left">My Hubs</TabsTrigger>
+                        <TabsTrigger value="joined" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink text-left">Going</TabsTrigger>
+                        <TabsTrigger value="evidence" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-center shrink-0 sm:shrink text-left">Evidence</TabsTrigger>
                     </TabsList>
                 </Tabs>
-                <div className="relative flex-1 w-full sm:max-w-sm">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
+                <div className="relative flex-1 w-full sm:max-w-sm text-left">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                     <Input 
                         placeholder="Search for gatherings..." 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full"
+                        className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full text-left"
                     />
                 </div>
             </div>
         </header>
 
-        <div className="px-0 sm:px-0 -mx-4 sm:mx-0">
-            <Tabs value={activeTab} className="w-full">
-                <TabsContent value="evidence" className="mt-0 outline-none px-4 sm:px-0">
-                    <div className="space-y-8">
-                        <div className="flex items-center gap-3 px-1">
-                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
-                                <Sparkles className="h-5 w-5 text-primary" />
+        <div className="px-0 sm:px-0 -mx-4 sm:mx-0 text-left">
+            <Tabs value={activeTab} className="w-full text-left">
+                <TabsContent value="evidence" className="mt-0 outline-none px-4 sm:px-0 text-left">
+                    <div className="space-y-8 text-left">
+                        <div className="flex items-center gap-3 px-1 text-left">
+                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
+                                <Sparkles className="h-5 w-5 text-primary text-left" />
                             </div>
-                            <div>
-                                <h3 className="text-xl font-black font-headline uppercase tracking-tight">Mission Proof</h3>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Visual proclamations of God's work</p>
+                            <div className="text-left">
+                                <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Mission Proof</h3>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Visual proclamations of God's work</p>
                             </div>
                         </div>
                         <EvidenceHub />
                     </div>
                 </TabsContent>
 
-                <TabsContent value={activeTab === 'evidence' ? 'evidence' : activeTab} className="mt-0 outline-none">
-                    <div className="flex flex-col gap-6 sm:gap-10">
+                <TabsContent value={activeTab === 'evidence' ? 'evidence' : activeTab} className="mt-0 outline-none text-left">
+                    <div className="flex flex-col gap-6 sm:gap-10 text-left">
                         {activeTab !== 'evidence' && (
                             eventsLoading ? (
                                 [...Array(3)].map((_, i) => (
-                                    <Card key={i} className="rounded-none sm:rounded-[3rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-none sm:shadow-sm animate-pulse h-[400px]">
-                                        <CardContent className="h-full bg-muted/30" />
+                                    <Card key={i} className="rounded-none sm:rounded-[3rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-none sm:shadow-sm animate-pulse h-[400px] text-left">
+                                        <CardContent className="h-full bg-muted/30 text-left" />
                                     </Card>
                                 ))
                             ) : interleavedEvents.length > 0 ? (
                                 interleavedEvents.map((item: any) => (
                                     item.isGame ? (
-                                        <div key={item.id} className="px-4 sm:px-0"><BibleGameCard /></div>
+                                        <div key={item.id} className="px-4 sm:px-0 text-left"><BibleGameCard /></div>
                                     ) : item.isAd ? (
-                                        <div key={item.id} className="px-4 sm:px-0"><KingdomAdSpot type={item.adType} /></div>
+                                        <div key={item.id} className="px-4 sm:px-0 text-left"><KingdomAdSpot type={item.adType} /></div>
                                     ) : (
                                         <EventCard 
                                             key={item.id} 
@@ -477,12 +478,12 @@ export default function EventPageClient() {
                                     )
                                 ))
                             ) : (
-                                <div className="col-span-full py-32 text-center flex flex-col items-center px-8">
-                                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
-                                        <CalendarDays className="h-10 w-10 text-muted-foreground opacity-10" />
+                                <div className="col-span-full py-32 text-center flex flex-col items-center px-8 text-left">
+                                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                        <CalendarDays className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
                                     </div>
-                                    <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center">Hub Silence</h3>
-                                    <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto text-balance text-center">No events found here. Why not host one for the Body of Christ?</p>
+                                    <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">Hub Silence</h3>
+                                    <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto text-balance text-center text-left">No events found here. Why not host one for the Body of Christ?</p>
                                 </div>
                             )
                         )}
@@ -494,15 +495,15 @@ export default function EventPageClient() {
         {isCreateOpen && (
             isMobile ? (
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left flex-shrink-0 p-0">
-                                <SheetTitle className="text-2xl font-black font-headline">Host for the Kingdom</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Organize a gathering to strengthen the saints.</SheetDescription>
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
+                                <SheetTitle className="text-2xl font-black font-headline text-left">Host for the Kingdom</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left">Organize a gathering to strengthen the saints.</SheetDescription>
                             </SheetHeader>
                         </div>
-                        <ScrollArea className="flex-grow">
-                            <div className="p-8">
+                        <ScrollArea className="flex-grow text-left">
+                            <div className="p-8 text-left">
                                 {userProfile && <CreateEventForm onEventCreated={() => setIsCreateOpen(false)} userProfile={userProfile} />}
                             </div>
                         </ScrollArea>
@@ -510,15 +511,15 @@ export default function EventPageClient() {
                 </Sheet>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="w-[95vw] sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2rem] border-none shadow-2xl">
-                        <div className="p-8 border-b shrink-0 bg-muted/10">
-                            <DialogHeader className="text-left p-0">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Host for the Kingdom</DialogTitle>
-                                <DialogDescription className="text-base font-medium">Organize a gathering to strengthen the saints.</DialogDescription>
+                    <DialogContent className="w-[95vw] sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2rem] border-none shadow-2xl text-left">
+                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <DialogHeader className="text-left p-0 text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Host for the Kingdom</DialogTitle>
+                                <DialogDescription className="text-base font-medium text-left text-left">Organize a gathering to strengthen the saints.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-1 min-h-0">
-                            <div className="p-8">
+                        <ScrollArea className="flex-1 min-h-0 text-left">
+                            <div className="p-8 text-left">
                                 {userProfile && <CreateEventForm onEventCreated={() => setIsCreateOpen(false)} userProfile={userProfile} />}
                             </div>
                         </ScrollArea>
@@ -538,15 +539,15 @@ export default function EventPageClient() {
         {eventToEdit && (
             isMobile ? (
                 <Sheet open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left flex-shrink-0 p-0">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Hub</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Refine the vision for your gathering.</SheetDescription>
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <SheetHeader className="text-left flex-shrink-0 p-0 text-left">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Hub</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left">Refine the vision for your gathering.</SheetDescription>
                             </SheetHeader>
                         </div>
-                        <ScrollArea className="flex-grow">
-                            <div className="p-8">
+                        <ScrollArea className="flex-grow text-left">
+                            <div className="p-8 text-left">
                                 <ManageEventForm 
                                     event={eventToEdit} 
                                     onEventUpdated={() => setEventToEdit(null)} 
@@ -562,15 +563,15 @@ export default function EventPageClient() {
                 </Sheet>
             ) : (
                 <Dialog open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
-                    <DialogContent className="w-[95vw] sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2rem] border-none shadow-2xl">
-                        <div className="p-8 border-b shrink-0 bg-muted/10">
-                            <DialogHeader className="text-left p-0">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Hub</DialogTitle>
-                                <DialogDescription className="text-base font-medium">Update event logistics and details.</DialogDescription>
+                    <DialogContent className="w-[95vw] sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2rem] border-none shadow-2xl text-left">
+                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <DialogHeader className="text-left p-0 text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Hub</DialogTitle>
+                                <DialogDescription className="text-base font-medium text-left">Update event logistics and details.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-1 min-h-0">
-                            <div className="p-8">
+                        <ScrollArea className="flex-1 min-h-0 text-left">
+                            <div className="p-8 text-left">
                                 <ManageEventForm 
                                     event={eventToEdit} 
                                     onEventUpdated={() => setEventToEdit(null)} 
@@ -588,17 +589,17 @@ export default function EventPageClient() {
         )}
 
         <AlertDialog open={!!eventToDelete} onOpenChange={(open) => !open && setEventToDelete(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
-                <AlertDialogHeader>
-                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Cancel Gathering?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                <AlertDialogHeader className="text-left">
+                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">Cancel Gathering?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
                         This will mark "{eventToDelete?.title}" as cancelled and remove it from the global directory. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12 font-bold">Close</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <AlertDialogFooter className="gap-3 mt-6 text-left">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12 font-bold text-left">Close</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                         Confirm Cancellation
                     </AlertDialogAction>
                 </AlertDialogFooter>

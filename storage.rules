@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Resumable Upload Authorization Fix - 2025-04-01T10:00:00Z
+    // Deployment trigger: Resumable Upload Authorization Fix - 2025-04-01T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -20,39 +20,46 @@ service firebase.storage {
     // Global read access to ensure the Body of Christ can witness all shared miracles
     allow read: if true;
 
-    // Granular write access for mission-critical directories
-    match /events/{userId}/{fileName} {
-      allow read, write: if isOwner(userId) && isValidSize();
+    // Granular write access for mission-critical directories with sub-path matching
+    match /events/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow create, update, delete: if isOwner(userId) && isValidSize();
     }
 
-    match /testimonies/{userId}/{fileName} {
-      allow read, write: if isOwner(userId) && isValidSize();
+    match /testimonies/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow create, update, delete: if isOwner(userId) && isValidSize();
     }
 
-    match /campaigns/{userId}/{fileName} {
-      allow read, write: if isOwner(userId) && isValidSize();
+    match /campaigns/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow create, update, delete: if isOwner(userId) && isValidSize();
     }
     
-    match /campaign-assets/{userId}/{fileName} {
-      allow read, write: if isOwner(userId) && isValidSize();
+    match /campaign-assets/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow create, update, delete: if isOwner(userId) && isValidSize();
     }
 
-    match /profile-pictures/{userId}/{fileName} {
-      allow read, write: if isOwner(userId) && isValidSize();
+    match /profile-pictures/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow create, update, delete: if isOwner(userId) && isValidSize();
     }
 
-    match /vendor-branding/{userId}/{fileName} {
-      allow read, write: if isOwner(userId) && isValidSize();
+    match /vendor-branding/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow create, update, delete: if isOwner(userId) && isValidSize();
     }
 
-    match /marketplace-items/{userId}/{fileName} {
-      allow read, write: if isOwner(userId) && isValidSize();
+    match /marketplace-items/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow create, update, delete: if isOwner(userId) && isValidSize();
     }
 
     // Generic fallback for any other mission-critical uploads
     match /{allPaths=**} {
       allow read: if true;
-      allow write: if isAuthenticated() && isValidSize();
+      allow create, update, delete: if isAuthenticated() && isValidSize();
     }
   }
 }
