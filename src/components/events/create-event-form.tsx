@@ -17,13 +17,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2, Video, MapPin, User, Sparkles, Target, Camera } from "lucide-react";
+import { Loader2, Video, MapPin, User, Sparkles, Target } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser, useFirestore } from "@/firebase";
 import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore";
 import { format } from "date-fns";
 import type { UserProfile, EventCategory } from "@/lib/types";
-import { ImageUpload } from "../common/image-upload";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const eventCategories: EventCategory[] = [
@@ -43,7 +42,7 @@ const formSchema = z.object({
   endTime: z.string().min(1, "End time is required."),
   maxParticipants: z.number().optional().nullable(),
   streamUrl: z.string().url("Valid URL required").optional().or(z.literal('')),
-  photoURL: z.string().min(5, "A cover photo is mandatory to launch your hub."),
+  photoURL: z.string().optional().nullable(),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
@@ -97,7 +96,7 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
             createdAt: serverTimestamp(),
             maxParticipants: values.maxParticipants || null,
             streamUrl: values.streamUrl || null,
-            photoURL: values.photoURL,
+            photoURL: values.photoURL || null,
             participantIds: [user.uid],
         };
 
@@ -129,26 +128,6 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
         <div className="space-y-10 pb-4">
-            <div className="bg-primary/5 p-8 rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center text-center space-y-4">
-                <FormField
-                    control={form.control}
-                    name="photoURL"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col items-center">
-                            <FormControl>
-                                <ImageUpload
-                                    initialImageUrl={field.value}
-                                    onUploadComplete={(url) => field.onChange(url)}
-                                    storagePath="events"
-                                    cropAspect={21/9}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </div>
-
             <div className="space-y-6">
                 <div className="flex items-center gap-3 px-1">
                     <Sparkles className="h-5 w-5 text-primary" />
