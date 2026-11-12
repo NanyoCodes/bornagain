@@ -5,7 +5,7 @@ import { MetadataRoute } from 'next';
  * All public routes are listed here to ensure full indexing with high priority for "Testify".
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://testifyglobal.com';
+  const baseUrl = 'https://bornagainglobal.com';
   const lastModified = new Date();
 
   // Define public routes that should be crawled by search engines

@@ -29,7 +29,7 @@ Disallow: /settings/
 Disallow: /souls-won/
 Disallow: /matchmaking/
 
-Sitemap: https://testifyglobal.com/sitemap.xml
+Sitemap: https://bornagainglobal.com/sitemap.xml
 `;
 
   return new NextResponse(robots, {

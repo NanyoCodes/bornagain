@@ -2,23 +2,23 @@
 
 This is a NextJS application built for the global body of Christ.
 
-## Production Domain: testifyglobal.com
+## Production Domain: bornagainglobal.com
 
-The app is fully configured to use **testifyglobal.com** for all branding and authentication.
+The app is fully configured to use **bornagainglobal.com** for all branding and authentication.
 
 ### Authentication Setup Status: COMPLETE
 
-The application is now configured to handle the secure authentication handshake directly through **testifyglobal.com**. 
+The application is now configured to handle the secure authentication handshake directly through **bornagainglobal.com**. 
 
-- **Auth Domain:** Set to `testifyglobal.com` in code.
+- **Auth Domain:** Set to `bornagainglobal.com` in code.
 - **Handshake Proxy:** Next.js rewrites handle the `/__/auth/` routes by proxying them to the secure Firebase backend.
-- **Branding:** Users will now see `testifyglobal.com` in the Google Sign-in popup.
+- **Branding:** Users will now see `bornagainglobal.com` in the Google Sign-in popup.
 
 ### Email Branding: Profile Photos
 
 To ensure the **App Logo** appears as the profile photo when users receive verification or password reset emails, you must perform a one-time manual setup:
 
-1.  **Google Account Profile Picture**: The sender email address (e.g., `support@testifyglobal.com` or your Gmail address used for sending) must have its profile picture set to the app logo.
+1.  **Google Account Profile Picture**: The sender email address (e.g., `support@bornagainglobal.com` or your Gmail address used for sending) must have its profile picture set to the app logo.
     *   Go to [myaccount.google.com](https://myaccount.google.com/) for that specific email account.
     *   Click on the profile icon and upload the app logo.
     *   *Note:* It may take up to 48 hours for this to propagate to all email clients like Gmail.
@@ -35,12 +35,12 @@ If you ever see "Invalid Request" or 404 errors in the future, verify these sett
 1.  **Google Cloud Console:**
     *   [Credentials Page](https://console.cloud.google.com/apis/credentials).
     *   Find the **OAuth 2.0 Client ID** (Web client).
-    *   **Authorized JavaScript origins:** `https://testifyglobal.com`
-    *   **Authorized redirect URIs:** `https://testifyglobal.com/__/auth/handler`
+    *   **Authorized JavaScript origins:** `https://bornagainglobal.com`
+    *   **Authorized redirect URIs:** `https://bornagainglobal.com/__/auth/handler`
 
 2.  **Firebase Console:**
     *   [Authentication Settings](https://console.firebase.google.com/project/_/authentication/settings).
-    *   **Authorized domains:** Ensure `testifyglobal.com` is listed.
+    *   **Authorized domains:** Ensure `bornagainglobal.com` is listed.
 
 ---
 

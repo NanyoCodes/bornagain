@@ -17,7 +17,7 @@ const inter = Inter({
 const bornAgainLogoUrl = 'https://i.postimg.cc/K8VD8BYD/Born-Again-Mountain-Sunrise-Emblem.png';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://testifyglobal.com'),
+  metadataBase: new URL('https://bornagainglobal.com'),
   title: {
     default: 'BornAgain | Global Christian Identity & Evangelism Platform',
     template: '%s | BornAgain',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'BornAgain - Are you BornAgain?',
     description: 'BornAgain is empowering the Great Commission through technology. Share testimonies and track souls won globally as a new creation.',
-    url: 'https://testifyglobal.com',
+    url: 'https://bornagainglobal.com',
     siteName: 'BornAgain',
     images: [
       {
