@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Granular Mission Authorization Fix - 2025-03-30T10:00:00Z
+    // Deployment trigger: Resumable Upload Authorization Fix - 2025-04-01T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -20,46 +20,39 @@ service firebase.storage {
     // Global read access to ensure the Body of Christ can witness all shared miracles
     allow read: if true;
 
-    // Explicit partitioning for mission hubs using granular permissions to support resumable uploads
+    // Granular write access for mission-critical directories
     match /events/{userId}/{fileName} {
-      allow create, update: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow read, write: if isOwner(userId) && isValidSize();
     }
 
     match /testimonies/{userId}/{fileName} {
-      allow create, update: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow read, write: if isOwner(userId) && isValidSize();
     }
 
     match /campaigns/{userId}/{fileName} {
-      allow create, update: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow read, write: if isOwner(userId) && isValidSize();
     }
     
     match /campaign-assets/{userId}/{fileName} {
-      allow create, update: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow read, write: if isOwner(userId) && isValidSize();
     }
 
     match /profile-pictures/{userId}/{fileName} {
-      allow create, update: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow read, write: if isOwner(userId) && isValidSize();
     }
 
     match /vendor-branding/{userId}/{fileName} {
-      allow create, update: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow read, write: if isOwner(userId) && isValidSize();
     }
 
     match /marketplace-items/{userId}/{fileName} {
-      allow create, update: if isOwner(userId) && isValidSize();
-      allow delete: if isOwner(userId);
+      allow read, write: if isOwner(userId) && isValidSize();
     }
 
     // Generic fallback for any other mission-critical uploads
     match /{allPaths=**} {
-      allow create, update: if isAuthenticated() && isValidSize();
-      allow delete: if isAuthenticated();
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidSize();
     }
   }
 }
