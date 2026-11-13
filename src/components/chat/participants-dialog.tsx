@@ -31,18 +31,20 @@ function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, classNam
                 </Avatar>
             </DialogTrigger>
             {currentPhotoUrl && (
-                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                    <DialogHeader className="sr-only text-center">
-                        <DialogTitle>Profile Photo</DialogTitle>
-                        <DialogDescription>Full screen view of participant's photo.</DialogDescription>
-                    </DialogHeader>
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
+                    <div className="sr-only text-left">
+                        <DialogHeader className="text-left text-left">
+                            <DialogTitle className="text-left text-left">Profile Photo</DialogTitle>
+                            <DialogDescription className="text-left text-left">Full screen view of participant's photo.</DialogDescription>
+                        </DialogHeader>
+                    </div>
                     <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
                         <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                             <Image 
                                 src={currentPhotoUrl} 
                                 alt="Participant" 
                                 fill 
-                                className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                className="object-contain shadow-2xl ring-4 ring-white/10 text-left" 
                                 unoptimized 
                             />
                         </div>
@@ -66,36 +68,45 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
     return <>{children}</>;
   }
   
-  const participants = Object.entries(chat.participantInfo || {});
+  const participantIds = chat.participantIds || [];
+  const infoMap = chat.participantInfo || {};
 
   const listContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
       <div className="space-y-3 pb-6 text-left">
-        {participants.map(([id, p]) => (
-          <div key={id} className="flex items-center gap-3 rounded-xl border p-3 bg-muted/5 text-left">
-            <div className="flex items-center gap-3 flex-1 min-w-0 group relative text-left">
-                <LiveParticipantAvatar 
-                    userId={id} 
-                    fallbackUrl={p.photoURL} 
-                    fallbackInitials={p.firstName?.charAt(0) || 'U'}
-                    className="shrink-0 shadow-sm border text-left"
-                />
-                <div className="min-w-0 flex-1 text-left">
-                    <Link 
-                        href={id === user?.uid ? '/profile' : `/profile/${id}`} 
-                        className="font-bold text-sm sm:text-base hover:underline leading-tight uppercase tracking-tight block text-left"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {p.firstName} {p.lastName}
-                    </Link>
-                    {p.email && <p className="text-[10px] sm:text-xs text-muted-foreground truncate font-medium text-left">{p.email}</p>}
-                </div>
+        {participantIds.map((id) => {
+          const p = infoMap[id];
+          if (!p) return null;
+          
+          return (
+            <div key={id} className="flex items-center gap-3 rounded-xl border p-3 bg-muted/5 text-left">
+              <div className="flex items-center gap-3 flex-1 min-w-0 group relative text-left">
+                  <LiveParticipantAvatar 
+                      userId={id} 
+                      fallbackUrl={p.photoURL} 
+                      fallbackInitials={p.firstName?.charAt(0) || 'U'}
+                      className="shrink-0 shadow-sm border text-left"
+                  />
+                  <div className="min-w-0 flex-1 text-left">
+                      <Link 
+                          href={id === user?.uid ? '/profile' : `/profile/${id}`} 
+                          className="font-bold text-sm sm:text-base hover:underline leading-tight uppercase tracking-tight block text-left"
+                          onClick={(e) => e.stopPropagation()}
+                      >
+                          {p.firstName} {p.lastName}
+                      </Link>
+                      {p.email && <p className="text-[10px] sm:text-xs text-muted-foreground truncate font-medium text-left">{p.email}</p>}
+                  </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </ScrollArea>
   );
+
+  const participantCount = participantIds.length;
+  const description = `${participantCount} ${participantCount === 1 ? 'believer' : 'believers'} in ${chat.campaignTitle || 'this gathering'}.`;
 
   if (mounted && isMobile) {
     return (
@@ -105,7 +116,7 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
           <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
             <SheetHeader className="text-left flex-shrink-0 text-left">
               <SheetTitle className="text-2xl font-black font-headline text-left">Directory</SheetTitle>
-              <SheetDescription className="text-sm font-medium text-left">{participants.length} believers in {chat.campaignTitle}.</SheetDescription>
+              <SheetDescription className="text-sm font-medium text-left">{description}</SheetDescription>
             </SheetHeader>
           </div>
           <div className="flex-grow min-h-0 pt-6 px-8 text-left">
@@ -124,7 +135,7 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
             <DialogHeader className="text-left">
                 <DialogTitle className="text-2xl font-black font-headline text-left">Participants</DialogTitle>
                 <DialogDescription className="text-sm font-medium text-left">
-                    {participants.length} believers in this conversation.
+                    {description}
                 </DialogDescription>
             </DialogHeader>
         </div>
