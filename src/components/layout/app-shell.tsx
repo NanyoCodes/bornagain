@@ -726,7 +726,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
 
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left text-left">
         <div className="relative mb-8 mx-auto w-fit text-left">
             <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
             <div className="absolute inset-0 flex items-center justify-center text-left">
@@ -777,7 +777,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           >
               <div className={cn(
               "mx-auto h-full text-left", 
-              (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6 text-left" : "w-full flex flex-col text-left" 
+              !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
               )}>
                   <PageTransition>{children}</PageTransition>
               </div>
