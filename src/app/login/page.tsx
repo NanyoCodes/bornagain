@@ -100,7 +100,7 @@ export default function LoginPage() {
     } catch (error) {
       const authError = error as AuthError;
       
-      // Gracefully handle user cancellation
+      // Gracefully handle user cancellation - do not log or toast
       if (authError.code === 'auth/popup-closed-by-user') {
         setIsGoogleLoading(false);
         return;
@@ -131,7 +131,7 @@ export default function LoginPage() {
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-primary animate-pulse">Entering Sanctuary...</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-primary animate-pulse text-center">Entering Sanctuary...</p>
         </div>
       </div>
     );
@@ -139,10 +139,10 @@ export default function LoginPage() {
 
   return (
     <AuthLayout>
-       <div className="space-y-6">
+       <div className="space-y-6 text-left">
         <div className="grid gap-2 text-left">
-          <h1 className="text-2xl md:text-3xl font-bold font-headline uppercase tracking-tight">Sign In</h1>
-          <p className="text-sm text-muted-foreground font-medium">
+          <h1 className="text-2xl md:text-3xl font-bold font-headline uppercase tracking-tight text-left">Sign In</h1>
+          <p className="text-sm text-muted-foreground font-medium text-left">
               Enter your credentials to access your Kingdom dashboard.
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <div className="relative">
+        <div className="relative text-left">
               <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
               </div>
@@ -167,12 +167,12 @@ export default function LoginPage() {
               </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-2">
-              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-12 rounded-xl font-bold">
+          <div className="grid grid-cols-1 gap-2 text-left">
+              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-12 rounded-xl font-bold text-left">
                   {isGoogleLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
                   ) : (
-                    <Icons.google className="mr-2 h-4 w-4" />
+                    <Icons.google className="mr-2 h-4 w-4 text-left" />
                   )}
                   Google
               </Button>

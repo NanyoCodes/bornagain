@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
@@ -204,14 +203,19 @@ export function SoulsImportTemplateCard() {
         await deleteApp(tempApp);
     } catch (error: any) {
         if (tempApp) await deleteApp(tempApp);
-        console.error("Google Contacts Import Error:", error);
-        if (error.code !== 'auth/popup-closed-by-user') {
-            toast({ 
-                variant: 'destructive', 
-                title: 'Import Failed', 
-                description: error.message || 'Please check your connection and try again.' 
-            });
+        
+        // Handle cancellation silently
+        if (error.code === 'auth/popup-closed-by-user') {
+            setIsFetchingContacts(false);
+            return;
         }
+
+        console.error("Google Contacts Import Error:", error);
+        toast({ 
+            variant: 'destructive', 
+            title: 'Import Failed', 
+            description: error.message || 'Please check your connection and try again.' 
+        });
     } finally {
         setIsFetchingContacts(false);
     }
@@ -412,7 +416,7 @@ export function SoulsImportTemplateCard() {
             <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Select Contacts</h3>
             <div className="flex items-center gap-2 mt-2 opacity-40">
                 <ChevronDown className="h-3 w-3 animate-bounce" />
-                <span className="text-[8px] font-bold uppercase tracking-widest">Swipe down to close</span>
+                <span className="text-[8px] font-bold uppercase tracking-widest text-left">Swipe down to close</span>
             </div>
             <div className="relative mt-6">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
@@ -552,7 +556,7 @@ export function SoulsImportTemplateCard() {
             <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
                 <DrawerPortal>
                     <DrawerOverlay className="fixed inset-0 z-50 bg-black/80" />
-                    <DrawerContent className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-[95dvh] flex-col rounded-t-[2.5rem] border bg-background sm:max-w-xl sm:mx-auto text-left">
+                    <DrawerContent className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-[95dvh] flex-col rounded-t-[2.5rem] border bg-background sm:max-w-xl sm:mx-auto text-left text-left">
                         <DrawerHeader className="sr-only p-0">
                             <DrawerTitle>Network Sync</DrawerTitle>
                             <DrawerDescription>Select contacts to synchronize.</DrawerDescription>

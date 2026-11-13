@@ -66,10 +66,10 @@ export default function SignUpPage() {
       const fullName = `${firstName} ${lastName}`.trim();
       const nameTokens = fullName.toLowerCase().split(/\s+/).filter(Boolean);
 
-      const userDocRef = doc(firestore, 'users', loggedUser.uid);
+      const userDocRef = doc(firestore, "users", loggedUser.uid);
       const userData = {
-        firstName: firstName,
-        lastName: lastName,
+        firstName: values.firstName,
+        lastName: values.lastName,
         fullName_lowercase: fullName.toLowerCase(),
         name_tokens: nameTokens,
         email: loggedUser.email,
@@ -96,23 +96,30 @@ export default function SignUpPage() {
       router.push('/testimonies');
     } catch (error) {
       const authError = error as AuthError;
-      if (authError.code !== 'auth/popup-closed-by-user') {
-        toast({
-          variant: "destructive",
-          title: "Sign Up Failed",
-          description: authError.message || 'An unexpected error occurred.',
-        });
+      
+      // Silent cancellation handling
+      if (authError.code === 'auth/popup-closed-by-user') {
+        setIsGoogleLoading(false);
+        return;
       }
+      
+      console.error('Social signup error:', authError);
+
+      toast({
+        variant: "destructive",
+        title: "Sign Up Failed",
+        description: authError.message || 'An unexpected error occurred.',
+      });
       setIsGoogleLoading(false);
     }
   };
 
   if (authLoading || (user && (user.emailVerified || user.providerData.some(p => p.providerId === 'google.com')))) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-left">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-primary animate-pulse">Establishing Identity...</p>
+      <div className="flex min-h-screen items-center justify-center bg-background text-left text-left">
+        <div className="flex flex-col items-center gap-4 text-left">
+          <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-primary animate-pulse text-center text-left">Establishing Identity...</p>
         </div>
       </div>
     );
@@ -124,7 +131,7 @@ export default function SignUpPage() {
         <div className="grid gap-2 text-left">
           <h1 className="text-2xl md:text-4xl font-black font-headline tracking-tight uppercase text-left">Registration</h1>
           <p className="text-balance text-muted-foreground font-medium text-sm text-left">
-            Register as a <span className="text-primary font-bold">Personal</span>, <span className="text-primary font-bold">Church</span>, or <span className="text-primary font-bold">Corporate</span> account to start mobilizing for the Kingdom.
+            Register as a <span className="text-primary font-bold text-left">Personal</span>, <span className="text-primary font-bold text-left">Church</span>, or <span className="text-primary font-bold text-left">Corporate</span> account to start mobilizing for the Kingdom.
           </p>
         </div>
 
@@ -132,16 +139,16 @@ export default function SignUpPage() {
 
         <div className="text-center text-sm font-medium">
           Already have an account?{' '}
-          <Link href="/login" className="underline cursor-pointer font-bold text-primary">
+          <Link href="/login" className="underline cursor-pointer font-bold text-primary text-left">
             Sign in
           </Link>
         </div>
 
         <div className="relative text-left">
-              <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
+              <div className="absolute inset-0 flex items-center text-left">
+                  <span className="w-full border-t text-left" />
               </div>
-              <div className="relative flex justify-center text-[10px] uppercase text-left">
+              <div className="relative flex justify-center text-[10px] uppercase text-left text-left">
                   <span className="bg-background px-3 font-black text-muted-foreground tracking-widest text-left">
                     Or Continue With
                   </span>
@@ -149,9 +156,9 @@ export default function SignUpPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-2 text-left">
-              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-12 rounded-xl text-left font-bold">
+              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-12 rounded-xl text-left font-bold text-left">
                   {isGoogleLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary text-left" />
                   ) : (
                     <Icons.google className="mr-2 h-4 w-4 text-left" />
                   )}
