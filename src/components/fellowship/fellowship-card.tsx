@@ -216,10 +216,7 @@ function FullDevotionalDialog({
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Mission Overview</span>
                     </div>
                     <DialogHeader className="text-left p-0 text-left">
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight break-words flex items-center gap-3 text-balance text-left">
-                            <MessageSquare className="h-6 w-6 text-primary shrink-0 text-left" />
-                            {devotional.title}
-                        </DialogTitle>
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight break-words flex items-center gap-3 text-balance text-left">{devotional.title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1 text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
@@ -369,6 +366,8 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 const fellowshipDoc = await transaction.get(fellowshipRef);
                 if (!fellowshipDoc.exists()) throw new Error("Group no longer exists.");
 
+                const fData = fellowshipDoc.data() as Fellowship;
+
                 transaction.update(fellowshipRef, {
                     memberIds: arrayUnion(user.uid),
                     memberCount: increment(1)
@@ -381,6 +380,20 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                     photoURL: userProfile.photoURL || '',
                     joinedAt: serverTimestamp()
                 });
+
+                // Proactive chat sync
+                if (fData.hasGroupChat) {
+                    const chatRef = doc(firestore, 'chats', fellowship.id);
+                    transaction.update(chatRef, {
+                        participantIds: arrayUnion(user.uid),
+                        [`participantInfo.${user.uid}`]: {
+                            firstName: userProfile.firstName,
+                            lastName: userProfile.lastName,
+                            photoURL: userProfile.photoURL || '',
+                            email: userProfile.email || ''
+                        }
+                    });
+                }
             });
             toast({ title: "Successfully Joined!", description: `You are now a member of ${fellowship.name}.`});
         } catch (e: any) {
@@ -405,12 +418,23 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
 
         try {
             await runTransaction(firestore, async (transaction) => {
+                const fellowshipDoc = await transaction.get(fellowshipRef);
+                const fData = fellowshipDoc?.data() as Fellowship;
+
                 transaction.update(fellowshipRef, {
                     memberIds: arrayRemove(user.uid),
                     memberCount: increment(-1)
                 });
                 transaction.delete(userFellowshipRef);
                 transaction.delete(fellowshipMemberRef);
+
+                // Proactive chat removal
+                if (fData?.hasGroupChat) {
+                    const chatRef = doc(firestore, 'chats', fellowship.id);
+                    transaction.update(chatRef, {
+                        participantIds: arrayRemove(user.uid)
+                    });
+                }
             });
             toast({ title: "Left Group", description: `You have left ${fellowship.name}.` });
         } catch (e) {

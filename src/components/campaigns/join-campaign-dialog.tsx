@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useFirestore, useUser } from '@/firebase';
 import type { Campaign, UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { doc, runTransaction, serverTimestamp, collection } from 'firebase/firestore';
+import { doc, runTransaction, serverTimestamp, collection, arrayUnion } from 'firebase/firestore';
 import {
   Dialog,
   DialogContent,
@@ -80,7 +80,10 @@ export function JoinCampaignDialog({
         }
 
         const newParticipantCount = (currentCampaign.participants || 0) + 1;
-        transaction.update(campaignRef, { participants: newParticipantCount });
+        transaction.update(campaignRef, { 
+            participants: newParticipantCount,
+            participantIds: arrayUnion(user.uid)
+        });
 
         transaction.set(joinedRef, {
           campaignId: campaign.id,
@@ -96,6 +99,20 @@ export function JoinCampaignDialog({
           joinReason: joinReason || null,
         };
         transaction.set(participantRef, participantData);
+
+        // Sync with Group Chat if active
+        if (currentCampaign.hasGroupChat) {
+            const chatRef = doc(firestore, 'chats', campaign.id);
+            transaction.update(chatRef, {
+                participantIds: arrayUnion(user.uid),
+                [`participantInfo.${user.uid}`]: {
+                    firstName: userProfile.firstName,
+                    lastName: userProfile.lastName,
+                    photoURL: userProfile.photoURL || '',
+                    email: userProfile.email || ''
+                }
+            });
+        }
 
         if (user.uid !== campaign.organizerId) {
           const notificationRef = doc(collection(firestore, `users/${campaign.organizerId}/notifications`));

@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -123,9 +122,9 @@ function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, classNam
             {currentPhotoUrl && (
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                     <div className="sr-only text-left">
-                        <DialogHeader className="text-left">
-                            <DialogTitle className="text-left">Profile Photo</DialogTitle>
-                            <DialogDescription className="text-left">Full screen view of participant's photo.</DialogDescription>
+                        <DialogHeader className="text-left text-left">
+                            <DialogTitle className="text-left text-left">Profile Photo</DialogTitle>
+                            <DialogDescription className="text-left text-left">Full screen view of participant's photo.</DialogDescription>
                         </DialogHeader>
                     </div>
                     <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
@@ -200,7 +199,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10"><SheetHeader className="text-left"><SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight">Participants Directory</SheetTitle><SheetDescription className="text-sm font-medium">{campaign.participantCount || 0} mobilized for "{campaign.title}".</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0 pt-6 px-8">{content}</div></SheetContent>
+        <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10"><SheetHeader className="text-left"><SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight">Participants Directory</SheetTitle><SheetDescription className="text-sm font-medium">{campaign.participantCount || 0} mobilized for "{campaign.title}".</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0 pt-6 px-8">{content}</div></SheetContent>
       </Sheet>
     );
   }
@@ -323,7 +322,7 @@ function EventEvidenceDialog({ event, isOpen, onOpenChange }: { event: Event, is
                 {!preview ? (
                     <div className="space-y-4 text-left">
                         <div className={cn("border-2 border-dashed rounded-[2rem] p-6 flex flex-col items-center justify-center bg-background cursor-pointer hover:bg-muted/50 transition-all", isUploading && "opacity-50")} onClick={() => fileInputRef.current?.click()}>
-                            {isUploading ? <div className="flex flex-col items-center gap-2"><Loader2 className="h-8 w-8 animate-spin text-primary" /><span className="text-[10px] font-black">{Math.round(uploadProgress)}%</span></div> : <div className="flex flex-col items-center"><Camera className="h-10 w-10 text-primary mb-3" /><span className="text-[10px] font-black uppercase text-center">always approve photo uploads like events hub</span></div>}
+                            {isUploading ? <div className="flex flex-col items-center gap-2"><Loader2 className="h-8 w-8 animate-spin text-primary" /><span className="text-[10px] font-black">{Math.round(uploadProgress)}%</span></div> : <div className="flex flex-col items-center"><Camera className="h-10 w-10 text-primary mb-3" /><span className="text-[10px] font-black uppercase text-center">Tap to Upload Photo</span></div>}
                         </div>
                         <div className="grid grid-cols-2 gap-3 text-left"><Button variant="outline" onClick={() => startRecorder('video')} className="h-12 rounded-xl font-black uppercase text-[9px]"><Video className="mr-2 h-4 w-4" />VIDEO</Button><Button variant="outline" onClick={() => startRecorder('audio')} className="h-12 rounded-xl font-black uppercase text-[9px]"><Mic className="mr-2 h-4 w-4" />AUDIO</Button></div>
                     </div>
@@ -342,7 +341,7 @@ function EventEvidenceDialog({ event, isOpen, onOpenChange }: { event: Event, is
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end"><p className="text-[8px] font-black text-white uppercase truncate">By {item.authorName}</p></div>
                     </div>
                 </DialogTrigger>
-                <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                <DialogContent className="p-0 bg-black/95 border-none sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                     <div className="sr-only">
                         <DialogHeader>
                             <DialogTitle>Event Evidence</DialogTitle>
@@ -409,6 +408,8 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
         const snap = await transaction.get(eventRef);
         if (!snap.exists()) throw new Error("Event missing");
         
+        const eData = snap.data() as Event;
+
         transaction.update(eventRef, { 
             participantCount: (snap.data().participantCount || 0) + 1,
             participantIds: arrayUnion(user.uid)
@@ -421,6 +422,20 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             photoURL: userProfile.photoURL || null,
             joinedAt: serverTimestamp()
         });
+
+        // Sync with Group Chat if active
+        if (eData.hasGroupChat) {
+            const chatRef = doc(firestore, 'chats', event.id);
+            transaction.update(chatRef, {
+                participantIds: arrayUnion(user.uid),
+                [`participantInfo.${user.uid}`]: {
+                    firstName: userProfile.firstName,
+                    lastName: userProfile.lastName,
+                    photoURL: userProfile.photoURL || '',
+                    email: userProfile.email || ''
+                }
+            });
+        }
       });
       toast({ title: 'Joined Event', description: 'See you there!' });
     } catch (e: any) {
@@ -606,4 +621,3 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
     </>
   );
 }
-
