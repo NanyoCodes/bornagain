@@ -176,7 +176,7 @@ function CheckoutPageContent() {
                     <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                 </div>
                 <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">Package is empty</h2>
-                <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto text-center text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
+                <p className="mt-2 text-sm text-muted-foreground max-xs mx-auto text-center text-left">Visit the Provision Hub or Kindness Center to add offerings.</p>
                 <div className="flex gap-4 mt-8 justify-center text-left">
                     <Button asChild variant="outline" className="rounded-xl h-11 font-bold text-left">
                         <Link href="/marketplace" className="text-left">Meals Hub</Link>
@@ -296,7 +296,7 @@ function CheckoutPageContent() {
                             <div className="bg-white/10 p-4 rounded-2xl border border-white/10 flex items-start gap-3 text-left">
                                 <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left" />
                                 <p className="text-[10px] leading-relaxed font-medium text-left">
-                                    Finalizing this order notifies providers immediately. Please coordinate payments directly using their saved details.
+                                    Finalizing this order notifies providers immediately. Please coordinate payments directly using their saved details. You can chat and contact them directly to coordinate delivery.
                                 </p>
                             </div>
                         </CardContent>
@@ -307,7 +307,7 @@ function CheckoutPageContent() {
                                 size="lg" 
                                 className="w-full h-14 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-[0.1em] uppercase text-sm text-center text-left"
                             >
-                                {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin text-left" />}
+                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                                 FINALIZE OFFERING
                             </Button>
                         </CardFooter>

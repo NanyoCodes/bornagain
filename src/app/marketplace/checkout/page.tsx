@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -297,7 +296,7 @@ function CheckoutPageContent() {
                             <div className="bg-white/10 p-4 rounded-2xl border border-white/10 flex items-start gap-3 text-left">
                                 <ShieldCheck className="h-5 w-5 shrink-0 mt-0.5 opacity-60 text-left" />
                                 <p className="text-[10px] leading-relaxed font-medium text-left">
-                                    Finalizing this order notifies providers immediately. Please coordinate payments directly using their saved details.
+                                    Finalizing this order notifies providers immediately. Please coordinate payments directly using their saved details. You can chat and contact them directly to coordinate delivery.
                                 </p>
                             </div>
                         </CardContent>
