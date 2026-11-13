@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
@@ -457,7 +458,7 @@ export function SoulsImportTemplateCard() {
                         )}
                     </div>
                 )) : (
-                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4 text-left">
+                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4">
                         <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4" />
                         <p className="text-sm text-muted-foreground font-medium italic text-center">No matching contacts found.</p>
                     </div>
@@ -478,10 +479,10 @@ export function SoulsImportTemplateCard() {
       <CardHeader className="p-6 sm:p-8">
         <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
-                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left">
+                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight">
                 <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Mobilization
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm font-medium text-left">
+                <CardDescription className="text-xs sm:text-sm font-medium">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
@@ -502,7 +503,7 @@ export function SoulsImportTemplateCard() {
                 className="h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm"
             >
                 {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Smartphone className="mr-2 h-4 w-4" />}
-                GOOGLE SYNC
+                NETWORK SYNC
             </Button>
 
             <div className="relative">
@@ -529,17 +530,17 @@ export function SoulsImportTemplateCard() {
         <div className="space-y-4">
             <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4">
                 <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                     Standardize your follow-up data. Import your existing contacts or use our template to organize outreach results for professional tracking.
                 </p>
             </div>
 
-            <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex items-start gap-3 text-left text-left">
+            <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex items-start gap-3 text-left">
                 <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase text-amber-700 tracking-widest">Verification Status: Testing</p>
-                    <p className="text-[9px] text-amber-700/80 leading-relaxed font-medium text-left">
-                        The Google Contacts import is currently in testing. If you see a warning, click <span className="font-bold">"Advanced"</span> and then <span className="font-bold">"Go to testifyglobal.com (unsafe)"</span> to proceed with the sync.
+                    <p className="text-[9px] text-amber-700/80 leading-relaxed font-medium">
+                        The Google Contacts import is currently in testing. If you see a warning, click <span className="font-bold">"Advanced"</span> and then <span className="font-bold">"Go to bornagainglobal.com (unsafe)"</span> to proceed with the sync.
                     </p>
                 </div>
             </div>
