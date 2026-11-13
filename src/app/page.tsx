@@ -348,7 +348,7 @@ export default function LandingPage() {
                     <div className="space-y-8 max-w-3xl mx-auto text-center text-left">
                         <div className="space-y-4 text-left">
                             <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto block w-fit text-left">Kingdom Arena</Badge>
-                            <h3 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center text-left">Empower Your Loved Ones</h3>
+                            <h3 className="text-4xl sm:text-6xl font-black font-headline uppercase leading-tight tracking-tighter text-center text-balance text-left">Empower Your Loved Ones</h3>
                             <p className="text-zinc-400 text-lg leading-relaxed italic font-medium text-center text-balance text-left">
                                 Use the Word Arena to challenge and sharpen those you care about. Bible study becomes a collaborative act of love for every Born Again believer.
                             </p>
@@ -455,6 +455,60 @@ export default function LandingPage() {
                         <Button asChild size="lg" className="rounded-full h-11 px-12 font-black uppercase tracking-widest text-[10px] shadow-xl bg-white text-primary hover:bg-zinc-100 transition-all flex items-center justify-center text-center text-left">
                             <Link href="/signup" className="text-center text-left">JOIN THE MISSION OF LOVE</Link>
                         </Button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section className="py-24 bg-primary/5 border-y border-primary/10 relative overflow-hidden text-left">
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
+                <ShieldCheck className="h-[40rem] w-[40rem] text-primary" />
+            </div>
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div className="order-2 lg:order-1">
+                        <div className="relative group">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-600 rounded-[3rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                            <Card className="relative rounded-[3rem] border-none shadow-2xl bg-card overflow-hidden">
+                                <CardContent className="p-8 sm:p-12 space-y-6">
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                            <Zap className="h-6 w-6 text-primary" />
+                                        </div>
+                                        <h3 className="text-xl font-black uppercase tracking-tight">Pure Spiritual Deposit</h3>
+                                    </div>
+                                    <p className="text-muted-foreground leading-relaxed font-medium text-lg italic text-balance">
+                                        "The media space is often a source of noise and comparison. BornAgain deposits more of God into your spirit and leaves less room for the confusion of the world."
+                                    </p>
+                                    <div className="flex items-center gap-3 pt-4">
+                                        <CheckCircle2 className="h-5 w-5 text-primary" />
+                                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Digital Sanctuary</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                    <div className="space-y-8 order-1 lg:order-2">
+                        <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1">Kingdom Focus</Badge>
+                        <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter">Less Confusion.<br/><span className="text-primary">More of God.</span></h2>
+                        <p className="text-muted-foreground text-lg leading-relaxed font-medium">
+                            Starve the spirit of confusion that plagues the modern media space. BornAgain provides a direct conduit to raw testimonies of God's power and coordinated Kingdom effort.
+                        </p>
+                        <ul className="space-y-4">
+                            {[
+                                "Starve the distraction, feed your purpose.",
+                                "Victory reports that build your faith.",
+                                "Coordinated missions over endless scrolling.",
+                                "A sanctuary for the global redeemed."
+                            ].map((item, i) => (
+                                <li key={i} className="flex items-start gap-3 group">
+                                    <div className="mt-1 h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 group-hover:bg-primary transition-colors">
+                                        <Check className="h-3 w-3 text-primary group-hover:text-white" />
+                                    </div>
+                                    <span className="text-sm sm:text-base font-bold text-muted-foreground group-hover:text-foreground transition-colors">{item}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
             </div>
