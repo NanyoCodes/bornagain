@@ -10,8 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Define public routes with strategic priority for SEO
   const routes = [
-    { path: '', priority: 1, changeFrequency: 'daily' },
-    { path: '/testimonies', priority: 1, changeFrequency: 'daily' },
+    { path: '', priority: 1.0, changeFrequency: 'daily' },
+    { path: '/testimonies', priority: 0.9, changeFrequency: 'daily' },
     { path: '/campaigns', priority: 0.9, changeFrequency: 'daily' },
     { path: '/territories', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/growth', priority: 0.8, changeFrequency: 'weekly' },

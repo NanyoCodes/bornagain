@@ -24,9 +24,11 @@ export const metadata: Metadata = {
     template: '%s | BornAgain Global',
   },
   description:
-    'BornAgain Global is the premier platform for the new creation in Christ. Share testimonies, win souls, and lead mission campaigns for the Kingdom of God.',
+    'BornAgain Global is the premier platform for the new creation in Christ. Share testimonies, win souls, and lead mission campaigns for the Kingdom of God. Discover the true meaning of being born again.',
   keywords: [
     'BornAgain',
+    'Born Again',
+    'What does born again mean',
     'BornAgain Global',
     'BornAgain App',
     'Christian Testimonies',
@@ -50,7 +52,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'BornAgain Global - Are you BornAgain?',
-    description: 'The global platform for the redeemed. Proclaim God’s goodness and mobilize the harvest as a new creation.',
+    description: 'The global platform for the redeemed. Proclaim God’s goodness and mobilize the harvest as a new creation in Christ.',
     url: 'https://bornagainglobal.com',
     siteName: 'BornAgain Global',
     images: [
@@ -111,11 +113,16 @@ export default function RootLayout({
     name: 'BornAgain Global',
     url: 'https://bornagainglobal.com',
     logo: bornAgainLogoUrl,
-    description: 'Global platform for Christian identity, testimonies, and soul-winning mobilization.',
+    description: 'BornAgain Global is the global platform for the new creation in Christ, dedicated to sharing testimonies and mobilizing the harvest.',
     sameAs: [
       'https://twitter.com/bornagainglobal',
       'https://facebook.com/bornagainglobal',
     ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      email: 'testifyglobal360@gmail.com',
+      contactType: 'customer support'
+    }
   };
 
   return (
