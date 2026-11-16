@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Final fix for author variable syntax and subcollection authorization - 2025-04-02T11:00:00Z
+    // Deployment trigger: Universal fix for author variable syntax and subcollection authorization - 2025-04-03T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
