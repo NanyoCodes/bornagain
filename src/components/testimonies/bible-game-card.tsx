@@ -68,10 +68,10 @@ export function BibleGameCard() {
     const handleShare = async (e: React.MouseEvent) => {
         e.stopPropagation();
         const shareUrl = `${window.location.origin}/signup`;
-        const text = "Sharpen your spirit with interactive biblical challenges. Join the Kingdom Arena on Testify!";
+        const text = "Sharpen your spirit with interactive biblical challenges. Join the Kingdom Arena on BornAgain!";
         if (navigator.share) {
             try {
-                await navigator.share({ title: 'Kingdom Arena | Testify', text: text, url: shareUrl });
+                await navigator.share({ title: 'Kingdom Arena | BornAgain', text: text, url: shareUrl });
             } catch (err) {}
         } else {
             navigator.clipboard.writeText(`${text} ${shareUrl}`);

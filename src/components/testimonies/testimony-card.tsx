@@ -377,9 +377,9 @@ export const TestimonyCard = memo(function TestimonyCard({
   const handleShare = async (e?: React.MouseEvent) => {
     if (e) { e.preventDefault(); e.stopPropagation(); }
     const shareUrl = `${window.location.origin}/testimonies#${testimony.id}`;
-    const textContent = `"${testimony.content.substring(0, 200)}${testimony.content.length > 200 ? '...' : ''}"\n\nRead full miracle on Testify:`;
+    const textContent = `"${testimony.content.substring(0, 200)}${testimony.content.length > 200 ? '...' : ''}"\n\nRead full miracle on BornAgain:`;
     
-    const shareData: any = { title: 'Kingdom Testimony | Testify', text: textContent, url: shareUrl };
+    const shareData: any = { title: 'Kingdom Testimony | BornAgain', text: textContent, url: shareUrl };
 
     try {
       if (navigator && navigator.share) {
@@ -523,7 +523,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                     Boost Miracle
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg">
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg text-left">
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     Delete Permanently
                                 </DropdownMenuItem>
@@ -620,8 +620,8 @@ export const TestimonyCard = memo(function TestimonyCard({
       {mounted && (
         <>
             <Drawer open={isBoostOpen} onOpenChange={setIsBoostOpen}>
-                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left text-left">
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                         <div className="p-0 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <TrendingUp className="h-5 w-5 text-indigo-600" />
@@ -631,15 +631,30 @@ export const TestimonyCard = memo(function TestimonyCard({
                             <DrawerDescription className="text-sm font-medium mt-1 text-balance text-left">Share your miracle with a wider global audience.</DrawerDescription>
                         </div>
                     </div>
-                    <div className="p-8 space-y-6 text-left">
-                        <div className="bg-primary/5 rounded-2xl p-6 border-2 border-dashed border-primary/20 text-left">
-                            <h4 className="font-bold text-sm mb-2 text-left">Promotion Benefits</h4>
+                    <div className="p-8 space-y-6 text-left text-left text-left text-left">
+                        <div className="bg-primary/5 rounded-2xl p-6 border-2 border-dashed border-primary/20 text-left text-left text-left">
+                            <h4 className="font-bold text-sm mb-2 text-left text-left">Promotion Benefits</h4>
                             <ul className="space-y-2 text-xs text-muted-foreground font-medium text-left">
-                                <li className="flex items-center gap-2 text-left"><Sparkles className="h-3.5 w-3.5 text-primary text-left" /> Featured in Kingdom Spotlight.</li>
-                                <li className="flex items-center gap-2 text-left"><Sparkles className="h-3.5 w-3.5 text-primary text-left" /> Prioritized in search feeds.</li>
+                                <li className="flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" /> Featured in the Kingdom Spotlight carousel.</li>
+                                <li className="flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" /> Prioritized in search results and regional feeds.</li>
+                                <li className="flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" /> Reach believers outside your immediate circle.</li>
                             </ul>
                         </div>
-                        <div className="flex gap-3 text-left"><Button variant="outline" className="flex-1 rounded-xl font-bold text-left" onClick={() => setIsBoostOpen(false)}>Cancel</Button><Button asChild className="flex-1 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center"><Link href={`/contact?subject=Boost Request&id=${testimony.id}`} className="text-center">PROCEED</Link></Button></div>
+                        
+                        <div className="p-6 rounded-2xl border bg-muted/20 space-y-4 text-left text-left">
+                            <div className="space-y-1 text-left text-left">
+                                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest text-left">Estimated Reach</p>
+                                <p className="text-2xl font-black text-primary text-left">5,000+ Believers</p>
+                            </div>
+                            <p className="text-xs text-muted-foreground italic text-left">Select 'Proceed' to view payment coordinates and finalize your boost request.</p>
+                        </div>
+
+                        <div className="flex gap-3 text-left">
+                            <Button variant="outline" className="flex-1 h-12 rounded-xl font-bold text-left" onClick={() => setIsBoostOpen(false)}>Cancel</Button>
+                            <Button asChild className="flex-1 h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center">
+                                <Link href={`/contact?subject=Testimony Boost Request&id=${testimony.id}`}>PROCEED TO HUB</Link>
+                            </Button>
+                        </div>
                     </div>
                 </DrawerContent>
             </Drawer>
@@ -647,41 +662,45 @@ export const TestimonyCard = memo(function TestimonyCard({
             <AnimatePresence>
                 {showFullText && (
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left">
-                                <DrawerHeader className="text-left p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription>
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Kingdom Testimony</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left">BY {authorName} • {displayDate}</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <div className="flex-grow min-h-0 pt-8 px-6 text-left">{fullTextContent}</div>
+                            <div className="flex-grow min-h-0 pt-8 px-6 text-left text-left">{fullTextContent}</div>
                         </DrawerContent>
                     </Drawer>
                 )}
                 {showFullPrayer && (
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
-                        <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left">
-                                <DrawerHeader className="text-left p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left"><Target className="h-5 w-5 mr-2 inline text-left" />Answered Prayer</DrawerTitle>
+                        <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow px-8 py-10 text-left">
-                                <div className="text-base text-muted-foreground italic text-left">{testimony.answeredPrayerContent}</div>
+                            <ScrollArea className="flex-grow px-8 py-10 text-left text-left">
+                                <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left">
+                                    {testimony.answeredPrayerContent}
+                                </div>
                             </ScrollArea>
                         </DrawerContent>
                     </Drawer>
                 )}
                 {isCommentsOpen && (
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Responses</DrawerTitle>
-                                    <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left">Responses</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
+                                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
-                            <div className="flex-grow min-h-0 text-left">{isCommentsOpen && <CommentSection path={`testimonies/${testimony.id}/comments`} />}</div>
+                            <div className="flex-grow min-h-0 text-left text-left">{isCommentsOpen && <CommentSection path={`testimonies/${testimony.id}/comments`} />}</div>
                         </DrawerContent>
                     </Drawer>
                 )}
