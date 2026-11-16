@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
@@ -508,7 +507,7 @@ export function SoulsImportTemplateCard() {
                 className="h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm"
             >
                 {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Smartphone className="mr-2 h-4 w-4" />}
-                NETWORK SYNC
+                GOOGLE SYNC
             </Button>
 
             <div className="relative">
