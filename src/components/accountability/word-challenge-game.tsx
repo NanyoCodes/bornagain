@@ -410,9 +410,14 @@ export function WordChallengeGame({ partnerId, partnerName }: { partnerId: strin
     }, [allHistory, partnerId, user?.uid]);
 
     const handleShareMatch = async (match: any) => {
-        const message = `Kingdom Arena Duel Summary\nMode: ${match.gameType.toUpperCase()}\n\nBeliever 1: ${match.mySession?.score || 0} Points\nBeliever 2: ${match.partnerSession?.score || 0} Points\n\nJoin the harvest at BornAgain: ${window.location.origin}/games`;
+        const myName = userProfile?.firstName || user?.displayName?.split(' ')[0] || 'Me';
+        const pName = partnerName || 'Partner';
+        const message = `Kingdom Arena Duel Summary\nMode: ${match.gameType.toUpperCase()}\n\n${myName.toUpperCase()}: ${match.mySession?.score || 0} Points\n${pName.toUpperCase()}: ${match.partnerSession?.score || 0} Points\n\nJoin the harvest at BornAgain: ${window.location.origin}/games`;
+        
         if (navigator.share) {
-            navigator.share({ title: 'Kingdom Arena Match Result', text: message, url: `${window.location.origin}/games` }).catch(() => {});
+            try {
+                await navigator.share({ title: 'Kingdom Arena Match Result', text: message, url: `${window.location.origin}/games` });
+            } catch (err) {}
         } else {
             navigator.clipboard.writeText(message);
             toast({ title: 'Result Copied' });
