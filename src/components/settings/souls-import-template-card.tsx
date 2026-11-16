@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
@@ -128,7 +129,7 @@ export function SoulsImportTemplateCard() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "testify_souls_template.csv");
+    link.setAttribute("download", "bornagain_souls_template.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -530,25 +531,6 @@ export function SoulsImportTemplateCard() {
                 </Button>
             </div>
         </div>
-
-        <div className="space-y-4">
-            <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4">
-                <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                    Standardize your follow-up data. Import your existing contacts or use our template to organize outreach results for professional tracking.
-                </p>
-            </div>
-
-            <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex items-start gap-3 text-left">
-                <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase text-amber-700 tracking-widest">Verification Status: Testing</p>
-                    <p className="text-[9px] text-amber-700/80 leading-relaxed font-medium">
-                        The Google Contacts import is currently in testing. If you see a warning, click <span className="font-bold">"Advanced"</span> and then <span className="font-bold">"Go to bornagainglobal.com (unsafe)"</span> to proceed with the sync.
-                    </p>
-                </div>
-            </div>
-        </div>
       </CardContent>
 
       <AnimatePresence>
@@ -556,7 +538,7 @@ export function SoulsImportTemplateCard() {
             <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
                 <DrawerPortal>
                     <DrawerOverlay className="fixed inset-0 z-50 bg-black/80" />
-                    <DrawerContent className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-[95dvh] flex-col rounded-t-[2.5rem] border bg-background sm:max-w-xl sm:mx-auto text-left text-left">
+                    <DrawerContent className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-[95dvh] flex-col rounded-t-[2.5rem] border bg-background sm:max-w-xl sm:mx-auto text-left">
                         <DrawerHeader className="sr-only p-0">
                             <DrawerTitle>Network Sync</DrawerTitle>
                             <DrawerDescription>Select contacts to synchronize.</DrawerDescription>
