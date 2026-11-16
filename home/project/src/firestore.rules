@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for community interactions (inspiredBy/connectedBy) - 2025-03-06T19:00:00Z
+    // Deployment trigger: Final fix for author variable syntax and subcollection authorization - 2025-04-02T11:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -48,7 +48,7 @@ service cloud.firestore {
       return isAuthenticated() && 
              eId != null && 
              eId is string && 
-             eId != "" && 
+             eId != "" &&
              exists(/databases/$(database)/documents/events/$(eId)) && 
              get(/databases/$(database)/documents/events/$(eId)).data.organizerId == request.auth.uid;
     }
@@ -69,7 +69,7 @@ service cloud.firestore {
 
       allow update: if isAuthenticated() && (
         isOwner(userId) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink', 'kingdomPoints', 'lastGameAt']) && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink', 'kingdomPoints', 'lastGameAt', 'fcmTokens', 'lastTokenSync']) && (
           isOwner(userId) ||
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
           (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
@@ -158,6 +158,12 @@ service cloud.firestore {
         allow create: if isAuthenticated();
         allow update, delete: if isOwner(userId) || isEventOrganizer(eventId);
       }
+
+      match /gallery/{itemId} {
+        allow read, list: if true;
+        allow create: if isAuthenticated();
+        allow delete: if isAuthenticated() && (request.auth.uid == resource.data.authorId || isEventOrganizer(eventId));
+      }
     }
 
     match /victoryCircles/{category} {
@@ -175,20 +181,20 @@ service cloud.firestore {
         match /comments/{commentId} {
           allow get, list: if isAuthenticated();
           allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-          allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
           allow update: if isAuthenticated() && (
-            (request.resource.data.authorId == request.authorId) ||
+            (resource.data.authorId == request.auth.uid) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
           );
         }
       }
-      
+
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
         allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
         allow update: if isAuthenticated() && (
-          (request.resource.data.authorId == request.authorId) ||
+          (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
         );
       }
@@ -198,7 +204,7 @@ service cloud.firestore {
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
         allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
         allow update: if isAuthenticated() && (
-          (request.resource.data.authorId == request.authorId) ||
+          (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
         );
       }
@@ -207,7 +213,21 @@ service cloud.firestore {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
         allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
-        allow update: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
+        allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
+      }
+    }
+    
+    match /regionalChallenges/{challengeId} {
+      allow read, list: if true; 
+      allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+      allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['solutionCount', 'status', 'usersWhoPrayed']));
+      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+
+      match /solutions/{solutionId} {
+        allow read, list: if true; 
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes']));
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
       }
     }
     
@@ -245,9 +265,9 @@ service cloud.firestore {
     match /prayerRequests/{requestId} {
       allow get, list: if true;
       allow create: if isAuthenticated();
-      allow delete: if isAuthenticated() && resource.authorId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.authorId) ||
+        (resource.data.authorId == request.auth.uid) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.get('answeredTestimonyId', '') != '' && (
           request.resource.data.status == 'pending' || 
@@ -268,6 +288,12 @@ service cloud.firestore {
       match /participants/{userId} {
         allow read: if isAuthenticated();
         allow write: if isOwner(userId);
+      }
+
+      match /gallery/{itemId} {
+        allow read, list: if true;
+        allow create: if isAuthenticated();
+        allow delete: if isAuthenticated() && (request.auth.uid == resource.data.authorId || isCampaignOrganizer(campaignId));
       }
     }
     
@@ -313,9 +339,9 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/fellowships/$(fellowshipId)/devotionals/$(date)).data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              (request.resource.data.authorId == request.authorId) ||
+              (request.resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }
