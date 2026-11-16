@@ -47,14 +47,14 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
         className="flex flex-col items-center gap-8 w-full max-sm text-left"
       >
         <div className="relative text-left">
-            <div className="absolute inset-0 bg-primary/30 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute inset-0 bg-primary/30 rounded-full blur-3xl animate-pulse text-left" />
             <motion.div 
                 animate={{ 
                     scale: [1, 1.05, 1],
                     rotate: [0, 2, -2, 0]
                 }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="relative z-10"
+                className="relative z-10 text-left"
             >
                 <Avatar className="h-32 w-32 sm:h-48 sm:w-48 shadow-2xl ring-8 ring-primary/10 border-4 border-background text-left">
                   <AvatarImage src={logoUrl} alt="BornAgain Logo" className="text-left" />

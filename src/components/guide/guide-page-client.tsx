@@ -18,11 +18,10 @@ export function GuidePageClient() {
   const { toast } = useToast();
 
   const handleShare = async () => {
-    const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
-    const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://testifyglobal.com';
+    const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://bornagainglobal.com';
     
     const shareData = {
-      title: 'Join Testify - Global Evangelism Platform',
+      title: 'Join BornAgain - Global Evangelism Platform',
       text: 'Help us organize the harvest and track evangelism progress for the Kingdom of God.',
       url: shareUrl
     };
@@ -46,7 +45,6 @@ export function GuidePageClient() {
 
   return (
     <>
-      {/* Advanced Features FAQ */}
       <section className="space-y-6">
         <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-primary" />
@@ -56,13 +54,13 @@ export function GuidePageClient() {
             <AccordionItem value="referrals" className="border rounded-xl px-4 bg-card mb-4 shadow-sm">
                 <AccordionTrigger className="hover:no-underline font-semibold text-left">How do I refer other believers?</AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                    Testify is most powerful when used collectively. Use the "Share App" button below or in the sidebar to invite your pastors, youth leaders, and friends. A stronger network means a more organized harvest.
+                    BornAgain is most powerful when used collectively. Use the "Share App" button below or in the sidebar to invite your pastors, youth leaders, and friends. A stronger network means a more organized harvest.
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="insights" className="border rounded-xl px-4 bg-card mb-4 shadow-sm">
                 <AccordionTrigger className="hover:no-underline font-semibold text-left">What are AI Follow-up Insights?</AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                    On the "Souls Won" page, click the "Insights" lightbulb on any convert's record. Our AI analyzes their status and history to suggest the best next steps and personalized messages for you to send.
+                    On the "Souls Won" page, click the "Details" button then check the insights section. Our AI analyzes their status and history to suggest the best next steps and personalized messages for you to send.
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="amen" className="border rounded-xl px-4 bg-card mb-4 shadow-sm">
@@ -74,7 +72,6 @@ export function GuidePageClient() {
         </Accordion>
       </section>
       
-      {/* Referral & CTA */}
       <section className="mt-16 p-8 rounded-3xl bg-primary/5 border border-primary/20 text-center relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 opacity-5">
             <Flame className="h-24 w-24 text-primary" />

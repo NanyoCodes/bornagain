@@ -3,7 +3,7 @@ import { AuthLayout } from '@/components/auth/auth-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Flame, ShieldCheck, Award, HeartHandshake, Globe, Zap, Sparkles, Heart } from 'lucide-react';
+import { Globe, Sparkles, Award, ShieldCheck, Zap, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -44,7 +44,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><Award className="h-5 w-5 text-primary" /> The Mandate</h2>
             <Card className="border-l-4 border-l-primary rounded-2xl bg-primary/5 shadow-none border-none">
                 <CardContent className="pt-6 italic text-muted-foreground leading-relaxed font-medium text-left">
-                    "I believe that the greatest move of God in our time is marked by the intentionality of the redeemed. BornAgain Global was birthed to ensure that when a soul enters the light, they are nurtured. It is the platform for the new creation—the one who cares enough to follow up, to pray, and to support their brethren." - by Nanyo Theophilus
+                    "I believe that the greatest move of God in our time is marked by the intentionality of the redeemed. BornAgain Global was birthed to ensure that when a soul enters the light, they are nurtured. It is the platform for the new creation—the one who cares enough to follow up, to pray, and to support their brethren." - Nanyo Theophilus
                 </CardContent>
             </Card>
         </section>
@@ -66,19 +66,6 @@ export default function AboutPage() {
                     We use AI-powered insights to provide strategies for nurturing those who have just been BornAgain, ensuring their foundation in Christ is solid.
                 </CardContent>
             </Card>
-        </section>
-
-        <section className="space-y-4">
-            <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2"><HeartHandshake className="h-5 w-5 text-primary" /> Kingdom Alliances</h2>
-            <p className="text-sm text-muted-foreground font-medium">
-                We partner with ministries globally to ensure that every 'New Creation' has the resources and community they need to thrive.
-            </p>
-            <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary" className="font-bold uppercase text-[9px]">Redeemed Networks</Badge>
-                <Badge variant="secondary" className="font-bold uppercase text-[9px]">Great Commission Hubs</Badge>
-                <Badge variant="secondary" className="font-bold uppercase text-[9px]">New Birth Support</Badge>
-                <Badge variant="secondary" className="font-bold uppercase text-[9px]">Alliance of the Spirit</Badge>
-            </div>
         </section>
 
         <footer className="pt-8 flex flex-col sm:flex-row gap-4 justify-center">

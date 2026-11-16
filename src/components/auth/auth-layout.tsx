@@ -56,7 +56,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         setShowSplash(false);
         localStorage.setItem('testify_splash_last_shown', now.toString());
         setContentVisible(true);
-      }, 3000); //snappier splash
+      }, 3000); 
       return () => clearTimeout(timer);
     } else {
       setContentVisible(true);
@@ -83,7 +83,6 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         transition={{ duration: 1 }}
         className="relative w-full min-h-screen text-left"
       >
-        {/* Background Gospel Image Overlay */}
         <div 
             className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000"
             style={{ 
@@ -134,7 +133,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                         <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
                         <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left">Privacy</Link>
                     </div>
-                    <p className="text-left">© {new Date().getFullYear()} BornAgain GLOBAL</p>
+                    <p className="text-left">© {new Date().getFullYear()} BornAgain Global</p>
                 </footer>
             </div>
             </div>

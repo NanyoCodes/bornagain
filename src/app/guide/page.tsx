@@ -33,8 +33,8 @@ import { cn } from '@/lib/utils';
 import { GuidePageClient } from '@/components/guide/guide-page-client';
 
 export const metadata: Metadata = {
-  title: 'App Guide - Born Again Global',
-  description: 'A complete guide to using Born Again Global for soul winning and testifying. Learn how to log souls, join campaigns, and grow in the Kingdom.',
+  title: 'App Guide - BornAgain Global',
+  description: 'A complete guide to using BornAgain Global for soul winning and testifying. Learn how to log souls, join campaigns, and grow in the Kingdom.',
 };
 
 const gettingStartedItems = [
@@ -187,14 +187,13 @@ const journeyPhases = [
 export default function GuidePage() {
   return (
     <div className="space-y-12 max-w-5xl mx-auto p-4 md:p-8 pb-24">
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" asChild className="shrink-0 rounded-full h-10 w-10">
             <Link href="/"><ArrowLeft className="h-4 w-4" /></Link>
           </Button>
           <div className="space-y-1">
-            <h1 className="text-3xl md:text-5xl font-black font-headline tracking-tight flex items-center gap-3">
+            <h1 className="text-3xl md:text-5xl font-black font-headline tracking-tight flex items-center gap-3 text-left">
               <BookOpen className="h-8 w-8 text-primary" />
               App Guide
             </h1>
@@ -210,7 +209,6 @@ export default function GuidePage() {
 
       <Separator />
 
-      {/* Getting Started Path */}
       <section className="space-y-8">
         <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-2xl bg-blue-500/10 flex items-center justify-center">
@@ -239,7 +237,6 @@ export default function GuidePage() {
         </div>
       </section>
 
-      {/* Journey Phases */}
       <section className="space-y-12">
         <div className="space-y-2">
             <h2 className="text-3xl font-black font-headline uppercase tracking-tight">The Believer's Journey</h2>
