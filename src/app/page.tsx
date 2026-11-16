@@ -241,10 +241,10 @@ export default function LandingPage() {
         <section className="py-24 bg-background text-left">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <div className="space-y-8 text-left">
-                <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1">Spiritual Foundation</Badge>
-                <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-left">What does it mean to be <span className="text-primary">BornAgain</span>?</h2>
-                <div className="space-y-4 text-muted-foreground leading-relaxed font-medium text-left">
+              <div className="space-y-8 text-center lg:text-left">
+                <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 mx-auto lg:mx-0 flex items-center justify-center w-fit">Spiritual Foundation</Badge>
+                <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase leading-tight tracking-tighter text-center lg:text-left text-balance">What does it mean to be <span className="text-primary">BornAgain</span>?</h2>
+                <div className="space-y-4 text-muted-foreground leading-relaxed font-medium text-center lg:text-left text-pretty">
                   <p>
                     Being "BornAgain" is more than a religious label; it is a profound spiritual transformation. It is the moment when a person experiences a spiritual rebirth through faith in Jesus Christ, as described in the Gospel of John.
                   </p>
@@ -254,18 +254,18 @@ export default function LandingPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 text-left">
                   <div className="space-y-2 text-left">
-                    <h3 className="font-black text-foreground uppercase tracking-tight flex items-center gap-2 text-left">
+                    <h3 className="font-black text-foreground uppercase tracking-tight flex items-center gap-2 text-left justify-center lg:justify-start">
                       <Sparkles className="h-4 w-4 text-primary" />
                       Spiritual Rebirth
                     </h3>
-                    <p className="text-xs text-left">The awakening of the spirit to a relationship with the Father.</p>
+                    <p className="text-xs text-center lg:text-left">The awakening of the spirit to a relationship with the Father.</p>
                   </div>
                   <div className="space-y-2 text-left">
-                    <h3 className="font-black text-foreground uppercase tracking-tight flex items-center gap-2 text-left">
+                    <h3 className="font-black text-foreground uppercase tracking-tight flex items-center gap-2 text-left justify-center lg:justify-start">
                       <Target className="h-4 w-4 text-primary" />
                       Kingdom Purpose
                     </h3>
-                    <p className="text-xs text-left">Activating your assignment in the harvest field of souls.</p>
+                    <p className="text-xs text-center lg:text-left">Activating your assignment in the harvest field of souls.</p>
                   </div>
                 </div>
               </div>
@@ -273,14 +273,14 @@ export default function LandingPage() {
                 <div className="absolute -inset-4 bg-primary/20 rounded-[3rem] blur-3xl opacity-20 animate-pulse text-left" />
                 <Card className="rounded-[3rem] border-none shadow-2xl overflow-hidden bg-card/50 backdrop-blur-xl relative z-10 border-t-8 border-t-primary/20 text-left">
                   <CardContent className="p-8 sm:p-12 space-y-6 text-left">
-                    <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left">
+                    <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left mx-auto lg:mx-0">
                       <BookMarked className="h-8 w-8 text-primary text-left" />
                     </div>
-                    <h3 className="text-2xl font-black uppercase tracking-tight text-left">The Scriptural Anchor</h3>
+                    <h3 className="text-2xl font-black uppercase tracking-tight text-center lg:text-left">The Scriptural Anchor</h3>
                     <blockquote className="border-l-4 border-primary/40 pl-6 py-2 italic text-lg text-muted-foreground leading-relaxed text-left">
                       "Therefore, if anyone is in Christ, he is a new creation. The old has passed away; behold, the new has come."
                     </blockquote>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-primary text-left">— 2 Corinthians 5:17</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-primary text-right text-left">— 2 Corinthians 5:17</p>
                   </CardContent>
                 </Card>
               </div>
@@ -353,7 +353,7 @@ export default function LandingPage() {
                             </p>
                         </div>
                         <Button asChild size="lg" className="h-12 px-10 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center text-center mx-auto text-left">
-                            <Link href="/signup" className="text-center text-left">START THE CHALLENGE <ChevronRight className="ml-2 h-4 w-4 text-left" /></Link>
+                            <Link href="/signup" className="text-center text-left">START THE CHALLENGE <ArrowRight className="ml-2 h-4 w-4 text-left" /></Link>
                         </Button>
                     </div>
                     <div className="w-full max-w-2xl mx-auto text-left">
@@ -553,7 +553,7 @@ export default function LandingPage() {
                             "{t.content}"
                           </p>
                           <div className="flex items-center gap-4 text-left text-left text-left">
-                            <Avatar className="h-11 w-11 border-2 border-background shadow-md shrink-0 text-left text-left">
+                            <Avatar className="h-11 w-11 border-2 border-background shadow-md shrink-0 text-left text-left text-left">
                                 <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary font-black uppercase text-left text-left text-left"> {t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex-1 text-left text-left text-left">
