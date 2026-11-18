@@ -137,13 +137,13 @@ function FilteredSoulList({
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
+        <p className="text-sm text-muted-foreground italic">No souls found matching this criteria.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 pb-6 text-left">
+    <div className="space-y-3 pb-6">
       {souls.map((soul) => {
         const isFamilyMember = soul.maritalStatus === 'Married';
         const wonAt = safeToDate(soul.wonAt);
@@ -155,98 +155,98 @@ function FilteredSoulList({
             const soulSpouse = (soul.spouseName || "").toLowerCase();
             const otherSpouse = (other.spouseName || "").toLowerCase();
             return (soulSpouse === otherFull || soulSpouse === other.firstName.toLowerCase()) &&
-                   (otherSpouse === soulFull || otherSpouse === other.firstName.toLowerCase());
+                   (otherSpouse === soulFull || otherSpouse === s.firstName.toLowerCase());
         }) : null;
 
         const children = allSouls.filter(child => soul.childrenIds?.includes(child.id));
         const hasFamily = spouseObj || children.length > 0;
 
         return (
-          <div key={soul.id} className="relative text-left">
+          <div key={soul.id} className="relative">
             <Collapsible open={openFamilyId === soul.id} onOpenChange={() => setOpenFamilyId(openFamilyId === soul.id ? null : soul.id)}>
                 <div 
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 transition-all hover:bg-card/40 cursor-pointer text-left"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-[2rem] border bg-background/50 group w-full relative gap-4 transition-all hover:bg-card/40 cursor-pointer"
                     onClick={() => onShareWord(soul)}
                 >
-                    <div className="flex flex-row items-center gap-3 min-w-0 flex-1 w-full text-left">
+                    <div className="flex flex-row items-center gap-3 min-w-0 flex-1 w-full">
                         <CollapsibleTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <div className="flex -space-x-3 sm:-space-x-4 shrink-0 hover:scale-105 active:scale-95 transition-transform text-left">
-                                <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0 text-left">
-                                    <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
-                                    <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left"> {soul.firstName?.charAt(0)}</AvatarFallback>
+                            <div className="flex -space-x-3 sm:-space-x-4 shrink-0 hover:scale-105 active:scale-95 transition-transform">
+                                <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0">
+                                    <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                    <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs flex items-center justify-center h-full w-full"> {soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 {spouseObj && (
-                                    <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0 text-left">
-                                        <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover text-left" />
-                                        <AvatarFallback className="font-black bg-primary/10 text-primary/60 text-[10px] sm:text-xs flex items-center justify-center h-full w-full text-left"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
+                                    <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0">
+                                        <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover" />
+                                        <AvatarFallback className="font-black bg-primary/10 text-primary/60 text-[10px] sm:text-xs flex items-center justify-center h-full w-full"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 )}
                             </div>
                         </CollapsibleTrigger>
-                        <div className="min-w-0 flex-1 pr-1 text-left">
-                            <div className="flex items-center gap-2 flex-wrap text-left">
-                                <p className="font-black text-[14px] sm:text-base uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
-                                <Badge variant="outline" className={cn("text-[8px] h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50 text-left", getStatusClasses(soul.status))}>{soul.status}</Badge>
+                        <div className="min-w-0 flex-1 pr-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-black text-[14px] sm:text-base uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                                <Badge variant="outline" className={cn("text-[8px] h-4 px-1 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50", getStatusClasses(soul.status))}>{soul.status}</Badge>
                             </div>
                             <CollapsibleTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 group/trigger hover:opacity-80 transition-opacity text-left">
-                                    <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left">
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 group/trigger hover:opacity-80 transition-opacity">
+                                    <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
                                         Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                                     </p>
                                     {hasFamily && (
-                                        <ChevronDown className={cn("h-3 w-3 text-primary transition-transform duration-200 text-left", openFamilyId === soul.id && "rotate-180")} />
+                                        <ChevronDown className={cn("h-3 w-3 text-primary transition-transform duration-200", openFamilyId === soul.id && "rotate-180")} />
                                     )}
                                 </div>
                             </CollapsibleTrigger>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 sm:gap-2 shrink-0 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-none border-dashed border-primary/10 text-left" onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary text-left" onClick={() => onShareWord(soul)}>
-                            <BookMarked className="h-4 w-4 text-left" />
+                    <div className="flex items-center gap-2 sm:gap-2 shrink-0 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-none border-dashed border-primary/10" onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary" onClick={() => onShareWord(soul)}>
+                            <BookMarked className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary text-left" onClick={() => onPray(soul)}>
-                            <HandHeart className="h-4 w-4 text-left" />
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary" onClick={() => onPray(soul)}>
+                            <HandHeart className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary text-left" onClick={() => onMessage(soul)}>
-                            <MessageSquare className="h-4 w-4 text-left" />
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-primary/10 text-primary" onClick={() => onMessage(soul)}>
+                            <MessageSquare className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30 text-left" onClick={() => onSelectSoul(soul)}>
-                            <User className="h-4 w-4 text-left" />
+                        <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted/20 text-muted-foreground hover:bg-muted/30" onClick={() => onSelectSoul(soul)}>
+                            <User className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
-              <CollapsibleContent className="px-4 pb-4 text-left">
-                  <div className="pt-3 space-y-2 text-left">
-                      <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2 text-left">Household Members</p>
+              <CollapsibleContent className="px-4 pb-4">
+                  <div className="pt-3 space-y-2">
+                      <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2">Household Members</p>
                       {spouseObj && (
-                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left">
-                              <Avatar className="h-8 w-8 border text-left">
-                                  <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover text-left" />
-                                  <AvatarFallback className="text-center flex items-center justify-center h-full w-full text-left"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
+                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4">
+                              <Avatar className="h-8 w-8 border">
+                                  <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover" />
+                                  <AvatarFallback className="text-center flex items-center justify-center h-full w-full"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0 text-left">
-                                  <p className="font-bold text-xs uppercase truncate leading-none text-left">{spouseObj.firstName} {spouseObj.lastName}</p>
-                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5 text-left">Spouse</p>
+                              <div className="flex-1 min-w-0">
+                                  <p className="font-bold text-xs uppercase truncate leading-none">{spouseObj.firstName} {spouseObj.lastName}</p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Spouse</p>
                               </div>
-                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-left" onClick={() => onSelectSoul(spouseObj)}>View Profile</Button>
+                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => onSelectSoul(spouseObj)}>View Profile</Button>
                           </div>
                       )}
                       {children.map(child => (
-                           <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left">
-                              <Avatar className="h-8 w-8 border text-left">
-                                  <AvatarImage src={child.photoURL || undefined} className="object-cover text-left" />
-                                  <AvatarFallback className="text-center flex items-center justify-center h-full w-full text-left"> {child.firstName?.charAt(0)}</AvatarFallback>
+                           <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4">
+                              <Avatar className="h-8 w-8 border">
+                                  <AvatarImage src={child.photoURL || undefined} className="object-cover" />
+                                  <AvatarFallback className="text-center flex items-center justify-center h-full w-full"> {child.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0 text-left">
-                                  <p className="font-bold text-xs uppercase truncate leading-none text-left">{child.firstName} {child.lastName}</p>
-                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5 text-left">Child</p>
+                              <div className="flex-1 min-w-0">
+                                  <p className="font-bold text-xs uppercase truncate leading-none">{child.firstName} {child.lastName}</p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Child</p>
                               </div>
-                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-left" onClick={() => onSelectSoul(child)}>View Profile</Button>
+                              <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => onSelectSoul(child)}>View Profile</Button>
                           </div>
                       ))}
-                      <div className="flex gap-2 ml-4 w-[calc(100%-1rem)] text-left">
-                        <Button variant="outline" className="flex-1 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase text-left" onClick={() => onAddChildForm(soul, spouseObj)}>
-                            <PlusCircle className="mr-1.5 h-3.5 w-3.5 text-left" /> New Record
+                      <div className="flex gap-2 ml-4 w-[calc(100%-1rem)]">
+                        <Button variant="outline" className="flex-1 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase" onClick={() => onAddChildForm(soul, spouseObj)}>
+                            <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> New Record
                         </Button>
                       </div>
                   </div>
@@ -390,7 +390,7 @@ export default function SoulsWonPage() {
                 const soulSpouse = (soul.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
                 return (soulSpouse === otherFull || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFull || otherSpouse === other.firstName.toLowerCase());
+                       (otherSpouse === soulFull || otherSpouse === s.firstName.toLowerCase());
               });
               if (spouse) { processedIds.add(spouse.id); stats.married.list.push({ ...soul, spouseRecord: spouse }); }
               else { stats.married.list.push(soul); }
@@ -764,8 +764,8 @@ export default function SoulsWonPage() {
                                 </Button>
                             </div>
                         </div>
-                        <ScrollArea className="flex-grow text-left">
-                            <div className="p-4 sm:p-8 text-left">
+                        <div className="flex-1 overflow-y-auto no-scrollbar">
+                            <div className="p-4 sm:p-8">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
@@ -776,7 +776,7 @@ export default function SoulsWonPage() {
                                   onMessage={(s) => { setSelectedFilterGroup(null); setMessageSoulId(s.id); }}
                                 />
                             </div>
-                        </ScrollArea>
+                        </div>
                     </DrawerContent>
                 </Drawer>
             ) : (
@@ -799,8 +799,8 @@ export default function SoulsWonPage() {
                                 </Button>
                             </div>
                         </div>
-                        <ScrollArea className="max-h-[60vh] text-left">
-                            <div className="p-4 sm:p-8 text-left">
+                        <div className="flex-1 overflow-y-auto max-h-[60vh] no-scrollbar">
+                            <div className="p-4 sm:p-8">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
@@ -811,7 +811,7 @@ export default function SoulsWonPage() {
                                   onMessage={(s) => { setSelectedFilterGroup(null); setMessageSoulId(s.id); }}
                                 />
                             </div>
-                        </ScrollArea>
+                        </div>
                     </DialogContent>
                 </Dialog>
             )
@@ -874,11 +874,11 @@ export default function SoulsWonPage() {
                                     </Button>
                                 </div>
                             </div>
-                            <ScrollArea className="flex-grow min-h-0 text-left">
-                                <div className="p-8 pb-32 text-left">
+                            <div className="flex-1 overflow-y-auto no-scrollbar">
+                                <div className="p-8 pb-32">
                                     <LogSoulFormLazy onSoulLogged={() => { setIsLogDialogOpen(false); setLogSoulDefaults({}); }} fellowships={fellowships || []} campaigns={[]} {...logSoulDefaults} />
                                 </div>
-                            </ScrollArea>
+                            </div>
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
@@ -894,11 +894,11 @@ export default function SoulsWonPage() {
                                     </Button>
                                 </div>
                             </div>
-                            <ScrollArea className="flex-grow min-h-0 text-left text-left">
-                                <div className="p-8 pb-32 text-left text-left">
+                            <div className="flex-1 overflow-y-auto no-scrollbar">
+                                <div className="p-8 pb-32">
                                     {soulToEdit && <EditSoulFormLazy soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                                 </div>
-                            </ScrollArea>
+                            </div>
                         </DrawerContent>
                     </Drawer>
                 </>
@@ -917,11 +917,11 @@ export default function SoulsWonPage() {
                                     </Button>
                                 </div>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 text-left">
-                                <div className="p-8 text-left">
+                            <div className="flex-1 overflow-y-auto no-scrollbar">
+                                <div className="p-8">
                                     <LogSoulFormLazy onSoulLogged={() => { setIsLogDialogOpen(false); setLogSoulDefaults({}); }} fellowships={fellowships || []} campaigns={[]} {...logSoulDefaults} />
                                 </div>
-                            </ScrollArea>
+                            </div>
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
@@ -937,11 +937,11 @@ export default function SoulsWonPage() {
                                     </Button>
                                 </div>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 text-left text-left">
-                                <div className="p-8 text-left text-left">
+                            <div className="flex-1 overflow-y-auto no-scrollbar">
+                                <div className="p-8">
                                     {soulToEdit && <EditSoulFormLazy soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                                 </div>
-                            </ScrollArea>
+                            </div>
                         </DialogContent>
                     </Dialog>
                 </>
@@ -966,7 +966,7 @@ export default function SoulsWonPage() {
                         </Button>
                     </div>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
+                <div className="flex-1 overflow-y-auto no-scrollbar">
                     <div className="p-6 pb-24 text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
@@ -981,7 +981,7 @@ export default function SoulsWonPage() {
                             />
                         )}
                     </div>
-                </ScrollArea>
+                </div>
             </DrawerContent>
         </Drawer>
     </div>
