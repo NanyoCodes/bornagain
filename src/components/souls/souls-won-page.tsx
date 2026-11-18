@@ -60,6 +60,13 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+} from "@/components/ui/drawer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -208,8 +215,8 @@ function FilteredSoulList({
                         </Button>
                     </div>
                 </div>
-              <CollapsibleContent className="px-4 pb-4 text-left text-left text-left">
-                  <div className="pt-3 space-y-2 text-left text-left">
+              <CollapsibleContent className="px-4 pb-4 text-left">
+                  <div className="pt-3 space-y-2 text-left">
                       <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2 text-left">Household Members</p>
                       {spouseObj && (
                           <div className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left">
@@ -749,7 +756,7 @@ export default function SoulsWonPage() {
                                     </div>
                                     <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
-                                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
+                                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                                     </DrawerHeader>
                                 </div>
                                 <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setSelectedFilterGroup(null)}>
@@ -883,7 +890,7 @@ export default function SoulsWonPage() {
                                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Update soul identity and mission details.</DrawerDescription>
                                     </DrawerHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left" onClick={() => setEditSoulId(null)}>
-                                        <X className="h-5 w-5 text-left text-left" />
+                                        <X className="h-5 w-5 text-left" />
                                     </Button>
                                 </div>
                             </div>
@@ -926,7 +933,7 @@ export default function SoulsWonPage() {
                                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Update soul identity and mission details.</DrawerDescription>
                                     </DialogHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left" onClick={() => setEditSoulId(null)}>
-                                        <X className="h-5 w-5 text-left text-left" />
+                                        <X className="h-5 w-5 text-left" />
                                     </Button>
                                 </div>
                             </div>
@@ -955,11 +962,11 @@ export default function SoulsWonPage() {
                             </DrawerHeader>
                         </div>
                         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left" onClick={() => setSelectedId(null)}>
-                            <X className="h-5 w-5 text-left text-left" />
+                            <X className="h-5 w-5 text-left" />
                         </Button>
                     </div>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
                     <div className="p-6 pb-24 text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
