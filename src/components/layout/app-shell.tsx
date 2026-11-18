@@ -79,7 +79,7 @@ import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { SearchProvider, useSearch } from "@/context/search-context";
+import { useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
 import type { Notification, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
@@ -577,8 +577,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 function BottomNavBar() {
     const pathname = usePathname();
     const activeColorClass = useMemo(() => {
-        const matchingPath = Object.keys(itemColors).find(path => pathname === path || (path !== '/' && pathname.startsWith(path)));
-        return itemColors[matchingPath || "/testimonies"];
+        const matchingPath = navItems.find(item => pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)));
+        const path = matchingPath?.href || "/testimonies";
+        return itemColors[path];
     }, [pathname]);
   
     return (
@@ -842,21 +843,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const unreadNotifCount = unreadOtherNotifications?.length ?? 0;
 
   return (
-    <SearchProvider>
-        <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left text-left">
-                <div className="relative mx-auto w-fit text-left text-left text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left" />
-                </div>
+    <Suspense fallback={
+        <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left text-left">
+            <div className="relative mx-auto w-fit text-left text-left text-left">
+                <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left" />
             </div>
-        }>
-            <ShellInner 
-              unreadChatCount={unreadChatCount} 
-              unreadNotifCount={unreadNotifCount}
-            >
-              {children}
-            </ShellInner>
-        </Suspense>
-    </SearchProvider>
+        </div>
+    }>
+        <ShellInner 
+          unreadChatCount={unreadChatCount} 
+          unreadNotifCount={unreadNotifCount}
+        >
+          {children}
+        </ShellInner>
+    </Suspense>
   );
 }

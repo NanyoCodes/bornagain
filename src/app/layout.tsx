@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { CookieConsentBanner } from '@/components/cookie-consent-banner';
 import { FontSizeProvider } from '@/components/font-size-provider';
+import { SearchProvider } from '@/context/search-context';
 import { Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import Script from 'next/script';
@@ -140,11 +141,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <FontSizeProvider>
-            <FirebaseClientProvider>
-              {children}
-              <Toaster />
-              <CookieConsentBanner />
-            </FirebaseClientProvider>
+            <SearchProvider>
+              <FirebaseClientProvider>
+                {children}
+                <Toaster />
+                <CookieConsentBanner />
+              </FirebaseClientProvider>
+            </SearchProvider>
           </FontSizeProvider>
         </ThemeProvider>
       </body>
