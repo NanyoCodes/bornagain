@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Bell,
+  BookOpen,
   LogOut,
   MessagesSquare,
   Newspaper,
@@ -48,7 +49,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
 import {
@@ -779,7 +779,17 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0"><div className="p-6 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle><DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription></DialogHeader></div><div className="p-6 max-h-[70vh] overflow-y-auto">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div></Dialog>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+            <div className="p-6 border-b bg-muted/10">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+              </DialogHeader>
+            </div>
+            <div className="p-6 max-h-[70vh] overflow-y-auto">
+              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+            </div>
+          </DialogContent>
         </Dialog>
       ) : null}
     </div>
