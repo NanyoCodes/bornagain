@@ -653,7 +653,7 @@ export default function SoulsWonPage() {
                     </div>
 
                     <div className="space-y-4 text-left">
-                        <div className="flex items-center gap-3 text-left">
+                        <div className="flex items-center gap-3 text-left text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left"><Users className="h-5 w-5 text-primary text-left" /></div>
                             <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">GENDER BALANCE</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Kingdom Workforce Diversity</p></div>
                         </div>
@@ -681,7 +681,7 @@ export default function SoulsWonPage() {
                         </div>
                         <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
                             <CardContent className="p-6 sm:p-8 text-left text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left text-left text-left">
                                     {[ { label: 'Families', count: maritalStats.married.count, color: 'bg-emerald-500', icon: Target }, { label: 'Singles', count: maritalStats.single.count, color: 'bg-primary', icon: Sparkles }, { label: 'Divorced', count: maritalStats.divorced.count, color: 'bg-slate-500', icon: HelpCircle }, { label: 'Widowers', count: maritalStats.widowed.count, color: 'bg-indigo-600', icon: Award } ].map(stat => {
                                         const percent = totalSoulsCount > 0 ? (stat.count / totalSoulsCount) * 100 : 0;
                                         return (
@@ -864,7 +864,7 @@ export default function SoulsWonPage() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <div className="flex items-center justify-between gap-4 text-left text-left">
-                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
+                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
                                         <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</DrawerTitle>
                                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Update soul identity and mission details.</DrawerDescription>
                                     </DrawerHeader>
@@ -928,25 +928,25 @@ export default function SoulsWonPage() {
         )}
         
         <Drawer open={!!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                    <div className="flex items-center justify-between gap-4 text-left text-left">
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                    <div className="flex items-center justify-between gap-4 text-left text-left text-left">
                         <div className="min-w-0 text-left text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
-                                <div className="flex items-center gap-2 mb-2 text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span></div>
-                                <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
+                            <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left text-left">
+                                <div className="flex items-center gap-2 mb-2 text-left text-left text-left"><Sparkles className="h-4 w-4 text-primary text-left text-left text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span></div>
+                                <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">
                                     {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                                 </DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                             </DrawerHeader>
                         </div>
-                        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left" onClick={() => setSelectedId(null)}>
+                        <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left text-left text-left" onClick={() => setSelectedId(null)}>
                             <X className="h-5 w-5 text-left" />
                         </Button>
                     </div>
                 </div>
                 <div className="flex-1 overflow-y-auto text-left">
-                    <div className="p-6 pb-24 text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left">
                         {selectedId && souls?.find(s => s.id === selectedId) && (
                             <SoulProfileContent 
                                 soul={souls.find(s => s.id === selectedId)!} 

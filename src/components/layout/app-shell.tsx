@@ -82,7 +82,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, deleteDoc, getDocs, limit } from "firebase/firestore";
-import type { Notification, VendorProfile, Campaign, Fellowship } from "@/lib/types";
+import type { Notification, VendorProfile, Campaign, Fellowship, Soul } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
@@ -270,25 +270,25 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (searchTerm.trim().length < 2) {
+      const term = searchTerm.trim().toLowerCase();
+      if (term.length < 2) {
         setSuggestions([]);
         return;
       }
       setIsSearching(true);
       try {
         const results: any[] = [];
-        const term = searchTerm.toLowerCase();
 
         // 1. Fetch Matching Campaigns
         const campaignsSnap = await getDocs(query(
             collection(firestore, 'campaigns'),
             where('status', '==', 'active'),
-            limit(5)
+            limit(10)
         ));
         campaignsSnap.docs.forEach(d => {
             const data = d.data();
             if (data.title.toLowerCase().includes(term)) {
-                results.push({ id: d.id, title: data.title, type: 'Campaign', link: `/campaigns/${d.id}` });
+                results.push({ id: d.id, title: data.title, type: 'Campaign', info: data.location, link: `/campaigns/${d.id}` });
             }
         });
 
@@ -296,14 +296,59 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
         const fellowshipsSnap = await getDocs(query(
             collection(firestore, 'fellowships'),
             where('status', '==', 'active'),
-            limit(5)
+            limit(10)
         ));
         fellowshipsSnap.docs.forEach(d => {
             const data = d.data();
             if (data.name.toLowerCase().includes(term)) {
-                results.push({ id: d.id, title: data.name, type: 'Fellowship', link: `/fellowships/${d.id}` });
+                results.push({ id: d.id, title: data.name, type: 'Fellowship', info: data.location || 'Global', link: `/fellowships/${d.id}` });
             }
         });
+
+        // 3. Fetch Matching Believers (Users)
+        const tokens = term.split(/\s+/).filter(Boolean);
+        if (tokens.length > 0) {
+            const usersSnap = await getDocs(query(
+                collection(firestore, 'users'),
+                where('name_tokens', 'array-contains-any', tokens),
+                limit(5)
+            ));
+            usersSnap.docs.forEach(d => {
+                const data = d.data();
+                if (d.id !== user?.uid) {
+                    results.push({
+                        id: d.id,
+                        title: `${data.firstName} ${data.lastName}`,
+                        type: 'Believer',
+                        info: data.location?.city || 'Global Station',
+                        link: `/profile/${d.id}`,
+                        photoURL: data.photoURL
+                    });
+                }
+            });
+        }
+
+        // 4. Fetch Matching Converts (Souls)
+        if (user?.uid) {
+            const soulsSnap = await getDocs(query(
+                collection(firestore, `users/${user.uid}/souls`),
+                limit(100)
+            ));
+            soulsSnap.docs.forEach(d => {
+                const data = d.data();
+                const fullName = `${data.firstName} ${data.lastName}`.toLowerCase();
+                if (fullName.includes(term) || (data.nickname && data.nickname.toLowerCase().includes(term))) {
+                    results.push({
+                        id: d.id,
+                        title: `${data.firstName} ${data.lastName}`,
+                        type: 'Convert',
+                        info: data.status,
+                        link: `/souls-won?soulId=${d.id}`,
+                        photoURL: data.photoURL
+                    });
+                }
+            });
+        }
 
         setSuggestions(results);
       } catch (e) {
@@ -315,7 +360,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 
     const debounce = setTimeout(fetchSuggestions, 300);
     return () => clearTimeout(debounce);
-  }, [searchTerm, firestore]);
+  }, [searchTerm, firestore, user?.uid]);
 
   const showGuestButtons = isPublicRoute && !user;
 
@@ -349,13 +394,13 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             {isSearching ? (
                 <div className="flex justify-center p-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
             ) : suggestions.length > 0 ? (
-                <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2">Matches Found</p>
+                <div className="space-y-4 pb-20">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2">Kingdom Matches</p>
                     {suggestions.map(s => (
                         <Button 
                             key={`${s.type}-${s.id}`} 
                             variant="ghost" 
-                            className="w-full justify-start h-auto p-4 rounded-2xl hover:bg-primary/5 transition-all text-left block"
+                            className="w-full justify-start h-auto p-4 rounded-3xl hover:bg-primary/5 transition-all text-left block border bg-muted/5 shadow-sm"
                             onClick={() => {
                                 router.push(s.link);
                                 setShowMobileSearch(false);
@@ -363,24 +408,33 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                                 setSearchTerm('');
                             }}
                         >
-                            <div className="flex items-center gap-3">
-                                <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                                    {s.type === 'Campaign' ? <Target className="h-5 w-5 text-primary" /> : <Users className="h-5 w-5 text-primary" />}
+                            <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/5 overflow-hidden">
+                                    {s.photoURL ? (
+                                        <Image src={s.photoURL} alt={s.title} width={40} height={40} className="object-cover h-full w-full" unoptimized />
+                                    ) : s.type === 'Campaign' ? (
+                                        <Target className="h-5 w-5 text-primary" />
+                                    ) : (
+                                        <Users className="h-5 w-5 text-primary" />
+                                    )}
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <p className="font-bold text-sm truncate uppercase tracking-tight">{s.title}</p>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase">{s.type}</p>
+                                    <p className="font-black text-sm uppercase tracking-tight leading-tight">{s.title}</p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-background/50">{s.type}</Badge>
+                                        <p className="text-[9px] font-bold text-muted-foreground uppercase truncate">{s.info}</p>
+                                    </div>
                                 </div>
-                                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-20" />
+                                <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20" />
                             </div>
                         </Button>
                     ))}
                 </div>
             ) : searchTerm.length > 2 && (
-                <div className="text-center py-20 opacity-30 flex flex-col items-center">
-                    <Search className="h-10 w-10 mb-4" />
-                    <p className="text-xs font-black uppercase tracking-widest">No exact results</p>
-                    <p className="text-[10px] mt-1">Keep typing to search broader...</p>
+                <div className="text-center py-24 opacity-30 flex flex-col items-center">
+                    <Search className="h-12 w-12 mb-4" />
+                    <p className="text-sm font-black uppercase tracking-widest">No exact results found</p>
+                    <p className="text-xs mt-1 italic">Keep searching the harvest field...</p>
                 </div>
             )}
         </ScrollArea>
@@ -440,42 +494,51 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 <span className="sr-only">Search</span>
               </Button>
               
-              {/* Desktop Search Dropdown */}
-              {!isMobile && searchTerm.length > 2 && (
-                  <Card className="absolute top-full right-0 mt-2 w-80 z-50 shadow-2xl rounded-2xl border-none overflow-hidden animate-in fade-in zoom-in duration-200">
-                      <ScrollArea className="max-h-[350px]">
-                          <div className="p-3 space-y-1">
+              {!isMobile && searchTerm.length > 1 && (
+                  <Card className="absolute top-full right-0 mt-3 w-96 z-50 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.4)] rounded-[2rem] border-none overflow-hidden animate-in fade-in zoom-in duration-200 bg-background/95 backdrop-blur-xl">
+                      <ScrollArea className="max-h-[450px]">
+                          <div className="p-4 space-y-1">
                                 {isSearching ? (
-                                    <div className="flex justify-center p-6"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+                                    <div className="flex justify-center p-10"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
                                 ) : suggestions.length > 0 ? (
                                     <>
-                                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground px-3 py-2">Quick Matches</p>
+                                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3">Kingdom Network Results</p>
                                         {suggestions.map(s => (
                                             <Button 
                                                 key={`${s.type}-${s.id}`}
                                                 variant="ghost"
-                                                className="w-full justify-start h-auto p-3 rounded-xl hover:bg-primary/5 transition-all text-left block"
+                                                className="w-full justify-start h-auto p-4 rounded-2xl hover:bg-primary/5 transition-all text-left block group"
                                                 onClick={() => {
                                                     router.push(s.link);
                                                     setSearchTerm('');
                                                     setSuggestions([]);
                                                 }}
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                                                        {s.type === 'Campaign' ? <Target className="h-4 w-4 text-primary" /> : <Users className="h-4 w-4 text-primary" />}
+                                                <div className="flex items-center gap-4">
+                                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/5 overflow-hidden">
+                                                        {s.photoURL ? (
+                                                            <Image src={s.photoURL} alt={s.title} width={40} height={40} className="object-cover h-full w-full" unoptimized />
+                                                        ) : s.type === 'Campaign' ? (
+                                                            <Target className="h-5 w-5 text-primary" />
+                                                        ) : (
+                                                            <Users className="h-5 w-5 text-primary" />
+                                                        )}
                                                     </div>
                                                     <div className="min-w-0 flex-1">
-                                                        <p className="font-bold text-xs truncate uppercase tracking-tight">{s.title}</p>
-                                                        <p className="text-[8px] font-black uppercase text-muted-foreground/60">{s.type}</p>
+                                                        <p className="font-black text-sm uppercase truncate tracking-tight group-hover:text-primary transition-colors">{s.title}</p>
+                                                        <div className="flex items-center gap-2 mt-0.5">
+                                                            <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-background/50 border-none leading-none">{s.type}</Badge>
+                                                            <p className="text-[9px] font-bold text-muted-foreground uppercase truncate opacity-60">{s.info}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </Button>
                                         ))}
                                     </>
                                 ) : (
-                                    <div className="py-8 text-center opacity-30">
-                                        <p className="text-[10px] font-black uppercase tracking-widest">No exact matches</p>
+                                    <div className="py-16 text-center opacity-30 flex flex-col items-center gap-4">
+                                        <Search className="h-10 w-10" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest px-10">No specific results found. Keep exploring the harvest.</p>
                                     </div>
                                 )}
                           </div>
