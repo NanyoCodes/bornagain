@@ -34,7 +34,8 @@ import {
   Info,
   ChevronDown,
   Trash2,
-  Target
+  Target,
+  Gamepad2
 } from "lucide-react";
 
 import {
@@ -86,6 +87,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 import { useSearch } from "@/context/search-context";
 import Image from "next/image";
+import { useToast } from "@/hooks/use-toast";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
@@ -262,6 +264,7 @@ function CartButton() {
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfileIncomplete }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, isProfileIncomplete: boolean }) {
   const { user } = useUser();
+  const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
   const router = useRouter();
