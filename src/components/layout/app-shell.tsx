@@ -32,12 +32,7 @@ import {
   Utensils,
   Info,
   ChevronDown,
-  Gamepad2,
-  Trash2,
-  Map,
-  Target,
-  Heart,
-  ArrowRight
+  Trash2
 } from "lucide-react";
 
 import {
@@ -81,14 +76,14 @@ import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, deleteDoc, getDocs, limit } from "firebase/firestore";
-import type { Notification, VendorProfile, Campaign, Fellowship, Soul } from "@/lib/types";
+import type { Notification, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
+import { useSearch } from "@/context/search-context";
 import Image from "next/image";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
@@ -148,6 +143,7 @@ function CartButton() {
   const { user } = useUser();
   const firestore = useFirestore();
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   
   const cartQuery = useMemo(() => (user && firestore) ? query(collection(firestore, 'users', user.uid, 'cart')) : null, [user, firestore]);
@@ -156,6 +152,17 @@ function CartButton() {
   const count = useMemo(() => {
     return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
   }, [cartItems]);
+
+  const handleRemoveItem = async (itemId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user?.uid || !firestore) return;
+    try {
+        await deleteDoc(doc(firestore, 'users', user.uid, 'cart', itemId));
+        toast({ title: 'Item removed from package' });
+    } catch (e) {
+        toast({ variant: 'destructive', title: 'Action failed' });
+    }
+  };
 
   const trigger = (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -175,15 +182,23 @@ function CartButton() {
         {cartItems && cartItems.length > 0 ? (
             <div className="space-y-3">
                 {cartItems.map((item: any) => (
-                    <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5">
-                        <Avatar className="h-10 w-10 border">
-                            <AvatarImage src={item.photoURL} />
+                    <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 group/item">
+                        <Avatar className="h-10 w-10 border shrink-0">
+                            <AvatarImage src={item.photoURL} className="object-cover" />
                             <AvatarFallback>P</AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
                             <p className="font-bold text-sm truncate uppercase tracking-tight">{item.name}</p>
-                            <p className="text-[10px] font-black uppercase tracking-widest">{item.currency}{item.price.toLocaleString()} x {item.quantity}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{item.currency}{item.price.toLocaleString()} x {item.quantity}</p>
                         </div>
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 rounded-lg text-muted-foreground/30 hover:text-destructive hover:bg-destructive/10 shrink-0 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                            onClick={(e) => handleRemoveItem(item.id, e)}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
                     </div>
                 ))}
                 <div className="pt-4 border-t border-dashed">
@@ -214,12 +229,12 @@ function CartButton() {
                         <ShoppingCart className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
                     </div>
-                    <DrawerHeader className="text-left flex-shrink-0">
+                    <DrawerHeader className="text-left flex-shrink-0 p-0">
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1">Review selection for gifting.</DrawerDescription>
                     </DrawerHeader>
                 </div>
-                <ScrollArea className="flex-grow">{listContent}</ScrollArea>
+                <div className="flex-1 min-h-0 overflow-y-auto">{listContent}</div>
             </DrawerContent>
         </Drawer>
     );
@@ -233,12 +248,12 @@ function CartButton() {
                 <ShoppingCart className="h-5 w-5 text-primary" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kindness Package</span>
             </div>
-            <DialogHeader className="text-left">
+            <DialogHeader className="text-left p-0">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Pending Offering</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
         </div>
-        <ScrollArea className="flex-grow">{listContent}</ScrollArea>
+        <div className="flex-1 min-h-0 overflow-y-auto">{listContent}</div>
       </DialogContent>
     </Dialog>
   );
@@ -764,7 +779,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0"><div className="p-6 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle><DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription></DialogHeader></div><div className="p-6 max-h-[70vh] overflow-y-auto">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div></DialogContent>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0"><div className="p-6 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle><DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription></DialogHeader></div><div className="p-6 max-h-[70vh] overflow-y-auto">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div></Dialog>
         </Dialog>
       ) : null}
     </div>
