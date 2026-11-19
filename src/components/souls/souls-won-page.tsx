@@ -155,7 +155,7 @@ function FilteredSoulList({
             const soulSpouse = (soul.spouseName || "").toLowerCase();
             const otherSpouse = (other.spouseName || "").toLowerCase();
             return (soulSpouse === otherFull || soulSpouse === other.firstName.toLowerCase()) &&
-                   (otherSpouse === soulFull || otherSpouse === s.firstName.toLowerCase());
+                   (otherSpouse === soulFull || otherSpouse === other.firstName.toLowerCase());
         }) : null;
 
         const children = allSouls.filter(child => soul.childrenIds?.includes(child.id));
@@ -369,7 +369,7 @@ export default function SoulsWonPage() {
                 const soulSpouse = (soul.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
                 return (soulSpouse === otherFull || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFull || otherSpouse === s.firstName.toLowerCase());
+                       (otherSpouse === soulFull || otherSpouse === other.firstName.toLowerCase());
               });
               if (spouse) { processedIds.add(spouse.id); stats.married.list.push({ ...soul, spouseRecord: spouse }); }
               else { stats.married.list.push(soul); }
@@ -575,7 +575,7 @@ export default function SoulsWonPage() {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-xl shadow-xl text-left">
-                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground font-black">Select Format</DropdownMenuLabel>
+                                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Select Format</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onSelect={() => handleExportHistory('csv')} className="py-2.5">
                                         <Download className="mr-2 h-4 w-4 opacity-40" /> CSV (Excel)
@@ -660,7 +660,11 @@ export default function SoulsWonPage() {
                         <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
                             <CardContent className="p-6 sm:p-8">
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
-                                    {[ { label: 'Male', count: genderStats.male.count, color: 'bg-blue-600' }, { label: 'Female', count: genderStats.female.count, color: 'bg-rose-500' }, { label: 'Not Assigned', count: genderStats.unassigned.count, color: 'bg-slate-400' } ].map(stat => {
+                                    {[
+                                        { label: 'Male', count: genderStats.male.count, color: 'bg-blue-600' },
+                                        { label: 'Female', count: genderStats.female.count, color: 'bg-rose-500' },
+                                        { label: 'Not Assigned', count: genderStats.unassigned.count, color: 'bg-slate-400' },
+                                    ].map(stat => {
                                         const percent = genderStats.total > 0 ? (stat.count / genderStats.total) * 100 : 0;
                                         return (
                                             <div key={stat.label} className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border text-left cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]" onClick={() => setSelectedFilterGroup({ type: 'gender', value: stat.label })}>

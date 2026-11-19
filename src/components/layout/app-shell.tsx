@@ -33,7 +33,8 @@ import {
   Utensils,
   Info,
   ChevronDown,
-  Trash2
+  Trash2,
+  Target
 } from "lucide-react";
 
 import {
@@ -224,12 +225,12 @@ function CartButton() {
         <Drawer open={isOpen} onOpenChange={setIsOpen}>
             <DrawerTrigger asChild>{trigger}</DrawerTrigger>
             <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10 shrink-0 flex-shrink-0">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10 shrink-0">
                     <div className="flex items-center gap-2 mb-1">
                         <ShoppingCart className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
                     </div>
-                    <DrawerHeader className="text-left flex-shrink-0 p-0">
+                    <DrawerHeader className="text-left p-0">
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1">Review selection for gifting.</DrawerDescription>
                     </DrawerHeader>
@@ -558,7 +559,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 <div className="p-1 space-y-1">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer"><Link href="/victory-hub" className="flex items-center gap-3 w-full"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center"><ShieldCheck className="h-3.5 w-3.5 text-primary" /></div><span className="text-[11px] font-bold uppercase tracking-widest">Victory Hub</span></Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer"><Link href="/territories" className="flex items-center gap-3 w-full"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center"><Map className="h-3.5 w-3.5 text-primary" /></div><span className="text-[11px] font-bold uppercase tracking-widest">Regions Hub</span></Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer"><Link href="/territories" className="flex items-center gap-3 w-full"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center"><Globe className="h-3.5 w-3.5 text-primary" /></div><span className="text-[11px] font-bold uppercase tracking-widest">Regions Hub</span></Link></DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer"><Link href="/games" className="flex items-center gap-3 w-full"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center"><Gamepad2 className="h-3.5 w-3.5 text-primary" /></div><span className="text-[11px] font-bold uppercase tracking-widest">Games Arena</span></Link></DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer"><Link href="/fellowships" className="flex items-center gap-3 w-full"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center"><Users className="h-3.5 w-3.5 text-primary" /></div><span className="text-[11px] font-bold uppercase tracking-widest">Fellowship Hub</span></Link></DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer"><Link href="/events" className="flex items-center gap-3 w-full"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center"><CalendarDays className="h-3.5 w-3.5 text-primary" /></div><span className="text-[11px] font-bold uppercase tracking-widest">Events Hub</span></Link></DropdownMenuItem>
