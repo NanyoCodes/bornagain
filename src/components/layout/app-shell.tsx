@@ -260,6 +260,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
+  const isMobile = useIsMobile();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
@@ -638,24 +639,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                     </Link>
                   </DropdownMenuItem>
                 </div>
-
-                <DropdownMenuSeparator />
-                
-                {userVendors && userVendors.length > 0 && (
-                    <div className="p-1 space-y-1">
-                        <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Provider Stations</p>
-                        {userVendors.map(v => (
-                            <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                                <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full">
-                                    <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                                        <Store className="h-3.5 w-3.5 text-primary" />
-                                    </div>
-                                    <span className="text-[11px] font-bold uppercase tracking-widest truncate">{v.businessName}</span>
-                                </Link>
-                            </DropdownMenuItem>
-                        ))}
-                    </div>
-                )}
 
                 <DropdownMenuSeparator />
                 
