@@ -139,6 +139,12 @@ const itemColors: Record<string, string> = {
   "/campaigns": "from-rose-500 to-rose-600",
 };
 
+const testimonyCategories = [
+  'Healing', 'Financial Breakthrough', 'Salvation', 'Relationships', 'Deliverance', 
+  'Academic Success', 'Employment', 'Family', 'Protection', 'Mental Health', 
+  'Global Missions', 'Business Growth', 'General'
+];
+
 function CartButton() {
   const { user } = useUser();
   const firestore = useFirestore();
@@ -281,11 +287,24 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
       try {
         const results: any[] = [];
 
-        // 1. Fetch Matching Campaigns
+        // 1. Match Categories (Prioritized)
+        testimonyCategories.forEach(cat => {
+            if (cat.toLowerCase().includes(term)) {
+                results.push({ 
+                    id: `cat-${cat}`, 
+                    title: cat, 
+                    type: 'Category', 
+                    info: 'Miracle Theme', 
+                    link: `/testimonies` 
+                });
+            }
+        });
+
+        // 2. Fetch Matching Campaigns
         const campaignsSnap = await getDocs(query(
             collection(firestore, 'campaigns'),
             where('status', '==', 'active'),
-            limit(10)
+            limit(5)
         ));
         campaignsSnap.docs.forEach(d => {
             const data = d.data();
@@ -294,11 +313,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             }
         });
 
-        // 2. Fetch Matching Fellowships
+        // 3. Fetch Matching Fellowships
         const fellowshipsSnap = await getDocs(query(
             collection(firestore, 'fellowships'),
             where('status', '==', 'active'),
-            limit(10)
+            limit(5)
         ));
         fellowshipsSnap.docs.forEach(d => {
             const data = d.data();
@@ -307,7 +326,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             }
         });
 
-        // 3. Fetch Matching Believers (Users)
+        // 4. Fetch Matching Believers (Users)
         const tokens = term.split(/\s+/).filter(Boolean);
         if (tokens.length > 0) {
             const usersSnap = await getDocs(query(
@@ -330,7 +349,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             });
         }
 
-        // 4. Fetch Matching Converts (Souls)
+        // 5. Fetch Matching Converts (Souls)
         if (user?.uid) {
             const soulsSnap = await getDocs(query(
                 collection(firestore, `users/${user.uid}/souls`),
@@ -363,8 +382,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
     const debounce = setTimeout(fetchSuggestions, 300);
     return () => clearTimeout(debounce);
   }, [searchTerm, firestore, user?.uid]);
-
-  const showGuestButtons = isPublicRoute && !user;
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -404,10 +421,14 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                             variant="ghost" 
                             className="w-full justify-start h-auto p-4 rounded-3xl hover:bg-primary/5 transition-all text-left block border bg-muted/5 shadow-sm"
                             onClick={() => {
+                                if (s.type === 'Category') {
+                                    setSearchTerm(s.title);
+                                } else {
+                                    setSearchTerm('');
+                                }
                                 router.push(s.link);
                                 setShowMobileSearch(false);
                                 setSuggestions([]);
-                                setSearchTerm('');
                             }}
                         >
                             <div className="flex items-center gap-4">
@@ -416,6 +437,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                                         <Image src={s.photoURL} alt={s.title} width={40} height={40} className="object-cover h-full w-full" unoptimized />
                                     ) : s.type === 'Campaign' ? (
                                         <Target className="h-5 w-5 text-primary" />
+                                    ) : s.type === 'Category' ? (
+                                        <Sparkles className="h-5 w-5 text-primary" />
                                     ) : (
                                         <Users className="h-5 w-5 text-primary" />
                                     )}
@@ -435,8 +458,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             ) : searchTerm.length > 2 && (
                 <div className="text-center py-24 opacity-30 flex flex-col items-center">
                     <Search className="h-12 w-12 mb-4" />
-                    <p className="text-sm font-black uppercase tracking-widest">No exact results found</p>
-                    <p className="text-xs mt-1 italic">Keep searching the harvest field...</p>
+                    <p className="text-sm font-black uppercase tracking-widest text-balance">No exact results found</p>
+                    <p className="text-xs mt-1 italic text-balance">Keep searching the harvest field...</p>
                 </div>
             )}
         </ScrollArea>
@@ -511,8 +534,12 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                                                 variant="ghost"
                                                 className="w-full justify-start h-auto p-4 rounded-2xl hover:bg-primary/5 transition-all text-left block group"
                                                 onClick={() => {
+                                                    if (s.type === 'Category') {
+                                                        setSearchTerm(s.title);
+                                                    } else {
+                                                        setSearchTerm('');
+                                                    }
                                                     router.push(s.link);
-                                                    setSearchTerm('');
                                                     setSuggestions([]);
                                                 }}
                                             >
@@ -522,6 +549,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                                                             <Image src={s.photoURL} alt={s.title} width={40} height={40} className="object-cover h-full w-full" unoptimized />
                                                         ) : s.type === 'Campaign' ? (
                                                             <Target className="h-5 w-5 text-primary" />
+                                                        ) : s.type === 'Category' ? (
+                                                            <Sparkles className="h-5 w-5 text-primary" />
                                                         ) : (
                                                             <Users className="h-5 w-5 text-primary" />
                                                         )}
