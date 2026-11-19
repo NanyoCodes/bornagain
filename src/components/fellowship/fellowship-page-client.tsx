@@ -163,15 +163,15 @@ function FullDevotionalDialog({
     if (!mounted) return <>{children}</>;
 
     const content = (
-        <div className="space-y-8 text-left" onClick={stopPropagation}>
+        <div className="space-y-8" onClick={stopPropagation}>
             <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
-                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-left text-balance relative z-10 break-words">{devotional.text}</p>
+                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words">{devotional.text}</p>
                 <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10">— {devotional.scripture}</p>
             </div>
             
             {devotional.prayer && (
-                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden text-left">
+                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                             <HandHeart className="h-4 w-4 text-primary" />
@@ -252,8 +252,8 @@ function FullDevotionalDialog({
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0 p-0">
                             <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
@@ -277,9 +277,9 @@ function FullDevotionalDialog({
             <DialogTrigger asChild onClick={stopPropagation}>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh]">
                 <div className="p-8 border-b bg-muted/10 shrink-0">
-                    <div className="flex items-center gap-3 mb-2 text-left">
+                    <div className="flex items-center gap-3 mb-2">
                         <Target className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
@@ -623,18 +623,18 @@ export default function FellowshipPageClient() {
 
     const loadingStatus = fellowshipLoading || profileLoading || soulsLoading || loadingMembers || devoLoading;
 
-    if (loadingStatus) return <div className="flex items-center justify-center h-full py-20 text-left"><Loader2 className="animate-spin text-primary" /></div>;
+    if (loadingStatus) return <div className="flex items-center justify-center h-full py-20 text-left"><Loader2 className="animate-spin text-primary text-left" /></div>;
 
     if (fellowshipError || !fellowship || fellowship.status === 'deleted') {
         return (
             <div className="text-center p-12 text-left">
-                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Users className="h-10 w-10 text-muted-foreground/30" />
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-6 text-left">
+                    <Users className="h-10 w-10 text-muted-foreground/30 text-left" />
                 </div>
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center">Fellowship Not Found</h2>
-                <p className="text-muted-foreground mt-2 max-w-xs mx-auto text-sm text-center">This community may have moved or been disbanded by the organizer.</p>
-                <Button asChild variant="outline" className="mt-8 h-11 rounded-full font-bold px-8 mx-auto block text-center">
-                    <NextLink href="/fellowships">Return to directory</NextLink>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-center text-left">Fellowship Not Found</h2>
+                <p className="text-muted-foreground mt-2 max-w-xs mx-auto text-sm text-center text-left">This community may have moved or been disbanded by the organizer.</p>
+                <Button asChild variant="outline" className="mt-8 h-11 rounded-full font-bold px-8 mx-auto block text-center text-left">
+                    <NextLink href="/fellowships" className="text-left">Return to directory</NextLink>
                 </Button>
             </div>
         );
@@ -820,8 +820,8 @@ export default function FellowshipPageClient() {
                     <Card className="rounded-none sm:rounded-[2.5rem] border-none shadow-sm bg-background border border-muted-foreground/10 overflow-hidden text-left">
                         <CardHeader className="p-6 sm:p-10 border-b bg-muted/5 text-left">
                             <CardTitle className="flex items-center justify-between text-base sm:text-lg font-black uppercase tracking-tight text-left">
-                                <span className="flex items-center gap-2"><Users className="h-5 w-5 text-primary" />Directory</span>
-                                <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{(members?.length || 0) + (assignedSouls?.length || 0)}</Badge>
+                                <span className="flex items-center gap-2"><Users className="h-5 w-5 text-primary text-left" />Directory</span>
+                                <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold text-left">{(members?.length || 0) + (assignedSouls?.length || 0)}</Badge>
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-0 text-left">
@@ -838,12 +838,16 @@ export default function FellowshipPageClient() {
                                                     <NextLink href={member.userId === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${member.userId}`} className="flex items-center gap-4 flex-1 min-w-0 group/member text-left">
                                                         <LiveMemberAvatar userId={member.userId} fallbackUrl={member.photoURL} fallbackInitials={member.firstName?.charAt(0)} className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0 transition-transform group-hover:scale-105" />
                                                         <div className="flex-1 min-w-0 text-left">
-                                                            <p className="font-black text-sm sm:text-base leading-tight break-words uppercase tracking-tight group-hover/member:text-primary transition-colors">{member.firstName} {member.lastName}</p>
-                                                            {member.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-[0.15em] block mt-1">Organizer</span>}
+                                                            <p className="font-black text-sm sm:text-base leading-tight break-words uppercase tracking-tight group-hover/member:text-primary transition-colors text-left">{member.firstName} {member.lastName}</p>
+                                                            {member.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-[0.15em] block mt-1 text-left">Organizer</span>}
                                                         </div>
                                                     </NextLink>
-                                                    <div className="flex items-center gap-1 text-left">
-                                                        {isOrganizer && member.userId !== user?.uid && <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive opacity-40 hover:opacity-100 hover:bg-destructive/10 rounded-full" onClick={() => setMemberToRemove(member)}><UserMinus className="h-4 w-4" /></Button>}
+                                                    <div className="flex items-center gap-1 text-left text-left">
+                                                        {isOrganizer && member.userId !== user?.uid && (
+                                                            <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive opacity-40 hover:opacity-100 hover:bg-destructive/10 rounded-full" onClick={() => setMemberToRemove(member)}>
+                                                                <UserMinus className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             ))}
@@ -908,7 +912,7 @@ export default function FellowshipPageClient() {
 
                 <div className="space-y-8 flex flex-col px-4 sm:px-0 text-left">
                     <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10 text-left"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4 text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2.5"><Calendar className="h-4 w-4 text-primary" /> Gathering Details</CardTitle></CardHeader><CardContent className="px-6 sm:p-8 pb-8 sm:pb-10 space-y-5 sm:space-y-6 pt-2 text-left">{fellowship.schedule && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed text-left"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-widest text-muted-foreground mb-2">Schedule</p><p className="text-foreground font-black text-xs sm:text-base leading-tight text-balance break-words">{fellowship.schedule}</p></div>}{fellowship.location && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed text-left"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-widest text-muted-foreground mb-2">Primary Location</p><p className="text-foreground font-black text-xs sm:text-base flex items-start gap-2 leading-tight break-words"><MapPin className="h-4 w-4 sm:h-5 w-5 text-primary shrink-0 mt-0.5" /> {fellowship.location}</p></div>}{(isMember || isOrganizer) && fellowship.streamUrl && <Button asChild className="w-full h-14 sm:h-16 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-sm sm:text-base uppercase tracking-widest text-center"><NextLink href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer"> <PlayCircle className="mr-3 h-5 sm:h-6 w-5 sm:w-6" />ENTER MEETING</NextLink></Button>}</CardContent></Card>
-                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 border-b-8 border-b-primary/5 mb-12 text-left"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4 text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground">Organizer</CardTitle></CardHeader><CardContent className="px-6 sm:p-8 pb-8 sm:pb-12 pt-2 text-left"><NextLink href={isOrganizer ? '/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 sm:p-5 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0 shadow-inner text-left"><LiveMemberAvatar userId={fellowship.organizerId} fallbackUrl={fellowship.organizerPhotoURL} fallbackInitials={fellowship.organizerName?.charAt(0)} className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0" /><div className="min-w-0 flex-1 text-left"><span className="font-black text-base group-hover:text-primary transition-colors block uppercase tracking-tight"> {fellowship.organizerName}</span><div className="flex items-center gap-2 mt-1 text-left"><Badge className="h-4 sm:h-5 text-[7px] sm:text-[8px] uppercase font-black tracking-widest px-2" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge></div></div></NextLink></CardContent></Card>
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 border-b-8 border-b-primary/5 mb-12 text-left"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4 text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground">Organizer</CardTitle></CardHeader><CardContent className="px-6 sm:p-8 pb-8 sm:pb-12 pt-2 text-left"><NextLink href={isOrganizer ? '/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 sm:p-5 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0 shadow-inner text-left"><LiveMemberAvatar userId={fellowship.organizerId} fallbackUrl={fellowship.organizerPhotoURL} fallbackInitials={fellowship.organizerName?.charAt(0)} className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-xl shrink-0" /><div className="min-w-0 flex-1 text-left"><span className="font-black text-base group-hover:text-primary transition-colors block uppercase tracking-tight text-left"> {fellowship.organizerName}</span><div className="flex items-center gap-2 mt-1 text-left"><Badge className="h-4 sm:h-5 text-[7px] sm:text-[8px] uppercase font-black tracking-widest px-2" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge></div></div></NextLink></CardContent></Card>
                 </div>
             </div>
 
@@ -923,7 +927,7 @@ export default function FellowshipPageClient() {
                                     <span className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground">Swipe down to close</span>
                                 </div>
                                 <DrawerTitle className="text-2xl font-black font-headline">Devotional Hub</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1">Arrange the Word and Prayer for your group.</DrawerDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Arrange the Word and Prayer for your group.</DrawerDescription>
                               </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow">
@@ -963,9 +967,9 @@ export default function FellowshipPageClient() {
 
             {isScheduleViewOpen && (
                 isMobile ? (
-                    <Drawer open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left"><DrawerHeader className="text-left flex-shrink-0 p-0"><div className="flex items-center gap-2 mb-2 text-left"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-widest text-primary">Spiritual Schedule</span></div><DrawerTitle className="text-2xl font-black font-headline">Planned Word</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1">Browse scheduled meditations for this group.</DrawerDescription></DrawerHeader></div><ScrollArea className="flex-grow px-8 pt-6">{ScheduleList}</ScrollArea></DrawerContent></Drawer>
+                    <Drawer open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left"><DrawerHeader className="text-left flex-shrink-0 p-0"><div className="flex items-center gap-2 mb-2 text-left"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-widest text-primary">Spiritual Schedule</span></div><DrawerTitle className="text-2xl font-black font-headline">Planned Word</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">Browse scheduled meditations for this group.</DrawerDescription></DrawerHeader></div><ScrollArea className="flex-grow px-8 pt-6">{ScheduleList}</ScrollArea></DrawerContent></Drawer>
                 ) : (
-                    <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left"><div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="p-0 text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Spiritual Schedule</DialogTitle><DialogDescription className="text-sm font-medium">Peek ahead at scheduled meditations.</DialogDescription></DialogHeader></div><ScrollArea className="max-h-[60vh] p-6">{ScheduleList}</ScrollArea></DialogContent></Dialog>
+                    <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left"><div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="p-0 text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Spiritual Schedule</DialogTitle><DialogDescription className="text-sm font-medium text-left">Peek ahead at scheduled meditations.</DialogDescription></DialogHeader></div><ScrollArea className="max-h-[60vh] p-6 text-left">{ScheduleList}</ScrollArea></DialogContent></Dialog>
                 )
             )}
 
@@ -978,8 +982,8 @@ export default function FellowshipPageClient() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline">Log Group Convert</DrawerTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1">Record a new life won directly to this community.</DialogDescription>
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DrawerTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Record a new life won directly to this community.</DialogDescription>
                                 </DrawerHeader>
                             </div>
                             <div className="flex-1 overflow-y-auto no-scrollbar">
@@ -991,14 +995,14 @@ export default function FellowshipPageClient() {
                     </Drawer>
                 ) : (
                     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="text-left p-0">
-                                    <DialogTitle className="text-2xl font-black font-headline">Log Group Convert</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
+                                <DialogHeader className="text-left p-0 text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left">Log Group Convert</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 p-8">
+                            <ScrollArea className="flex-1 min-h-0 p-8 text-left">
                                 <LogSoulFormLazy onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />
                             </ScrollArea>
                         </DialogContent>

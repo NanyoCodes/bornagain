@@ -128,7 +128,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={cn(inter.variable)} suppressHydrationWarning>
-      <body className="font-body antialiased text-left">
+      <body className="font-body antialiased">
         <Script
           id="organization-schema"
           type="application/ld+json"
