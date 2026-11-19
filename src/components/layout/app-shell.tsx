@@ -76,6 +76,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -89,6 +90,7 @@ import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 import { Card } from "../ui/card";
+import Image from "next/image";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
@@ -421,7 +423,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                                 <div className="min-w-0 flex-1">
                                     <p className="font-black text-sm uppercase tracking-tight leading-tight">{s.title}</p>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-background/50">{s.type}</Badge>
+                                        <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-background/50 border-none leading-none">{s.type}</Badge>
                                         <p className="text-[9px] font-bold text-muted-foreground uppercase truncate">{s.info}</p>
                                     </div>
                                 </div>
