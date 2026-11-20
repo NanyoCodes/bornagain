@@ -507,7 +507,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             <SelectItem value="Employed" className="text-left">Employed</SelectItem>
                             <SelectItem value="Self-Employed" className="text-left">Self-Employed</SelectItem>
                             <SelectItem value="Business Owner" className="text-left">Business Owner</SelectItem>
+                            <SelectItem value="Unemployed" className="text-left">Unemployed</SelectItem>
                             <SelectItem value="Student" className="text-left">Student</SelectItem>
+                            <SelectItem value="Retired" className="text-left">Retired</SelectItem>
                             <SelectItem value="Other" className="text-left">Other</SelectItem>
                         </SelectContent>
                         </Select>

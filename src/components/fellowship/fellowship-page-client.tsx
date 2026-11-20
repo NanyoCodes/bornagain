@@ -88,6 +88,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
 const devotionalSchema = z.object({
@@ -110,7 +111,7 @@ function LiveMemberAvatar({ userId, fallbackUrl, fallbackInitials, className }: 
     return (
         <Avatar className={className}>
             <AvatarImage src={currentPhotoUrl} className="object-cover" />
-            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
+            <AvatarFallback className="font-black bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
         </Avatar>
     );
 }
@@ -236,7 +237,7 @@ function FullDevotionalDialog({
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left text-left">
                 <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                     <div className="flex items-center gap-3 mb-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left"><Target className="h-5 w-5 text-primary text-left" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left text-left text-left text-left text-left text-left text-left text-left">Mission Overview</span></div>
-                    <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <DialogHeader>
                         <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight break-words flex items-center gap-3 text-balance text-left text-left text-left text-left text-left text-left text-left text-left">{devotional.title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
@@ -637,7 +638,7 @@ export default function FellowshipPageClient() {
                 ) : (
                     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Log Group Convert</DialogTitle><DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription></DialogHeader></div>
+                            <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left p-0 text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Log Group Convert</DialogTitle><DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription></DialogHeader></div>
                             <ScrollArea className="flex-1 min-h-0 p-8 text-left text-left text-left text-left text-left text-left"><LogSoulFormLazy onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} /></ScrollArea>
                         </DialogContent>
                     </Dialog>

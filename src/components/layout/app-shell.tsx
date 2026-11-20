@@ -35,7 +35,8 @@ import {
   ChevronDown,
   Trash2,
   Target,
-  Gamepad2
+  Gamepad2,
+  Plus
 } from "lucide-react";
 
 import {
@@ -52,6 +53,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -146,6 +148,7 @@ function CartButton() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
   
   const cartQuery = useMemo(() => (user && firestore) ? query(collection(firestore, 'users', user.uid, 'cart')) : null, [user, firestore]);
@@ -220,6 +223,27 @@ function CartButton() {
         )}
     </div>
   );
+
+  if (isMobile) {
+    return (
+        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+            <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+            <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <div className="p-8 border-b bg-muted/10 shrink-0 flex-shrink-0 text-left">
+                    <div className="flex items-center gap-2 mb-1 text-left">
+                        <ShoppingCart className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Offering</span>
+                    </div>
+                    <DrawerHeader className="text-left flex-shrink-0 text-left">
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Review selection for gifting.</DrawerDescription>
+                    </DrawerHeader>
+                </div>
+                <ScrollArea className="flex-grow text-left text-left">{listContent}</ScrollArea>
+            </DrawerContent>
+        </Drawer>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -479,7 +503,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left"><Link href="/victory-hub" className="flex items-center gap-3 w-full text-left"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left"><ShieldCheck className="h-3.5 w-3.5 text-primary text-left" /></div><span className="text-[11px] font-bold uppercase tracking-widest text-left">Victory Hub</span></Link></DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left"><Link href="/territories" className="flex items-center gap-3 w-full text-left text-left"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left"><Globe className="h-3.5 w-3.5 text-primary text-left text-left" /></div><span className="text-[11px] font-bold uppercase tracking-widest text-left">Regions Hub</span></Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left"><Link href="/games" className="flex items-center gap-3 w-full text-left text-left"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left"><Gamepad2 className="h-3.5 w-3.5 text-primary text-left text-left" /></div><span className="text-[11px] font-bold uppercase tracking-widest text-left">Games Arena</span></Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left"><Link href="/games" className="flex items-center gap-3 w-full text-left text-left text-left"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left"><Gamepad2 className="h-3.5 w-3.5 text-primary text-left text-left" /></div><span className="text-[11px] font-bold uppercase tracking-widest text-left">Games Arena</span></Link></DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left"><Link href="/fellowships" className="flex items-center gap-3 w-full text-left text-left text-left"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left"><Users className="h-3.5 w-3.5 text-primary text-left text-left text-left" /></div><span className="text-[11px] font-bold uppercase tracking-widest text-left">Fellowship Hub</span></Link></DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left"><Link href="/events" className="flex items-center gap-3 w-full text-left text-left text-left"><div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left text-left"><CalendarDays className="h-3.5 w-3.5 text-primary text-left text-left text-left" /></div><span className="text-[11px] font-bold uppercase tracking-widest text-left">Events Hub</span></Link></DropdownMenuItem>
                 </div>
@@ -629,7 +653,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
     }
   }, [userProfile, mounted]);
 
-  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events', '/marketplace', '/marketplace/gifts', '/marketplace/orders', '/victory-hub', '/strongholds', '/territories', '/games', '/verify-email'];
+  const publicRoutes = ['/about', '/contact', '/terms-of-service', '/privacy-policy', '/verify-email'];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
   const isTakeoverPage = useMemo(() => {
