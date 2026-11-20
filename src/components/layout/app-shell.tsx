@@ -264,7 +264,6 @@ function CartButton() {
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfileIncomplete }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, isProfileIncomplete: boolean }) {
   const { user } = useUser();
-  const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
   const router = useRouter();
@@ -765,7 +764,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0">
           {!isTakeoverPage && (<AppHeader unreadChatCount={unreadChatCount} unreadNotifCount={unreadNotifCount} isPublicRoute={isPublicRoute} isProfileIncomplete={isProfileIncomplete} />)}
           <div className="flex-1 relative min-h-0">
-          <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
+          <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage && "overflow-y-auto")}>
               <div className={cn("mx-auto h-full", (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col")}>
                   <PageTransition>{children}</PageTransition>
               </div>

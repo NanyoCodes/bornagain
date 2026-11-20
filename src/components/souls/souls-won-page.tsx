@@ -734,7 +734,7 @@ export default function SoulsWonPage() {
                                 <div className="min-w-0 text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left">
                                         <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Harvest Demographic</span>
                                     </div>
                                     <DrawerHeader className="text-left flex-shrink-0 p-0">
                                         <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
@@ -870,7 +870,7 @@ export default function SoulsWonPage() {
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <div className="flex items-center justify-between gap-4 text-left">
                                     <div className="flex-shrink-0 text-left">
-                                        <DrawerHeader className="p-0 text-left">
+                                        <DrawerHeader className="text-left p-0 text-left">
                                             <DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle>
                                             <DrawerDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DrawerDescription>
                                         </DrawerHeader>
