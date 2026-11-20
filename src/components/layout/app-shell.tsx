@@ -429,14 +429,14 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
               <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "transition-all px-2 lg:px-4 h-11 rounded-2xl whitespace-nowrap flex items-center justify-center gap-2 group relative",
-                    isActive 
-                      ? "bg-primary text-white shadow-xl shadow-primary/40 ring-2 ring-primary/20 scale-105" 
-                      : "text-muted-foreground hover:bg-muted/50"
-                  )}
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "transition-all px-2 lg:px-4 h-11 rounded-2xl whitespace-nowrap flex items-center justify-center gap-2 group relative",
+                  isActive 
+                    ? "bg-primary text-white shadow-xl shadow-primary/40 ring-2 ring-primary/20 scale-105" 
+                    : "text-muted-foreground hover:bg-muted/50"
+                )}
               >
                 <item.icon className={cn("h-4 w-4 shrink-0 transition-transform", isActive && "scale-110")} />
                 <span className={cn(
@@ -718,15 +718,15 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left"><SheetHeader className="text-left flex-shrink-0 text-left"><SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle><SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription></SheetHeader></div>
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left"><SheetHeader className="text-left flex-shrink-0 text-left text-left"><SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle><SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription></SheetHeader></div>
             <div className="flex-grow overflow-y-auto p-8 text-left">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div>
           </SheetContent>
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-            <div className="p-6 border-b bg-muted/10 text-left">
-              <DialogHeader className="text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left">
+              <DialogHeader className="text-left text-left text-left text-left">
                 <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
                 <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>

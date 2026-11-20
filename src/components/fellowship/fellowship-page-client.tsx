@@ -62,7 +62,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { format, parseISO, isSameDay, subDays, addDays } from 'date-fns';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { LogSoulForm } from '@/components/souls/log-soul-form';
 import { CommentSection } from '../testimonies/comment-section';
 import NextLink from 'next/link';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -99,6 +98,7 @@ const devotionalSchema = z.object({
   scheduledDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Please enter a valid date."),
 });
 
+const LogSoulFormLazy = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
 const ViewHistoryDialogLazy = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 const LogFollowUpDialogLazy = dynamic(() => import('@/components/souls/log-follow-up-dialog').then(m => m.LogFollowUpDialog), { ssr: false });
 
@@ -118,14 +118,14 @@ function LiveMemberAvatar({ userId, fallbackUrl, fallbackInitials, className }: 
             </DialogTrigger>
             {currentPhotoUrl && (
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                    <div className="sr-only text-left">
-                        <DialogHeader className="text-left text-left">
-                            <DialogTitle className="text-left text-left">Profile Photo</DialogTitle>
-                            <DialogDescription className="text-left text-left">Full screen view of participant's photo.</DialogDescription>
+                    <div className="sr-only">
+                        <DialogHeader>
+                            <DialogTitle>Profile Photo</DialogTitle>
+                            <DialogDescription>Full screen view of participant's photo.</DialogDescription>
                         </DialogHeader>
                     </div>
-                    <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                    <div className="relative h-full w-full flex items-center justify-center p-4">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                             <Image src={currentPhotoUrl} alt="Participant" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                         </div>
                     </div>
@@ -174,12 +174,10 @@ function FullDevotionalDialog({
         commentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    const stopPropagation = (e: React.MouseEvent) => { e.stopPropagation(); };
-
     if (!mounted) return <>{children}</>;
 
     const content = (
-        <div className="space-y-8 text-left" onClick={stopPropagation}>
+        <div className="space-y-8 text-left" onClick={e => e.stopPropagation()}>
             <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
                 <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-left text-balance relative z-10 break-words">{devotional.text}</p>
@@ -230,11 +228,14 @@ function FullDevotionalDialog({
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
+                <SheetTrigger asChild onClick={e => e.stopPropagation()}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0 p-0">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">{devotional.title}</SheetTitle>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
+                                <MessageSquare className="h-6 w-6 text-primary shrink-0" />
+                                {devotional.title}
+                            </SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -606,7 +607,7 @@ export default function FellowshipPageClient() {
                     <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b bg-muted/10 shrink-0"><DialogHeader className="text-left p-0"><DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight">Devotional Hub</DialogTitle><DialogDescription className="text-base font-medium">Prepare and schedule spiritual nourishment for your group.</DialogDescription></DialogHeader></div>
-                            <ScrollArea className="flex-1 min-h-0"><div className="p-8 text-left"><Form {...form}><form id="devotional-form-desktop" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6 text-left"><div className="grid grid-cols-2 gap-4"><FormField control={form.control} name="scheduledDate" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel><FormControl><Input type="date" min={todayStr} {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="title" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel><FormControl><Input placeholder="e.g., Power of Prayer" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /></div><FormField control={form.control} name="scripture" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel><FormControl><Input placeholder="e.g., Matthew 6:33" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="text" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel><FormControl><Textarea placeholder="Type the daily word here..." className="min-h-[120px] rounded-xl bg-muted/20 border-none shadow-inner text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="prayer" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel><FormControl><Textarea placeholder="Add a guided prayer..." className="min-h-[100px] rounded-xl bg-muted/20 border-none shadow-inner text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><Button type="submit" form="devotional-form-desktop" disabled={isSavingDevotional} className="w-full h-12 rounded-xl font-black shadow-xl tracking-widest uppercase text-center">{isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}</Button></form></Form></div></ScrollArea>
+                            <ScrollArea className="flex-1 min-h-0"><div className="p-8 text-left"><Form {...form}><form id="devotional-form-desktop" onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6 text-left"><div className="grid grid-cols-2 gap-4"><FormField control={form.control} name="scheduledDate" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pin to Date</FormLabel><FormControl><Input type="date" min={todayStr} {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="title" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1">Title</FormLabel><FormControl><Input placeholder="e.g., Power of Prayer" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /></div><FormField control={form.control} name="scripture" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Primary Scripture</FormLabel><FormControl><Input placeholder="e.g., Matthew 6:33" {...field} className="h-11 rounded-xl bg-muted/20 border-none font-bold" /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="text" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Content</FormLabel><FormControl><Textarea placeholder="Type the daily word here..." className="min-h-[120px] rounded-xl bg-muted/20 border-none shadow-inner text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><FormField control={form.control} name="prayer" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Prayer for Today</FormLabel><FormControl><Textarea placeholder="Add a guided prayer..." className="min-h-[100px] rounded-xl bg-muted/20 border-none shadow-inner text-base" {...field} /></FormControl><FormMessage /></FormItem>)} /><Button type="submit" form="devotional-form-desktop" disabled={isSavingDevotional} className="w-full h-12 rounded-xl font-black shadow-xl tracking-widest uppercase text-center">{isSavingDevotional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {activeDevotional && activeDevotional.scheduledDate === form.getValues('scheduledDate') ? 'UPDATE WORD' : 'PUBLISH WORD'}</Button></form></Form></div></ScrollArea>
                         </DialogContent>
                     </Dialog>
                 )
@@ -649,21 +650,21 @@ export default function FellowshipPageClient() {
             )}
 
             <ViewHistoryDialogLazy soul={activeSoul} isOpen={!!historySoulId} onOpenChange={(open) => !open && setHistorySoulId(null)} />
-            <LogFollowUpDialogLazy soul={activeSoul} isOpen={!!followUpSoulId} onOpenChange={(open) => !open && setFollowUpSoulId(null)} onFollowUpLogged={() => setFollowUpSoulId(null)} userProfile={profileData} />
+            <LogFollowUpDialogLazy soul={activeSoul} isOpen={!!followUpSoulId} onOpenChange={(open) => !open && setFollowUpSoulId(null)} onFollowUpLogged={() => setFollowUpSoulId(null)} userProfile={userProfile} />
             
             {isLogSoulOpen && (
                 isMobile ? (
                     <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left flex-shrink-0 p-0 text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won directly to this community.</DrawerDescription></DrawerHeader></div>
-                            <div className="flex-1 overflow-y-auto no-scrollbar"><div className="p-8 pb-32 text-left"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} /></div></div>
+                            <div className="flex-1 overflow-y-auto no-scrollbar"><div className="p-8 pb-32 text-left"><LogSoulFormLazy onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} /></div></div>
                         </DrawerContent>
                     </Drawer>
                 ) : (
                     <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left p-0 text-left"><DialogTitle className="text-2xl font-black font-headline text-left">Log Group Convert</DialogTitle><DialogDescription className="text-sm font-medium mt-1 text-left">Record a new life won. This convert will be automatically assigned to this group.</DialogDescription></DialogHeader></div>
-                            <ScrollArea className="flex-1 min-h-0 p-8 text-left"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} /></ScrollArea>
+                            <ScrollArea className="flex-1 min-h-0 p-8 text-left"><LogSoulFormLazy onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} /></ScrollArea>
                         </DialogContent>
                     </Dialog>
                 )}
