@@ -78,6 +78,7 @@ import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, deleteDoc, getDocs, limit } from "firebase/firestore";
 import type { Notification, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
@@ -85,7 +86,6 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
-import { useSearch } from "@/context/search-context";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 
@@ -820,8 +820,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const unreadNotifCount = unreadOtherNotifications?.length ?? 0;
 
   return (
-    <Suspense fallback={<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center"><div className="relative mx-auto w-fit"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div></div>}>
-        <ShellInner unreadChatCount={unreadChatCount} unreadNotifCount={unreadNotifCount} >{children}</ShellInner>
-    </Suspense>
+    <SearchProvider>
+        <Suspense fallback={<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center"><div className="relative mx-auto w-fit"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div></div>}>
+            <ShellInner unreadChatCount={unreadChatCount} unreadNotifCount={unreadNotifCount} >{children}</ShellInner>
+        </Suspense>
+    </SearchProvider>
   );
 }

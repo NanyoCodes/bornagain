@@ -16,8 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import React, { useState, useMemo, useEffect } from "react";
-import { Loader2, LocateFixed, Video, Map as MapIcon, Youtube, Plus, Trash2, ExternalLink, Info, MessageSquare, Briefcase, User, Globe, Camera, Building2, X, Church, Sparkles, ShieldCheck, Target } from "lucide-react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { Loader2, LocateFixed, Map as MapIcon, Youtube, Plus, Trash2, ShieldCheck, Sparkles, Building2, User, Briefcase, MessageSquare, Camera, Church, X } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc, serverTimestamp, collection, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -37,7 +37,6 @@ import { Country, State } from 'country-state-city';
 import { motion, AnimatePresence } from "framer-motion";
 import { format, differenceInYears } from "date-fns";
 import { cn, safeToDate } from "@/lib/utils";
-import Link from 'next/link';
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -423,7 +422,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none">MANDATORY</Badge>
                   </div>
                   <FormControl>
-                    <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                    <Input placeholder={isPersonal ? "John" : "Contact First Name"} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -441,7 +440,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none">MANDATORY</Badge>
                   </div>
                   <FormControl>
-                    <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                    <Input placeholder={isPersonal ? "Doe" : "Contact Last Name"} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
