@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useDoc, useUser, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment, Chat } from '@/lib/types';
 import { 
     doc, 
@@ -342,7 +342,7 @@ export default function FellowshipPageClient() {
     });
 
     const handleEditDevotional = (devo: DailyDevotional) => {
-        form.reset({ title: d.title, scripture: d.scripture, text: d.text, prayer: d.prayer || '', scheduledDate: d.scheduledDate });
+        form.reset({ title: devo.title, scripture: devo.scripture, text: devo.text, prayer: devo.prayer || '', scheduledDate: devo.scheduledDate });
     };
 
     const handleSaveDevotional = async (values: z.infer<typeof devotionalSchema>) => {
@@ -598,7 +598,7 @@ export default function FellowshipPageClient() {
                                         <span className="text-[10px] font-black uppercase tracking-widest text-primary">Spiritual Schedule</span>
                                     </div>
                                     <DrawerTitle className="text-2xl font-black font-headline">Planned Word</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1">Browse scheduled meditations for this group.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Browse scheduled meditations for this group.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow px-8 pt-6">
@@ -630,7 +630,7 @@ export default function FellowshipPageClient() {
                 isMobile ? (
                     <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10"><DrawerHeader className="text-left flex-shrink-0 p-0"><DrawerTitle className="text-2xl font-black font-headline">Log Group Convert</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1">Record a new life won directly to this community.</DrawerDescription></DrawerHeader></div>
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10"><DrawerHeader className="text-left flex-shrink-0 p-0"><DrawerTitle className="text-2xl font-black font-headline">Log Group Convert</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won directly to this community.</DrawerDescription></DrawerHeader></div>
                             <div className="flex-1 overflow-y-auto no-scrollbar"><div className="p-8 pb-32"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} /></div></div>
                         </DrawerContent>
                     </Drawer>

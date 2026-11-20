@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { Loader2, LocateFixed, Map as MapIcon, Youtube, Plus, Trash2, ShieldCheck, Sparkles, Building2, User, Briefcase, MessageSquare, Camera, Church, X } from "lucide-react";
+import { Loader2, LocateFixed, Map as MapIcon, Youtube, Plus, Trash2, ShieldCheck, Sparkles, Building2, User, Briefcase, MessageSquare, Camera, Church, X, Target } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc, serverTimestamp, collection, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -343,8 +343,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   };
 
   return (
-    <div className="text-left relative overflow-hidden">
-       {/* Background Decoration */}
+    <div className="relative overflow-hidden">
        <div className="absolute inset-0 pointer-events-none opacity-[0.02] flex items-center justify-center overflow-hidden">
           <div className="grid grid-cols-4 gap-12 rotate-12">
               {[...Array(16)].map((_, i) => (
@@ -354,7 +353,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left relative z-10">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10">
            <div className="bg-primary/5 p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center text-center space-y-4">
                 <FormField
                     control={form.control}
@@ -386,7 +385,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             control={form.control}
             name="accountType"
             render={({ field }) => (
-              <FormItem className="text-left">
+              <FormItem>
                 <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
                   <Building2 className="h-3.5 w-3.5" />
                   Account Identity Type
@@ -409,12 +408,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             )}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="firstName"
               render={({ field }) => (
-                <FormItem className="text-left">
+                <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
                       First Name
@@ -432,7 +431,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               control={form.control}
               name="lastName"
               render={({ field }) => (
-                <FormItem className="text-left">
+                <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
                       Last Name
@@ -452,7 +451,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             control={form.control}
             name="personalMessage"
             render={({ field }) => (
-              <FormItem className="text-left">
+              <FormItem>
                 <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
                   <MessageSquare className="h-3.5 w-3.5" />
                   Public Slogan
@@ -467,12 +466,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           />
 
           {isPersonal && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                     control={form.control}
                     name="maritalStatus"
                     render={({ field }) => (
-                    <FormItem className="text-left">
+                    <FormItem>
                         <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Relationship Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
@@ -497,7 +496,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     control={form.control}
                     name="workStatus"
                     render={({ field }) => (
-                    <FormItem className="text-left">
+                    <FormItem>
                         <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Work Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
@@ -530,13 +529,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <div className="space-y-6 text-left border-2 border-dashed border-muted p-4 sm:p-6 rounded-3xl sm:rounded-[2rem] bg-muted/10">
+                <div className="space-y-6 border-2 border-dashed border-muted p-4 sm:p-6 rounded-3xl sm:rounded-[2rem] bg-muted/10">
                   {watchedAccountType === 'Church Department' && (
                     <FormField
                       control={form.control}
                       name="churchName"
                       render={({ field }) => (
-                        <FormItem className="text-left">
+                        <FormItem>
                           <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
                             <Church className="h-3.5 w-3.5" />
                             Parent Church Name
@@ -554,7 +553,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                       control={form.control}
                       name="organizationName"
                       render={({ field }) => (
-                        <FormItem className="text-left">
+                        <FormItem>
                           <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
                             <Briefcase className="h-3.5 w-3.5" />
                             {organizationLabel}
@@ -570,7 +569,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                       control={form.control}
                       name="roleInOrganization"
                       render={({ field }) => (
-                        <FormItem className="text-left">
+                        <FormItem>
                           <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
                             <User className="h-3.5 w-3.5" />
                             ROLE
@@ -592,7 +591,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             control={form.control}
             name="bio"
             render={({ field }) => (
-              <FormItem className="text-left">
+              <FormItem>
                 <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     {isPersonal ? 'ABOUT YOURSELF' : 'VISION & MISSION'}
                 </FormLabel>
@@ -604,26 +603,26 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             )}
           />
          
-          <Accordion type="single" collapsible className="w-full border rounded-2xl sm:rounded-[2rem] overflow-hidden text-left bg-muted/5">
-            <AccordionItem value="item-1" className="border-none text-left">
-              <AccordionTrigger className="p-4 sm:p-6 hover:no-underline [&[data-state=open]>svg]:rotate-180 text-left">
-                <div className="flex flex-col items-start text-left">
-                  <Label className="text-base sm:text-lg font-black uppercase tracking-tight text-left">Public Location Settings</Label>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1 text-left">
+          <Accordion type="single" collapsible className="w-full border rounded-2xl sm:rounded-[2rem] overflow-hidden bg-muted/5">
+            <AccordionItem value="item-1" className="border-none">
+              <AccordionTrigger className="p-4 sm:p-6 hover:no-underline [&[data-state=open]>svg]:rotate-180">
+                <div className="flex flex-col items-start">
+                  <Label className="text-base sm:text-lg font-black uppercase tracking-tight">Public Location Settings</Label>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1">
                     Set your City, State, and Country for search indexing.
                   </p>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="p-4 sm:p-6 pt-0 space-y-6 text-left">
-                <div className="text-left bg-muted/20 p-4 rounded-2xl">
-                  <Label className="mb-2 block text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Quick Location Search</Label>
+              <AccordionContent className="p-4 sm:p-6 pt-0 space-y-6">
+                <div className="bg-muted/20 p-4 rounded-2xl">
+                  <Label className="mb-2 block text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Quick Location Search</Label>
                   <LocationProfileInput form={form} />
                 </div>
                 
-                <div className="space-y-4 pt-2 text-left">
+                <div className="space-y-4 pt-2">
                   <FormField control={form.control} name="country" render={({ field }) => (
-                      <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Country</FormLabel>
+                      <FormItem>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country</FormLabel>
                         <Select 
                           onValueChange={(val) => { 
                               field.onChange(val); 
@@ -632,28 +631,28 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                           }} 
                           value={field.value}
                         >
-                          <FormControl className="text-left">
-                            <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner text-left font-bold">
-                              <SelectValue placeholder="Select Country" className="text-left" />
+                          <FormControl>
+                            <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                              <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="max-h-[300px] overflow-y-auto text-left rounded-xl border-none shadow-2xl">
+                          <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl">
                             {countriesList.map((c) => (
-                              <SelectItem key={c.isoCode} value={c.name} className="text-left rounded-lg">
+                              <SelectItem key={c.isoCode} value={c.name} className="rounded-lg">
                                 {c.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage className="text-left" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField control={form.control} name="state" render={({ field }) => (
-                        <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">State / Region</FormLabel>
+                        <FormItem>
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">State / Region</FormLabel>
                           <Select 
                             onValueChange={(val) => { 
                                 field.onChange(val); 
@@ -662,43 +661,43 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             value={field.value}
                             disabled={!watchedCountryName || statesList.length === 0}
                           >
-                            <FormControl className="text-left">
-                              <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner text-left font-bold">
-                                <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} className="text-left" />
+                            <FormControl>
+                              <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="max-h-[300px] overflow-y-auto text-left rounded-xl border-none shadow-2xl">
+                            <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl">
                               {statesList.map((s) => (
-                                <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left rounded-lg">
+                                <SelectItem key={s.isoCode + s.name} value={s.name} className="rounded-lg">
                                   {s.name}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage className="text-left" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                     <FormField control={form.control} name="city" render={({ field }) => (
-                        <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">City</FormLabel>
-                          <FormControl className="text-left">
-                            <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
+                        <FormItem>
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                           </FormControl>
-                          <FormMessage className="text-left" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                 </div>
 
-                <div className="text-left pt-4">
-                    <div className="flex justify-between items-center mb-4 text-left">
-                      <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 text-left">
+                <div className="pt-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
                         <Target className="h-3.5 w-3.5 sm:h-4 w-4" /> Private Proximity Pin
                       </Label>
-                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-8 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary hover:bg-primary/20 text-left">
-                          <LocateFixed className="mr-1 h-3 w-3 text-left" />
+                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-8 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary hover:bg-primary/20">
+                          <LocateFixed className="mr-1 h-3 w-3" />
                           SYNC NOW
                       </Button>
                     </div>
@@ -711,7 +710,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     ) : (
                         <PrivateLocationMap form={form} markerPosition={markerPosition} />
                     )}
-                    <p className="text-[10px] text-muted-foreground mt-4 leading-snug text-left border-l-2 border-primary/20 pl-4 italic">
+                    <p className="text-[10px] text-muted-foreground mt-4 leading-snug border-l-2 border-primary/20 pl-4 italic">
                         Your private pin is only used to calculate proximity to local campaigns and testimonies. It is never shared with other users.
                     </p>
                 </div>
@@ -719,7 +718,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             </AccordionItem>
           </Accordion>
           
-          <div className="space-y-4 text-left">
+          <div className="space-y-4">
             <div className="flex items-center justify-between px-1">
                 <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Living Testimonies (Video)</Label>
                 <Button 
@@ -745,7 +744,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             <X className="h-3.5 w-3.5" />
                         </Button>
                         <CardContent className="p-4 sm:p-5 space-y-4">
-                             <div className="grid gap-3 text-left">
+                             <div className="grid gap-3">
                                 <FormField
                                     control={form.control}
                                     name={`videoTestimonies.${index}.title`}
@@ -782,8 +781,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
           <div className="flex gap-3 sm:gap-4">
              <Button type="button" variant="outline" onClick={onClose} className="h-11 sm:h-14 flex-1 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs">Cancel</Button>
-             <Button type="submit" className="h-11 sm:h-14 flex-[2] rounded-xl sm:rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase text-left text-[10px] sm:text-xs" disabled={isSubmitting}>
-               {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
+             <Button type="submit" className="h-11 sm:h-14 flex-[2] rounded-xl sm:rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase text-[10px] sm:text-xs" disabled={isSubmitting}>
+               {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                ACTIVATE PROFILE
              </Button>
           </div>

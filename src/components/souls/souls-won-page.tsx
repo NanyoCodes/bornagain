@@ -654,11 +654,11 @@ export default function SoulsWonPage() {
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left"><Users className="h-5 w-5 text-primary text-left" /></div>
-                            <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">GENDER BALANCE</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Kingdom Workforce Diversity</p></div>
+                            <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left">GENDER BALANCE</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Kingdom Workforce Diversity</p></div>
                         </div>
                         <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
-                            <CardContent className="p-6 sm:p-8 text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left text-left">
+                            <CardContent className="p-6 sm:p-8 text-left text-left text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left text-left text-left text-left">
                                     {[
                                         { label: 'Male', count: genderStats.male.count, color: 'bg-blue-600' },
                                         { label: 'Female', count: genderStats.female.count, color: 'bg-rose-500' },
@@ -680,7 +680,7 @@ export default function SoulsWonPage() {
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left"><Heart className="h-5 w-5 text-primary text-left" /></div>
-                            <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">MARITAL DEMOGRAPHICS</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Family & Status Insights</p></div>
+                            <div className="min-w-0 text-left"><h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left">MARITAL DEMOGRAPHICS</h2><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Family & Status Insights</p></div>
                         </div>
                         <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
                             <CardContent className="p-6 sm:p-8 text-left">
@@ -764,11 +764,12 @@ export default function SoulsWonPage() {
             ) : (
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
-                            <div className="flex items-center justify-between gap-4 text-left text-left text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
+                            <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left">
                                 <div className="min-w-0 text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                        <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left" />
+                                        <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left">
+                                        </BarChart3>
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Demographic View</span>
                                     </div>
                                     <DialogHeader className="text-left p-0 text-left text-left">
@@ -894,7 +895,7 @@ export default function SoulsWonPage() {
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <div className="flex items-center justify-between gap-4 text-left">
-                                    <DialogHeader className="text-left p-0 text-left">
+                                    <DialogHeader className="text-left p-0 text-left text-left">
                                         <DialogTitle className="text-2xl font-bold font-headline text-left">Add New Soul</DialogTitle>
                                         <DialogDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DialogDescription>
                                     </DialogHeader>
