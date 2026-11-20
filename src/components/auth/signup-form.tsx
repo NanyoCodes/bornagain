@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -184,7 +183,7 @@ export function SignUpForm() {
             render={({ field }) => (
               <FormItem className="text-left">
                 <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
-                    {isPersonal ? 'First Name' : 'Primary Contact First Name'}
+                    First Name
                 </FormLabel>
                 <FormControl>
                     <Input placeholder="John" {...field} className="rounded-xl h-11 text-left" />
@@ -199,7 +198,7 @@ export function SignUpForm() {
             render={({ field }) => (
               <FormItem className="text-left">
                 <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
-                    {isPersonal ? 'Last Name' : 'Primary Contact Last Name'}
+                    Last Name
                 </FormLabel>
                 <FormControl>
                     <Input placeholder="Doe" {...field} className="rounded-xl h-11 text-left" />

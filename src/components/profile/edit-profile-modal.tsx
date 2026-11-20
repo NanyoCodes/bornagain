@@ -417,12 +417,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 <FormItem className="text-left">
                   <div className="flex items-center justify-between">
                     <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
-                      {isPersonal ? 'First Name' : 'Representative First Name'}
+                      First Name
                     </FormLabel>
                     <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none">MANDATORY</Badge>
                   </div>
                   <FormControl>
-                    <Input placeholder={isPersonal ? "John" : "Contact First Name"} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                    <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -435,12 +435,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 <FormItem className="text-left">
                   <div className="flex items-center justify-between">
                     <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
-                      {isPersonal ? 'Last Name' : 'Representative Last Name'}
+                      Last Name
                     </FormLabel>
                     <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none">MANDATORY</Badge>
                   </div>
                   <FormControl>
-                    <Input placeholder={isPersonal ? "Doe" : "Contact Last Name"} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                    <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
