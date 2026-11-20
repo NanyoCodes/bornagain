@@ -32,8 +32,7 @@ import {
   Phone,
   Mail,
   Send,
-  X,
-  Search
+  X
 } from "lucide-react";
 import { 
   Dialog, 
@@ -742,7 +741,7 @@ export default function SoulsWonPage() {
                                         <DrawerDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                                     </DrawerHeader>
                                 </div>
-                                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setSelectedFilterGroup(null)}>
+                                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setSelectedFilterGroup(null)}>
                                     <X className="h-5 w-5 text-left" />
                                 </Button>
                             </div>
@@ -848,11 +847,13 @@ export default function SoulsWonPage() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <div className="flex items-center justify-between gap-4 text-left">
-                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                                        <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
-                                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
-                                    </DrawerHeader>
-                                    <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setIsLogDialogOpen(false)}>
+                                    <div className="flex-shrink-0 text-left">
+                                        <DrawerHeader className="p-0 text-left">
+                                            <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
+                                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
+                                        </DrawerHeader>
+                                    </div>
+                                    <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setIsLogDialogOpen(false)}>
                                         <X className="h-5 w-5 text-left" />
                                     </Button>
                                 </div>
@@ -868,11 +869,13 @@ export default function SoulsWonPage() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <div className="flex items-center justify-between gap-4 text-left">
-                                    <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                                        <DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle>
-                                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DrawerDescription>
-                                    </DrawerHeader>
-                                    <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setEditSoulId(null)}>
+                                    <div className="flex-shrink-0 text-left">
+                                        <DrawerHeader className="p-0 text-left">
+                                            <DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle>
+                                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DrawerDescription>
+                                        </DrawerHeader>
+                                    </div>
+                                    <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setEditSoulId(null)}>
                                         <X className="h-5 w-5 text-left" />
                                     </Button>
                                 </div>
@@ -895,7 +898,7 @@ export default function SoulsWonPage() {
                                         <DialogTitle className="text-2xl font-bold font-headline text-left">Add New Soul</DialogTitle>
                                         <DialogDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DialogDescription>
                                     </DialogHeader>
-                                    <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setIsLogDialogOpen(false)}>
+                                    <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setIsLogDialogOpen(false)}>
                                         <X className="h-5 w-5 text-left" />
                                     </Button>
                                 </div>
@@ -913,8 +916,8 @@ export default function SoulsWonPage() {
                                 <div className="flex items-center justify-between gap-4 text-left">
                                     <DialogHeader className="text-left p-0 text-left">
                                         <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
-                                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DrawerDescription>
-                                    </DrawerHeader>
+                                        <DialogDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DialogDescription>
+                                    </DialogHeader>
                                     <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setEditSoulId(null)}>
                                         <X className="h-5 w-5 text-left" />
                                     </Button>
