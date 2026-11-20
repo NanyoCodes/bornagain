@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     const actionCodeSettings = {
-      url: 'https://bornagainglobal.com/verify-email',
+      url: 'https://bornagainglobal.com/__/auth/action',
       handleCodeInApp: true,
     };
 
