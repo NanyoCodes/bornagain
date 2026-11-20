@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -334,7 +334,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden text-left">
        <div className="absolute inset-0 pointer-events-none opacity-[0.02] flex items-center justify-center overflow-hidden">
           <div className="grid grid-cols-4 gap-12 rotate-12">
               {[...Array(16)].map((_, i) => (
@@ -568,7 +568,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     {isPersonal ? 'ABOUT YOURSELF' : 'VISION & MISSION'}
                 </FormLabel>
                 <FormControl>
-                  <Textarea placeholder={isPersonal ? "Share your personal testimony..." : "Describe the vision and impact..."} className="resize-none text-base min-h-[120px] rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner p-4 sm:p-6" {...field} />
+                  <Textarea placeholder={isPersonal ? "Share your personal testimony..." : "Describe the vision and impact..."} className="resize-none text-base min-h-[120px] rounded-xl sm:rounded-2xl bg-muted/10 border-none shadow-inner p-4 sm:p-6" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
