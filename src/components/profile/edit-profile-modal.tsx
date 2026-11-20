@@ -158,11 +158,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "videoTestimonies"
-  });
-
   const watchedLat = form.watch('latitude');
   const watchedLng = form.watch('longitude');
   const watchedCountryName = form.watch('country');
@@ -354,13 +349,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10 text-left">
-           <div className="bg-primary/5 p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center text-center space-y-4 text-left">
+           <div className="bg-primary/5 p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center text-center space-y-4">
                 <FormField
                     control={form.control}
                     name="photoURL"
                     render={({ field }) => (
-                        <FormItem className="flex flex-col items-center text-left">
-                            <FormControl className="text-left">
+                        <FormItem className="flex flex-col items-center">
+                            <FormControl>
                                 <ImageUpload
                                     initialImageUrl={field.value}
                                     onUploadComplete={(url) => field.onChange(url)}
@@ -369,7 +364,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                                     circularCrop={true}
                                 />
                             </FormControl>
-                            <FormMessage className="text-left" />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -386,44 +381,44 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="accountType"
             render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left">
-                  <Building2 className="h-3.5 w-3.5 text-left" />
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                  <Building2 className="h-3.5 w-3.5" />
                   Account Identity Type
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                  <FormControl className="text-left">
-                    <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner font-bold text-left">
+                  <FormControl>
+                    <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner font-bold">
                       <SelectValue placeholder="Select Type" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
-                    <SelectItem value="Personal" className="rounded-xl text-left">Personal Account</SelectItem>
-                    <SelectItem value="Church" className="rounded-xl text-left">Church Account</SelectItem>
-                    <SelectItem value="Church Department" className="rounded-xl text-left">Church Department</SelectItem>
-                    <SelectItem value="Corporate" className="rounded-xl text-left">Corporate / Business</SelectItem>
+                  <SelectContent className="rounded-2xl border-none shadow-2xl">
+                    <SelectItem value="Personal" className="rounded-xl">Personal Account</SelectItem>
+                    <SelectItem value="Church" className="rounded-xl">Church Account</SelectItem>
+                    <SelectItem value="Church Department" className="rounded-xl">Church Department</SelectItem>
+                    <SelectItem value="Corporate" className="rounded-xl">Corporate / Business</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormMessage className="text-left" />
+                <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="firstName"
               render={({ field }) => (
                 <FormItem className="text-left">
-                  <div className="flex items-center justify-between text-left">
-                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate text-left">
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
                       First Name
                     </FormLabel>
-                    <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none text-left">MANDATORY</Badge>
+                    <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none">MANDATORY</Badge>
                   </div>
-                  <FormControl className="text-left">
-                    <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
+                  <FormControl>
+                    <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                   </FormControl>
-                  <FormMessage className="text-left" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -432,16 +427,16 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               name="lastName"
               render={({ field }) => (
                 <FormItem className="text-left">
-                  <div className="flex items-center justify-between text-left">
-                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate text-left">
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
                       Last Name
                     </FormLabel>
-                    <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none text-left">MANDATORY</Badge>
+                    <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none">MANDATORY</Badge>
                   </div>
-                  <FormControl className="text-left">
-                    <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
+                  <FormControl>
+                    <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                   </FormControl>
-                  <FormMessage className="text-left" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -452,42 +447,42 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="personalMessage"
             render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left">
-                  <MessageSquare className="h-3.5 w-3.5 text-left" />
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                  <MessageSquare className="h-3.5 w-3.5" />
                   Public Slogan
                 </FormLabel>
-                <FormControl className="text-left">
-                  <Input placeholder={isPersonal ? "e.g., Jesus is Lord!" : "e.g., Growing the Kingdom workforce."} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
+                <FormControl>
+                  <Input placeholder={isPersonal ? "e.g., Jesus is Lord!" : "e.g., Growing the Kingdom workforce."} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                 </FormControl>
-                <FormDescription className="text-[10px] text-left">A short message shown at the top of your profile.</FormDescription>
-                <FormMessage className="text-left" />
+                <FormDescription className="text-[10px]">A short message shown at the top of your profile.</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
 
           {isPersonal && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                     control={form.control}
                     name="maritalStatus"
                     render={({ field }) => (
                     <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Relationship Status</FormLabel>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Relationship Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                        <FormControl className="text-left">
-                            <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner text-left">
-                            <SelectValue placeholder="Select Status" className="text-left" />
+                        <FormControl>
+                            <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner">
+                            <SelectValue placeholder="Select Status" />
                             </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-xl border-none shadow-2xl text-left">
-                            <SelectItem value="Single" className="text-left">Single</SelectItem>
-                            <SelectItem value="Married" className="text-left">Married</SelectItem>
-                            <SelectItem value="Engaged" className="text-left">Engaged</SelectItem>
-                            <SelectItem value="Divorced" className="text-left">Divorced</SelectItem>
-                            <SelectItem value="Widowed" className="text-left">Widowed</SelectItem>
+                        <SelectContent className="rounded-xl border-none shadow-2xl">
+                            <SelectItem value="Single">Single</SelectItem>
+                            <SelectItem value="Married">Married</SelectItem>
+                            <SelectItem value="Engaged">Engaged</SelectItem>
+                            <SelectItem value="Divorced">Divorced</SelectItem>
+                            <SelectItem value="Widowed">Widowed</SelectItem>
                         </SelectContent>
                         </Select>
-                        <FormMessage className="text-left" />
+                        <FormMessage />
                     </FormItem>
                     )}
                 />
@@ -496,24 +491,24 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     name="workStatus"
                     render={({ field }) => (
                     <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Work Status</FormLabel>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Work Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                        <FormControl className="text-left">
-                            <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner text-left">
-                            <SelectValue placeholder="Select Status" className="text-left" />
+                        <FormControl>
+                            <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner">
+                            <SelectValue placeholder="Select Status" />
                             </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-xl border-none shadow-2xl text-left">
-                            <SelectItem value="Employed" className="text-left">Employed</SelectItem>
-                            <SelectItem value="Self-Employed" className="text-left">Self-Employed</SelectItem>
-                            <SelectItem value="Business Owner" className="text-left">Business Owner</SelectItem>
-                            <SelectItem value="Unemployed" className="text-left">Unemployed</SelectItem>
-                            <SelectItem value="Student" className="text-left">Student</SelectItem>
-                            <SelectItem value="Retired" className="text-left">Retired</SelectItem>
-                            <SelectItem value="Other" className="text-left">Other</SelectItem>
+                        <SelectContent className="rounded-xl border-none shadow-2xl">
+                            <SelectItem value="Employed">Employed</SelectItem>
+                            <SelectItem value="Self-Employed">Self-Employed</SelectItem>
+                            <SelectItem value="Business Owner">Business Owner</SelectItem>
+                            <SelectItem value="Unemployed">Unemployed</SelectItem>
+                            <SelectItem value="Student">Student</SelectItem>
+                            <SelectItem value="Retired">Retired</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                         </Select>
-                        <FormMessage className="text-left" />
+                        <FormMessage />
                     </FormItem>
                     )}
                 />
@@ -526,23 +521,23 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden text-left"
+                className="overflow-hidden"
               >
-                <div className="space-y-6 border-2 border-dashed border-muted p-4 sm:p-6 rounded-3xl sm:rounded-[2rem] bg-muted/10 text-left">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1 text-left">
+                <div className="space-y-6 border-2 border-dashed border-muted p-4 sm:p-6 rounded-3xl sm:rounded-[2rem] bg-muted/10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1">
                     <FormField
                       control={form.control}
                       name="organizationName"
                       render={({ field }) => (
                         <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left">
-                            <Briefcase className="h-3.5 w-3.5 text-left" />
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                            <Briefcase className="h-3.5 w-3.5" />
                             {organizationLabel}
                           </FormLabel>
-                          <FormControl className="text-left">
-                            <Input placeholder={`Enter your ${organizationLabel.toLowerCase()}...`} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
+                          <FormControl>
+                            <Input placeholder={`Enter your ${organizationLabel.toLowerCase()}...`} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner" />
                           </FormControl>
-                          <FormMessage className="text-left" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -551,14 +546,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                       name="roleInOrganization"
                       render={({ field }) => (
                         <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left">
-                            <User className="h-3.5 w-3.5 text-left" />
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                            <User className="h-3.5 w-3.5" />
                             ROLE
                           </FormLabel>
-                          <FormControl className="text-left">
-                            <Input placeholder={isPersonal ? "e.g., Manager, Student..." : "e.g., Lead Pastor..."} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
+                          <FormControl>
+                            <Input placeholder={isPersonal ? "e.g., Manager, Student..." : "e.g., Lead Pastor..."} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner" />
                           </FormControl>
-                          <FormMessage className="text-left" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -573,37 +568,37 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="bio"
             render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     {isPersonal ? 'ABOUT YOURSELF' : 'VISION & MISSION'}
                 </FormLabel>
-                <FormControl className="text-left">
-                  <Textarea placeholder={isPersonal ? "Share your personal testimony..." : "Describe the vision and impact..."} className="resize-none text-base min-h-[120px] rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner p-4 sm:p-6 text-left" {...field} />
+                <FormControl>
+                  <Textarea placeholder={isPersonal ? "Share your personal testimony..." : "Describe the vision and impact..."} className="resize-none text-base min-h-[120px] rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner p-4 sm:p-6" {...field} />
                 </FormControl>
-                <FormMessage className="text-left" />
+                <FormMessage />
               </FormItem>
             )}
           />
          
           <Accordion type="single" collapsible className="w-full border rounded-2xl sm:rounded-[2rem] overflow-hidden bg-muted/5 text-left">
-            <AccordionItem value="item-1" className="border-none text-left">
-              <AccordionTrigger className="p-4 sm:p-6 hover:no-underline [&[data-state=open]>svg]:rotate-180 text-left">
+            <AccordionItem value="item-1" className="border-none">
+              <AccordionTrigger className="p-4 sm:p-6 hover:no-underline [&[data-state=open]>svg]:rotate-180">
                 <div className="flex flex-col items-start text-left">
-                  <Label className="text-base sm:text-lg font-black uppercase tracking-tight text-left">Public Location Settings</Label>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1 text-left">
+                  <Label className="text-base sm:text-lg font-black uppercase tracking-tight">Public Location Settings</Label>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1">
                     Set your City, State, and Country for search indexing.
                   </p>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="p-4 sm:p-6 pt-0 space-y-6 text-left">
-                <div className="bg-muted/20 p-4 rounded-2xl text-left">
-                  <Label className="mb-2 block text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Location Search</Label>
+                <div className="bg-muted/20 p-4 rounded-2xl">
+                  <Label className="mb-2 block text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Location Search</Label>
                   <LocationProfileInput form={form} />
                 </div>
                 
-                <div className="space-y-4 pt-2 text-left">
+                <div className="space-y-4 pt-2">
                   <FormField control={form.control} name="country" render={({ field }) => (
                       <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Country</FormLabel>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country</FormLabel>
                         <Select 
                           onValueChange={(val) => { 
                               field.onChange(val); 
@@ -612,28 +607,28 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                           }} 
                           value={field.value}
                         >
-                          <FormControl className="text-left">
-                            <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                              <SelectValue placeholder="Select Country" className="text-left" />
+                          <FormControl>
+                            <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                              <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl text-left">
+                          <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl">
                             {countriesList.map((c) => (
-                              <SelectItem key={c.isoCode} value={c.name} className="rounded-lg text-left">
+                              <SelectItem key={c.isoCode} value={c.name} className="rounded-lg">
                                 {c.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage className="text-left" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField control={form.control} name="state" render={({ field }) => (
                         <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">State</FormLabel>
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">State</FormLabel>
                           <Select 
                             onValueChange={(val) => { 
                                 field.onChange(val); 
@@ -642,50 +637,50 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             value={field.value}
                             disabled={!watchedCountryName || statesList.length === 0}
                           >
-                            <FormControl className="text-left">
-                              <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} className="text-left" />
+                            <FormControl>
+                              <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none font-bold">
+                                <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl text-left">
+                            <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl">
                               {statesList.map((s) => (
-                                <SelectItem key={s.isoCode + s.name} value={s.name} className="rounded-lg text-left">
+                                <SelectItem key={s.isoCode + s.name} value={s.name} className="rounded-lg">
                                   {s.name}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage className="text-left" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                     <FormField control={form.control} name="city" render={({ field }) => (
                         <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">City</FormLabel>
-                          <FormControl className="text-left">
-                            <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                           </FormControl>
-                          <FormMessage className="text-left" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                 </div>
 
-                <div className="pt-4 text-left">
-                    <div className="flex justify-between items-center mb-4 text-left">
-                      <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 text-left">
-                        <Target className="h-3.5 w-3.5 sm:h-4 w-4 text-left" /> Private Proximity Pin
+                <div className="pt-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                        <Target className="h-3.5 w-3.5 sm:h-4 w-4" /> Private Proximity Pin
                       </Label>
-                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-8 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary hover:bg-primary/20 text-left">
-                          <LocateFixed className="mr-1 h-3 w-3 text-left" />
+                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-8 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary hover:bg-primary/20">
+                          <LocateFixed className="mr-1 h-3 w-3" />
                           SYNC NOW
                       </Button>
                     </div>
                     {!isValidKey(GOOGLE_MAPS_API_KEY) ? (
-                        <div className="h-60 w-full rounded-2xl bg-muted/30 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4 text-left">
-                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-left">
-                                <MapIcon className="h-6 w-6 text-primary opacity-50 text-left" />
+                        <div className="h-60 w-full rounded-2xl bg-muted/30 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                <MapIcon className="h-6 w-6 text-primary opacity-50" />
                             </div>
                         </div>
                     ) : (
@@ -696,10 +691,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             </AccordionItem>
           </Accordion>
 
-          <div className="flex gap-3 sm:gap-4 text-left">
-             <Button type="button" variant="outline" onClick={onClose} className="h-11 sm:h-14 flex-1 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs text-left">Cancel</Button>
+          <div className="flex gap-3 sm:gap-4">
+             <Button type="button" variant="outline" onClick={onClose} className="h-11 sm:h-14 flex-1 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs">Cancel</Button>
              <Button type="submit" className="h-11 sm:h-14 flex-[2] rounded-xl sm:rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase text-[10px] sm:text-xs text-center" disabled={isSubmitting}>
-               {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <ShieldCheck className="mr-2 h-4 w-4 text-left" />}
+               {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                ACTIVATE IDENTITY
              </Button>
           </div>
