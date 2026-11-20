@@ -264,7 +264,6 @@ function CartButton() {
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfileIncomplete }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, isProfileIncomplete: boolean }) {
   const { user } = useUser();
-  const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
   const router = useRouter();
@@ -774,6 +773,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       </motion.div>
       {user && showBottomNav && <BottomNavBar />}
       {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
+      
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">

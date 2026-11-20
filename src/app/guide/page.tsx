@@ -186,50 +186,50 @@ const journeyPhases = [
 
 export default function GuidePage() {
   return (
-    <div className="space-y-12 max-w-5xl mx-auto p-4 md:p-8 pb-24">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" asChild className="shrink-0 rounded-full h-10 w-10">
-            <Link href="/"><ArrowLeft className="h-4 w-4" /></Link>
+    <div className="space-y-12 max-w-5xl mx-auto p-4 md:p-8 pb-24 text-left">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 text-left text-left">
+        <div className="flex items-center gap-4 text-left text-left">
+          <Button variant="outline" size="icon" asChild className="shrink-0 rounded-full h-10 w-10 text-left text-left">
+            <Link href="/"><ArrowLeft className="h-4 w-4 text-left text-left" /></Link>
           </Button>
-          <div className="space-y-1">
+          <div className="space-y-1 text-left text-left">
             <h1 className="text-3xl md:text-5xl font-black font-headline tracking-tight flex items-center gap-3 text-left">
-              <BookOpen className="h-8 w-8 text-primary" />
+              <BookOpen className="h-8 w-8 text-primary text-left text-left" />
               App Guide
             </h1>
-            <p className="text-muted-foreground italic text-sm md:text-base font-medium">
+            <p className="text-muted-foreground italic text-sm md:text-base font-medium text-left text-left">
               Equipping the Kingdom workforce for a global harvest.
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-            <Badge className="bg-primary/20 text-primary border-primary/20 px-3 py-1 font-bold uppercase tracking-widest text-[10px]">Great Commission</Badge>
+        <div className="flex gap-2 text-left text-left">
+            <Badge className="bg-primary/20 text-primary border-primary/20 px-3 py-1 font-bold uppercase tracking-widest text-[10px] text-left text-left">Great Commission</Badge>
         </div>
       </div>
 
-      <Separator />
+      <Separator className="text-left text-left" />
 
-      <section className="space-y-8">
-        <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-blue-500/10 flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-blue-500" />
+      <section className="space-y-8 text-left text-left">
+        <div className="flex items-center gap-3 text-left text-left">
+            <div className="h-10 w-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-left text-left">
+                <Sparkles className="h-5 w-5 text-blue-500 text-left text-left" />
             </div>
-            <h2 className="text-2xl font-black font-headline uppercase tracking-tight">The 7-Step Mobilization Path</h2>
+            <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">The 7-Step Mobilization Path</h2>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left text-left">
             {gettingStartedItems.map((item) => (
-                <Card key={item.step} className="border-2 border-dashed bg-muted/20 relative group hover:bg-muted/40 transition-colors">
-                    <CardHeader className="p-5 pb-2">
+                <Card key={item.step} className="border-2 border-dashed bg-muted/20 relative group hover:bg-muted/40 transition-colors text-left text-left">
+                    <CardHeader className="p-5 pb-2 text-left text-left">
                         <div className={cn("h-10 w-10 rounded-2xl flex items-center justify-center mb-3 border shadow-sm transition-transform group-hover:scale-110", item.bgColor)}>
                             <item.icon className={cn("h-5 w-5", item.color)} />
                         </div>
-                        <CardTitle className="text-base font-black tracking-tight">{item.title}</CardTitle>
+                        <CardTitle className="text-base font-black tracking-tight text-left text-left">{item.title}</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 pt-0">
-                        <p className="text-xs text-muted-foreground leading-relaxed font-medium">{item.description}</p>
+                    <CardContent className="p-5 pt-0 text-left text-left">
+                        <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left text-left">{item.description}</p>
                     </CardContent>
-                    <div className="absolute top-2 right-4 text-3xl font-black text-foreground/5 italic">
+                    <div className="absolute top-2 right-4 text-3xl font-black text-foreground/5 italic text-left text-left">
                         {item.step}
                     </div>
                 </Card>
@@ -237,32 +237,32 @@ export default function GuidePage() {
         </div>
       </section>
 
-      <section className="space-y-12">
-        <div className="space-y-2">
-            <h2 className="text-3xl font-black font-headline uppercase tracking-tight">The Believer's Journey</h2>
-            <p className="text-sm text-muted-foreground font-medium">Strategic phases for maximum Kingdom impact.</p>
+      <section className="space-y-12 text-left text-left">
+        <div className="space-y-2 text-left text-left">
+            <h2 className="text-3xl font-black font-headline uppercase tracking-tight text-left text-left">The Believer's Journey</h2>
+            <p className="text-sm text-muted-foreground font-medium text-left text-left">Strategic phases for maximum Kingdom impact.</p>
         </div>
 
-        <div className="space-y-16">
+        <div className="space-y-16 text-left text-left">
             {journeyPhases.map((phase, idx) => (
-                <div key={idx} className="space-y-6">
-                    <div className="flex items-center gap-5">
+                <div key={idx} className="space-y-6 text-left text-left">
+                    <div className="flex items-center gap-5 text-left text-left">
                         <div className={cn("h-14 w-14 rounded-[1.5rem] flex items-center justify-center shrink-0 shadow-lg border-2", phase.bgColor)}>
                             <phase.icon className={cn("h-7 w-7", phase.color)} />
                         </div>
-                        <div>
-                            <h3 className="text-xl font-black tracking-tight leading-tight">{phase.title}</h3>
-                            <p className="text-sm text-muted-foreground font-medium">{phase.description}</p>
+                        <div className="text-left text-left">
+                            <h3 className="text-xl font-black tracking-tight leading-tight text-left text-left">{phase.title}</h3>
+                            <p className="text-sm text-muted-foreground font-medium text-left text-left">{phase.description}</p>
                         </div>
                     </div>
-                    <div className="grid gap-6 sm:grid-cols-2 ml-2 sm:ml-20">
+                    <div className="grid gap-6 sm:grid-cols-2 ml-2 sm:ml-20 text-left text-left text-left">
                         {phase.items.map((item, i) => (
-                            <Card key={i} className="border-none shadow-none bg-muted/30 hover:bg-muted/50 transition-colors rounded-2xl">
-                                <CardHeader className="p-6 pb-2">
-                                    <CardTitle className="text-sm font-black uppercase tracking-wider text-primary">{item.title}</CardTitle>
+                            <Card key={i} className="border-none shadow-none bg-muted/30 hover:bg-muted/50 transition-colors rounded-2xl text-left text-left text-left">
+                                <CardHeader className="p-6 pb-2 text-left text-left">
+                                    <CardTitle className="text-sm font-black uppercase tracking-wider text-primary text-left text-left">{item.title}</CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-6 pt-0">
-                                    <p className="text-sm leading-relaxed text-muted-foreground font-medium">{item.content}</p>
+                                <CardContent className="p-6 pt-0 text-left text-left text-left">
+                                    <p className="text-sm leading-relaxed text-muted-foreground font-medium text-left text-left text-left">{item.content}</p>
                                 </CardContent>
                             </Card>
                         ))}
@@ -272,17 +272,17 @@ export default function GuidePage() {
         </div>
       </section>
 
-      <Separator />
+      <Separator className="text-left text-left" />
 
       <GuidePageClient />
 
-      <footer className="text-center py-12 border-t bg-muted/5 rounded-[2rem] border-dashed">
-        <blockquote className="max-w-2xl mx-auto px-8">
-            <p className="text-lg text-muted-foreground italic font-medium leading-relaxed">
+      <footer className="text-center py-12 border-t bg-muted/5 rounded-[2rem] border-dashed text-left text-left">
+        <blockquote className="max-w-2xl mx-auto px-8 text-left text-left">
+            <p className="text-lg text-muted-foreground italic font-medium leading-relaxed text-center text-left">
             "The harvest is plentiful, but the laborers are few; therefore pray earnestly to the Lord of the harvest to send out laborers into his harvest."
             </p>
-            <footer className="mt-4">
-                <cite className="text-sm font-black text-primary uppercase tracking-[0.2em]">— Matthew 9:37-38</cite>
+            <footer className="mt-4 text-center text-left">
+                <cite className="text-sm font-black text-primary uppercase tracking-[0.2em] text-center text-left">— Matthew 9:37-38</cite>
             </footer>
         </blockquote>
       </footer>

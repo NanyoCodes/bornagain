@@ -92,11 +92,11 @@ function EmailVerificationDialog({ user, isOpen, onOpenChange }: { user: User | 
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <p className="text-sm text-muted-foreground font-medium italic py-4 text-left">
-                    Check your inbox and spam folder. Verification is necessary to ensure the integrity of shared testimonies.
+                    Check your inbox and spam folder. Verification is necessary to ensure the integrity of shared testimonies on bornagainglobal.com.
                 </p>
                 <AlertDialogFooter className="flex-col sm:flex-row gap-3 text-left">
                     <AlertDialogCancel disabled={isLoading} onClick={handleClose} className="rounded-xl h-11 font-bold text-left">Close</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleResend} disabled={isLoading} className="rounded-xl h-11 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left">
+                    <AlertDialogAction onClick={handleResend} disabled={isLoading} className="rounded-xl h-11 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-center">
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                         RESEND LINK
                     </AlertDialogAction>
@@ -225,7 +225,7 @@ export function LoginForm() {
                 <div className="relative text-left">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground text-left" />
                   <FormControl className="text-left">
-                    <Input placeholder="name@example.com" {...field} className="pl-10 h-11 rounded-xl text-left" />
+                    <Input placeholder="name@example.com" {...field} className="pl-10 h-11 rounded-xl text-left text-left" />
                   </FormControl>
                 </div>
                 <FormMessage className="text-left" />
@@ -246,14 +246,14 @@ export function LoginForm() {
                 <div className="relative text-left text-left">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground text-left" />
                   <FormControl className="text-left">
-                    <Input type="password" placeholder="********" {...field} className="pl-10 h-11 rounded-xl text-left" />
+                    <Input type="password" placeholder="********" {...field} className="pl-10 h-11 rounded-xl text-left text-left" />
                   </FormControl>
                 </div>
                 <FormMessage className="text-left" />
               </FormItem>
             )}
           />
-          <Button type="submit" variant="default" className="w-full h-11 font-bold shadow-md rounded-xl text-left" disabled={isLoading}>
+          <Button type="submit" variant="default" className="w-full h-11 font-bold shadow-md rounded-xl text-left text-center" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
             Sign In
           </Button>
