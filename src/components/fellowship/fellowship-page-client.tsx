@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
@@ -195,6 +194,7 @@ function FullDevotionalDialog({
                         <Button onClick={(e) => onReaction('inspired', e)} disabled={isProcessingReaction !== null || !user} variant="outline" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest bg-background", hasInspired && "bg-chart-3/10 border-chart-3/30 text-chart-3")}>{isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5", hasInspired && "fill-current")} />}<span>Hallelujah</span></Button>
                         <Button onClick={(e) => onReaction('celebrate', e)} disabled={isProcessingReaction !== null || !user} variant="outline" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest bg-background", hasCelebrated && "bg-blue-500/10 border-blue-500/30 text-blue-500")}>{isProcessingReaction === 'celebrate' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}<span>Celebrate</span></Button>
                     </div>
+
                     <Button variant="outline" size="sm" className="h-9 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest bg-muted/20 border-primary/20 hover:bg-muted/30 transition-all active:scale-95 px-6 shadow-sm" onClick={scrollToComments}><MessageSquare className="h-4 w-4 text-primary" /><span>{commentCount} Response{commentCount !== 1 ? 's' : ''}</span></Button>
                 </div>
             </div>
@@ -213,8 +213,8 @@ function FullDevotionalDialog({
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0 p-0">
                             <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">{devotional.title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
@@ -232,7 +232,7 @@ function FullDevotionalDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild onClick={stopPropagation}>
+            <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh]">
@@ -453,7 +453,7 @@ export default function FellowshipPageClient() {
                 <div className="flex items-center gap-2 px-1">
                     <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" onClick={handleShare} className="h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg bg-background border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/5"><Share2 className="h-4 w-4 sm:h-5 w-5" /></Button></TooltipTrigger><TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Share Fellowship</p></TooltipContent></Tooltip></TooltipProvider>
                     {(isMember || isOrganizer) && (
-                        <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant={fellowship.hasGroupChat ? "default" : "outline"} size="icon" onClick={handleOpenGroupChat} disabled={isChatLoading || (!fellowship.hasGroupChat && !isOrganizer)} className={cn("h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg relative shrink-0 transition-all", fellowship.hasGroupChat ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90" : "opacity-60 bg-muted border-muted-foreground/20")}>{isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}{!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && <span className="absolute -top-1 -right-1 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span></span>}</Button></TooltipTrigger><TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase text-center leading-tight">{fellowship.hasGroupChat ? "Open Group Chat" : isOrganizer ? (members && members.length < 2 ? "Need members to start chat" : "Initialize Group Chat") : "Chat pending organizer initiation"}</p></TooltipContent></Tooltip></TooltipProvider>
+                        <TooltipProvider><Tooltip><TooltipTrigger asChild><Button variant={fellowship.hasGroupChat ? "default" : "outline"} size="icon" onClick={handleOpenGroupChat} disabled={isChatLoading || (!fellowship.hasGroupChat && !isOrganizer)} className={cn("h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg relative shrink-0 transition-all", fellowship.hasGroupChat ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90" : "opacity-60 bg-muted border-muted-foreground/20")}>{isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}{!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && <span className="absolute -top-1 -right-1 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span></span>}</Button></TooltipTrigger><TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase text-center leading-tight">{fellowship.hasGroupChat ? "Open Group Chat" : isOrganizer ? (members && members.length < 2 ? "Need members to start chat" : "Initialize Group Chat") : "Chat pending organizer initiation"}</p></TooltipContent></Tooltip></TooltipProvider>
                     )}
                 </div>
             </div>

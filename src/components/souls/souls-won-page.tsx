@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -748,7 +747,7 @@ export default function SoulsWonPage() {
                                 </Button>
                             </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto text-left">
+                        <div className="flex-1 overflow-y-auto no-scrollbar text-left">
                             <div className="p-4 sm:p-8 text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
@@ -938,11 +937,11 @@ export default function SoulsWonPage() {
                     <div className="flex items-center justify-between gap-4 text-left">
                         <div className="min-w-0 text-left">
                             <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                                <div className="flex items-center gap-2 mb-2 text-left"><Sparkles className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span></div>
-                                <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+                                <div className="flex items-center gap-2 mb-2 text-left"><Sparkles className="h-4 w-4 text-primary text-left" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span></div>
+                                <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
                                     {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                                 </DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                             </DrawerHeader>
                         </div>
                         <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background shadow-sm text-muted-foreground/60 hover:text-foreground text-left" onClick={() => setSelectedId(null)}>

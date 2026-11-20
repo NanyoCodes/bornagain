@@ -99,11 +99,11 @@ function PrivateLocationMap({ form, markerPosition }: { form: any, markerPositio
         }
     };
 
-    if (loadError) return <div className="h-60 w-full bg-muted/50 rounded-md flex items-center justify-center border-2 border-dashed text-left"><p className="text-xs text-muted-foreground">Map Error</p></div>;
+    if (loadError) return <div className="h-60 w-full bg-muted/50 rounded-md flex items-center justify-center border-2 border-dashed"><p className="text-xs text-muted-foreground">Map Error</p></div>;
     if (!isLoaded) return <Skeleton className="h-60 w-full mt-2" />;
 
     return (
-        <div className="h-60 w-full rounded-md overflow-hidden mt-2 border text-left">
+        <div className="h-60 w-full rounded-md overflow-hidden mt-2 border">
             <GoogleMap
                 mapContainerClassName="h-full w-full"
                 center={markerPosition || fallbackCenter}
@@ -416,9 +416,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               name="firstName"
               render={({ field }) => (
                 <FormItem className="text-left">
-                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    {isPersonal ? 'First Name' : 'Primary Contact First Name'}
-                  </FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
+                      {isPersonal ? 'First Name' : 'Representative First Name'}
+                    </FormLabel>
+                    <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none">MANDATORY</Badge>
+                  </div>
                   <FormControl>
                     <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                   </FormControl>
@@ -431,9 +434,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               name="lastName"
               render={({ field }) => (
                 <FormItem className="text-left">
-                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    {isPersonal ? 'Last Name' : 'Primary Contact Last Name'}
-                  </FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
+                      {isPersonal ? 'Last Name' : 'Representative Last Name'}
+                    </FormLabel>
+                    <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none">MANDATORY</Badge>
+                  </div>
                   <FormControl>
                     <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                   </FormControl>

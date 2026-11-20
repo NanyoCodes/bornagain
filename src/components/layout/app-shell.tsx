@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -395,7 +394,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                             }}
                         >
                             <div className="flex items-center gap-4">
-                                <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/5 overflow-hidden">
+                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/5 overflow-hidden">
                                     {s.photoURL ? <Image src={s.photoURL} alt={s.title} width={40} height={40} className="object-cover h-full w-full" unoptimized /> : s.type === 'Campaign' ? <Target className="h-5 w-5 text-primary" /> : s.type === 'Category' ? <Sparkles className="h-5 w-5 text-primary" /> : <Users className="h-5 w-5 text-primary" />}
                                 </div>
                                 <div className="min-w-0 flex-1">
