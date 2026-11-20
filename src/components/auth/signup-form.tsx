@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
 import { Loader2, Mail, Lock, User } from "lucide-react";
-import { createUserWithEmailAndPassword, updateProfile, AuthError, sendEmailVerification, setPersistence, browserLocalPersistence, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, AuthError, setPersistence, browserLocalPersistence, signOut } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -28,18 +29,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Link from "next/link";
 
 const formSchema = z.object({
-  firstName: z.string().min(2, {
-    message: "First name must be at least 2 characters.",
-  }),
-  lastName: z.string().min(2, {
-    message: "Last name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
+  firstName: z.string().min(2, "First name must be at least 2 characters."),
+  lastName: z.string().min(2, "Last name must be at least 2 characters."),
+  email: z.string().email("Please enter a valid email address."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
   accountType: z.enum(['Personal', 'Church', 'Church Department', 'Corporate'], {
     required_error: "Please select an account type.",
   }),
@@ -91,7 +84,12 @@ export function SignUpForm() {
         displayName: displayName,
       });
       
-      await sendEmailVerification(user);
+      // Call custom verification API to send branded email from bornagainglobal.com
+      fetch('/api/send-verification', {
+        method: 'POST',
+        body: JSON.stringify({ email: values.email }),
+        headers: { 'Content-Type': 'application/json' }
+      }).catch(err => console.error("Failed to trigger branded verification:", err));
 
       const userDocRef = doc(firestore, "users", user.uid);
       const fullName = `${values.firstName} ${values.lastName}`;
@@ -120,7 +118,7 @@ export function SignUpForm() {
 
       toast({
         title: "Account Created!",
-        description: "Verification sent! Check your email to activate your identity before signing in.",
+        description: "Activation link sent! Check your inbox to activate your identity before signing in.",
       });
       
       router.push("/login");
@@ -257,7 +255,7 @@ export function SignUpForm() {
               </FormControl>
               <div className="space-y-1 leading-none text-left">
                 <FormLabel className="text-xs leading-normal cursor-pointer font-medium">
-                  I agree to respect all users and abide by the Testify guidelines.
+                  I agree to respect all users and abide by the guidelines.
                 </FormLabel>
                 <FormDescription className="text-[10px]">
                    Read our <Link href="/terms-of-service" className="underline hover:text-primary">Terms of Service</Link> for details.
