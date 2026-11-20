@@ -353,7 +353,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10 text-left">
            <div className="bg-primary/5 p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center text-center space-y-4">
                 <FormField
                     control={form.control}

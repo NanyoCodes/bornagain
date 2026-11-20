@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import { adminAuth } from '@/lib/firebase-admin';
 import { Resend } from 'resend';
@@ -20,7 +19,6 @@ export async function POST(request: Request) {
 
     const link = await adminAuth.generateEmailVerificationLink(email, actionCodeSettings);
 
-    // Standard high-fidelity template for BornAgain Global
     const { data, error } = await resend.emails.send({
       from: 'BornAgain Global <verify@bornagainglobal.com>',
       to: email,
@@ -30,24 +28,29 @@ export async function POST(request: Request) {
         <html>
         <head>
           <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f9fafb; }
+            .wrapper { width: 100%; table-layout: fixed; background-color: #f9fafb; padding-bottom: 40px; }
             .container { max-width: 600px; margin: 40px auto; padding: 40px; border-radius: 40px; background: #ffffff; border: 1px solid #f0f0f0; box-shadow: 0 20px 40px rgba(0,0,0,0.05); text-align: center; }
-            .logo { width: 80px; height: 80px; margin-bottom: 24px; }
-            h1 { color: #000000; font-size: 28px; font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 16px; }
-            p { color: #666666; font-size: 16px; line-height: 1.6; margin-bottom: 32px; }
+            .logo { width: 80px; height: 80px; margin-bottom: 24px; border-radius: 20px; }
+            h1 { color: #111827; font-size: 28px; font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 16px; }
+            p { color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 32px; }
             .button { background-color: #f97416; color: #ffffff !important; padding: 18px 40px; text-decoration: none; border-radius: 20px; font-weight: 900; font-size: 14px; letter-spacing: 0.1em; display: inline-block; box-shadow: 0 10px 20px rgba(249,116,22,0.3); }
-            .footer { margin-top: 40px; padding-top: 32px; border-top: 1px solid #f0f0f0; color: #999999; font-size: 12px; }
+            .footer { margin-top: 40px; padding-top: 32px; border-top: 1px solid #f3f4f6; color: #9ca3af; font-size: 12px; }
+            .footer p { margin: 4px 0; color: #9ca3af; font-size: 12px; }
           </style>
         </head>
         <body>
-          <div class="container">
-            <img src="https://i.postimg.cc/NMWvPrRn/Born-Again-Sunrise-Emblem.png" class="logo" alt="BornAgain" />
-            <h1>Activate Your Identity</h1>
-            <p>Welcome to the global movement of the redeemed. To ensure the integrity of our community and testimonies, please verify your email address below.</p>
-            <a href="${link}" class="button">ACTIVATE NOW</a>
-            <div class="footer">
-              <p>&copy; ${new Date().getFullYear()} BORN AGAIN GLOBAL<br/>Built for the Great Commission</p>
-              <p>If you didn't create an account, you can safely ignore this message.</p>
+          <div class="wrapper">
+            <div class="container">
+              <img src="https://i.postimg.cc/NMWvPrRn/Born-Again-Sunrise-Emblem.png" class="logo" alt="BornAgain" />
+              <h1>Activate Your Identity</h1>
+              <p>Welcome to the global movement of the redeemed. To ensure the integrity of our community and testimonies, please verify your email address below to activate your account.</p>
+              <a href="${link}" class="button">ACTIVATE NOW</a>
+              <div class="footer">
+                <p>&copy; ${new Date().getFullYear()} BORN AGAIN GLOBAL</p>
+                <p>Built for the Great Commission</p>
+                <p style="margin-top: 16px;">If you didn't create an account, you can safely ignore this message.</p>
+              </div>
             </div>
           </div>
         </body>
