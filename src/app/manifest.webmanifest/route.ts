@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 
 /**
- * @fileOverview Dynamically generates the Web App Manifest for Testify Global.
+ * @fileOverview Dynamically generates the Web App Manifest for BornAgain Global.
  */
 
 export async function GET() {
-  const bornAgainLogoUrl = 'https://i.postimg.cc/K8VD8BYD/Born-Again-Mountain-Sunrise-Emblem.png';
+  const bornAgainLogoUrl = 'https://i.postimg.cc/GmLp6x1W/Radiant-Dove-Born-Again-Logo.png';
 
   const manifest = {
-    name: 'Testify Global',
-    short_name: 'Testify',
+    name: 'BornAgain Global',
+    short_name: 'BornAgain',
     description: 'The global platform for the new creation in Christ. Share testimonies and organize the harvest.',
     start_url: '/',
     display: 'standalone',

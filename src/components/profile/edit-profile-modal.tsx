@@ -333,10 +333,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     }
   }
 
-  const handleCreateMeet = () => {
-    window.open('https://meet.google.com/new', '_blank');
-  };
-
   return (
     <div className="relative overflow-hidden">
        <div className="absolute inset-0 pointer-events-none opacity-[0.02] flex items-center justify-center overflow-hidden">
@@ -491,7 +487,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     name="workStatus"
                     render={({ field }) => (
                     <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Work Status</FormLabel>
+                        <FormLabel className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Work Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
                             <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner">

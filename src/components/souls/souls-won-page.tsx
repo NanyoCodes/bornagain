@@ -207,37 +207,37 @@ function FilteredSoulList({
                     </div>
                 </div>
               <CollapsibleContent className="px-4 pb-4">
-                  <div className="pt-3 space-y-2 text-left">
-                      <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2">Household Members</p>
+                  <div className="pt-3 space-y-2 text-left text-left">
+                      <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest ml-4 mb-2 text-left">Household Members</p>
                       {spouseObj && (
-                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4">
-                              <Avatar className="h-8 w-8 border shrink-0">
-                                  <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover" />
-                                  <AvatarFallback className="font-black text-[10px] text-center flex items-center justify-center h-full w-full"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
+                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left">
+                              <Avatar className="h-8 w-8 border shrink-0 text-left">
+                                  <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover text-left" />
+                                  <AvatarFallback className="font-black text-[10px] text-center flex items-center justify-center h-full w-full text-left"> {spouseObj.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0">
-                                  <p className="font-bold text-xs uppercase truncate leading-none">{spouseObj.firstName} {spouseObj.lastName}</p>
-                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Spouse</p>
+                              <div className="flex-1 min-w-0 text-left">
+                                  <p className="font-bold text-xs uppercase truncate leading-none text-left">{spouseObj.firstName} {spouseObj.lastName}</p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5 text-left">Spouse</p>
                               </div>
                               <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => onSelectSoul(spouseObj)}>View Profile</Button>
                           </div>
                       )}
                       {children.map(child => (
-                           <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4">
+                           <div key={child.id} className="flex items-center gap-3 p-3 rounded-2xl bg-muted/20 border border-dashed ml-4 text-left">
                               <Avatar className="h-8 w-8 border shrink-0">
-                                  <AvatarImage src={child.photoURL || undefined} className="object-cover" />
-                                  <AvatarFallback className="font-black text-[10px] text-center flex items-center justify-center h-full w-full"> {child.firstName?.charAt(0)}</AvatarFallback>
+                                  <AvatarImage src={child.photoURL || undefined} className="object-cover text-left" />
+                                  <AvatarFallback className="font-black text-[10px] text-center flex items-center justify-center h-full w-full text-left"> {child.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0">
-                                  <p className="font-bold text-xs uppercase truncate leading-none">{child.firstName} {child.lastName}</p>
-                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5">Child</p>
+                              <div className="flex-1 min-w-0 text-left text-left">
+                                  <p className="font-bold text-xs uppercase truncate leading-none text-left">{child.firstName} {child.lastName}</p>
+                                  <p className="text-[9px] text-muted-foreground uppercase mt-0.5 text-left text-left">Child</p>
                               </div>
                               <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => onSelectSoul(child)}>View Profile</Button>
                           </div>
                       ))}
-                      <div className="flex gap-2 ml-4 w-[calc(100%-1rem)]">
+                      <div className="flex gap-2 ml-4 w-[calc(100%-1rem)] text-left">
                         <Button variant="outline" className="flex-1 h-9 rounded-xl border-dashed text-[10px] font-bold uppercase text-left" onClick={() => onAddChildForm(soul, spouseObj)}>
-                            <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> New Record
+                            <PlusCircle className="mr-1.5 h-3.5 w-3.5 text-left" /> New Record
                         </Button>
                       </div>
                   </div>
@@ -930,7 +930,7 @@ export default function SoulsWonPage() {
                     <div className="flex items-center justify-between gap-4 text-left">
                         <div className="min-w-0">
                             <DrawerHeader className="text-left flex-shrink-0 p-0">
-                                <div className="flex items-center gap-2 mb-2 text-left"><Sparkles className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity Hub</span></div>
+                                <div className="flex items-center gap-2 mb-2 text-left"><Sparkles className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span></div>
                                 <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
                                     {souls?.find(s => s.id === selectedId)?.firstName} {souls?.find(s => s.id === selectedId)?.lastName}
                                 </DrawerTitle>
