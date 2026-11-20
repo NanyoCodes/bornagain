@@ -13,6 +13,7 @@ export async function POST(request: Request) {
     }
 
     const actionCodeSettings = {
+      // Production action URL for custom identity activation
       url: 'https://bornagainglobal.com/__/auth/action',
       handleCodeInApp: true,
     };
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
         <body>
           <div class="wrapper">
             <div class="container">
-              <img src="https://i.postimg.cc/NMWvPrRn/Born-Again-Sunrise-Emblem.png" class="logo" alt="BornAgain" />
+              <img src="https://i.postimg.cc/K8VD8BYD/Born-Again-Mountain-Sunrise-Emblem.png" class="logo" alt="BornAgain" />
               <h1>Activate Your Identity</h1>
               <p>Welcome to the global movement of the redeemed. To ensure the integrity of our community and testimonies, please verify your email address below to activate your account.</p>
               <a href="${link}" class="button">ACTIVATE NOW</a>
