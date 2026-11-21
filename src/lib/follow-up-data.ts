@@ -20,52 +20,42 @@ export const prayerTemplates = [
     {
         id: 'strength',
         label: 'Strength & Empowerment',
-        text: "Heavenly Father, I bring {name} before You today. Lord, I pray that You would strengthen {object} with Your mighty power in {possessive} inner being. May {subject} be rooted and established in Your love, and may {subject} have the spiritual strength to overcome every challenge {subject} faces. Fill {object} with the knowledge of Your will through all the wisdom and understanding that the Spirit gives. Join our harvest community at https://bornagainglobal.com"
+        text: "Heavenly Father, I bring {name} before Your throne today. Lord, I pray that You would strengthen {object} with Your mighty power in {possessive} inner being. May {subject} be rooted and established in Your love, and may {subject} have the spiritual strength to overcome every challenge. Fill {object} with the knowledge of Your will through all wisdom and understanding. In Jesus' name, Amen. Join our harvest community at https://bornagainglobal.com"
     },
     {
         id: 'revelation',
         label: 'Grace & Revelation',
-        text: "Lord Jesus, I thank You for {name}. I pray that You would open the eyes of {possessive} heart today to see Your goodness and Your truth. May {subject} walk in a fresh revelation of Your grace, knowing that You are with {object} and that Your plans for {object} are plans for good and not for evil. Join our harvest community at https://bornagainglobal.com"
+        text: "Lord Jesus, I thank You for the life of {name}. I pray that You would open the eyes of {possessive} heart today to see Your goodness and Your truth. May {subject} walk in a fresh revelation of Your grace, knowing that You are with {object} and that Your plans are for good and not for evil. Let Your light guide {possessive} path. Amen. Join our community at https://bornagainglobal.com"
     },
     {
         id: 'provision',
         label: 'Provision & Health',
-        text: "Gracious God, I lift up {name} to Your loving care. You are the Great Physician and our Jehovah Jireh. I pray for Your divine provision and healing to flow into {possessive} life right now. Meet every need according to Your riches in glory in Christ Jesus. Strengthen {possessive} faith to trust in Your perfect timing. Join our harvest community at https://bornagainglobal.com"
+        text: "Gracious God, I lift up {name} to Your loving care. You are the Great Physician and our Jehovah Jireh. I pray for Your divine provision and healing to flow into {possessive} life right now. Meet every need according to Your riches in glory in Christ Jesus. Strengthen {possessive} faith to trust in Your perfect timing. Amen. Join us at https://bornagainglobal.com"
     },
     {
         id: 'growth',
         label: 'Growth in Faith',
-        text: "Father, I pray for {name}'s spiritual roots to grow deep into the Word. May {subject} be transformed by the renewing of {possessive} mind, and may {possessive} faith become an unshakeable shield. Let the seeds of truth planted in {possessive} heart bear fruit a hundredfold. Join our harvest community at https://bornagainglobal.com"
+        text: "Father, I pray for {name}'s spiritual roots to grow deep into the Word. May {subject} be transformed by the renewing of {possessive} mind, and may {possessive} faith become an unshakeable shield. Let the seeds of truth planted in {possessive} heart bear fruit a hundredfold in this season. Amen. Join the movement at https://bornagainglobal.com"
     },
     {
         id: 'purpose',
         label: 'Kingdom Purpose',
-        text: "Lord, I pray for the revelation of {name}'s unique assignment in Your Kingdom. Open {possessive} eyes to the good works You prepared in advance for {object} to do. May {subject} walk in bold confidence, knowing {subject} is fearfully and wonderfully made for this hour. Join our harvest community at https://bornagainglobal.com"
+        text: "Lord, I pray for the revelation of {name}'s unique assignment in Your Kingdom. Open {possessive} eyes to the good works You prepared in advance for {object} to do. May {subject} walk in bold confidence, knowing {subject} is fearfully and wonderfully made for this hour. Let Your glory be seen in {object}. Amen. Register at https://bornagainglobal.com"
     },
     {
         id: 'protection',
         label: 'Divine Protection',
-        text: "I declare Psalm 91 over {name} today. Lord, be {possessive} refuge and fortress. Cover {object} with Your feathers and under Your wings let {object} find trust. I pray for a hedge of protection around {possessive} mind, body, and spirit. May Your angels have charge over {object}. Join our harvest community at https://bornagainglobal.com"
+        text: "I declare Psalm 91 over {name} today. Lord, be {possessive} refuge and fortress. Cover {object} with Your feathers and under Your wings let {object} find trust. I pray for a hedge of protection around {possessive} mind, body, and spirit. May Your angels have charge over {possessive} household. Amen. Join our network at https://bornagainglobal.com"
     },
     {
         id: 'victory',
         label: 'Freedom & Victory',
-        text: "Lord, I speak total freedom into {name}'s life. Where the Spirit of the Lord is, there is liberty. I declare victory over every stronghold and every weight that tries to hinder {possessive} walk. May {subject} walk in the power of the Holy Spirit, free from the past. Join our harvest community at https://bornagainglobal.com"
-    },
-    {
-        id: 'financial',
-        label: 'Financial Breakthrough',
-        text: "Father, in the name of Jesus, I speak over {name}'s finances. I declare that the windows of heaven are opened and Your abundance is being released. I command every spirit of lack and poverty to leave {possessive} life now. Lord, provide divine ideas for wealth creation. Join our harvest community at https://bornagainglobal.com"
+        text: "Lord, I speak total freedom into {name}'s life. Where the Spirit of the Lord is, there is liberty. I declare victory over every stronghold and every weight that tries to hinder {possessive} walk. May {subject} walk in the power of the Holy Spirit, free from the past and established in the light. Amen. Join the feed at https://bornagainglobal.com"
     },
     {
         id: 'salvation_house',
         label: 'Household Salvation',
-        text: "Lord, Your Word says that if I believe, I and my household shall be saved. I claim {name} and {possessive} entire family for the Kingdom today. I pull down every stronghold of rebellion and spiritual blindness. Let Your light shine into {possessive} home. Join our harvest community at https://bornagainglobal.com"
-    },
-    {
-        id: 'deliverance',
-        label: 'Complete Deliverance',
-        text: "In the name of Jesus, I speak complete deliverance over {name}. Every chain that has bound {object} is broken today. I declare that {subject} is a new creation in Christ, and the old things have passed away. Walk in the glorious liberty of the children of God. Join our harvest community at https://bornagainglobal.com"
+        text: "Lord, Your Word says that if I believe, I and my household shall be saved. I claim {name} and {possessive} entire family for the Kingdom today. I pull down every stronghold of spiritual blindness. Let Your light shine into {possessive} home and bring total reconciliation. Amen. Join us at https://bornagainglobal.com"
     }
 ];
 

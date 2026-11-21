@@ -37,6 +37,7 @@ import { Country, State } from 'country-state-city';
 import { motion, AnimatePresence } from "framer-motion";
 import { format, differenceInYears } from "date-fns";
 import { cn, safeToDate } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -98,7 +99,7 @@ function PrivateLocationMap({ form, markerPosition }: { form: any, markerPositio
         }
     };
 
-    if (loadError) return <div className="h-60 w-full bg-muted/50 rounded-md flex items-center justify-center border-2 border-dashed"><p className="text-xs text-muted-foreground">Map Error</p></div>;
+    if (loadError) return <div className="h-60 w-full bg-muted/50 rounded-md flex items-center justify-center border-2 border-dashed text-left"><p className="text-xs text-muted-foreground text-left">Map Error</p></div>;
     if (!isLoaded) return <Skeleton className="h-60 w-full mt-2" />;
 
     return (
@@ -162,6 +163,33 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     control: form.control,
     name: "videoTestimonies"
   });
+
+  useEffect(() => {
+    if (userProfile) {
+        form.reset({
+            accountType: userProfile.accountType || 'Personal',
+            firstName: userProfile.firstName || "",
+            lastName: userProfile.lastName || "",
+            photoURL: userProfile.photoURL || "",
+            bio: userProfile.bio || "",
+            personalMessage: userProfile.personalMessage || "",
+            maritalStatus: userProfile.maritalStatus || "",
+            workStatus: userProfile.workStatus || "",
+            organizationName: userProfile.organizationName || "",
+            churchName: userProfile.churchName || "",
+            roleInOrganization: userProfile.roleInOrganization || "",
+            videoTestimonies: userProfile.videoTestimonies || [],
+            dateOfBirth: safeToDate(userProfile.dateOfBirth) || null,
+            city: userProfile.location?.city || "",
+            state: userProfile.location?.state || "",
+            country: userProfile.location?.country || "",
+            latitude: userProfile.location?.latitude ?? null,
+            longitude: userProfile.location?.longitude ?? null,
+            phone: userProfile.phone || "",
+            defaultMeetingLink: userProfile.defaultMeetingLink || "",
+        });
+    }
+  }, [userProfile, form]);
 
   const watchedLat = form.watch('latitude');
   const watchedLng = form.watch('longitude');
@@ -338,12 +366,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     }
   }
 
-  const handleCreateMeet = () => {
-    window.open('https://meet.google.com/new', '_blank');
-  };
-
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden text-left">
        <div className="absolute inset-0 pointer-events-none opacity-[0.02] flex items-center justify-center overflow-hidden">
           <div className="grid grid-cols-4 gap-12 rotate-12">
               {[...Array(16)].map((_, i) => (
@@ -353,14 +377,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10 text-left">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10 text-left text-left">
            <div className="bg-primary/5 p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center text-center space-y-4 text-left">
                 <FormField
                     control={form.control}
                     name="photoURL"
                     render={({ field }) => (
-                        <FormItem className="flex flex-col items-center text-left">
-                            <FormControl className="text-left">
+                        <FormItem className="flex flex-col items-center">
+                            <FormControl>
                                 <ImageUpload
                                     initialImageUrl={field.value}
                                     onUploadComplete={(url) => field.onChange(url)}
@@ -369,7 +393,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                                     circularCrop={true}
                                 />
                             </FormControl>
-                            <FormMessage className="text-left" />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
@@ -386,12 +410,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="accountType"
             render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left">
-                  <Building2 className="h-3.5 w-3.5 text-left" />
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                  <Building2 className="h-3.5 w-3.5" />
                   Account Identity Type
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                  <FormControl className="text-left">
+                  <FormControl>
                     <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner font-bold text-left">
                       <SelectValue placeholder="Select Type" />
                     </SelectTrigger>
@@ -403,7 +427,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     <SelectItem value="Corporate" className="rounded-xl text-left">Corporate / Business</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormMessage className="text-left" />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -414,16 +438,16 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               name="firstName"
               render={({ field }) => (
                 <FormItem className="text-left">
-                  <div className="flex items-center justify-between text-left">
+                  <div className="flex items-center justify-between">
                     <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate text-left">
                       First Name
                     </FormLabel>
                     <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none text-left">MANDATORY</Badge>
                   </div>
-                  <FormControl className="text-left">
+                  <FormControl>
                     <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                   </FormControl>
-                  <FormMessage className="text-left" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -432,16 +456,16 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               name="lastName"
               render={({ field }) => (
                 <FormItem className="text-left">
-                  <div className="flex items-center justify-between text-left">
+                  <div className="flex items-center justify-between">
                     <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate text-left">
                       Last Name
                     </FormLabel>
                     <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none text-left">MANDATORY</Badge>
                   </div>
-                  <FormControl className="text-left">
+                  <FormControl>
                     <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                   </FormControl>
-                  <FormMessage className="text-left" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -452,15 +476,15 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="personalMessage"
             render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left">
-                  <MessageSquare className="h-3.5 w-3.5 text-left" />
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                  <MessageSquare className="h-3.5 w-3.5" />
                   Public Slogan
                 </FormLabel>
-                <FormControl className="text-left">
+                <FormControl>
                   <Input placeholder={isPersonal ? "e.g., Jesus is Lord!" : "e.g., Growing the Kingdom workforce."} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                 </FormControl>
                 <FormDescription className="text-[10px] text-left">A short message shown at the top of your profile.</FormDescription>
-                <FormMessage className="text-left" />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -472,14 +496,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     name="maritalStatus"
                     render={({ field }) => (
                     <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Relationship Status</FormLabel>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Relationship Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                        <FormControl className="text-left">
+                        <FormControl>
                             <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner text-left">
-                            <SelectValue placeholder="Select Status" className="text-left" />
+                            <SelectValue placeholder="Select Status" />
                             </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-xl border-none shadow-2xl text-left">
+                        <SelectContent className="rounded-xl border-none shadow-2xl text-left text-left">
                             <SelectItem value="Single" className="text-left">Single</SelectItem>
                             <SelectItem value="Married" className="text-left">Married</SelectItem>
                             <SelectItem value="Engaged" className="text-left">Engaged</SelectItem>
@@ -487,7 +511,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             <SelectItem value="Widowed" className="text-left">Widowed</SelectItem>
                         </SelectContent>
                         </Select>
-                        <FormMessage className="text-left" />
+                        <FormMessage />
                     </FormItem>
                     )}
                 />
@@ -496,22 +520,24 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     name="workStatus"
                     render={({ field }) => (
                     <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Work Status</FormLabel>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Work Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                        <FormControl className="text-left">
+                        <FormControl>
                             <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner text-left">
-                            <SelectValue placeholder="Select Status" className="text-left" />
+                            <SelectValue placeholder="Select Status" />
                             </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-xl border-none shadow-2xl text-left">
+                        <SelectContent className="rounded-xl border-none shadow-2xl text-left text-left">
                             <SelectItem value="Employed" className="text-left">Employed</SelectItem>
                             <SelectItem value="Self-Employed" className="text-left">Self-Employed</SelectItem>
                             <SelectItem value="Business Owner" className="text-left">Business Owner</SelectItem>
+                            <SelectItem value="Unemployed" className="text-left">Unemployed</SelectItem>
                             <SelectItem value="Student" className="text-left">Student</SelectItem>
+                            <SelectItem value="Retired" className="text-left">Retired</SelectItem>
                             <SelectItem value="Other" className="text-left">Other</SelectItem>
                         </SelectContent>
                         </Select>
-                        <FormMessage className="text-left" />
+                        <FormMessage />
                     </FormItem>
                     )}
                 />
@@ -524,23 +550,23 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden text-left"
+                className="overflow-hidden"
               >
                 <div className="space-y-6 border-2 border-dashed border-muted p-4 sm:p-6 rounded-3xl sm:rounded-[2rem] bg-muted/10 text-left">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1 text-left">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1">
                     <FormField
                       control={form.control}
                       name="organizationName"
                       render={({ field }) => (
-                        <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left">
+                        <FormItem className="text-left text-left">
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left text-left">
                             <Briefcase className="h-3.5 w-3.5 text-left" />
                             {organizationLabel}
                           </FormLabel>
-                          <FormControl className="text-left">
-                            <Input placeholder={`Enter your ${organizationLabel.toLowerCase()}...`} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
+                          <FormControl className="text-left text-left">
+                            <Input placeholder={`Enter your ${organizationLabel.toLowerCase()}...`} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                           </FormControl>
-                          <FormMessage className="text-left" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -548,15 +574,15 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                       control={form.control}
                       name="roleInOrganization"
                       render={({ field }) => (
-                        <FormItem className="text-left">
+                        <FormItem className="text-left text-left">
                           <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left">
                             <User className="h-3.5 w-3.5 text-left" />
                             ROLE
                           </FormLabel>
                           <FormControl className="text-left">
-                            <Input placeholder={isPersonal ? "e.g., Manager, Student..." : "e.g., Lead Pastor..."} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
+                            <Input placeholder={isPersonal ? "e.g., Manager, Student..." : "e.g., Lead Pastor..."} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" />
                           </FormControl>
-                          <FormMessage className="text-left" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -571,30 +597,30 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             name="bio"
             render={({ field }) => (
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     {isPersonal ? 'ABOUT YOURSELF' : 'VISION & MISSION'}
                 </FormLabel>
                 <FormControl className="text-left">
                   <Textarea placeholder={isPersonal ? "Share your personal testimony..." : "Describe the vision and impact..."} className="resize-none text-base min-h-[120px] rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner p-4 sm:p-6 text-left" {...field} />
                 </FormControl>
-                <FormMessage className="text-left" />
+                <FormMessage />
               </FormItem>
             )}
           />
          
           <Accordion type="single" collapsible className="w-full border rounded-2xl sm:rounded-[2rem] overflow-hidden bg-muted/5 text-left">
-            <AccordionItem value="item-1" className="border-none text-left">
-              <AccordionTrigger className="p-4 sm:p-6 hover:no-underline [&[data-state=open]>svg]:rotate-180 text-left">
-                <div className="flex flex-col items-start text-left">
-                  <Label className="text-base sm:text-lg font-black uppercase tracking-tight text-left">Public Location Settings</Label>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1 text-left">
+            <AccordionItem value="item-1" className="border-none">
+              <AccordionTrigger className="p-4 sm:p-6 hover:no-underline [&[data-state=open]>svg]:rotate-180 text-left text-left">
+                <div className="flex flex-col items-start text-left text-left">
+                  <Label className="text-base sm:text-lg font-black uppercase tracking-tight text-left text-left">Public Location Settings</Label>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1 text-left text-left">
                     Set your City, State, and Country for search indexing.
                   </p>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="p-4 sm:p-6 pt-0 space-y-6 text-left">
-                <div className="bg-muted/20 p-4 rounded-2xl text-left">
-                  <Label className="mb-2 block text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Location Search</Label>
+              <AccordionContent className="p-4 sm:p-6 pt-0 space-y-6 text-left text-left">
+                <div className="bg-muted/20 p-4 rounded-2xl text-left text-left">
+                  <Label className="mb-2 block text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground text-left text-left">Location Search</Label>
                   <LocationProfileInput form={form} />
                 </div>
                 
@@ -612,7 +638,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                         >
                           <FormControl className="text-left">
                             <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                              <SelectValue placeholder="Select Country" className="text-left" />
+                              <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl text-left">
@@ -623,7 +649,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage className="text-left" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -631,7 +657,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                     <FormField control={form.control} name="state" render={({ field }) => (
                         <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">State</FormLabel>
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left text-left">State</FormLabel>
                           <Select 
                             onValueChange={(val) => { 
                                 field.onChange(val); 
@@ -642,10 +668,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                           >
                             <FormControl className="text-left">
                               <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} className="text-left" />
+                                <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl text-left">
+                            <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl text-left text-left">
                               {statesList.map((s) => (
                                 <SelectItem key={s.isoCode + s.name} value={s.name} className="rounded-lg text-left">
                                   {s.name}
@@ -653,17 +679,17 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage className="text-left" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                     <FormField control={form.control} name="city" render={({ field }) => (
-                        <FormItem className="text-left">
+                        <FormItem className="text-left text-left">
                           <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">City</FormLabel>
                           <FormControl className="text-left">
                             <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                           </FormControl>
-                          <FormMessage className="text-left" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -672,7 +698,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
                 <div className="pt-4 text-left">
                     <div className="flex justify-between items-center mb-4 text-left">
-                      <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 text-left">
+                      <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 text-left text-left">
                         <Target className="h-3.5 w-3.5 sm:h-4 w-4 text-left" /> Private Proximity Pin
                       </Label>
                       <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-8 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary hover:bg-primary/20 text-left">
@@ -694,7 +720,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             </AccordionItem>
           </Accordion>
 
-          <div className="flex gap-3 sm:gap-4 text-left">
+          <div className="flex gap-3 sm:gap-4 text-left text-left">
              <Button type="button" variant="outline" onClick={onClose} className="h-11 sm:h-14 flex-1 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs text-left">Cancel</Button>
              <Button type="submit" className="h-11 sm:h-14 flex-[2] rounded-xl sm:rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase text-[10px] sm:text-xs text-center" disabled={isSubmitting}>
                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <ShieldCheck className="mr-2 h-4 w-4 text-left" />}
