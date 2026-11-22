@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -13,6 +14,7 @@ import {
   Newspaper,
   Search,
   Settings,
+  Target,
   User,
   UserPlus,
   Loader2,
@@ -29,14 +31,14 @@ import {
   Globe,
   Sparkles,
   ChevronRight,
+  Heart,
   X,
   Utensils,
   Info,
   ChevronDown,
+  Plus,
   Trash2,
-  Target,
-  Gamepad2,
-  Plus
+  Gamepad2
 } from "lucide-react";
 
 import {

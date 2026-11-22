@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -367,7 +368,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden text-left">
        <div className="absolute inset-0 pointer-events-none opacity-[0.02] flex items-center justify-center overflow-hidden">
           <div className="grid grid-cols-4 gap-12 rotate-12">
               {[...Array(16)].map((_, i) => (
@@ -377,7 +378,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10 text-left">
            <div className="bg-primary/5 p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center text-center space-y-4">
                 <FormField
                     control={form.control}
@@ -416,11 +417,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 </FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner font-bold">
+                    <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner font-bold text-left">
                       <SelectValue placeholder="Select Type" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="rounded-2xl border-none shadow-2xl">
+                  <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
                     <SelectItem value="Personal" className="rounded-xl">Personal Account</SelectItem>
                     <SelectItem value="Church" className="rounded-xl">Church Account</SelectItem>
                     <SelectItem value="Church Department" className="rounded-xl">Church Department</SelectItem>
@@ -432,7 +433,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             )}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
             <FormField
               control={form.control}
               name="firstName"
@@ -490,7 +491,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           />
 
           {isPersonal && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                 <FormField
                     control={form.control}
                     name="maritalStatus"
@@ -499,16 +500,16 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                         <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Relationship Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
-                            <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner">
+                            <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner text-left">
                             <SelectValue placeholder="Select Status" />
                             </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-xl border-none shadow-2xl">
-                            <SelectItem value="Single">Single</SelectItem>
-                            <SelectItem value="Married">Married</SelectItem>
-                            <SelectItem value="Engaged">Engaged</SelectItem>
-                            <SelectItem value="Divorced">Divorced</SelectItem>
-                            <SelectItem value="Widowed">Widowed</SelectItem>
+                        <SelectContent className="rounded-xl border-none shadow-2xl text-left">
+                            <SelectItem value="Single" className="rounded-xl">Single</SelectItem>
+                            <SelectItem value="Married" className="rounded-xl">Married</SelectItem>
+                            <SelectItem value="Engaged" className="rounded-xl">Engaged</SelectItem>
+                            <SelectItem value="Divorced" className="rounded-xl">Divorced</SelectItem>
+                            <SelectItem value="Widowed" className="rounded-xl">Widowed</SelectItem>
                         </SelectContent>
                         </Select>
                         <FormMessage />
@@ -523,18 +524,18 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                         <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Work Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
-                            <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner">
-                            <SelectValue placeholder="Select Status" />
+                            <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner text-left">
+                            <SelectValue placeholder="Select Work" />
                             </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-xl border-none shadow-2xl">
-                            <SelectItem value="Employed">Employed</SelectItem>
-                            <SelectItem value="Self-Employed">Self-Employed</SelectItem>
-                            <SelectItem value="Business Owner">Business Owner</SelectItem>
-                            <SelectItem value="Unemployed">Unemployed</SelectItem>
-                            <SelectItem value="Student">Student</SelectItem>
-                            <SelectItem value="Retired">Retired</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
+                        <SelectContent className="rounded-xl border-none shadow-2xl text-left">
+                            <SelectItem value="Employed" className="rounded-xl">Employed</SelectItem>
+                            <SelectItem value="Self-Employed" className="rounded-xl">Self-Employed</SelectItem>
+                            <SelectItem value="Business Owner" className="rounded-xl">Business Owner</SelectItem>
+                            <SelectItem value="Unemployed" className="rounded-xl">Unemployed</SelectItem>
+                            <SelectItem value="Student" className="rounded-xl">Student</SelectItem>
+                            <SelectItem value="Retired" className="rounded-xl">Retired</SelectItem>
+                            <SelectItem value="Other" className="rounded-xl">Other</SelectItem>
                         </SelectContent>
                         </Select>
                         <FormMessage />
@@ -552,7 +553,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <div className="space-y-6 border-2 border-dashed border-muted p-4 sm:p-6 rounded-3xl sm:rounded-[2rem] bg-muted/10">
+                <div className="space-y-6 border-2 border-dashed border-muted p-4 sm:p-6 rounded-3xl sm:rounded-[2rem] bg-muted/10 text-left">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1">
                     <FormField
                       control={form.control}
@@ -608,23 +609,23 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             )}
           />
          
-          <Accordion type="single" collapsible className="w-full border rounded-2xl sm:rounded-[2rem] overflow-hidden bg-muted/5">
+          <Accordion type="single" collapsible className="w-full border rounded-2xl sm:rounded-[2rem] overflow-hidden bg-muted/5 text-left">
             <AccordionItem value="item-1" className="border-none">
-              <AccordionTrigger className="p-4 sm:p-6 hover:no-underline [&[data-state=open]>svg]:rotate-180">
-                <div className="flex flex-col items-start">
+              <AccordionTrigger className="p-4 sm:p-6 hover:no-underline [&[data-state=open]>svg]:rotate-180 text-left">
+                <div className="flex flex-col items-start text-left">
                   <Label className="text-base sm:text-lg font-black uppercase tracking-tight">Public Location Settings</Label>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1 text-left">
                     Set your City, State, and Country for search indexing.
                   </p>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="p-4 sm:p-6 pt-0 space-y-6">
-                <div className="bg-muted/20 p-4 rounded-2xl">
-                  <Label className="mb-2 block text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Location Search</Label>
+              <AccordionContent className="p-4 sm:p-6 pt-0 space-y-6 text-left">
+                <div className="bg-muted/20 p-4 rounded-2xl text-left">
+                  <Label className="mb-2 block text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Location Search</Label>
                   <LocationProfileInput form={form} />
                 </div>
                 
-                <div className="space-y-4 pt-2">
+                <div className="space-y-4 pt-2 text-left">
                   <FormField control={form.control} name="country" render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country</FormLabel>
@@ -637,13 +638,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                           value={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                            <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                               <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl">
+                          <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl text-left">
                             {countriesList.map((c) => (
-                              <SelectItem key={c.isoCode} value={c.name} className="rounded-lg">
+                              <SelectItem key={c.isoCode} value={c.name} className="rounded-lg text-left">
                                 {c.name}
                               </SelectItem>
                             ))}
@@ -654,10 +655,10 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     )}
                   />
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                     <FormField control={form.control} name="state" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">State</FormLabel>
+                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">State</FormLabel>
                           <Select 
                             onValueChange={(val) => { 
                                 field.onChange(val); 
@@ -667,13 +668,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                             disabled={!watchedCountryName || statesList.length === 0}
                           >
                             <FormControl>
-                              <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                              <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                 <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl">
+                            <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl text-left">
                               {statesList.map((s) => (
-                                <SelectItem key={s.isoCode + s.name} value={s.name} className="rounded-lg">
+                                <SelectItem key={s.isoCode + s.name} value={s.name} className="rounded-lg text-left">
                                   {s.name}
                                 </SelectItem>
                               ))}
@@ -696,12 +697,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                   </div>
                 </div>
 
-                <div className="pt-4">
-                    <div className="flex justify-between items-center mb-4">
+                <div className="pt-4 text-left">
+                    <div className="flex justify-between items-center mb-4 text-left">
                       <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
                         <Target className="h-3.5 w-3.5 sm:h-4 w-4" /> Private Proximity Pin
                       </Label>
-                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-8 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary hover:bg-primary/20">
+                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-8 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary hover:bg-primary/20 text-center">
                           <LocateFixed className="mr-1 h-3 w-3" />
                           SYNC NOW
                       </Button>
@@ -720,8 +721,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             </AccordionItem>
           </Accordion>
 
-          <div className="flex gap-3 sm:gap-4">
-             <Button type="button" variant="outline" onClick={onClose} className="h-11 sm:h-14 flex-1 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs">Cancel</Button>
+          <div className="flex gap-3 sm:gap-4 text-left">
+             <Button type="button" variant="outline" onClick={onClose} className="h-11 sm:h-14 flex-1 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs text-center">Cancel</Button>
              <Button type="submit" className="h-11 sm:h-14 flex-[2] rounded-xl sm:rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase text-[10px] sm:text-xs text-center" disabled={isSubmitting}>
                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                ACTIVATE IDENTITY
