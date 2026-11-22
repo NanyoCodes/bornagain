@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -554,7 +553,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 className="overflow-hidden"
               >
                 <div className="space-y-6 border-2 border-dashed border-muted p-4 sm:p-6 rounded-3xl sm:rounded-[2rem] bg-muted/10 text-left">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1 text-left">
                     <FormField
                       control={form.control}
                       name="organizationName"
@@ -610,11 +609,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           />
          
           <Accordion type="single" collapsible className="w-full border rounded-2xl sm:rounded-[2rem] overflow-hidden bg-muted/5 text-left">
-            <AccordionItem value="item-1" className="border-none">
+            <AccordionItem value="item-1" className="border-none text-left">
               <AccordionTrigger className="p-4 sm:p-6 hover:no-underline [&[data-state=open]>svg]:rotate-180 text-left">
                 <div className="flex flex-col items-start text-left">
-                  <Label className="text-base sm:text-lg font-black uppercase tracking-tight">Public Location Settings</Label>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1 text-left">
+                  <Label className="text-base sm:text-lg font-black uppercase tracking-tight text-left">Public Location Settings</Label>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1 text-left text-left">
                     Set your City, State, and Country for search indexing.
                   </p>
                 </div>
@@ -627,7 +626,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 
                 <div className="space-y-4 pt-2 text-left">
                   <FormField control={form.control} name="country" render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="text-left">
                         <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country</FormLabel>
                         <Select 
                           onValueChange={(val) => { 
@@ -657,7 +656,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                     <FormField control={form.control} name="state" render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="text-left">
                           <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">State</FormLabel>
                           <Select 
                             onValueChange={(val) => { 
@@ -685,7 +684,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                       )}
                     />
                     <FormField control={form.control} name="city" render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="text-left">
                           <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
                           <FormControl>
                             <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
@@ -699,7 +698,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
                 <div className="pt-4 text-left">
                     <div className="flex justify-between items-center mb-4 text-left">
-                      <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                      <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 text-left">
                         <Target className="h-3.5 w-3.5 sm:h-4 w-4" /> Private Proximity Pin
                       </Label>
                       <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-8 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary hover:bg-primary/20 text-center">
@@ -722,8 +721,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
           </Accordion>
 
           <div className="flex gap-3 sm:gap-4 text-left">
-             <Button type="button" variant="outline" onClick={onClose} className="h-11 sm:h-14 flex-1 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs text-center">Cancel</Button>
-             <Button type="submit" className="h-11 sm:h-14 flex-[2] rounded-xl sm:rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase text-[10px] sm:text-xs text-center" disabled={isSubmitting}>
+             <Button type="button" variant="outline" onClick={onClose} className="h-11 sm:h-14 flex-1 rounded-xl sm:rounded-2xl font-bold text-[10px] sm:text-xs text-center text-left">Cancel</Button>
+             <Button type="submit" className="h-11 sm:h-14 flex-[2] rounded-xl sm:rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase text-[10px] sm:text-xs text-center text-left" disabled={isSubmitting}>
                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                ACTIVATE IDENTITY
              </Button>
