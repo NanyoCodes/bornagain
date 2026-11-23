@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment } from '@/lib/types';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment, Chat } from '@/lib/types';
 import { 
     doc, 
     collection, 
@@ -18,7 +18,9 @@ import {
     deleteField, 
     setDoc, 
     limit, 
-    arrayUnion 
+    arrayUnion, 
+    getDocs, 
+    getDoc 
 } from 'firebase/firestore';
 import { 
     Loader2, 
@@ -110,6 +112,192 @@ function LiveMemberAvatar({ userId, fallbackUrl, fallbackInitials, className }: 
             <AvatarImage src={currentPhotoUrl} className="object-cover" />
             <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
         </Avatar>
+    );
+}
+
+function FullDevotionalDialog({ 
+    devotional, 
+    children,
+    fellowshipId,
+    commentCount = 0,
+    supporters = [],
+    inspiredBy = [],
+    connectedBy = [],
+    onReaction,
+    isProcessingReaction
+}: { 
+    devotional: DailyDevotional, 
+    children: React.ReactNode,
+    fellowshipId: string,
+    commentCount?: number,
+    supporters?: string[],
+    inspiredBy?: string[],
+    connectedBy?: string[],
+    onReaction: (type: 'amen' | 'inspired' | 'celebrate', e: React.MouseEvent) => void,
+    isProcessingReaction: string | null
+}) {
+    const { user } = useUser();
+    const isMobile = useIsMobile();
+    const [isOpen, setIsOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    const commentsRef = useRef<HTMLDivElement>(null);
+    useEffect(() => setMounted(true), []);
+
+    const hasAmened = user ? supporters.includes(user.uid) : false;
+    const hasInspired = user ? inspiredBy.includes(user.uid) : false;
+    const hasCelebrated = user ? connectedBy.includes(user.uid) : false;
+
+    const commentPath = `fellowships/${fellowshipId}/devotionals/${devotional.scheduledDate}/comments`;
+
+    const scrollToComments = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        commentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    const stopPropagation = (e: React.MouseEvent) => {
+        e.stopPropagation();
+    };
+
+    if (!mounted) return <>{children}</>;
+
+    const content = (
+        <div className="space-y-8 text-left" onClick={stopPropagation}>
+            <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
+                <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
+                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-left text-balance relative z-10 break-words">{devotional.text}</p>
+                <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10">— {devotional.scripture}</p>
+            </div>
+            
+            {devotional.prayer && (
+                <div className="bg-muted/30 rounded-[2rem] p-8 sm:p-10 border border-muted-foreground/10 shadow-sm relative overflow-hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <HandHeart className="h-4 w-4 text-primary" />
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">PRAYER FOR TODAY</span>
+                    </div>
+                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance break-words">
+                        &ldquo;{devotional.prayer}&rdquo;
+                    </p>
+                </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-dashed pt-8">
+                <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit">
+                    <Sparkles className="h-4 w-4 text-primary fill-current" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap justify-center w-full sm:w-auto">
+                    <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                        <Button 
+                            onClick={(e) => onReaction('amen', e)} 
+                            disabled={isProcessingReaction !== null || !user} 
+                            variant="outline" 
+                            size="sm" 
+                            className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest bg-background", hasAmened && "bg-primary/10 border-primary/30 text-primary")}
+                        >
+                            {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className={cn("h-3.5 w-3.5", hasAmened && "fill-current")} />}
+                            <span>Amen</span>
+                        </Button>
+                        <Button 
+                            onClick={(e) => onReaction('inspired', e)} 
+                            disabled={isProcessingReaction !== null || !user} 
+                            variant="outline" 
+                            size="sm" 
+                            className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest bg-background", hasInspired && "bg-chart-3/10 border-chart-3/30 text-chart-3")}
+                        >
+                            {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5", hasInspired && "fill-current")} />}
+                            <span>Hallelujah</span>
+                        </Button>
+                        <Button 
+                            onClick={(e) => onReaction('celebrate', e)} 
+                            disabled={isProcessingReaction !== null || !user} 
+                            variant="outline" 
+                            size="sm" 
+                            className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest bg-background", hasCelebrated && "bg-blue-500/10 border-blue-500/30 text-blue-500")}
+                        >
+                            {isProcessingReaction === 'celebrate' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
+                            <span>Celebrate</span>
+                        </Button>
+                    </div>
+
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-9 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest bg-muted/20 border-primary/20 hover:bg-muted/30 transition-all active:scale-95 px-6 shadow-sm"
+                        onClick={scrollToComments}
+                    >
+                        <MessageSquare className="h-4 w-4 text-primary" />
+                        <span>{commentCount} Response{commentCount !== 1 ? 's' : ''}</span>
+                    </Button>
+                </div>
+            </div>
+
+            <div ref={commentsRef} className="border-t border-dashed pt-8">
+                <div className="flex items-center gap-3 mb-6 px-1">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <MessageSquare className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">GATHERED RESPONSES</span>
+                </div>
+                <CommentSectionLazy path={commentPath} inline />
+            </div>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left flex-shrink-0 p-0">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
+                                <MessageSquare className="h-6 w-6 text-primary shrink-0" />
+                                {devotional.title}
+                            </SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <ScrollArea className="flex-grow">
+                        <div className="p-8 pb-32">
+                            {content}
+                        </div>
+                    </ScrollArea>
+                </SheetContent>
+            </Sheet>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild onClick={stopPropagation}>
+                {children}
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh]">
+                <div className="p-8 border-b bg-muted/10 shrink-0">
+                    <div className="flex items-center gap-3 mb-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
+                    </div>
+                    <DialogHeader>
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight break-words flex items-center gap-3 text-balance">{devotional.title}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
+                    </DialogHeader>
+                </div>
+                <div className="flex-1 min-h-0">
+                  <ScrollArea className="h-full">
+                      <div className="p-8">
+                          {content}
+                      </div>
+                  </ScrollArea>
+                </div>
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0">
+                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold">Close Word</Button>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
 
@@ -247,7 +435,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
             {loadingSchedule ? (
                 <div className="py-12 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
             ) : (scheduledDevotionals && scheduledDevotionals.length > 0) ? (
-                <div className="grid gap-3 text-left">
+                <div className="grid gap-3">
                     {scheduledDevotionals.map(devo => {
                         const isSelected = isSameDay(parseISO(devo.scheduledDate), viewDate);
                         return (
@@ -269,6 +457,10 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
             )}
         </div>
     );
+
+    const handleDateNav = (direction: 'prev' | 'next') => {
+        setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
+    };
 
     return (
         <div className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4 text-left">
@@ -324,7 +516,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                                 </div>
                             ) : (
                                 <div className="text-center py-12 bg-white/5 rounded-3xl border-2 border-dashed border-white/10">
-                                    <p className="text-sm opacity-50 italic">No spiritual guidance published for this date.</p>
+                                    <p className="text-sm opacity-50 italic">No spiritual guidance Arranged for this date.</p>
                                     {isOrganizer && <Button variant="secondary" className="mt-6 h-11 px-8 rounded-xl font-black uppercase" onClick={() => setIsDevotionalDialogOpen(true)}>PUBLISH WORD</Button>}
                                 </div>
                             )}
@@ -417,7 +609,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
 
             {isScheduleViewOpen && (
                 isMobile ? (
-                    <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10"><SheetHeader className="text-left flex-shrink-0"><div className="flex items-center gap-2 mb-2"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span></div><SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle><SheetDescription className="text-sm font-medium mt-1 text-left">Browse scheduled meditations for this group.</SheetDescription></SheetHeader></div><ScrollArea className="flex-grow px-8 pt-6">{ScheduleList}</ScrollArea></SheetContent></Sheet>
+                    <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10"><SheetHeader className="text-left flex-shrink-0"><div className="flex items-center gap-2 mb-2"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span></div><SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Browse scheduled meditations for this group.</SheetDescription></SheetHeader></div><ScrollArea className="flex-grow px-8 pt-6">{ScheduleList}</ScrollArea></SheetContent></Sheet>
                 ) : (
                     <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Spiritual Schedule</DialogTitle><DialogDescription className="text-sm font-medium">Peek ahead at scheduled meditations.</DialogDescription></DialogHeader></div><ScrollArea className="max-h-[60vh] p-6">{ScheduleList}</ScrollArea></DialogContent></Dialog>
                 )
@@ -428,7 +620,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
             
             <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left flex-shrink-0 p-0 text-left"><DrawerTitle className="text-2xl font-black font-headline">Log Convert</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1">Record a new life won to this community.</DrawerDescription></DrawerHeader></div>
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left"><DrawerHeader className="text-left flex-shrink-0 p-0"><DrawerTitle className="text-2xl font-black font-headline">Log Convert</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1">Record a new life won to this community.</DrawerDescription></DrawerHeader></div>
                     <ScrollArea className="flex-1 min-h-0 p-8"><LogSoulFormLazy onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} /></ScrollArea>
                 </DrawerContent>
             </Drawer>
