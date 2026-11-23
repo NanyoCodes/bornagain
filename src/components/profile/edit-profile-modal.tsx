@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,8 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import React, { useState, useMemo, useEffect, useRef } from "react";
-import { Loader2, LocateFixed, Map as MapIcon, Youtube, Plus, Trash2, ShieldCheck, Sparkles, Building2, User, Briefcase, MessageSquare, Camera, Church, X, Target } from "lucide-react";
+import React, { useState, useMemo, useEffect } from "react";
+import { Loader2, Youtube, Trash2, ShieldCheck, Sparkles, Building2, User, Briefcase, MessageSquare, Target } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc, serverTimestamp, collection, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -28,23 +28,10 @@ import { LocationProfileInput } from "../common/location-profile-input";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ImageUpload } from "../common/image-upload";
-import { useJsApiLoader, GoogleMap, MarkerF } from '@react-google-maps/api';
-import { Skeleton } from "../ui/skeleton";
-import { Card, CardContent } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Country, State } from 'country-state-city';
-import { motion, AnimatePresence } from "framer-motion";
-import { format, differenceInYears } from "date-fns";
-import { cn, safeToDate } from "@/lib/utils";
+import { safeToDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-
-const libraries: ('places')[] = ['places'];
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-const isValidKey = (key: string | undefined) => !!(key && key.startsWith('AIza') && key.length > 20);
-
-const fallbackCenter = { lat: 34.0522, lng: -118.2437 };
 
 const videoSchema = z.object({
   url: z.string().url("Please enter a valid YouTube URL."),
@@ -79,43 +66,6 @@ interface EditProfileModalProps {
   onClose: () => void;
 }
 
-function PrivateLocationMap({ form, markerPosition }: { form: any, markerPosition: google.maps.LatLngLiteral | null }) {
-    const { isLoaded, loadError } = useJsApiLoader({
-        googleMapsApiKey: GOOGLE_MAPS_API_KEY || '',
-        libraries,
-    });
-
-    const handleMapClick = (e: google.maps.MapMouseEvent) => {
-        if (e.latLng) {
-            form.setValue('latitude', e.latLng.lat(), { shouldDirty: true });
-            form.setValue('longitude', e.latLng.lng(), { shouldDirty: true });
-        }
-    };
-
-    if (loadError) return <div className="h-60 w-full bg-muted/50 rounded-md flex items-center justify-center border-2 border-dashed"><p className="text-xs text-muted-foreground">Map Error</p></div>;
-    if (!isLoaded) return <Skeleton className="h-60 w-full mt-2" />;
-
-    return (
-        <div className="h-60 w-full rounded-md overflow-hidden mt-2 border">
-            <GoogleMap
-                mapContainerClassName="h-full w-full"
-                center={markerPosition || fallbackCenter}
-                zoom={markerPosition ? 12 : 4}
-                onClick={handleMapClick}
-                options={{ streetViewControl: false, mapTypeControl: false }}
-            >
-                {markerPosition && (
-                    <MarkerF
-                        position={markerPosition}
-                        draggable={true}
-                        onDragEnd={handleMapClick}
-                    />
-                )}
-            </GoogleMap>
-        </div>
-    );
-}
-
 export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps) {
   const { toast } = useToast();
   const { user } = useUser();
@@ -123,7 +73,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const auth = useAuth();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const countriesList = useMemo(() => Country.getAllCountries(), []);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -152,7 +101,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     },
   });
 
-<<<<<<< HEAD
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "videoTestimonies"
@@ -185,14 +133,9 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
     }
   }, [userProfile, form]);
 
-=======
->>>>>>> origin/main
-  const watchedLat = form.watch('latitude');
-  const watchedLng = form.watch('longitude');
   const watchedCountryName = form.watch('country');
   const watchedWorkStatus = useWatch({ control: form.control, name: "workStatus" });
   const watchedAccountType = useWatch({ control: form.control, name: "accountType" });
-  const watchedPhotoURL = useWatch({ control: form.control, name: "photoURL" });
 
   const isPersonal = watchedAccountType === 'Personal';
 
@@ -200,7 +143,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       if (watchedAccountType === 'Church') return 'Church Name';
       if (watchedAccountType === 'Church Department') return 'Department Name';
       if (watchedAccountType === 'Corporate') return 'Company Name';
-      
       switch(watchedWorkStatus) {
           case 'Employed': return 'Company Name';
           case 'Business Owner': return 'Business Name';
@@ -214,42 +156,12 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       return !isPersonal || ['Employed', 'Business Owner', 'Student', 'Self-Employed', 'Other'].includes(watchedWorkStatus || '');
   }, [watchedWorkStatus, isPersonal]);
 
-  const selectedCountry = useMemo(() => 
-    countriesList.find(c => c.name === watchedCountryName), 
-    [countriesList, watchedCountryName]
-  );
-
-  const statesList = useMemo(() => 
-    selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : [], 
-    [selectedCountry]
-  );
-
-  const markerPosition = useMemo(() => {
-    if (watchedLat != null && watchedLng != null) {
-      return { lat: watchedLat, lng: watchedLng };
-    }
-    return null;
-  }, [watchedLat, watchedLng]);
-  
-  const handleGeolocate = () => {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                form.setValue('latitude', position.coords.latitude, { shouldDirty: true });
-                form.setValue('longitude', position.coords.longitude, { shouldDirty: true });
-                toast({ title: 'Location Updated' });
-            },
-            () => {
-                toast({ variant: 'destructive', title: 'Geolocation Failed' });
-            }
-        );
-    }
-  };
+  const selectedCountry = useMemo(() => countriesList.find(c => c.name === watchedCountryName), [countriesList, watchedCountryName]);
+  const statesList = useMemo(() => selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : [], [selectedCountry]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore || !auth.currentUser) return;
     setIsSubmitting(true);
-
     const displayName = `${values.firstName} ${values.lastName}`;
     const authorLocation = {
       city: values.city || "",
@@ -261,7 +173,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       latitude: values.latitude ?? null,
       longitude: values.longitude ?? null,
     };
-
     const firestoreUpdatePayload = {
         accountType: values.accountType,
         firstName: values.firstName,
@@ -283,13 +194,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         defaultMeetingLink: values.defaultMeetingLink || null,
         lastUpdatedAt: serverTimestamp(),
     };
-
     try {
       await updateDoc(doc(firestore, 'users', user.uid), firestoreUpdatePayload);
       if (auth.currentUser.displayName !== displayName || auth.currentUser.photoURL !== values.photoURL) {
           await updateProfile(auth.currentUser, { displayName, photoURL: values.photoURL });
       }
-
       const batch = writeBatch(firestore);
       const testimoniesSnap = await getDocs(query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)));
       testimoniesSnap.forEach(tDoc => {
@@ -303,7 +212,6 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               }
           });
       });
-
       await batch.commit();
       toast({ title: "Identity Activated" });
       onClose();
@@ -315,31 +223,16 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   }
 
   return (
-<<<<<<< HEAD
     <div className="space-y-8 text-left">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-           <div className="bg-primary/5 p-6 rounded-[2rem] border-2 border-dashed border-primary/20 flex flex-col items-center gap-4">
-=======
-    <div className="relative overflow-hidden text-left">
-       <div className="absolute inset-0 pointer-events-none opacity-[0.02] flex items-center justify-center overflow-hidden">
-          <div className="grid grid-cols-4 gap-12 rotate-12">
-              {[...Array(16)].map((_, i) => (
-                  <Sparkles key={i} className="h-24 w-24 text-primary" />
-              ))}
-          </div>
-      </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10 text-left">
-           <div className="bg-primary/5 p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center text-center space-y-4">
->>>>>>> origin/main
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
+           <div className="bg-primary/5 p-6 rounded-[2rem] border-2 border-dashed border-primary/20 flex flex-col items-center gap-4 text-left">
                 <FormField
                     control={form.control}
                     name="photoURL"
                     render={({ field }) => (
-                        <FormItem className="flex flex-col items-center">
-                            <FormControl>
+                        <FormItem className="flex flex-col items-center text-left">
+                            <FormControl className="text-left">
                                 <ImageUpload
                                     initialImageUrl={field.value}
                                     onUploadComplete={(url) => field.onChange(url)}
@@ -348,7 +241,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                                     circularCrop={true}
                                 />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-left" />
                         </FormItem>
                     )}
                 />
@@ -358,90 +251,32 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             control={form.control}
             name="accountType"
             render={({ field }) => (
-<<<<<<< HEAD
-              <FormItem>
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2"><Building2 className="h-3.5 w-3.5" />Account Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left"><SelectValue placeholder="Select Type" /></SelectTrigger>
-                  </FormControl>
-                  <SelectContent className="rounded-2xl border-none shadow-2xl">
-                    <SelectItem value="Personal">Personal Account</SelectItem>
-                    <SelectItem value="Church">Church Account</SelectItem>
-                    <SelectItem value="Church Department">Church Department</SelectItem>
-                    <SelectItem value="Corporate">Corporate / Business</SelectItem>
-                  </SelectContent>
-                </Select>
-=======
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
-                  <Building2 className="h-3.5 w-3.5" />
-                  Account Identity Type
-                </FormLabel>
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left"><Building2 className="h-3.5 w-3.5 text-left" />Account Type</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner font-bold">
-                      <SelectValue placeholder="Select Type" />
-                    </SelectTrigger>
+                  <FormControl className="text-left">
+                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left"><SelectValue placeholder="Select Type" className="text-left" /></SelectTrigger>
                   </FormControl>
-                  <SelectContent className="rounded-2xl border-none shadow-2xl">
-                    <SelectItem value="Personal" className="rounded-xl">Personal Account</SelectItem>
-                    <SelectItem value="Church" className="rounded-xl">Church Account</SelectItem>
-                    <SelectItem value="Church Department" className="rounded-xl">Church Department</SelectItem>
-                    <SelectItem value="Corporate" className="rounded-xl">Corporate / Business</SelectItem>
+                  <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
+                    <SelectItem value="Personal" className="text-left">Personal Account</SelectItem>
+                    <SelectItem value="Church" className="text-left">Church Account</SelectItem>
+                    <SelectItem value="Church Department" className="text-left">Church Department</SelectItem>
+                    <SelectItem value="Corporate" className="text-left">Corporate / Business</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormMessage />
->>>>>>> origin/main
               </FormItem>
             )}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<<<<<<< HEAD
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
             <FormField control={form.control} name="firstName" render={({ field }) => (
-                <FormItem><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">First Name <Badge variant="outline" className="text-[8px] h-3.5 ml-1 border-primary/40 text-primary">MANDATORY</Badge></FormLabel>
-                  <FormControl><Input placeholder="John" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage />
+                <FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">First Name <Badge variant="outline" className="text-[8px] h-3.5 ml-1 border-primary/40 text-primary text-left">MANDATORY</Badge></FormLabel>
+                  <FormControl className="text-left"><Input placeholder="John" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></FormControl><FormMessage className="text-left" />
                 </FormItem>
             )} />
             <FormField control={form.control} name="lastName" render={({ field }) => (
-                <FormItem><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Last Name <Badge variant="outline" className="text-[8px] h-3.5 ml-1 border-primary/40 text-primary">MANDATORY</Badge></FormLabel>
-                  <FormControl><Input placeholder="Doe" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl><FormMessage />
-=======
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <div className="flex items-center justify-between">
-                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
-                      First Name
-                    </FormLabel>
-                    <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none">MANDATORY</Badge>
-                  </div>
-                  <FormControl>
-                    <Input placeholder="John" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <div className="flex items-center justify-between">
-                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
-                      Last Name
-                    </FormLabel>
-                    <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/5 text-primary border-none leading-none">MANDATORY</Badge>
-                  </div>
-                  <FormControl>
-                    <Input placeholder="Doe" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
-                  </FormControl>
-                  <FormMessage />
->>>>>>> origin/main
+                <FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Last Name <Badge variant="outline" className="text-[8px] h-3.5 ml-1 border-primary/40 text-primary text-left">MANDATORY</Badge></FormLabel>
+                  <FormControl className="text-left"><Input placeholder="Doe" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></FormControl><FormMessage className="text-left" />
                 </FormItem>
             )} />
           </div>
@@ -450,304 +285,62 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
             control={form.control}
             name="personalMessage"
             render={({ field }) => (
-<<<<<<< HEAD
-              <FormItem>
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2"><MessageSquare className="h-3.5 w-3.5" />Slogan</FormLabel>
-                <FormControl><Input placeholder="e.g., Jesus is Lord!" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl>
-=======
               <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
-                  <MessageSquare className="h-3.5 w-3.5" />
-                  Public Slogan
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder={isPersonal ? "e.g., Jesus is Lord!" : "e.g., Growing the Kingdom workforce."} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left"><MessageSquare className="h-3.5 w-3.5 text-left" />Slogan</FormLabel>
+                <FormControl className="text-left">
+                    <Input placeholder="e.g., Jesus is Lord!" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                 </FormControl>
-                <FormDescription className="text-[10px]">A short message shown at the top of your profile.</FormDescription>
->>>>>>> origin/main
-                <FormMessage />
+                <FormMessage className="text-left" />
               </FormItem>
             )}
           />
 
-<<<<<<< HEAD
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            <AccordionItem value="logistics" className="border rounded-[2rem] bg-muted/5">
-                <AccordionTrigger className="p-6 hover:no-underline"><div className="flex flex-col items-start"><p className="text-lg font-black uppercase tracking-tight">Public Logistics</p><p className="text-xs font-medium text-muted-foreground mt-1">Address for search indexing</p></div></AccordionTrigger>
-                <AccordionContent className="p-6 pt-0 space-y-6">
-                    <div className="bg-muted/20 p-4 rounded-2xl"><Label className="mb-2 block text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Search Address</Label><LocationProfileInput form={form} /></div>
-                    <div className="space-y-4">
-                        <FormField control={form.control} name="country" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country</FormLabel><Select onValueChange={(val) => { field.onChange(val); form.setValue('state', ''); form.setValue('city', ''); }} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left"><SelectValue placeholder="Country" /></SelectTrigger></FormControl><SelectContent className="max-h-[300px]">{countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}</SelectContent></Select></FormItem>)} />
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <FormField control={form.control} name="state" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">State</FormLabel><Select onValueChange={(val) => { field.onChange(val); form.setValue('city', ''); }} value={field.value} disabled={!watchedCountryName || statesList.length === 0}><FormControl><SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left"><SelectValue placeholder="State" /></SelectTrigger></FormControl><SelectContent className="max-h-[300px]">{statesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}</SelectContent></Select></FormItem>)} />
-                            <FormField control={form.control} name="city" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel><FormControl><Input placeholder="City" {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold" /></FormControl></FormItem>)} />
+          <Accordion type="single" collapsible className="w-full space-y-4 text-left">
+            <AccordionItem value="logistics" className="border rounded-[2rem] bg-muted/5 text-left">
+                <AccordionTrigger className="p-6 hover:no-underline text-left"><div className="flex flex-col items-start text-left"><p className="text-lg font-black uppercase tracking-tight text-left">Public Logistics</p><p className="text-xs font-medium text-muted-foreground mt-1 text-left">Address for search indexing</p></div></AccordionTrigger>
+                <AccordionContent className="p-6 pt-0 space-y-6 text-left">
+                    <div className="bg-muted/20 p-4 rounded-2xl text-left"><Label className="mb-2 block text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Search Address</Label><LocationProfileInput form={form} /></div>
+                    <div className="space-y-4 text-left">
+                        <FormField control={form.control} name="country" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Country</FormLabel><Select onValueChange={(val) => { field.onChange(val); form.setValue('state', ''); form.setValue('city', ''); }} value={field.value}><FormControl className="text-left"><SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left"><SelectValue placeholder="Country" className="text-left" /></SelectTrigger></FormControl><SelectContent className="max-h-[300px] text-left">{countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}</SelectContent></Select></FormItem>)} />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                            <FormField control={form.control} name="state" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">State</FormLabel><Select onValueChange={(val) => { field.onChange(val); form.setValue('city', ''); }} value={field.value} disabled={!watchedCountryName || statesList.length === 0}><FormControl className="text-left"><SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left"><SelectValue placeholder="State" className="text-left" /></SelectTrigger></FormControl><SelectContent className="max-h-[300px] text-left">{statesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}</SelectContent></Select></FormItem>)} />
+                            <FormField control={form.control} name="city" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">City</FormLabel><FormControl className="text-left"><Input placeholder="City" {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left" /></FormControl></FormItem>)} />
                         </div>
                     </div>
-                    <div className="pt-4"><div className="flex justify-between items-center mb-4"><Label className="text-[10px] sm:text-xs font-black uppercase text-primary flex items-center gap-2"><Target className="h-4 w-4" />Proximity Pin</Label><Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-8 rounded-full bg-primary/10 text-primary">SYNC GPS</Button></div><PrivateLocationMap form={form} markerPosition={markerPosition} /></div>
                 </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="details" className="border rounded-[2rem] bg-muted/5">
-                <AccordionTrigger className="p-6 hover:no-underline"><div className="flex flex-col items-start"><p className="text-lg font-black uppercase tracking-tight">Identity Details</p><p className="text-xs font-medium text-muted-foreground mt-1">Marital, Professional & Spiritual context</p></div></AccordionTrigger>
-                <AccordionContent className="p-6 pt-0 space-y-6">
+            <AccordionItem value="details" className="border rounded-[2rem] bg-muted/5 text-left">
+                <AccordionTrigger className="p-6 hover:no-underline text-left"><div className="flex flex-col items-start text-left"><p className="text-lg font-black uppercase tracking-tight text-left">Identity Details</p><p className="text-xs font-medium text-muted-foreground mt-1 text-left">Marital, Professional & Spiritual context</p></div></AccordionTrigger>
+                <AccordionContent className="p-6 pt-0 space-y-6 text-left">
                     {isPersonal && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <FormField control={form.control} name="maritalStatus" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Relationship</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left"><SelectValue placeholder="Marital Status" /></SelectTrigger></FormControl><SelectContent>{['Single', 'Married', 'Engaged', 'Widowed'].map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select></FormItem>)} />
-                            <FormField control={form.control} name="workStatus" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Work Status</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left"><SelectValue placeholder="Work Status" /></SelectTrigger></FormControl><SelectContent>{['Employed', 'Self-Employed', 'Business Owner', 'Student'].map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select></FormItem>)} />
-=======
-          {isPersonal && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField
-                    control={form.control}
-                    name="maritalStatus"
-                    render={({ field }) => (
-                    <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Relationship Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                        <FormControl>
-                            <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner">
-                            <SelectValue placeholder="Select Status" />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="rounded-xl border-none shadow-2xl">
-                            <SelectItem value="Single">Single</SelectItem>
-                            <SelectItem value="Married">Married</SelectItem>
-                            <SelectItem value="Engaged">Engaged</SelectItem>
-                            <SelectItem value="Divorced">Divorced</SelectItem>
-                            <SelectItem value="Widowed">Widowed</SelectItem>
-                        </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="workStatus"
-                    render={({ field }) => (
-                    <FormItem className="text-left">
-                        <FormLabel className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Work Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                        <FormControl>
-                            <SelectTrigger className="h-11 sm:h-12 rounded-xl sm:rounded-2xl text-base bg-muted/20 border-none shadow-inner">
-                            <SelectValue placeholder="Select Status" />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="rounded-xl border-none shadow-2xl">
-                            <SelectItem value="Employed">Employed</SelectItem>
-                            <SelectItem value="Self-Employed">Self-Employed</SelectItem>
-                            <SelectItem value="Business Owner">Business Owner</SelectItem>
-                            <SelectItem value="Unemployed">Unemployed</SelectItem>
-                            <SelectItem value="Student">Student</SelectItem>
-                            <SelectItem value="Retired">Retired</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
-                        </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-            </div>
-          )}
-
-          <AnimatePresence>
-            {showOrganizationField && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="space-y-6 border-2 border-dashed border-muted p-4 sm:p-6 rounded-3xl sm:rounded-[2rem] bg-muted/10">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1">
-                    <FormField
-                      control={form.control}
-                      name="organizationName"
-                      render={({ field }) => (
-                        <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
-                            <Briefcase className="h-3.5 w-3.5" />
-                            {organizationLabel}
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder={`Enter your ${organizationLabel.toLowerCase()}...`} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="roleInOrganization"
-                      render={({ field }) => (
-                        <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
-                            <User className="h-3.5 w-3.5" />
-                            ROLE
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder={isPersonal ? "e.g., Manager, Student..." : "e.g., Lead Pastor..."} {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <FormField
-            control={form.control}
-            name="bio"
-            render={({ field }) => (
-              <FormItem className="text-left">
-                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    {isPersonal ? 'ABOUT YOURSELF' : 'VISION & MISSION'}
-                </FormLabel>
-                <FormControl>
-                  <Textarea placeholder={isPersonal ? "Share your personal testimony..." : "Describe the vision and impact..."} className="resize-none text-base min-h-[120px] rounded-xl sm:rounded-2xl bg-muted/10 border-none shadow-inner p-4 sm:p-6" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-         
-          <Accordion type="single" collapsible className="w-full border rounded-2xl sm:rounded-[2rem] overflow-hidden bg-muted/5 text-left">
-            <AccordionItem value="item-1" className="border-none">
-              <AccordionTrigger className="p-4 sm:p-6 hover:no-underline [&[data-state=open]>svg]:rotate-180">
-                <div className="flex flex-col items-start text-left">
-                  <Label className="text-base sm:text-lg font-black uppercase tracking-tight">Public Location Settings</Label>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground font-bold mt-1">
-                    Set your City, State, and Country for search indexing.
-                  </p>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="p-4 sm:p-6 pt-0 space-y-6 text-left">
-                <div className="bg-muted/20 p-4 rounded-2xl">
-                  <Label className="mb-2 block text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Location Search</Label>
-                  <LocationProfileInput form={form} />
-                </div>
-                
-                <div className="space-y-4 pt-2">
-                  <FormField control={form.control} name="country" render={({ field }) => (
-                      <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country</FormLabel>
-                        <Select 
-                          onValueChange={(val) => { 
-                              field.onChange(val); 
-                              form.setValue('state', '', { shouldDirty: true }); 
-                              form.setValue('city', '', { shouldDirty: true }); 
-                          }} 
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
-                              <SelectValue placeholder="Select Country" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl">
-                            {countriesList.map((c) => (
-                              <SelectItem key={c.isoCode} value={c.name} className="rounded-lg">
-                                {c.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="state" render={({ field }) => (
-                        <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">State</FormLabel>
-                          <Select 
-                            onValueChange={(val) => { 
-                                field.onChange(val); 
-                                form.setValue('city', '', { shouldDirty: true }); 
-                            }} 
-                            value={field.value}
-                            disabled={!watchedCountryName || statesList.length === 0}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none font-bold">
-                                <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="max-h-[300px] overflow-y-auto rounded-xl border-none shadow-2xl">
-                              {statesList.map((s) => (
-                                <SelectItem key={s.isoCode + s.name} value={s.name} className="rounded-lg">
-                                  {s.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField control={form.control} name="city" render={({ field }) => (
-                        <FormItem className="text-left">
-                          <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11 sm:h-12 rounded-xl sm:rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                        <Target className="h-3.5 w-3.5 sm:h-4 w-4" /> Private Proximity Pin
-                      </Label>
-                      <Button type="button" variant="ghost" size="sm" onClick={handleGeolocate} className="h-8 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary hover:bg-primary/20">
-                          <LocateFixed className="mr-1 h-3 w-3" />
-                          SYNC NOW
-                      </Button>
-                    </div>
-                    {!isValidKey(GOOGLE_MAPS_API_KEY) ? (
-                        <div className="h-60 w-full rounded-2xl bg-muted/30 border-2 border-dashed flex flex-col items-center justify-center text-center p-6 space-y-4">
-                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                                <MapIcon className="h-6 w-6 text-primary opacity-50" />
-                            </div>
->>>>>>> origin/main
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                            <FormField control={form.control} name="maritalStatus" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Relationship</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl className="text-left"><SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left"><SelectValue placeholder="Marital Status" className="text-left" /></SelectTrigger></FormControl><SelectContent className="text-left">{['Single', 'Married', 'Engaged', 'Widowed'].map(v => <SelectItem key={v} value={v} className="text-left">{v}</SelectItem>)}</SelectContent></Select></FormItem>)} />
+                            <FormField control={form.control} name="workStatus" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Work Status</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl className="text-left"><SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left"><SelectValue placeholder="Work Status" className="text-left" /></SelectTrigger></FormControl><SelectContent className="text-left">{['Employed', 'Self-Employed', 'Business Owner', 'Student'].map(v => <SelectItem key={v} value={v} className="text-left">{v}</SelectItem>)}</SelectContent></Select></FormItem>)} />
                         </div>
                     )}
                     {showOrganizationField && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"><FormField control={form.control} name="organizationName" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5"><Briefcase className="h-3.5 w-3.5" />{organizationLabel}</FormLabel><FormControl><Input placeholder="Organization Name" {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold" /></FormControl></FormItem>)} /><FormField control={form.control} name="roleInOrganization" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5"><User className="h-3.5 w-3.5" />ROLE</FormLabel><FormControl><Input placeholder="Position" {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold" /></FormControl></FormItem>)} /></div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                            <FormField control={form.control} name="organizationName" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 text-left"><Briefcase className="h-3.5 w-3.5 text-left" />{organizationLabel}</FormLabel><FormControl className="text-left"><Input placeholder="Organization Name" {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left" /></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="roleInOrganization" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 text-left"><User className="h-3.5 w-3.5 text-left" />ROLE</FormLabel><FormControl className="text-left"><Input placeholder="Position" {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left" /></FormControl></FormItem>)} />
+                        </div>
                     )}
-                    <FormField control={form.control} name="bio" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">BIO / TESTIMONY</FormLabel><FormControl><Textarea placeholder="Share your story..." className="min-h-[120px] rounded-[2rem] bg-muted/20 border-none p-6 text-base" {...field} /></FormControl></FormItem>)} />
+                    <FormField control={form.control} name="bio" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">BIO / TESTIMONY</FormLabel><FormControl className="text-left"><Textarea placeholder="Share your story..." className="min-h-[120px] rounded-[2rem] bg-muted/20 border-none p-6 text-base text-left" {...field} /></FormControl></FormItem>)} />
                 </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="assets" className="border rounded-[2rem] bg-muted/5">
-                <AccordionTrigger className="p-6 hover:no-underline"><div className="flex flex-col items-start"><p className="text-lg font-black uppercase tracking-tight">Kingdom Assets</p><p className="text-xs font-medium text-muted-foreground mt-1">Video testimonies and meeting links</p></div></AccordionTrigger>
-                <AccordionContent className="p-6 pt-0 space-y-6">
-                    <FormField control={form.control} name="defaultMeetingLink" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase text-primary flex items-center gap-1.5"><Sparkles className="h-4 w-4" />PRO-Identity Meeting Link</FormLabel><FormControl><Input placeholder="Google Meet / Zoom URL" {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold" /></FormControl></FormItem>)} />
-                    <div className="space-y-4"><div className="flex items-center justify-between"><Label className="text-[10px] font-black uppercase text-primary flex items-center gap-2"><Youtube className="h-4 w-4" />Video Testimonies</Label><Button type="button" variant="outline" size="sm" onClick={() => append({ url: '', title: '' })} className="h-8 rounded-xl font-bold">Add Video</Button></div><div className="space-y-4">{fields.map((field, index) => (<div key={field.id} className="p-4 border-2 border-dashed rounded-2xl bg-muted/10 space-y-3 relative"><Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full text-destructive" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button><div className="space-y-2"><Label className="text-[9px] font-black uppercase opacity-60">YouTube URL</Label><Input {...form.register(`videoTestimonies.${index}.url` as const)} placeholder="https://youtube.com/watch?v=..." className="h-10 rounded-xl" /></div><div className="space-y-2"><Label className="text-[9px] font-black uppercase opacity-60">Display Title</Label><Input {...form.register(`videoTestimonies.${index}.title` as const)} placeholder="Miracle Title" className="h-10 rounded-xl" /></div></div>))}</div></div>
+            <AccordionItem value="assets" className="border rounded-[2rem] bg-muted/5 text-left">
+                <AccordionTrigger className="p-6 hover:no-underline text-left"><div className="flex flex-col items-start text-left"><p className="text-lg font-black uppercase tracking-tight text-left">Kingdom Assets</p><p className="text-xs font-medium text-muted-foreground mt-1 text-left">Video testimonies and meeting links</p></div></AccordionTrigger>
+                <AccordionContent className="p-6 pt-0 space-y-6 text-left">
+                    <FormField control={form.control} name="defaultMeetingLink" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase text-primary flex items-center gap-1.5 text-left"><Sparkles className="h-4 w-4 text-left" />PRO-Identity Meeting Link</FormLabel><FormControl className="text-left"><Input placeholder="Google Meet / Zoom URL" {...field} className="h-12 rounded-2xl bg-muted/20 border-none font-bold text-left" /></FormControl></FormItem>)} />
+                    <div className="space-y-4 text-left"><div className="flex items-center justify-between text-left"><Label className="text-[10px] font-black uppercase text-primary flex items-center gap-2 text-left"><Youtube className="h-4 w-4 text-left" />Video Testimonies</Label><Button type="button" variant="outline" size="sm" onClick={() => append({ url: '', title: '' })} className="h-8 rounded-xl font-bold text-left">Add Video</Button></div><div className="space-y-4 text-left">{fields.map((field, index) => (<div key={field.id} className="p-4 border-2 border-dashed rounded-2xl bg-muted/10 space-y-3 relative text-left"><Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full text-destructive text-left" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-left" /></Button><div className="space-y-2 text-left"><Label className="text-[9px] font-black uppercase opacity-60 text-left">YouTube URL</Label><Input {...form.register(`videoTestimonies.${index}.url` as const)} placeholder="https://youtube.com/watch?v=..." className="h-10 rounded-xl text-left" /></div><div className="space-y-2 text-left"><Label className="text-[9px] font-black uppercase opacity-60 text-left">Display Title</Label><Input {...form.register(`videoTestimonies.${index}.title` as const)} placeholder="Miracle Title" className="h-10 rounded-xl text-left" /></div></div>))}</div></div>
                 </AccordionContent>
             </AccordionItem>
           </Accordion>
 
-<<<<<<< HEAD
-          <div className="flex gap-4 pt-4">
-             <Button type="button" variant="outline" onClick={onClose} className="h-14 flex-1 rounded-2xl font-bold">Cancel</Button>
-             <Button type="submit" className="h-14 flex-[2] rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}ACTIVATE IDENTITY</Button>
-=======
-          <div className="flex gap-3 sm:gap-4">
-             <Button type="button" variant="outline" onClick={onClose} className="h-11 sm:h-14 flex-1 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs">Cancel</Button>
-             <Button type="submit" className="h-11 sm:h-14 flex-[2] rounded-xl sm:rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase text-[10px] sm:text-xs text-center" disabled={isSubmitting}>
-               {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
-               ACTIVATE IDENTITY
-             </Button>
->>>>>>> origin/main
+          <div className="flex gap-4 pt-4 text-left">
+             <Button type="button" variant="outline" onClick={onClose} className="h-14 flex-1 rounded-2xl font-bold text-left">Cancel</Button>
+             <Button type="submit" className="h-14 flex-[2] rounded-2xl font-black shadow-xl shadow-primary/20 tracking-widest uppercase text-center text-left" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <ShieldCheck className="mr-2 h-4 w-4 text-left" />}ACTIVATE IDENTITY</Button>
           </div>
         </form>
       </Form>
