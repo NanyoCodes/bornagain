@@ -2,15 +2,9 @@
   "placeholderImages": [
     {
       "id": "logo",
-<<<<<<< HEAD
-      "description": "BornAgain logo",
-      "imageUrl": "https://i.postimg.cc/GmLp6x1W/Radiant-Dove-Born-Again-Logo.png",
-      "imageHint": "bornagain logo"
-=======
       "description": "BornAgain Radiant Dove Logo",
       "imageUrl": "https://i.postimg.cc/GmLp6x1W/Radiant-Dove-Born-Again-Logo.png",
       "imageHint": "radiant dove logo"
->>>>>>> origin/main
     },
     {
       "id": "hero-bg",
