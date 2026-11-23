@@ -248,7 +248,7 @@ function FullDevotionalDialog({
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0 p-0">
                             <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words flex items-center gap-3 text-balance">
@@ -419,13 +419,13 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
         updateDoc(ref, { [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) }).finally(() => setIsProcessingReaction(null));
     }
 
-    if (fellowshipLoading || profileLoading || soulsLoading || loadingMembers || devoLoading) return <div className="flex justify-center py-20 text-left"><Loader2 className="animate-spin text-primary text-left" /></div>;
-    if (fellowshipError || !fellowship || fellowship.status === 'deleted') return <div className="text-center p-12 text-left"><h2>Not Found</h2></div>;
+    if (fellowshipLoading || profileLoading || soulsLoading || loadingMembers || devoLoading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary" /></div>;
+    if (fellowshipError || !fellowship || fellowship.status === 'deleted') return <div className="text-center p-12"><h2>Not Found</h2></div>;
 
     return (
         <div className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4 text-left">
-            <div className="flex flex-col gap-5 px-4 sm:px-0 text-left">
-                <div className="flex items-center gap-4 text-left">
+            <div className="flex flex-col gap-5 px-4 sm:px-0">
+                <div className="flex items-center gap-4">
                     <Button variant="outline" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10"><ArrowLeft className="h-5 w-5"/></Button>
                     <div className="min-w-0 flex-1">
                         <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline uppercase truncate">{fellowship.name}</h1>
@@ -434,28 +434,28 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
-                <div className="lg:col-span-2 space-y-8 text-left">
-                    <Card className="rounded-none sm:rounded-[2.5rem] bg-primary text-primary-foreground overflow-hidden border-none shadow-xl border-b-8 border-b-white/10 text-left">
-                        <CardHeader className="p-6 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-left">
-                            <div className="space-y-1.5 flex-1 min-w-0 text-left">
-                                <div className="flex items-center gap-2 mb-1 opacity-80 text-left"><BookOpen className="h-4 w-4" /><span className="text-[10px] font-black uppercase tracking-widest">DEVOTIONAL</span></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-8">
+                    <Card className="rounded-none sm:rounded-[2.5rem] bg-primary text-primary-foreground overflow-hidden border-none shadow-xl border-b-8 border-b-white/10">
+                        <CardHeader className="p-6 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+                            <div className="space-y-1.5 flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1 opacity-80"><BookOpen className="h-4 w-4" /><span className="text-[10px] font-black uppercase tracking-widest">DEVOTIONAL</span></div>
                                 <CardTitle className="text-2xl sm:text-3xl font-black font-headline uppercase leading-tight truncate">{activeDevotional?.title || 'No Word Today'}</CardTitle>
                                 <p className="text-[10px] font-bold uppercase opacity-70 mt-2">{format(viewDate, 'EEEE, MMMM d')}</p>
                             </div>
                             {isOrganizer && <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl bg-white/10 border-white/20 text-white" onClick={() => setIsDevotionalDialogOpen(true)}><Edit className="h-5 w-5" /></Button>}
                         </CardHeader>
-                        <CardContent className="px-6 sm:p-10 pb-10 text-left">
+                        <CardContent className="px-6 sm:p-10 pb-10">
                             {activeDevotional ? (
-                                <div className="space-y-6 text-left">
-                                    <div className="bg-black/20 rounded-[2rem] p-6 sm:p-10 border border-white/10 relative overflow-hidden text-left">
+                                <div className="space-y-6">
+                                    <div className="bg-black/20 rounded-[2rem] p-6 sm:p-10 border border-white/10 relative overflow-hidden">
                                         <Quote className="absolute top-4 right-6 h-10 w-10 opacity-5" />
                                         <p className="text-lg sm:text-xl font-serif italic leading-relaxed text-justify">{activeDevotional.text}</p>
-                                        <p className="text-xs font-black uppercase text-right mt-6 tracking-widest opacity-80 text-right">— {activeDevotional.scripture}</p>
+                                        <p className="text-xs font-black uppercase text-right mt-6 tracking-widest opacity-80">— {activeDevotional.scripture}</p>
                                     </div>
-                                    {activeDevotional.prayer && <div className="bg-white/10 rounded-2xl p-6 border border-dashed border-white/20 text-left"><p className="text-sm italic">&ldquo;{activeDevotional.prayer}&rdquo;</p></div>}
-                                    <div className="flex items-center gap-3 pt-4 text-left">
-                                        <Button onClick={(e) => handleReaction('amen', e)} disabled={isProcessingReaction !== null} variant="outline" size="sm" className={cn("rounded-full h-8 gap-2 bg-white/5 border-white/10 text-white", (activeDevotional.supporters || []).includes(user?.uid || '') && "bg-white/20")}>{isProcessingReaction === 'amen' ? <Loader2 className="h-3 w-3 animate-spin" /> : <HandHeart className="h-3.5 w-3.5" />} AMEN</Button>
+                                    {activeDevotional.prayer && <div className="bg-white/10 rounded-2xl p-6 border border-dashed border-white/20"><p className="text-sm italic">&ldquo;{activeDevotional.prayer}&rdquo;</p></div>}
+                                    <div className="flex items-center gap-3 pt-4">
+                                        <Button onClick={(e) => handleReaction('amen', e)} disabled={isProcessingReaction !== null} variant="outline" size="sm" className={cn("rounded-full h-8 gap-2 bg-white/5 border-white/10 text-white", (activeDevotional.supporters || []).includes(user?.uid || '') && "bg-white/20")}>{isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className="h-3.5 w-3.5" />} AMEN</Button>
                                     </div>
                                 </div>
                             ) : (
@@ -467,14 +467,14 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-none sm:rounded-[2.5rem] border-none shadow-sm bg-background border overflow-hidden text-left">
+                    <Card className="rounded-none sm:rounded-[2.5rem] border-none shadow-sm bg-background border overflow-hidden">
                         <CardHeader className="p-8 border-b bg-muted/5">
                             <CardTitle className="flex items-center justify-between text-base sm:text-lg font-black uppercase">
                                 <span className="flex items-center gap-2"><Users className="h-5 w-5 text-primary" />Directory</span>
                                 <Badge variant="secondary">{(members?.length || 0) + (assignedSouls?.length || 0)}</Badge>
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="p-0 text-left">
+                        <CardContent className="p-0">
                             {(isMember || isOrganizer) ? (
                                 <Tabs defaultValue="believers">
                                     <TabsList className="flex w-full bg-muted/10 h-12 p-0 rounded-none border-b">
@@ -487,7 +487,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                                                 <div key={m.id} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 group">
                                                     <LiveMemberAvatar userId={m.userId} fallbackInitials={m.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm" />
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="font-black text-sm truncate uppercase tracking-tight">{m.firstName} {m.lastName}</p>
+                                                        <p className="font-black text-sm uppercase tracking-tight truncate">{m.firstName} {m.lastName}</p>
                                                         {m.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary">Organizer</span>}
                                                     </div>
                                                     {isOrganizer && m.userId !== user?.uid && <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-40 hover:opacity-100" onClick={() => setMemberToRemove(m)}><UserMinus className="h-4 w-4" /></Button>}
@@ -514,18 +514,18 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                     </Card>
 
                     <div ref={commentsAreaRef} className="pt-8">
-                        <Card className="rounded-none sm:rounded-[2rem] border-none shadow-sm overflow-hidden bg-background text-left">
+                        <Card className="rounded-none sm:rounded-[2rem] border-none shadow-sm overflow-hidden bg-background">
                             <CommentSectionLazy path={`fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`} inline />
                         </Card>
                     </div>
                 </div>
 
-                <div className="space-y-8 px-4 sm:px-0 text-left">
-                    <Card className="rounded-3xl border shadow-sm bg-background border-b-8 border-b-primary/10 text-left">
-                        <CardHeader className="pb-3 text-left"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Gathering Details</CardTitle></CardHeader>
-                        <CardContent className="space-y-4 text-left">
-                            <div className="p-4 rounded-2xl bg-muted/20 border border-dashed text-left"><p className="text-[8px] font-black uppercase text-muted-foreground mb-1">Schedule</p><p className="font-black text-sm">{fellowship.schedule}</p></div>
-                            <div className="p-4 rounded-2xl bg-muted/20 border border-dashed text-left"><p className="text-[8px] font-black uppercase text-muted-foreground mb-1">Area</p><p className="font-black text-sm flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> {fellowship.location}</p></div>
+                <div className="space-y-8 px-4 sm:px-0">
+                    <Card className="rounded-3xl border shadow-sm bg-background border-b-8 border-b-primary/10">
+                        <CardHeader className="pb-3"><CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Gathering Details</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="p-4 rounded-2xl bg-muted/20 border border-dashed"><p className="text-[8px] font-black uppercase text-muted-foreground mb-1">Schedule</p><p className="font-black text-sm">{fellowship.schedule}</p></div>
+                            <div className="p-4 rounded-2xl bg-muted/20 border border-dashed"><p className="text-[8px] font-black uppercase text-muted-foreground mb-1">Area</p><p className="font-black text-sm flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> {fellowship.location}</p></div>
                             {(isMember || isOrganizer) && fellowship.streamUrl && <Button asChild className="w-full h-12 font-black rounded-xl shadow-lg"><NextLink href={fellowship.streamUrl} target="_blank" className="flex items-center justify-center"><PlayCircle className="mr-2 h-5 w-5" />JOIN MEETING</NextLink></Button>}
                         </CardContent>
                     </Card>
@@ -534,8 +534,8 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
 
             {isDevotionalDialogOpen && (
                 <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
-                    <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Daily Word Hub</DialogTitle><DialogDescription className="text-sm font-medium mt-1">Publish spiritual nourishment for your group.</DialogDescription></DialogHeader></div>
+                    <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+                        <div className="p-8 border-b bg-muted/10 shrink-0"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Daily Word Hub</DialogTitle><DialogDescription className="text-sm font-medium mt-1">Publish spiritual nourishment for your group.</DialogDescription></DialogHeader></div>
                         <ScrollArea className="flex-1 min-h-0 p-8">
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(handleSaveDevotional)} className="space-y-6">
@@ -555,23 +555,23 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
             <LogFollowUpDialogLazy soul={activeSoul} isOpen={!!followUpSoulId} onOpenChange={(open) => !open && setFollowUpSoulId(null)} onFollowUpLogged={() => setFollowUpSoulId(null)} userProfile={userProfile} />
             
             <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10"><DrawerHeader className="text-left"><DrawerTitle className="text-2xl font-black font-headline">Log Convert</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won to this community.</DrawerDescription></DrawerHeader></div>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10"><DrawerHeader><DrawerTitle className="text-2xl font-black font-headline">Log Convert</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1">Record a new life won to this community.</DrawerDescription></DrawerHeader></div>
                     <ScrollArea className="flex-1 min-h-0 p-8"><LogSoulFormLazy onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} /></ScrollArea>
                 </DrawerContent>
             </Drawer>
 
             <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
-                <AlertDialogContent className="rounded-3xl p-8 text-left">
-                    <AlertDialogHeader className="text-left"><AlertDialogTitle>Remove Member?</AlertDialogTitle><AlertDialogDescription>Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AlertDialogHeader>
+                <AlertDialogContent className="rounded-3xl p-8">
+                    <AlertDialogHeader><AlertDialogTitle>Remove Member?</AlertDialogTitle><AlertDialogDescription>Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AlertDialogHeader>
                     <AlertDialogFooter className="mt-6"><AlertDialogCancel disabled={isProcessingRemoval} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Removal</AlertDialogAction></AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>
-                <AlertDialogContent className="rounded-3xl p-8 text-left">
-                  <AlertDialogHeader className="text-left"><AlertDialogTitle>Unassign Convert?</AlertDialogTitle><AlertDialogDescription>Remove {soulToUnassign?.firstName} from this shared list?</AlertDialogDescription></AlertDialogHeader>
-                  <AlertDialogFooter className="gap-3 mt-6 text-left">
+                <AlertDialogContent className="rounded-3xl p-8">
+                  <AlertDialogHeader><AlertDialogTitle>Unassign Convert?</AlertDialogTitle><AlertDialogDescription>Remove {soulToUnassign?.firstName} from this shared list?</AlertDialogDescription></AlertDialogHeader>
+                  <AlertDialogFooter className="gap-3 mt-6">
                     <AlertDialogCancel className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Unassign</AlertDialogAction>
                   </AlertDialogFooter>
@@ -580,3 +580,4 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
         </div>
     );
 }
+
