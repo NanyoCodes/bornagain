@@ -47,6 +47,8 @@ import {
     MessageSquare, 
     X,
     Target,
+    LogOut,
+    Heart,
     MapPin
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -151,6 +153,12 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
     const activeDevotionalRef = useMemo(() => (firestore && fellowshipId) ? doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr) : null, [firestore, fellowshipId, viewDateStr]);
     const { data: activeDevotional, loading: devoLoading } = useDoc<DailyDevotional>(activeDevotionalRef);
 
+    const scheduledDevotionalsQuery = useMemo(() => {
+        if (!firestore || !fellowshipId) return null;
+        return query(collection(firestore, 'fellowships', fellowshipId, 'devotionals'), orderBy('scheduledDate', 'asc'), limit(60));
+    }, [firestore, fellowshipId]);
+    const { data: scheduledDevotionals, loading: loadingSchedule } = useCollection<DailyDevotional>(scheduledDevotionalsQuery);
+
     const membersQuery = useMemo(() => (firestore && fellowshipId && (isMember || isOrganizer)) ? query(collection(firestore, 'fellowships', fellowshipId, 'members'), orderBy('joinedAt', 'desc')) : null, [firestore, fellowshipId, isMember, isOrganizer]);
     const { data: members, loading: loadingMembers } = useCollection<FellowshipMember>(membersQuery);
 
@@ -218,11 +226,20 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
         batch.commit().then(() => { setSoulToUnassign(null); toast({ title: "Unassigned" }); }).finally(() => setIsProcessingRemoval(false));
     };
 
-    const handleDateNav = (direction: 'prev' | 'next') => {
-        setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
-    };
+    const handleReaction = (type: 'amen' | 'inspired' | 'celebrate', e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!user || !firestore || !activeDevotional) return;
+        const supporters = activeDevotional.supporters || [];
+        const inspiredBy = activeDevotional.inspiredBy || [];
+        const connectedBy = activeDevotional.connectedBy || [];
+        const hasReacted = (type === 'amen' && supporters.includes(user.uid)) || (type === 'inspired' && inspiredBy.includes(user.uid)) || (type === 'celebrate' && connectedBy.includes(user.uid));
+        setIsProcessingReaction(type);
+        const ref = doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr);
+        const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
+        updateDoc(ref, { [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) }).finally(() => setIsProcessingReaction(null));
+    }
 
-    if (fellowshipLoading || profileLoading || soulsLoading || loadingMembers || devoLoading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary" /></div>;
+    if (fellowshipLoading || profileLoading || soulsLoading || loadingMembers || devoLoading) return <div className="flex justify-center py-20 text-left"><Loader2 className="animate-spin text-primary" /></div>;
     if (fellowshipError || !fellowship || fellowship.status === 'deleted') return <div className="text-center p-12"><h2>Not Found</h2></div>;
 
     const ScheduleList = (
@@ -258,7 +275,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
             <div className="flex flex-col gap-5 px-4 sm:px-0">
                 <div className="flex items-center gap-4">
                     <Button variant="outline" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10"><ArrowLeft className="h-5 w-5"/></Button>
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 text-left">
                         <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline uppercase truncate">{fellowship.name}</h1>
                         <div className="flex items-center gap-2 mt-1"><Badge variant="secondary" className="uppercase font-bold text-[10px] h-5">{fellowship.groupType}</Badge></div>
                     </div>
@@ -290,7 +307,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                                 {isOrganizer && <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl bg-white/10 border-white/20 text-white" onClick={() => setIsDevotionalDialogOpen(true)}><Edit className="h-5 w-5" /></Button>}
                             </div>
                         </CardHeader>
-                        <CardContent className="px-6 sm:p-10 pb-10 text-left">
+                        <CardContent className="px-6 sm:p-10 pb-10">
                             {activeDevotional ? (
                                 <div className="space-y-6">
                                     <div className="bg-black/20 rounded-[2rem] p-6 sm:p-10 border border-white/10 relative overflow-hidden">
@@ -329,7 +346,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                                         <TabsTrigger value="souls" className="flex-1 text-xs font-bold h-full rounded-none">Converts ({assignedSouls?.length || 0})</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="believers" className="p-6">
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             {members?.map(m => (
                                                 <div key={m.id} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 group">
                                                     <LiveMemberAvatar userId={m.userId} fallbackInitials={m.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm" />
@@ -398,8 +415,16 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                 </Dialog>
             )}
 
+            {isScheduleViewOpen && (
+                isMobile ? (
+                    <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10"><SheetHeader className="text-left flex-shrink-0"><div className="flex items-center gap-2 mb-2"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span></div><SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle><SheetDescription className="text-sm font-medium mt-1 text-left">Browse scheduled meditations for this group.</SheetDescription></SheetHeader></div><ScrollArea className="flex-grow px-8 pt-6">{ScheduleList}</ScrollArea></SheetContent></Sheet>
+                ) : (
+                    <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Spiritual Schedule</DialogTitle><DialogDescription className="text-sm font-medium">Peek ahead at scheduled meditations.</DialogDescription></DialogHeader></div><ScrollArea className="max-h-[60vh] p-6">{ScheduleList}</ScrollArea></DialogContent></Dialog>
+                )
+            )}
+
             <ViewHistoryDialogLazy soul={activeSoul} isOpen={!!historySoulId} onOpenChange={(open) => !open && setHistorySoulId(null)} />
-            <LogFollowUpDialogLazy soul={activeSoul} isOpen={!!followUpSoulId} onOpenChange={(open) => !open && setFollowUpSoulId(null)} onFollowUpLogged={() => setFollowUpSoulId(null)} userProfile={profileData} />
+            <LogFollowUpDialogLazy soul={activeSoul} isOpen={!!followUpSoulId} onOpenChange={(open) => !open && setFollowUpSoulId(null)} onFollowUpLogged={() => setFollowUpSoulId(null)} userProfile={userProfile} />
             
             <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                 <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
