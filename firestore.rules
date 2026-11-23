@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Universal fix for author variable syntax and subcollection authorization - 2025-04-03T10:00:00Z
+    // Deployment trigger: Universal fix for membership joining and subcollection authorization - 2025-04-04T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -299,7 +299,12 @@ service cloud.firestore {
     
     match /chats/{chatId} {
       allow create: if isAuthenticated();
-      allow read, update: if canAccessChatDoc(resource.data);
+      allow read: if canAccessChatDoc(resource.data);
+      allow update: if canAccessChatDoc(resource.data) || (
+        isAuthenticated() && 
+        resource.data.get('isGroupChat', false) == true &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantIds', 'participantInfo'])
+      );
       allow delete: if false;
 
       match /messages/{messageId} {
