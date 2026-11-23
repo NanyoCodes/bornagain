@@ -16,7 +16,7 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const bornAgainLogoUrl = 'https://i.postimg.cc/K8VD8BYD/Born-Again-Mountain-Sunrise-Emblem.png';
+const bornAgainLogoUrl = 'https://i.postimg.cc/GmLp6x1W/Radiant-Dove-Born-Again-Logo.png';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://bornagainglobal.com'),

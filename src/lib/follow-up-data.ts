@@ -1,17 +1,17 @@
 import type { FollowUpStatus } from './types';
 
 export const actionItems = [
-  { id: 'prayed_together', label: 'Pray with' },
-  { id: 'studied_bible', label: 'Study the Word with' },
-  { id: 'shared_meal', label: 'Share a meal with' },
-  { id: 'visited_home', label: 'Visit' },
-  { id: 'introduced_friend', label: 'Check' },
-  { id: 'gave_gift', label: 'Give a gift to' },
-  { id: 'matchmaking', label: 'Propose Matchmaking' },
-  { id: 'phone_call', label: 'Call' },
-  { id: 'text_message', label: 'Message' },
-  { id: 'helped_with_need', label: 'Health Check' },
-  { id: 'invited_to_event', label: 'Invite to an event' },
+  { id: 'prayed_together', label: 'Prayed with' },
+  { id: 'studied_bible', label: 'Studied the Word with' },
+  { id: 'shared_meal', label: 'Shared a meal with' },
+  { id: 'visited_home', label: 'Visited' },
+  { id: 'introduced_friend', label: 'Introduced to a partner' },
+  { id: 'gave_gift', label: 'Gave a gift to' },
+  { id: 'matchmaking', label: 'Check' },
+  { id: 'phone_call', label: 'Called' },
+  { id: 'text_message', label: 'Messaged' },
+  { id: 'helped_with_need', label: 'Helped with a need' },
+  { id: 'invited_to_event', label: 'Invited to an event' },
 ];
 
 export const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Established'];

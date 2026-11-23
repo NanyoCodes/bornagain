@@ -1,6 +1,6 @@
 import type {NextConfig} from 'next';
 
-const bornAgainLogoUrl = 'https://i.postimg.cc/K8VD8BYD/Born-Again-Mountain-Sunrise-Emblem.png';
+const bornAgainLogoUrl = 'https://i.postimg.cc/GmLp6x1W/Radiant-Dove-Born-Again-Logo.png';
 
 const cspHeader = `
     default-src 'self';

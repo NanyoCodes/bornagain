@@ -13,8 +13,12 @@ export async function POST(request: Request) {
     }
 
     const actionCodeSettings = {
+<<<<<<< HEAD
       // Production action URL for identity activation on bornagainglobal.com
       url: 'https://bornagainglobal.com/auth/action',
+=======
+      url: 'https://bornagainglobal.com/__/auth/action',
+>>>>>>> origin/main
       handleCodeInApp: true,
     };
 
