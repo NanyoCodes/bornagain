@@ -5,7 +5,7 @@ export const actionItems = [
   { id: 'studied_bible', label: 'Study the Word with' },
   { id: 'shared_meal', label: 'Share a meal with' },
   { id: 'visited_home', label: 'Visit' },
-  { id: 'introduced_friend', label: 'Introduce to a partner' },
+  { id: 'introduced_friend', label: 'Check' },
   { id: 'gave_gift', label: 'Give a gift to' },
   { id: 'matchmaking', label: 'Propose Matchmaking' },
   { id: 'phone_call', label: 'Call' },
@@ -20,7 +20,7 @@ export const prayerTemplates = [
     {
         id: 'strength',
         label: 'Strength & Empowerment',
-        text: "Heavenly Father, I bring {name} before Your throne today. Lord, I pray that You would strengthen {object} with Your mighty power in {possessive} inner being. May {subject} be rooted and established in Your love, and may {subject} have the spiritual strength to overcome every challenge. Fill {object} with the knowledge of Your will through all wisdom and understanding. In Jesus' name, Amen. Join our harvest community at https://bornagainglobal.com"
+        text: "Heavenly Father, I bring {name} before Your throne today. Lord, I pray that You would strengthen {object} with Your mighty power in {possessive} inner being. May {subject} be rooted and established in Your love, and may {subject} have the spiritual strength to overcome every challenge {subject} faces. Fill {object} with the knowledge of Your will through all the wisdom and understanding that the Spirit gives. Join our harvest community at https://bornagainglobal.com"
     },
     {
         id: 'revelation',

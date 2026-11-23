@@ -13,8 +13,8 @@ export async function POST(request: Request) {
     }
 
     const actionCodeSettings = {
-      // Production action URL for custom identity activation on bornagainglobal.com
-      url: 'https://bornagainglobal.com/verify-email',
+      // Production action URL for identity activation on bornagainglobal.com
+      url: 'https://bornagainglobal.com/auth/action',
       handleCodeInApp: true,
     };
 
