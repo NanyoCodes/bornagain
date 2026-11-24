@@ -1,5 +1,9 @@
 import type { FollowUpStatus } from './types';
 
+/**
+ * @fileOverview Present tense action labels for the BornAgain Global follow-up system.
+ */
+
 export const actionItems = [
   { id: 'prayed_together', label: 'Pray with' },
   { id: 'studied_bible', label: 'Study the Word with' },

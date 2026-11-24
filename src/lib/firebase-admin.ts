@@ -3,9 +3,9 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 
 /**
- * @fileOverview Lazy-initialization utility for Firebase Admin SDK.
- * This pattern prevents the Next.js build process from crashing when 
- * environment variables/secrets are missing during static analysis.
+ * @fileOverview Build-safe initialization for Firebase Admin SDK.
+ * Prevents build-time crashes by initializing with Project ID only if secrets are missing,
+ * then using full credentials at runtime.
  */
 
 export function initAdmin() {
@@ -22,22 +22,26 @@ export function initAdmin() {
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
-  const options: any = {
-    projectId,
-  };
+  // Build-time safety: If secrets are missing (standard during App Hosting builds),
+  // we initialize with just the Project ID. Runtime functions will fail gracefully
+  // or wait for the environment to provide the key.
+  if (!privateKey || !clientEmail) {
+    console.warn("Firebase Admin: Initializing with Project ID only. Authentication features will require secrets at runtime.");
+    const app = initializeApp({ projectId });
+    return {
+      auth: getAuth(app),
+      db: getFirestore(app),
+    };
+  }
 
-  // If we have full service account details (local dev or explicit secrets)
-  if (clientEmail && privateKey) {
-    options.credential = cert({
+  const app = initializeApp({
+    credential: cert({
       projectId,
       clientEmail,
       privateKey: privateKey.replace(/\\n/g, '\n'),
-    });
-  }
-  // Otherwise, initialize with just the Project ID. 
-  // On Google infrastructure (App Hosting), it will use Application Default Credentials.
-
-  const app = initializeApp(options);
+    }),
+    projectId,
+  });
 
   return {
     auth: getAuth(app),
