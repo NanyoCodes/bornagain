@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { adminAuth } from '@/lib/firebase-admin';
+import { initAdmin } from '@/lib/firebase-admin';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -11,6 +11,9 @@ export async function POST(request: Request) {
     if (!email) {
       return NextResponse.json({ error: 'Email is required.' }, { status: 400 });
     }
+
+    // Lazy init admin services to avoid build-time crashes
+    const { auth: adminAuth } = initAdmin();
 
     const actionCodeSettings = {
       // Production action URL for identity activation on bornagainglobal.com
