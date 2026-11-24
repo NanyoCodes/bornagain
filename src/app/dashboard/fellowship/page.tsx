@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
 import {
@@ -26,7 +25,7 @@ import type { UserProfile, Fellowship, FellowshipMember, JoinedFellowship } from
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { PlusCircle, Loader2, Video, Users, Group, Target, MessagesSquare, Trash2, MapPin } from 'lucide-react';
+import { PlusCircle, Loader2, Video, Users, Group, Target, MessagesSquare, Trash2, MapPin, ChevronDown } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,6 +40,13 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+} from "@/components/ui/drawer";
 import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FellowshipCard } from '@/components/fellowship/fellowship-card';
@@ -491,7 +497,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
   );
 }
 
-export default function FellowshipPage() {
+function FellowshipDashboardContent() {
     const router = useRouter();
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
@@ -834,13 +840,13 @@ export default function FellowshipPage() {
 
             {mounted && (
                 isMobile ? (
-                    <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left p-0">
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1">Create a space for community and growth.</SheetDescription>
-                                </SheetHeader>
+                                <DrawerHeader className="text-left p-0">
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1">Create a space for community and growth.</DrawerDescription>
+                                </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow">
                                 <div className="p-8">
@@ -852,8 +858,8 @@ export default function FellowshipPage() {
                                     />
                                 </div>
                             </ScrollArea>
-                        </SheetContent>
-                    </Sheet>
+                        </DrawerContent>
+                    </Drawer>
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
@@ -935,8 +941,8 @@ export default function FellowshipPage() {
                         </AlertDialogHeader>
                         <AlertDialogFooter className="gap-3 mt-6">
                             <AlertDialogCancel className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
-                                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">
+                                {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                 Confirm Delete
                             </AlertDialogAction>
                         </AlertDialogFooter>
@@ -945,4 +951,14 @@ export default function FellowshipPage() {
             )}
         </div>
     );
+}
+
+export default function FellowshipStandalonePage() {
+  return (
+    <AppShell>
+      <Suspense fallback={<div className="flex justify-center p-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>}>
+        <FellowshipDashboardContent />
+      </Suspense>
+    </AppShell>
+  );
 }

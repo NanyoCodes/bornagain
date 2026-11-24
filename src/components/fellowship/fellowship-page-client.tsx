@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
+import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment } from '@/lib/types';
 import { 
     doc, 
@@ -336,7 +336,6 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
     const isOrganizer = useMemo(() => (user && fellowship?.organizerId === user.uid) || false, [user, fellowship?.organizerId]);
 
     const viewDateStr = format(viewDate, 'yyyy-MM-dd');
-    const isViewingToday = isSameDay(viewDate, new Date());
     
     const activeDevotionalRef = useMemo(() => (firestore && fellowshipId) ? doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr) : null, [firestore, fellowshipId, viewDateStr]);
     const { data: activeDevotional, loading: devoLoading } = useDoc<DailyDevotional>(activeDevotionalRef);
@@ -432,7 +431,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
     if (fellowshipError || !fellowship || fellowship.status === 'deleted') return <div className="text-center p-12"><h2>Not Found</h2></div>;
 
     const ScheduleList = (
-        <div className="space-y-4">
+        <div className="space-y-4 text-left">
             {loadingSchedule ? (
                 <div className="py-12 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
             ) : (scheduledDevotionals && (scheduledDevotionals || []).length > 0) ? (
@@ -465,10 +464,6 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
             )}
         </div>
     );
-
-    const handleDateNav = (direction: 'prev' | 'next') => {
-        setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
-    };
 
     return (
         <div className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4 text-left">
@@ -508,7 +503,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                                 </div>
                             ) : (
                                 <div className="text-center py-12 bg-white/5 rounded-3xl border-2 border-dashed border-white/10">
-                                    <p className="text-sm opacity-50 italic text-center">No spiritual guidance Arranged for this date.</p>
+                                    <p className="text-sm opacity-50 italic text-center">No spiritual guidance arranged for this date.</p>
                                     {isOrganizer && <Button variant="secondary" className="mt-6 h-11 px-8 rounded-xl font-black uppercase" onClick={() => setIsDevotionalDialogOpen(true)}>PUBLISH WORD</Button>}
                                 </div>
                             )}
@@ -535,7 +530,7 @@ export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: s
                                                 <div key={m.id} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 group">
                                                     <LiveMemberAvatar userId={m.userId} fallbackInitials={m.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm" />
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="font-black text-sm truncate uppercase tracking-tight">{m.firstName} {m.lastName}</p>
+                                                        <p className="font-black text-sm uppercase truncate">{m.firstName} {m.lastName}</p>
                                                         {m.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary">Organizer</span>}
                                                     </div>
                                                     {isOrganizer && m.userId !== user?.uid && <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-40 hover:opacity-100" onClick={() => setMemberToRemove(m)}><UserMinus className="h-4 w-4" /></Button>}
