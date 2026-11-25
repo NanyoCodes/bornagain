@@ -579,7 +579,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                             <div className="flex justify-center pointer-events-auto">
                                 {!isRecording ? (
                                     <Button 
-                                        onClick={startRecording}
+                                        onClick={startRecording} 
                                         size="lg"
                                         className="h-20 w-20 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center p-0 transition-transform active:scale-95"
                                     >
@@ -654,4 +654,3 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
-

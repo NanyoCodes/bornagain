@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { useState, useMemo, useEffect, memo, useRef } from "react";
-import Link from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony, UserProfile, FollowUpStatus, Witness } from "@/lib/types";
@@ -68,7 +68,9 @@ import {
   query, 
   serverTimestamp, 
   addDoc, 
-  orderBy
+  orderBy,
+  setDoc,
+  getDoc
 } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -752,7 +754,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     </div>
                     <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-tight ml-1 text-left">
                         {totalReactions > 0 && <span> {totalReactions} REACTIONS</span>}
-                        {witnessCount > 0 && <span className="text-emerald-600"> {witnessCount} WITNESSES</span>}
+                        {witnessCount > 0 && <span className="text-emerald-600"> {witnessCount} {witnessCount === 1 ? 'Witness' : 'Witnesses'}</span>}
                     </div>
                 </div>
                 {testimony.campaignTitle && <span className="text-[9px] font-black uppercase text-muted-foreground/60 truncate italic bg-muted/50 px-2 py-0.5 rounded-full border max-w-[150px] text-left">RE: {testimony.campaignTitle}</span>}
@@ -771,7 +773,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 Hallelujah
             </Button>
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasCelebrated && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}>
-                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
+                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
                 Celebrate
             </Button>
             <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
