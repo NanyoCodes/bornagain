@@ -31,7 +31,11 @@ import {
     Clock,
     Users,
     Lock,
-    ShieldAlert
+    ShieldAlert,
+    TrendingUp,
+    ShieldCheck,
+    Quote,
+    Activity
 } from "lucide-react";
 import { cn, safeToDate } from "@/lib/utils";
 import { format, isSameDay } from "date-fns";
@@ -59,6 +63,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
+import Link from 'next/link';
 
 const timerOptions = [60, 90, 120];
 
@@ -107,7 +113,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         
         groupSessions.forEach(s => {
             if (!map[s.userId]) {
-                map[s.userId] = { userId: s.userId, name: 'Member', score: 0, sessions: 0 };
+                map[s.userId] = { userId: s.userId, name: 'Kingdom Laborer', score: 0, sessions: 0 };
             }
             map[s.userId].score += s.score;
             map[s.userId].sessions++;
@@ -217,7 +223,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                 correctCountRef.current = next;
                 return next;
             });
-            setTimeout(() => { if (isGameActive) nextChallenge(); }, 500);
+            setTimeout(() => { if (isGameActive) nextChallenge(); }, 600);
         } else {
             setGameState('wrong');
             setWrongCount(prev => {
@@ -225,7 +231,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                 wrongCountRef.current = next;
                 return next;
             });
-            setTimeout(() => { if (isGameActive) nextChallenge(); }, 1200);
+            setTimeout(() => { if (isGameActive) nextChallenge(); }, 1500);
         }
     };
 
@@ -234,22 +240,25 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
 
     if (!isMember && !isGameActive && gameState !== 'finished') {
         return (
-            <div className="max-w-4xl mx-auto flex flex-col items-center justify-center py-24 text-center px-8 space-y-8">
-                <div className="h-20 w-20 bg-muted/20 rounded-[2.5rem] flex items-center justify-center border-2 border-dashed border-primary/20 shadow-inner">
-                    <ShieldAlert className="h-10 w-10 text-primary opacity-40" />
+            <div className="max-w-4xl mx-auto flex flex-col items-center justify-center py-24 text-center px-8 space-y-12">
+                <div className="relative">
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="h-32 w-32 bg-muted/20 rounded-[3.5rem] flex items-center justify-center border-4 border-dashed border-primary/20 shadow-inner relative z-10">
+                        <ShieldAlert className="h-16 w-16 text-primary opacity-40" />
+                    </div>
                 </div>
-                <div className="space-y-2">
-                    <h2 className="text-3xl font-black font-headline uppercase tracking-tight">Membership Required</h2>
-                    <p className="text-muted-foreground font-medium max-w-sm mx-auto leading-relaxed text-balance italic">
-                        The "{fellowship.name}" Crusade Arena is a sanctuary for established members only. Join the community to contribute your spiritual strength.
+                <div className="space-y-4">
+                    <h2 className="text-4xl sm:text-5xl font-black font-headline uppercase tracking-tight">Access Restricted</h2>
+                    <p className="text-muted-foreground text-lg font-medium max-w-sm mx-auto leading-relaxed text-balance italic">
+                        The "{fellowship.name}" Arena is reserved for established members of this community. Join the workforce to contribute your spiritual strength.
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs mx-auto">
-                    <Button asChild className="h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20">
+                <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm mx-auto">
+                    <Button asChild size="lg" className="h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30">
                         <Link href={`/fellowship/${fellowshipId}`}>JOIN COMMUNITY</Link>
                     </Button>
-                    <Button variant="ghost" onClick={() => router.back()} className="h-12 font-bold text-muted-foreground">
-                        Back to Lobby
+                    <Button variant="ghost" size="lg" onClick={() => router.back()} className="h-14 font-black uppercase tracking-widest text-xs text-muted-foreground">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> BATTLE LOBBY
                     </Button>
                 </div>
             </div>
@@ -257,15 +266,16 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     }
 
     const quiz = BIBLE_GAME_DATA[activeGameType][quizIndex];
+    const timerPercent = (timeLeft / selectedTimer) * 100;
 
     return (
         <div className="max-w-6xl mx-auto space-y-8 pb-32 px-4 sm:px-6 text-left">
             <header className="space-y-6 pt-4 text-left">
                 <div className="flex items-center gap-4 text-left">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full border bg-background shadow-sm text-left">
-                        <ArrowLeft className="h-4 w-4 text-left" />
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
+                        <ArrowLeft className="h-5 w-5 text-left" />
                     </Button>
-                    <div className="min-w-0 text-left">
+                    <div className="min-w-0 flex-1 text-left">
                         <div className="flex items-center gap-2 mb-1 text-left">
                             <Sword className="h-4 w-4 text-primary text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Crusade</span>
@@ -275,115 +285,185 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
-                    <Card className="lg:col-span-2 rounded-[2rem] sm:rounded-[3rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden text-left">
-                        <CardHeader className="p-6 sm:p-10 pb-4 text-center">
+                    <Card className="lg:col-span-2 rounded-[2rem] sm:rounded-[3.5rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden relative text-left">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-zinc-900 overflow-hidden text-left">
+                            {isGameActive && (
+                                <motion.div 
+                                    className={cn("h-full", timeLeft <= 10 ? "bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)]" : "bg-primary")}
+                                    initial={{ width: "100%" }}
+                                    animate={{ width: `${timerPercent}%` }}
+                                    transition={{ duration: 1, ease: "linear" }}
+                                />
+                            )}
+                        </div>
+
+                        <CardHeader className="p-8 sm:p-12 pb-4 text-center text-left">
                             <div className="flex items-center justify-center gap-2 mb-2 text-left">
                                 <Gamepad2 className="h-5 w-5 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Mission Field</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Crusade Mission</span>
                             </div>
-                            <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase text-white text-center">Group Crusade</CardTitle>
+                            <CardTitle className="text-2xl sm:text-5xl font-black font-headline uppercase text-white text-center">The Arena</CardTitle>
                         </CardHeader>
                         
-                        <CardContent className="p-6 sm:p-12 pt-0 space-y-8 text-left">
+                        <CardContent className={cn("p-8 sm:p-16 pt-0 space-y-10 text-left", !isGameActive && "flex flex-col items-center justify-center")}>
                             {!isGameActive && gameState !== 'finished' ? (
-                                <div className="py-8 flex flex-col items-center gap-8 w-full text-left">
-                                    <div className="w-full space-y-8 text-left">
+                                <div className="py-8 flex flex-col items-center gap-10 w-full text-left">
+                                    <div className="w-full space-y-10 text-left text-left">
                                         <div className="space-y-4 text-left">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Challenge Type</Label>
-                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Crusade Mode</Label>
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
                                                 {[ { id: 'word', label: 'Word Arena', icon: BookOpen }, { id: 'prayer', label: 'Prayer Altar', icon: HandHeart }, { id: 'trivia', label: 'Kingdom Trivia', icon: HelpCircle } ].map(type => (
-                                                    <Button key={type.id} variant="outline" onClick={() => setActiveGameType(type.id as any)} className={cn("h-20 sm:h-28 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-4 sm:gap-2 px-6 sm:px-4 rounded-2xl border-2 transition-all text-left", activeGameType === type.id ? "bg-primary/20 border-primary text-primary shadow-lg" : "bg-zinc-900/50 border-zinc-800 text-zinc-500 hover:border-primary/40")}>
-                                                        <type.icon className="h-6 w-6 shrink-0" />
-                                                        <span className="text-[11px] font-black uppercase tracking-widest">{type.label}</span>
+                                                    <Button key={type.id} variant="outline" onClick={() => setActiveGameType(type.id as any)} className={cn("h-24 sm:h-32 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-5 sm:gap-3 px-8 sm:px-4 rounded-[2rem] border-2 transition-all group/mode text-left", activeGameType === type.id ? "bg-primary/20 border-primary text-primary shadow-2xl scale-[1.02]" : "bg-zinc-900/50 border-zinc-800 text-zinc-500 hover:border-primary/40")}>
+                                                        <type.icon className={cn("h-8 w-8 shrink-0 transition-transform group-hover/mode:scale-110", activeGameType === type.id ? "text-primary" : "text-zinc-600")} />
+                                                        <span className="text-xs font-black uppercase tracking-widest">{type.label}</span>
                                                     </Button>
                                                 ))}
                                             </div>
                                         </div>
                                         <div className="space-y-4 text-left">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Session Duration</Label>
-                                            <div className="grid grid-cols-3 gap-2 text-left">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Mission Duration</Label>
+                                            <div className="grid grid-cols-3 gap-3 text-left">
                                                 {timerOptions.map(opt => (
-                                                    <Button key={opt} variant="outline" size="sm" onClick={() => setSelectedTimer(opt)} className={cn("h-12 rounded-xl font-black text-xs transition-all text-left", selectedTimer === opt ? "bg-primary text-white border-none shadow-lg" : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white")}>{opt}s</Button>
+                                                    <Button key={opt} variant="outline" size="sm" onClick={() => setSelectedTimer(opt)} className={cn("h-14 rounded-2xl font-black text-sm transition-all border-2", selectedTimer === opt ? "bg-primary text-white border-primary shadow-xl" : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white")}>{opt}s</Button>
                                                 ))}
                                             </div>
                                         </div>
-                                        <Button onClick={handleStart} size="lg" className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 text-center">
-                                            ENTER ARENA
+                                        <Button onClick={handleStart} size="lg" className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 text-center text-lg active:scale-95 transition-transform">
+                                            LAUNCH CRUSADE
                                         </Button>
                                     </div>
                                 </div>
                             ) : isGameActive ? (
-                                <div className="space-y-6 sm:space-y-10 animate-in fade-in zoom-in duration-500 text-left">
-                                    <div className="flex items-center justify-between px-2 text-left">
-                                        <div className="flex items-center gap-3 text-left text-left">
-                                            <div className={cn("h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center border-2 shadow-lg", timeLeft <= 10 ? "bg-red-500 border-red-400 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary")}><Timer className="h-5 w-5 sm:h-6 sm:w-6" /></div>
-                                            <div className="text-left text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Left</p><p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
+                                <div className="space-y-8 sm:space-y-12 animate-in fade-in zoom-in duration-500 text-left">
+                                    <div className="flex items-center justify-between px-2 text-left text-left">
+                                        <div className="flex items-center gap-4 text-left text-left">
+                                            <div className={cn("h-12 w-12 sm:h-16 sm:w-16 rounded-[1.25rem] sm:rounded-[1.5rem] flex items-center justify-center border-2 shadow-2xl transition-all", timeLeft <= 10 ? "bg-red-600 border-red-500 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary")}><Timer className="h-6 w-6 sm:h-8 sm:w-8" /></div>
+                                            <div className="text-left text-left text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Remaining</p><p className={cn("text-2xl sm:text-4xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
                                         </div>
-                                        <div className="text-right text-left text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Contribution</p><p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right">{correctCount * 10} XP</p></div>
+                                        <div className="text-right text-left text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none text-right">+{correctCount * 10} XP</p></div>
                                     </div>
-                                    <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[160px] text-center relative overflow-hidden text-left"><div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left"><Target className="h-16 w-16 text-primary text-left" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
-                                    <div className="grid grid-cols-2 gap-3 text-left">
-                                        {quiz?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal", gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_25px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary")} disabled={gameState !== 'playing'} onClick={() => handleCheck(opt)}>{opt}</Button>))}
+                                    <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden text-left text-left"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left text-left text-left"><Target className="h-24 w-24 text-primary text-left text-left" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
+                                    <div className="grid grid-cols-2 gap-4 text-left text-left">
+                                        {quiz?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-16 sm:h-24 rounded-[1.25rem] sm:rounded-[2rem] font-black uppercase tracking-widest text-xs sm:text-base transition-all border-2 text-center whitespace-normal p-4", gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-[1.03] shadow-[0_0_40px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-xl" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/40")} disabled={gameState !== 'playing'} onClick={() => handleCheck(opt)}>{opt}</Button>))}
                                     </div>
+                                    <AnimatePresence mode="wait">
+                                        {gameState === 'wrong' && (
+                                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-4 bg-red-600/10 border-2 border-red-600/30 rounded-2xl text-center shadow-xl animate-in zoom-in text-left text-left">
+                                                <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1 text-center">Correct Answer</p>
+                                                <p className="text-lg font-black text-white text-center">{quiz.correct}</p>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                             ) : (
-                                <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center text-left">
-                                    <div className="space-y-4 text-center text-left">
-                                        <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-left">
-                                            <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-left" />
+                                <div className="space-y-10 sm:space-y-16 animate-in slide-in-from-bottom-8 duration-700 text-center text-left text-left text-left">
+                                    <div className="space-y-6 text-center text-left text-left text-left">
+                                        <div className="relative text-left text-left text-left">
+                                            <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse text-left text-left text-left" />
+                                            <div className="h-28 w-28 sm:h-36 sm:w-36 rounded-[2.5rem] sm:rounded-[3.5rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 relative z-10 text-left text-left text-left">
+                                                <Award className="h-14 w-14 sm:h-20 sm:w-20 text-white text-left text-left text-left" />
+                                            </div>
                                         </div>
-                                        <div className="space-y-2 text-center text-left">
-                                            <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center">Crusade Complete!</h3>
-                                            <p className="text-sm text-zinc-400 italic font-medium text-center">You've contributed to the group legacy.</p>
+                                        <div className="space-y-4 text-center text-left text-left text-left">
+                                            <h3 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight text-center">Crusade Complete!</h3>
+                                            <div className="bg-zinc-900 rounded-[2rem] p-8 border-2 border-dashed border-primary/20 max-w-md mx-auto text-left text-left text-left">
+                                                <div className="flex items-center justify-center gap-2 mb-3 text-left text-left text-left">
+                                                    <Badge className="bg-primary/20 text-primary border-none font-black text-[10px] text-left text-left">KINGDOM VERSE</Badge>
+                                                </div>
+                                                <p className="text-xl font-black text-white uppercase tracking-widest text-center">{quiz.ref}</p>
+                                                <p className="text-sm text-zinc-400 italic mt-3 leading-relaxed text-center text-balance text-left text-left">
+                                                    {quiz.explanation || "Your labor in the Word builds an unshakeable foundation for the community."}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-3 gap-3 sm:gap-6 text-left"><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center">Group XP</p><p className="text-xl sm:text-4xl font-black text-white text-center">+{correctCount * 10}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center">Accuracy</p><p className="text-xl sm:text-4xl font-black text-white text-center">{Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-amber-500 uppercase mb-1 tracking-widest text-center">XP Total</p><p className="text-xl sm:text-4xl font-black text-white text-center">{(userProfile?.kingdomPoints || 0) + correctCount * 10}</p></div></div>
-                                    <Button onClick={() => setGameState('playing')} className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl text-center text-left">RETURN TO LOBBY</Button>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left text-left text-left text-left text-left">
+                                        <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 border border-white/5 text-center shadow-inner text-left text-left text-left">
+                                            <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-2 tracking-widest text-center">Group Legacy</p>
+                                            <p className="text-3xl sm:text-5xl font-black text-white text-center">+{correctCount * 10}</p>
+                                        </div>
+                                        <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 border border-white/5 text-center shadow-inner text-center text-left text-left">
+                                            <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-2 tracking-widest text-center">Accuracy</p>
+                                            <p className="text-3xl sm:text-5xl font-black text-white text-center">{Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%</p>
+                                        </div>
+                                        <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 border border-white/5 text-center shadow-inner text-center text-left text-left text-left">
+                                            <p className="text-[10px] sm:text-xs font-black text-amber-500 uppercase mb-2 tracking-widest text-center">Total XP</p>
+                                            <p className="text-3xl sm:text-5xl font-black text-white text-center">{(userProfile?.kingdomPoints || 0) + correctCount * 10}</p>
+                                        </div>
+                                    </div>
+                                    <Button onClick={() => { setGameState('playing'); resetToSelection(); }} className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.2em] shadow-2xl text-center text-left text-left">RETURN TO HUB</Button>
                                 </div>
                             )}
                         </CardContent>
-                        <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5 text-left"><p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">United in Truth • Shared in Spirit</p></CardFooter>
+                        <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5 text-left text-left text-left"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em] text-center">United in Truth • Shared in Spirit</p></CardFooter>
                     </Card>
 
-                    <div className="space-y-6 text-left">
-                        <Card className="rounded-[2rem] border shadow-md bg-indigo-600 text-white overflow-hidden text-left">
-                            <CardHeader className="p-6 pb-2 text-left text-left">
-                                <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80 flex items-center gap-2 text-left"><Trophy className="h-4 w-4 text-left" /> Global Group XP</CardTitle>
+                    <div className="space-y-8 text-left text-left">
+                        <Card className="rounded-[2rem] sm:rounded-3xl border-none shadow-xl bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/20 text-left text-left">
+                            <CardHeader className="p-8 pb-4 text-left text-left">
+                                <CardTitle className="text-xs font-black uppercase tracking-[0.3em] opacity-80 flex items-center gap-2 text-left text-left"><Trophy className="h-4 w-4 text-left text-left" /> Global Crusade XP</CardTitle>
                             </CardHeader>
-                            <CardContent className="p-6 pt-0 text-left">
-                                <p className="text-4xl font-black tracking-tighter text-left">{totalGroupXP}</p>
-                                <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mt-1 text-left">Lifetime Community Score</p>
+                            <CardContent className="p-8 pt-0 text-left text-left">
+                                <p className="text-5xl font-black tracking-tighter text-left text-left">{totalGroupXP}</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mt-2 text-left text-left text-left">Total Spiritual Impact Index</p>
                             </CardContent>
                         </Card>
 
-                        <Card className="rounded-[2rem] border shadow-md bg-card/50 backdrop-blur-sm overflow-hidden text-left">
-                            <CardHeader className="p-6 pb-2 border-b bg-muted/5 text-left">
-                                <CardTitle className="text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2 text-left"><Award className="h-4 w-4 text-primary text-left" /> Group Leaderboard</CardTitle>
+                        <Card className="rounded-[2rem] sm:rounded-3xl border shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden flex flex-col text-left text-left">
+                            <CardHeader className="p-6 sm:p-8 border-b bg-muted/10 text-left text-left text-left">
+                                <CardTitle className="text-xs font-black uppercase tracking-[0.3em] flex items-center gap-2.5 text-left text-left text-left">
+                                    <TrendingUp className="h-4 w-4 text-primary text-left text-left text-left" /> 
+                                    Mission Rank
+                                </CardTitle>
                             </CardHeader>
-                            <CardContent className="p-4 text-left">
-                                <ScrollArea className="h-72 text-left">
-                                    <div className="space-y-3 text-left">
-                                        {leaderboard.map((entry, i) => (
-                                            <div key={entry.userId} className="flex items-center justify-between p-3 rounded-2xl bg-muted/20 border border-transparent group hover:border-primary/20 transition-all text-left">
-                                                <div className="flex items-center gap-3 text-left">
-                                                    <span className="text-[10px] font-black text-muted-foreground w-4 text-left">{i + 1}</span>
-                                                    <div className="h-8 w-8 rounded-full bg-primary/10 border-2 border-background shadow-sm flex items-center justify-center font-black text-[10px] text-primary text-left">{entry.name.charAt(0)}</div>
-                                                    <span className="text-xs font-black uppercase tracking-tight truncate max-w-[80px] text-left">{entry.name}</span>
+                            <CardContent className="p-0 text-left text-left">
+                                <ScrollArea className="h-[400px] text-left text-left text-left">
+                                    <div className="p-4 sm:p-6 space-y-3 text-left text-left text-left">
+                                        {leaderboard.length > 0 ? leaderboard.map((entry, i) => (
+                                            <div key={entry.userId} className={cn(
+                                                "flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 group text-left text-left",
+                                                i === 0 ? "bg-amber-500/10 border-amber-500/30 shadow-md ring-1 ring-amber-500/10" : 
+                                                i === 1 ? "bg-slate-400/10 border-slate-400/30" :
+                                                i === 2 ? "bg-orange-700/10 border-orange-700/30" :
+                                                "bg-muted/30 border-transparent hover:border-primary/10"
+                                            )}>
+                                                <div className="flex items-center gap-4 text-left text-left text-left">
+                                                    <div className="relative shrink-0 text-left text-left">
+                                                        <div className="h-10 w-10 rounded-full bg-primary/10 border-2 border-background shadow-lg flex items-center justify-center font-black text-xs text-primary text-left text-left">{entry.name.charAt(0)}</div>
+                                                        {i < 3 && (
+                                                            <div className={cn(
+                                                                "absolute -top-1 -right-1 h-5 w-5 rounded-full flex items-center justify-center border-2 border-background shadow-lg text-left text-left",
+                                                                i === 0 ? "bg-amber-500" : i === 1 ? "bg-slate-400" : "bg-orange-700"
+                                                            )}>
+                                                                <Trophy className="h-2.5 w-2.5 text-white fill-current text-left text-left" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="min-w-0 text-left text-left text-left">
+                                                        <span className="text-sm font-black uppercase tracking-tight truncate block text-left text-left text-left">{entry.name}</span>
+                                                        <span className="text-[9px] font-bold text-muted-foreground uppercase text-left text-left text-left">{entry.sessions} MISSIONS</span>
+                                                    </div>
                                                 </div>
-                                                <div className="text-right text-left">
-                                                    <p className="text-xs font-black text-primary text-right">{entry.score} XP</p>
-                                                    <p className="text-[8px] font-bold text-muted-foreground uppercase text-right">{entry.sessions} SESSIONS</p>
+                                                <div className="text-right text-left text-left">
+                                                    <p className={cn("text-base font-black tracking-tighter text-right", i === 0 ? "text-amber-600" : "text-primary")}>{entry.score} XP</p>
+                                                    <p className="text-[8px] font-bold text-muted-foreground uppercase text-right">CONTRIBUTION</p>
                                                 </div>
                                             </div>
-                                        ))}
-                                        {leaderboard.length === 0 && (
-                                            <div className="py-20 text-center text-muted-foreground italic text-left">
-                                                <p className="text-xs text-center">No sessions recorded.</p>
+                                        )) : (
+                                            <div className="py-24 text-center text-muted-foreground italic flex flex-col items-center gap-4 text-left text-left">
+                                                <Users className="h-12 w-12 opacity-10 text-left text-left" />
+                                                <p className="text-sm font-medium opacity-60 text-center text-left text-left">No crusade records found in this community yet.</p>
                                             </div>
                                         )}
                                     </div>
                                 </ScrollArea>
                             </CardContent>
+                            <CardFooter className="p-4 bg-muted/20 border-t flex items-center justify-center text-left text-left">
+                                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-50 text-left text-left">
+                                    <ShieldCheck className="h-3 w-3 text-left text-left" />
+                                    Live Workforce Tracking
+                                </div>
+                            </CardFooter>
                         </Card>
                     </div>
                 </div>
