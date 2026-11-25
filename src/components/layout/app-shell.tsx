@@ -658,7 +658,9 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       pathname.startsWith('/bible') ||
       pathname.startsWith('/dashboard/bible') ||
       pathname.startsWith('/notifications') ||
-      pathname.startsWith('/dashboard/notifications')
+      pathname.startsWith('/dashboard/notifications') ||
+      pathname.startsWith('/fellowships') ||
+      pathname.startsWith('/dashboard/fellowship')
     );
   }, [pathname]);
 
@@ -746,16 +748,18 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
+          <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
               <SheetHeader className="text-left flex-shrink-0">
                 <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
                 <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-8">
-              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
-            </div>
+            <ScrollArea className="flex-grow">
+              <div className="p-8">
+                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+              </div>
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       ) : user ? (
@@ -767,9 +771,11 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
                 <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
-              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
-            </div>
+            <ScrollArea className="max-h-[70vh]">
+              <div className="p-6">
+                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+              </div>
+            </ScrollArea>
           </DialogContent>
         </Dialog>
       ) : null}
