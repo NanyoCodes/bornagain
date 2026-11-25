@@ -406,19 +406,19 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator className="text-left text-left" />
+                <DropdownMenuSeparator className="text-left text-left text-left text-left" />
                 
                 <div className="p-1 space-y-1 text-left text-left text-left text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left text-left">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left text-left">
-                        <ShieldCheck className="h-3.5 w-3.5 text-primary text-left text-left text-left" />
+                        <ShieldCheck className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left">
                     <Link href="/territories" className="flex items-center gap-3 w-full text-left text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left text-left">
                         <Globe className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left" />
@@ -426,7 +426,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left text-left">Regions Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left">
                     <Link href="/games" className="flex items-center gap-3 w-full text-left text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left text-left">
                         <Gamepad2 className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left" />
@@ -452,7 +452,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator className="text-left text-left text-left" />
+                <DropdownMenuSeparator className="text-left text-left text-left text-left" />
                 
                 <div className="p-1 space-y-1 text-left text-left text-left text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left text-left">Provision & Support</p>
@@ -469,7 +469,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                       <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left text-left text-left text-left">
                         <Gift className="h-3.5 w-3.5 text-indigo-600 text-left text-left text-left text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left">Kindness Center</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left">Kindness Center</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left">
@@ -679,7 +679,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
-        <div className="relative mb-8 mx-auto w-fit text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><div className="absolute inset-0 flex items-center justify-center text-left text-left text-left"><div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left text-left" /></div></div>
+        <div className="relative mb-8 mx-auto w-fit text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><div className="absolute inset-0 flex items-center justify-center text-left text-left text-left"><div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left text-left text-left" /></div></div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8 text-left text-left">{loadingMessage || "GOD FIRST"}</p>
         <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center text-left text-left">Kingdom Network Active</p>
       </div>
@@ -762,4 +762,3 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SearchProvider>
   );
 }
-

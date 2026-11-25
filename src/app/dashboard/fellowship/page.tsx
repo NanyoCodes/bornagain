@@ -61,6 +61,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FeedSidebar } from '@/components/layout/feed-sidebar';
 import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 import { KingdomAdSpot } from '@/components/testimonies/kingdom-ad-spot';
+import { AppShell } from '@/components/layout/app-shell';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),

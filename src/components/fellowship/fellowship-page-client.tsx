@@ -303,6 +303,7 @@ function FullDevotionalDialog({
 
 export default function FellowshipPageClient({ fellowshipId }: { fellowshipId: string }) {
     const router = useRouter();
+    const params = useParams();
     const firestore = useFirestore();
     const { user } = useUser();
     const { userProfile, loading: profileLoading } = useUserProfile();
