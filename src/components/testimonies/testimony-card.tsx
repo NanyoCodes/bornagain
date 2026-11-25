@@ -594,7 +594,7 @@ export const TestimonyCard = memo(function TestimonyCard({
       )}>
         <div className="p-4 sm:p-6 pb-2 text-left text-left">
           <div className="flex flex-row items-start justify-between gap-3 text-left">
-            <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left">
+            <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left text-left">
                 {testimony.isAnonymous ? (
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm text-left">
                         <AvatarFallback className="bg-primary/10 text-primary font-bold text-left"><Users className="h-5 w-5 text-left" /></AvatarFallback>
@@ -603,9 +603,9 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14 text-left" />
                 )}
                 <div className="min-w-0 flex-1 text-left">
-                    <div className="flex items-center gap-2 flex-wrap text-left">
+                    <div className="flex items-center gap-2 flex-wrap text-left text-left">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0 text-left text-left">
-                             <h3 className="text-base sm:text-lg font-bold capitalize leading-none text-left"> 
+                             <h3 className="text-base sm:text-lg font-bold capitalize leading-none text-left text-left"> 
                                 <LiveAuthorName userId={String(testimony.authorId)} fallbackName={authorName} />
                              </h3>
                         </Link>
@@ -775,7 +775,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 Celebrate
             </Button>
             <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-center text-left", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
-                <div className="relative flex flex-col items-center justify-center h-full text-center"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm text-center text-left"> {commentCount}</span>}</div>Comment
+                <div className="relative flex flex-col items-center justify-center h-full text-center text-left"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm text-center text-left"> {commentCount}</span>}</div>Comment
             </Button>
         </div>
       </div>
@@ -877,7 +877,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                         <span className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.3em] text-left text-left text-left text-left text-left text-left text-left">Miracle Verification</span>
                                     </div>
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left text-left text-left">The Cloud of Witnesses</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left">Formal endorsements of this miracle proclamation.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left">the testimony of two men is true scripture</DrawerDescription>
                                     <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
