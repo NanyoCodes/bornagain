@@ -1,4 +1,3 @@
-// ... (rest of imports remains same, just ensuring Target, Globe, Gamepad2 are here)
 'use client';
 
 import Link from "next/link";
@@ -37,8 +36,7 @@ import {
   Info,
   ChevronDown,
   Gamepad2,
-  Trash2,
-  Plus
+  Trash2
 } from "lucide-react";
 
 import {
@@ -83,7 +81,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
-import type { Notification, UserProfile } from "@/lib/types";
+import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
