@@ -62,6 +62,7 @@ import { FeedSidebar } from '@/components/layout/feed-sidebar';
 import { BibleGameCard } from '@/components/testimonies/bible-game-card';
 import { KingdomAdSpot } from '@/components/testimonies/kingdom-ad-spot';
 import { AppShell } from '@/components/layout/app-shell';
+import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -139,18 +140,14 @@ function FellowshipForm({
                                 value={field.value}
                                 className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0"
                             >
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                <RadioGroupItem value="Fellowship" />
-                                </FormControl>
-                                <FormLabel className="font-normal">Fellowship Group</FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                <RadioGroupItem value="Association" />
-                                </FormControl>
-                                <FormLabel className="font-normal">Association</FormLabel>
-                            </FormItem>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Fellowship" id="r1" />
+                                    <Label htmlFor="r1" className="font-normal cursor-pointer">Fellowship Group</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Association" id="r2" />
+                                    <Label htmlFor="r2" className="font-normal cursor-pointer">Association</Label>
+                                </div>
                             </RadioGroup>
                         </FormControl>
                         <FormMessage />
@@ -190,24 +187,18 @@ function FellowshipForm({
                                 defaultValue={field.value}
                                 className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0"
                             >
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                <RadioGroupItem value="Physical" />
-                                </FormControl>
-                                <FormLabel className="font-normal">Physical</FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                <RadioGroupItem value="Virtual" />
-                                </FormControl>
-                                <FormLabel className="font-normal">Virtual</FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                <RadioGroupItem value="Physical and Virtual" />
-                                </FormControl>
-                                <FormLabel className="font-normal">Both</FormLabel>
-                            </FormItem>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Physical" id="l1" />
+                                    <Label htmlFor="l1" className="font-normal cursor-pointer">Physical</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Virtual" id="l2" />
+                                    <Label htmlFor="l2" className="font-normal cursor-pointer">Virtual</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Physical and Virtual" id="l3" />
+                                    <Label htmlFor="l3" className="font-normal cursor-pointer">Both</Label>
+                                </div>
                             </RadioGroup>
                         </FormControl>
                         <FormMessage />
@@ -344,14 +335,14 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             defaultValue={field.value} 
                             className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0"
                         >
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl><RadioGroupItem value="Fellowship" /></FormControl>
-                                <FormLabel className="font-normal">Fellowship</FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl><RadioGroupItem value="Association" /></FormControl>
-                                <FormLabel className="font-normal">Association</FormLabel>
-                            </FormItem>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="Fellowship" id="m1" />
+                                <Label htmlFor="m1" className="font-normal cursor-pointer">Fellowship</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="Association" id="m2" />
+                                <Label htmlFor="m2" className="font-normal cursor-pointer">Association</Label>
+                            </div>
                         </RadioGroup>
                     </FormControl>
                     </FormItem>
@@ -390,18 +381,18 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             defaultValue={field.value} 
                             className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0"
                         >
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl><RadioGroupItem value="Physical" /></FormControl>
-                                <FormLabel className="font-normal">Physical</FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl><RadioGroupItem value="Virtual" /></FormControl>
-                                <FormLabel className="font-normal">Virtual</FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl><RadioGroupItem value="Physical and Virtual" /></FormControl>
-                                <FormLabel className="font-normal">Both</FormLabel>
-                            </FormItem>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="Physical" id="ml1" />
+                                <Label htmlFor="ml1" className="font-normal cursor-pointer">Physical</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="Virtual" id="ml2" />
+                                <Label htmlFor="ml2" className="font-normal cursor-pointer">Virtual</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="Physical and Virtual" id="ml3" />
+                                <Label htmlFor="ml3" className="font-normal cursor-pointer">Both</Label>
+                            </div>
                         </RadioGroup>
                     </FormControl>
                     <FormMessage />
@@ -488,7 +479,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
         <Card className="border-destructive">
             <CardHeader>
                 <CardTitle className="text-destructive flex items-center gap-2"><Trash2 className="h-5 w-5" /> Delete Group</CardTitle>
-                <CardDescription>Permanently remove this {(fellowship.groupType || 'group').toLowerCase()} from Testify.</CardDescription>
+                <CardDescription>Permanently remove this {(fellowship.groupType || 'group').toLowerCase()} from BornAgain Global.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Button variant="destructive" onClick={onDelete}>Delete Permanently</Button>
@@ -847,7 +838,7 @@ function FellowshipDashboardContent() {
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1">Create a space for community and growth.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Create a space for community and growth.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow">

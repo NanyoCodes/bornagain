@@ -224,8 +224,8 @@ function CartButton() {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0">
-            <div className="flex items-center gap-2 mb-1">
-                <ShoppingCart className="h-5 w-5 text-primary" />
+            <div className="flex items-center gap-2 mb-1 text-left">
+                <ShoppingCart className="h-5 w-5 text-primary text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kindness Package</span>
             </div>
             <DialogHeader className="text-left">
