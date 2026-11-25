@@ -367,7 +367,7 @@ function WitnessSection({ testimonyId }: { testimonyId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="py-20 text-center border-2 border-dashed rounded-[2rem] bg-muted/5">
+                    <div className="text-center py-20 border-2 border-dashed rounded-[2rem] bg-muted/5">
                         <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3" />
                         <p className="text-xs text-muted-foreground italic font-medium px-12">No additional witnesses have shared their account yet.</p>
                     </div>
@@ -611,13 +611,42 @@ export const TestimonyCard = memo(function TestimonyCard({
                             </TooltipProvider>
                         )}
                     </div>
-                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left text-left">
+                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left text-left text-left">
                         <div className="truncate text-[10px] sm:text-xs opacity-70 text-left text-left"> {displayDate}</div>
                         <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium text-left text-left"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
                     </div>
                 </div>
             </div>
             <div className="flex items-center gap-1.5">
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button 
+                                variant="outline" 
+                                size="icon" 
+                                className={cn(
+                                    "h-8 w-8 rounded-full bg-background transition-colors",
+                                    witnessCount > 0 ? "text-emerald-600 border-emerald-500/30 bg-emerald-500/5" : "text-muted-foreground"
+                                )}
+                                onClick={(e) => { e.stopPropagation(); setIsWitnessOpen(true); }}
+                            >
+                                <div className="relative">
+                                    <ShieldCheck className="h-4 w-4" />
+                                    {witnessCount > 0 && (
+                                        <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-emerald-500 text-[6px] font-black text-white border-2 border-background">
+                                            {witnessCount}
+                                        </span>
+                                    )}
+                                </div>
+                                <span className="sr-only">Witness</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+                            <p className="text-[10px] font-black uppercase">Bear Witness</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+
                 <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-background" onClick={handleShare}>
                     <Share2 className="h-3.5 w-3.5" /><span className="sr-only">Share</span>
                 </Button>
@@ -637,7 +666,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                     Boost Miracle
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg text-left text-left">
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg text-left text-left text-left">
                                     <Trash2 className="mr-2 h-4 w-4 text-left" />
                                     Delete Permanently
                                 </DropdownMenuItem>
@@ -716,7 +745,7 @@ export const TestimonyCard = memo(function TestimonyCard({
         </div>
 
         <Separator className="mx-4 sm:mx-6 w-auto opacity-50" />
-        <div className="py-2 sm:py-3 px-2 sm:px-4 grid grid-cols-5 gap-0.5 sm:gap-1 text-left">
+        <div className="py-2 sm:py-3 px-2 sm:px-4 grid grid-cols-4 gap-0.5 sm:gap-1 text-left">
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-center text-left", hasAmened && "text-primary hover:text-primary bg-primary/5")}>
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
                 Amen
@@ -729,9 +758,6 @@ export const TestimonyCard = memo(function TestimonyCard({
                 {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
                 Celebrate
             </Button>
-            <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-center text-left", isWitnessOpen && "text-emerald-600 bg-emerald-500/5")} onClick={(e) => { e.stopPropagation(); setIsWitnessOpen(true); }}>
-                <div className="relative flex flex-col items-center justify-center h-full text-center"><ShieldCheck className={cn("h-3.5 w-3.5 sm:h-4 w-4", isWitnessOpen && "fill-current")} />{witnessCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[7px] sm:text-[8px] font-black text-white border-background border-2 shadow-sm text-center"> {witnessCount}</span>}</div>Witness
-            </Button>
             <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-center text-left", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
                 <div className="relative flex flex-col items-center justify-center h-full text-center"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm text-center text-left"> {commentCount}</span>}</div>Comment
             </Button>
@@ -741,8 +767,8 @@ export const TestimonyCard = memo(function TestimonyCard({
       {mounted && (
         <>
             <Drawer open={isBoostOpen} onOpenChange={setIsBoostOpen}>
-                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left text-left text-left">
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                         <div className="p-0 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <TrendingUp className="h-5 w-5 text-indigo-600" />
