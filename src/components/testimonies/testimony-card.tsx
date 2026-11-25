@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useState, useMemo, useEffect, memo, useRef } from "react";
 import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Testimony, UserProfile, FollowUpStatus, Witness } from "@/lib/types";
@@ -24,16 +24,13 @@ import {
   Users,
   Camera,
   X,
-  ChevronRight,
   ChevronDown,
   TrendingUp,
   Target,
-  Music,
   Mic,
   Newspaper,
-  ExternalLink,
   ShieldCheck,
-  Send
+  User
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -50,8 +47,6 @@ import {
   DialogTitle, 
   DialogDescription, 
   DialogTrigger, 
-  DialogFooter, 
-  DialogClose
 } from "@/components/ui/dialog";
 import { 
   Drawer,
@@ -70,8 +65,6 @@ import {
   query, 
   serverTimestamp, 
   addDoc, 
-  setDoc, 
-  getDoc,
   orderBy
 } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -88,16 +81,6 @@ import { useToast } from "@/hooks/use-toast";
 import { MutualConnectBadge } from "./mutual-connect-badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Textarea } from "../ui/textarea";
-
-export function getYouTubeEmbedUrl(url: string | undefined | null) {
-  if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  if (match && match[2].length === 11) {
-    return `https://www.youtube.com/embed/${match[2]}`;
-  }
-  return null;
-}
 
 export const MediaPreview = ({ url, type, isFull = false }: { url: string, type: 'image' | 'video' | 'audio', isFull?: boolean }) => {
   const isAudio = type === 'audio';
@@ -159,7 +142,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           ) : type === 'video' ? (
               <video key={url} src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
           ) : (
-              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left text-left">
+              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
                   <div className="relative shrink-0 text-left">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
                           <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
@@ -187,10 +170,10 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
             {trigger}
             <Drawer open={isOpen} onOpenChange={setIsOpen}>
                 <DrawerContent className="p-0 bg-black/95 border-0 h-dvh rounded-none flex items-center justify-center text-center">
-                    <div className="sr-only text-left">
+                    <div className="sr-only">
                         <DrawerHeader className="text-left">
-                            <DrawerTitle className="text-left">Media View</DrawerTitle>
-                            <DrawerDescription className="text-left">Full screen media preview.</DrawerDescription>
+                            <DrawerTitle>Media View</DrawerTitle>
+                            <DrawerDescription>Full screen media preview.</DrawerDescription>
                         </DrawerHeader>
                     </div>
                     <Button variant="ghost" size="icon" className="absolute top-4 right-4 z-50 rounded-full bg-white/10 text-white hover:bg-white/20" onClick={() => setIsOpen(false)}>
@@ -215,8 +198,8 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
               <div className="sr-only text-left">
                   <DialogHeader className="text-left">
-                    <DialogTitle className="text-left">Full View</DialogTitle>
-                    <DialogDescription className="text-left">Full miracle proof preview.</DialogDescription>
+                    <DialogTitle>Full View</DialogTitle>
+                    <DialogDescription>Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
               {mediaContent}
@@ -610,6 +593,17 @@ export const TestimonyCard = memo(function TestimonyCard({
                                 <LiveAuthorName userId={String(testimony.authorId)} fallbackName={authorName} />
                              </h3>
                         </Link>
+                        
+                        {testimony.witnessType && (
+                            <Badge variant="outline" className={cn(
+                                "h-4 px-1.5 text-[7px] uppercase font-black tracking-tighter flex items-center gap-1 text-left",
+                                testimony.witnessType === 'Beneficiary' ? "bg-primary/5 text-primary border-primary/20" : "bg-indigo-500/5 text-indigo-600 border-indigo-500/20"
+                            )}>
+                                {testimony.witnessType === 'Beneficiary' ? <User className="h-2 w-2" /> : <Users className="h-2 w-2" />}
+                                {testimony.witnessType}
+                            </Badge>
+                        )}
+
                         {isPartner && <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20 shrink-0 text-left">Partner</Badge>}
                         {!isAuthor && !isPartner && currentUserProfile && (
                             <TooltipProvider>
@@ -834,8 +828,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left text-left text-left text-left text-left text-left text-left">
-                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer</DrawerTitle>
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
@@ -854,7 +847,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                 <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left text-left text-left text-left">Responses</DrawerTitle>
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
-                                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left text-left text-left">Swipe down to close</span></div>
+                                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left text-left text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
                             <div className="flex-grow min-h-0 text-left text-left text-left text-left text-left">{isCommentsOpen && <CommentSection path={`testimonies/${testimony.id}/comments`} />}</div>
@@ -875,7 +868,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                     <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left text-left text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left text-left text-left text-left">
+                            <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <div className="p-8 pb-32 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                     <WitnessSection testimonyId={testimony.id} testimonyAuthorId={testimony.authorId} />
                                 </div>

@@ -572,7 +572,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                            </div>
                            <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden text-left"><motion.div className="h-full bg-primary text-left" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} /></div>
                        </div>
-                       <div className="flex gap-4 w-full text-left">{!isRecording ? (<Button onClick={startRecording} className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center text-left"><Mic className="mr-3 h-6 w-6 text-left" /> START</Button>) : (<Button onClick={stopRecording} variant="destructive" className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center text-left"><Square className="mr-3 h-6 w-6 fill-current text-left" /> STOP</Button>)}</div>
+                       <div className="flex gap-4 w-full text-left text-left">
+                                {!isRecording ? (<Button onClick={startRecording} className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center text-left"><Mic className="mr-3 h-6 w-6 text-left" /> START</Button>) : (<Button onClick={stopRecording} variant="destructive" className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center text-left"><Square className="mr-3 h-6 w-6 fill-current text-left" /> STOP</Button>)}
+                       </div>
                   </div>
               )}
           </DialogContent>
