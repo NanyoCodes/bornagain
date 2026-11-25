@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -28,12 +29,14 @@ import {
     Share2,
     Hourglass,
     Clock,
-    Users
+    Users,
+    Lock,
+    ShieldAlert
 } from "lucide-react";
 import { cn, safeToDate } from "@/lib/utils";
 import { format, isSameDay } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from '@/firebase';
+import { useUser, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { 
     collection, 
     updateDoc, 
@@ -85,9 +88,10 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     const fellowshipDocRef = useMemo(() => (firestore && fellowshipId) ? doc(firestore, 'fellowships', fellowshipId) : null, [firestore, fellowshipId]);
     const { data: fellowship, loading: fellowshipLoading } = useDoc<Fellowship>(fellowshipDocRef);
 
+    const isMember = useMemo(() => (user && (fellowship?.memberIds || []).includes(user.uid)) || false, [user, fellowship?.memberIds]);
+
     const sessionsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !user?.uid) return null;
-        // Optimization: List all sessions for this fellowship, rules now allow membership-based listing
         return query(
             collection(firestore, 'gameSessions'),
             where('fellowshipId', '==', fellowshipId),
@@ -139,7 +143,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         setIsGameActive(false);
         setGameState('finished');
         
-        if (!user || !firestore || !fellowship) return;
+        if (!user || !firestore || !fellowship || !isMember) return;
         setIsSavingSession(true);
 
         const totalPoints = finalCorrect * 10;
@@ -169,9 +173,13 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
             })
             .catch(() => toast({ variant: 'destructive', title: 'Save Failed' }))
             .finally(() => setIsSavingSession(false));
-    }, [user, firestore, fellowshipId, fellowship, activeGameType, toast]);
+    }, [user, firestore, fellowshipId, fellowship, activeGameType, toast, isMember]);
 
     const handleStart = () => {
+        if (!isMember) {
+            toast({ variant: 'destructive', title: 'Membership Required', description: `You must join ${fellowship?.name} to participate in this crusade.` });
+            return;
+        }
         const pool = BIBLE_GAME_DATA[activeGameType];
         const initialIdx = Math.floor(Math.random() * pool.length);
         
@@ -223,6 +231,30 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
 
     if (fellowshipLoading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
     if (!fellowship) return <div className="p-20 text-center">Group not found</div>;
+
+    if (!isMember && !isGameActive && gameState !== 'finished') {
+        return (
+            <div className="max-w-4xl mx-auto flex flex-col items-center justify-center py-24 text-center px-8 space-y-8">
+                <div className="h-20 w-20 bg-muted/20 rounded-[2.5rem] flex items-center justify-center border-2 border-dashed border-primary/20 shadow-inner">
+                    <ShieldAlert className="h-10 w-10 text-primary opacity-40" />
+                </div>
+                <div className="space-y-2">
+                    <h2 className="text-3xl font-black font-headline uppercase tracking-tight">Membership Required</h2>
+                    <p className="text-muted-foreground font-medium max-w-sm mx-auto leading-relaxed text-balance italic">
+                        The "{fellowship.name}" Crusade Arena is a sanctuary for established members only. Join the community to contribute your spiritual strength.
+                    </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs mx-auto">
+                    <Button asChild className="h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20">
+                        <Link href={`/fellowship/${fellowshipId}`}>JOIN COMMUNITY</Link>
+                    </Button>
+                    <Button variant="ghost" onClick={() => router.back()} className="h-12 font-bold text-muted-foreground">
+                        Back to Lobby
+                    </Button>
+                </div>
+            </div>
+        );
+    }
 
     const quiz = BIBLE_GAME_DATA[activeGameType][quizIndex];
 
