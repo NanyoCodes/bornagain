@@ -717,7 +717,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
             <div className="p-6 border-b bg-muted/10">
               <DialogHeader className="text-left">
                 <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
