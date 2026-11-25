@@ -276,7 +276,7 @@ export function getStatusClasses(status: FollowUpStatus | undefined): string {
     }
 }
 
-function WitnessSection({ testimonyId }: { testimonyId: string }) {
+function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: string, testimonyAuthorId: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { userProfile } = useUserProfile();
@@ -284,6 +284,8 @@ function WitnessSection({ testimonyId }: { testimonyId: string }) {
     
     const [witnessText, setWitnessText] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const isAuthor = user?.uid === testimonyAuthorId;
 
     const witnessesQuery = useMemo(() => {
         if (!firestore) return null;
@@ -293,7 +295,7 @@ function WitnessSection({ testimonyId }: { testimonyId: string }) {
 
     const handlePostWitness = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user || !userProfile || !witnessText.trim()) return;
+        if (!user || !userProfile || !witnessText.trim() || isAuthor) return;
 
         setIsSubmitting(true);
         const witnessData = {
@@ -319,7 +321,7 @@ function WitnessSection({ testimonyId }: { testimonyId: string }) {
 
     return (
         <div className="space-y-8 text-left">
-            {user && (
+            {user && !isAuthor && (
                 <form onSubmit={handlePostWitness} className="space-y-4 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner">
                     <div className="flex items-center gap-2 mb-1">
                         <ShieldCheck className="h-4 w-4 text-primary" />
@@ -340,6 +342,15 @@ function WitnessSection({ testimonyId }: { testimonyId: string }) {
                         BEAR WITNESS
                     </Button>
                 </form>
+            )}
+
+            {isAuthor && (
+                <div className="p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed flex items-start gap-4 shadow-inner">
+                    <Info className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic">
+                        The witness must be someone else. Others who witnessed this miracle can provide their formal endorsement here to build the "Cloud of Witnesses."
+                    </p>
+                </div>
             )}
 
             <div className="space-y-6">
@@ -647,7 +658,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-                            <p className="text-[10px] font-black uppercase">{hasWitnessed ? "You Have Witnessed" : "Bear Witness"}</p>
+                            <p className="text-[10px] font-black uppercase">{isAuthor ? "View Witnesses" : hasWitnessed ? "You Have Witnessed" : "Bear Witness"}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
@@ -872,7 +883,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                             </div>
                             <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left">
                                 <div className="p-8 pb-32 text-left text-left text-left text-left text-left">
-                                    <WitnessSection testimonyId={testimony.id} />
+                                    <WitnessSection testimonyId={testimony.id} testimonyAuthorId={testimony.authorId} />
                                 </div>
                             </ScrollArea>
                         </DrawerContent>
