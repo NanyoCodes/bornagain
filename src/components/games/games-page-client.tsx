@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -406,7 +407,12 @@ export default function GamesPageClient() {
                                                             <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left">{item.data.memberCount} Members</p>
                                                         </div>
                                                     </div>
-                                                    <Button className="w-full sm:w-auto h-11 px-8 rounded-xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] text-center text-left text-left text-left">START CRUSADE</Button>
+                                                    <Button 
+                                                        onClick={() => router.push(`/games/crusade/${item.data.id}`)}
+                                                        className="w-full sm:w-auto h-11 px-8 rounded-xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] text-center text-left text-left text-left"
+                                                    >
+                                                        START CRUSADE
+                                                    </Button>
                                                 </CardContent>
                                             </Card>
                                         )

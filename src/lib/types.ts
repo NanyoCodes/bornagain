@@ -144,7 +144,9 @@ export type GameSession = {
   id: string;
   participantIds: string[];
   userId: string;
-  partnerId: string;
+  partnerId?: string;
+  fellowshipId?: string;
+  fellowshipName?: string;
   gameType: GameSessionType;
   score: number;
   correctCount: number;

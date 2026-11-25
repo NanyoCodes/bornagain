@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -659,8 +660,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       pathname.startsWith('/dashboard/bible') ||
       pathname.startsWith('/notifications') ||
       pathname.startsWith('/dashboard/notifications') ||
-      pathname.startsWith('/fellowships') ||
-      pathname.startsWith('/dashboard/fellowship')
+      pathname.startsWith('/games/crusade')
     );
   }, [pathname]);
 
