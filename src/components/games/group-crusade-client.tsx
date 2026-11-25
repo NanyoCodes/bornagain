@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -87,14 +86,15 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     const { data: fellowship, loading: fellowshipLoading } = useDoc<Fellowship>(fellowshipDocRef);
 
     const sessionsQuery = useMemo(() => {
-        if (!firestore || !fellowshipId) return null;
+        if (!firestore || !fellowshipId || !user?.uid) return null;
+        // Optimization: List all sessions for this fellowship, rules now allow membership-based listing
         return query(
             collection(firestore, 'gameSessions'),
             where('fellowshipId', '==', fellowshipId),
             orderBy('createdAt', 'desc'),
             limit(100)
         );
-    }, [firestore, fellowshipId]);
+    }, [firestore, fellowshipId, user?.uid]);
     const { data: groupSessions, loading: sessionsLoading } = useCollection<GameSession>(sessionsQuery);
 
     const leaderboard = useMemo(() => {
@@ -103,7 +103,6 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         
         groupSessions.forEach(s => {
             if (!map[s.userId]) {
-                // Approximate name from history or profile if available (real production should use a dedicated leaderboard collection)
                 map[s.userId] = { userId: s.userId, name: 'Member', score: 0, sessions: 0 };
             }
             map[s.userId].score += s.score;
@@ -232,7 +231,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
             <header className="space-y-6 pt-4 text-left">
                 <div className="flex items-center gap-4 text-left">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full border bg-background shadow-sm text-left">
-                        <ArrowLeft className="h-6 w-6 text-left" />
+                        <ArrowLeft className="h-4 w-4 text-left" />
                     </Button>
                     <div className="min-w-0 text-left">
                         <div className="flex items-center gap-2 mb-1 text-left">
@@ -246,8 +245,8 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
                     <Card className="lg:col-span-2 rounded-[2rem] sm:rounded-[3rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden text-left">
                         <CardHeader className="p-6 sm:p-10 pb-4 text-center">
-                            <div className="flex items-center justify-center gap-2 mb-2">
-                                <Gamepad2 className="h-5 w-5 text-primary" />
+                            <div className="flex items-center justify-center gap-2 mb-2 text-left">
+                                <Gamepad2 className="h-5 w-5 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Mission Field</span>
                             </div>
                             <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase text-white text-center">Group Crusade</CardTitle>
@@ -282,44 +281,42 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                     </div>
                                 </div>
                             ) : isGameActive ? (
-                                <div className="space-y-6 sm:space-y-10 animate-in fade-in zoom-in duration-500 text-left text-left text-left">
+                                <div className="space-y-6 sm:space-y-10 animate-in fade-in zoom-in duration-500 text-left">
                                     <div className="flex items-center justify-between px-2 text-left">
-                                        <div className="flex items-center gap-3 text-left">
+                                        <div className="flex items-center gap-3 text-left text-left">
                                             <div className={cn("h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center border-2 shadow-lg", timeLeft <= 10 ? "bg-red-500 border-red-400 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary")}><Timer className="h-5 w-5 sm:h-6 sm:w-6" /></div>
                                             <div className="text-left text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Left</p><p className={cn("text-xl sm:text-2xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
                                         </div>
-                                        <div className="text-right text-left text-left text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Contribution</p><p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right">{correctCount * 10} XP</p></div>
+                                        <div className="text-right text-left text-left"><p className="text-[9px] sm:text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Contribution</p><p className="text-xl sm:text-2xl font-black text-green-500 tracking-tighter leading-none text-right">{correctCount * 10} XP</p></div>
                                     </div>
-                                    <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[160px] text-center relative overflow-hidden text-left text-left"><div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left text-left"><Target className="h-16 w-16 text-primary text-left" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
-                                    <div className="grid grid-cols-2 gap-3 text-left text-left">
+                                    <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-10 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[160px] text-center relative overflow-hidden text-left"><div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none text-left"><Target className="h-16 w-16 text-primary text-left" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-lg sm:text-xl font-serif italic leading-relaxed text-zinc-200 text-balance text-center">&ldquo;{quiz?.text}&rdquo;</motion.p></AnimatePresence></div>
+                                    <div className="grid grid-cols-2 gap-3 text-left">
                                         {quiz?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-14 sm:h-20 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-sm transition-all border-2 text-center whitespace-normal", gameState === 'correct' && opt === quiz.correct ? "bg-green-600 text-white border-green-400 scale-105 shadow-[0_0_25px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-lg" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary")} disabled={gameState !== 'playing'} onClick={() => handleCheck(opt)}>{opt}</Button>))}
                                     </div>
                                 </div>
                             ) : (
-                                <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center text-left text-left">
-                                    <div className="space-y-4 text-center text-left text-left">
-                                        <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-left text-left text-left">
-                                            <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-left text-left text-left" />
+                                <div className="space-y-8 sm:space-y-12 animate-in slide-in-from-bottom-6 duration-700 text-center text-left">
+                                    <div className="space-y-4 text-center text-left">
+                                        <div className="h-20 w-20 sm:h-28 sm:w-28 rounded-[2rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 text-left">
+                                            <Award className="h-10 w-10 sm:h-14 sm:w-14 text-white text-left" />
                                         </div>
-                                        <div className="space-y-2 text-center text-left text-left">
+                                        <div className="space-y-2 text-center text-left">
                                             <h3 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight text-center">Crusade Complete!</h3>
                                             <p className="text-sm text-zinc-400 italic font-medium text-center">You've contributed to the group legacy.</p>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-3 gap-3 sm:gap-6 text-left text-left"><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center">Group XP</p><p className="text-xl sm:text-4xl font-black text-white text-center">+{correctCount * 10}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center">Accuracy</p><p className="text-xl sm:text-4xl font-black text-white text-center">{Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left text-left text-left"><p className="text-[10px] sm:text-xs font-black text-amber-500 uppercase mb-1 tracking-widest text-center">XP Total</p><p className="text-xl sm:text-4xl font-black text-white text-center">{(userProfile?.kingdomPoints || 0) + correctCount * 10}</p></div></div>
-                                    <Button onClick={() => setGameState('playing')} className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl text-center">RETURN TO LOBBY</Button>
+                                    <div className="grid grid-cols-3 gap-3 sm:gap-6 text-left"><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-1 tracking-widest text-center">Group XP</p><p className="text-xl sm:text-4xl font-black text-white text-center">+{correctCount * 10}</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-1 tracking-widest text-center">Accuracy</p><p className="text-xl sm:text-4xl font-black text-white text-center">{Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%</p></div><div className="bg-zinc-900 rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 text-center border border-white/5 shadow-inner text-left"><p className="text-[10px] sm:text-xs font-black text-amber-500 uppercase mb-1 tracking-widest text-center">XP Total</p><p className="text-xl sm:text-4xl font-black text-white text-center">{(userProfile?.kingdomPoints || 0) + correctCount * 10}</p></div></div>
+                                    <Button onClick={() => setGameState('playing')} className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl text-center text-left">RETURN TO LOBBY</Button>
                                 </div>
                             )}
                         </CardContent>
-                        <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5 text-left text-left">
-                            <p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">United in Truth • Shared in Spirit</p>
-                        </CardFooter>
+                        <CardFooter className="p-4 bg-black/40 text-center justify-center border-t border-white/5 text-left"><p className="text-[8px] sm:text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">United in Truth • Shared in Spirit</p></CardFooter>
                     </Card>
 
                     <div className="space-y-6 text-left">
                         <Card className="rounded-[2rem] border shadow-md bg-indigo-600 text-white overflow-hidden text-left">
-                            <CardHeader className="p-6 pb-2 text-left">
-                                <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80 flex items-center gap-2 text-left"><Trophy className="h-4 w-4" /> Global Group XP</CardTitle>
+                            <CardHeader className="p-6 pb-2 text-left text-left">
+                                <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80 flex items-center gap-2 text-left"><Trophy className="h-4 w-4 text-left" /> Global Group XP</CardTitle>
                             </CardHeader>
                             <CardContent className="p-6 pt-0 text-left">
                                 <p className="text-4xl font-black tracking-tighter text-left">{totalGroupXP}</p>
@@ -329,27 +326,27 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
 
                         <Card className="rounded-[2rem] border shadow-md bg-card/50 backdrop-blur-sm overflow-hidden text-left">
                             <CardHeader className="p-6 pb-2 border-b bg-muted/5 text-left">
-                                <CardTitle className="text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2 text-left"><Award className="h-4 w-4 text-primary" /> Group Leaderboard</CardTitle>
+                                <CardTitle className="text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2 text-left"><Award className="h-4 w-4 text-primary text-left" /> Group Leaderboard</CardTitle>
                             </CardHeader>
                             <CardContent className="p-4 text-left">
                                 <ScrollArea className="h-72 text-left">
                                     <div className="space-y-3 text-left">
                                         {leaderboard.map((entry, i) => (
                                             <div key={entry.userId} className="flex items-center justify-between p-3 rounded-2xl bg-muted/20 border border-transparent group hover:border-primary/20 transition-all text-left">
-                                                <div className="flex items-center gap-3 text-left text-left">
+                                                <div className="flex items-center gap-3 text-left">
                                                     <span className="text-[10px] font-black text-muted-foreground w-4 text-left">{i + 1}</span>
                                                     <div className="h-8 w-8 rounded-full bg-primary/10 border-2 border-background shadow-sm flex items-center justify-center font-black text-[10px] text-primary text-left">{entry.name.charAt(0)}</div>
                                                     <span className="text-xs font-black uppercase tracking-tight truncate max-w-[80px] text-left">{entry.name}</span>
                                                 </div>
-                                                <div className="text-right text-left text-left">
-                                                    <p className="text-xs font-black text-primary text-right text-left">{entry.score} XP</p>
-                                                    <p className="text-[8px] font-bold text-muted-foreground uppercase text-right text-left">{entry.sessions} SESSIONS</p>
+                                                <div className="text-right text-left">
+                                                    <p className="text-xs font-black text-primary text-right">{entry.score} XP</p>
+                                                    <p className="text-[8px] font-bold text-muted-foreground uppercase text-right">{entry.sessions} SESSIONS</p>
                                                 </div>
                                             </div>
                                         ))}
                                         {leaderboard.length === 0 && (
                                             <div className="py-20 text-center text-muted-foreground italic text-left">
-                                                <p className="text-xs text-center text-left">No sessions recorded.</p>
+                                                <p className="text-xs text-center">No sessions recorded.</p>
                                             </div>
                                         )}
                                     </div>
