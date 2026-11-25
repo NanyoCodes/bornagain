@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -122,14 +121,14 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                   />
               ) : (
                   <div className="w-full max-w-sm flex flex-col items-center gap-8 bg-zinc-900 p-12 rounded-[3rem] border border-white/10 shadow-2xl">
-                      <div className="relative text-center text-left text-left">
+                      <div className="relative text-center">
                           <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)] mx-auto">
                               <Mic className="h-16 w-16 text-primary" />
                           </div>
                           <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-pulse" />
                       </div>
-                      <div className="space-y-2 text-center text-left">
-                          <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white text-center">Voice Proclamation</h4>
+                      <div className="space-y-2 text-center">
+                          <h4 className="text-xl font-black font-headline uppercase tracking-tight text-white">Voice Proclamation</h4>
                           <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest italic text-center">A testimony of God's goodness</p>
                       </div>
                       <audio 
@@ -173,9 +172,9 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                       </motion.div>
                   </div>
-                  <div className="min-w-0 flex-1 text-left text-left text-left">
-                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left">Voice Proclamation</p>
-                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left">Tap to Hear Miracle</p>
+                  <div className="min-w-0 flex-1 text-left">
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
+                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
                   </div>
               </div>
           )}
@@ -213,10 +212,10 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
           {trigger}
           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
-              <div className="sr-only text-left text-left text-left">
-                  <DialogHeader className="text-left text-left text-left">
-                    <DialogTitle className="text-left text-left text-left">Full View</DialogTitle>
-                    <DialogDescription className="text-left text-left text-left">Full miracle proof preview.</DialogDescription>
+              <div className="sr-only text-left">
+                  <DialogHeader className="text-left">
+                    <DialogTitle className="text-left">Full View</DialogTitle>
+                    <DialogDescription className="text-left">Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
               {mediaContent}
@@ -430,10 +429,6 @@ export const TestimonyCard = memo(function TestimonyCard({
   
   const totalReactions = supporters.length + inspiredBy.length + connectedBy.length;
 
-  const hasAmened = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
-  const hasInspired = useMemo(() => user ? inspiredBy.includes(user.uid) : false, [user, inspiredBy]);
-  const hasCelebrated = useMemo(() => user ? connectedBy.includes(user.uid) : false, [user, connectedBy]);
-  
   const displayDate = useMemo(() => {
     const createdAtDate = safeToDate(testimony.createdAt);
     return createdAtDate ? "Shared " + format(createdAtDate, "PPP 'at' p") : 'Shared recently';
@@ -457,8 +452,14 @@ export const TestimonyCard = memo(function TestimonyCard({
       if (!firestore) return null;
       return query(collection(firestore, 'testimonies', testimony.id, 'witnesses'));
   }, [firestore, testimony.id]);
-  const { data: witnesses } = useCollection<{id: string}>(witnessesQuery);
-  const witnessCount = witnesses?.length || 0;
+  const { data: witnessesData } = useCollection<Witness>(witnessesQuery);
+  const witnessCount = witnessesData?.length || 0;
+  
+  const hasWitnessed = useMemo(() => user && witnessesData?.some(w => w.authorId === user.uid), [user, witnessesData]);
+
+  const hasAmened = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
+  const hasInspired = useMemo(() => user ? inspiredBy.includes(user.uid) : false, [user, inspiredBy]);
+  const hasCelebrated = useMemo(() => user ? connectedBy.includes(user.uid) : false, [user, connectedBy]);
 
   useEffect(() => {
     const checkTruncation = () => {
@@ -585,7 +586,7 @@ export const TestimonyCard = memo(function TestimonyCard({
             <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 {testimony.isAnonymous ? (
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-center flex items-center justify-center h-full w-full text-left"><Users className="h-5 w-5" /></AvatarFallback>
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-left"><Users className="h-5 w-5" /></AvatarFallback>
                     </Avatar>
                 ) : (
                     <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
@@ -626,14 +627,18 @@ export const TestimonyCard = memo(function TestimonyCard({
                                 size="icon" 
                                 className={cn(
                                     "h-8 w-8 rounded-full bg-background transition-colors",
-                                    witnessCount > 0 ? "text-emerald-600 border-emerald-500/30 bg-emerald-500/5" : "text-muted-foreground"
+                                    hasWitnessed ? "text-emerald-600 border-emerald-500/30 bg-emerald-500/10 shadow-sm ring-1 ring-emerald-500/20" : 
+                                    witnessCount > 0 ? "text-emerald-600/70 border-emerald-500/20 bg-emerald-500/5" : "text-muted-foreground"
                                 )}
                                 onClick={(e) => { e.stopPropagation(); setIsWitnessOpen(true); }}
                             >
                                 <div className="relative">
                                     <ShieldCheck className="h-4 w-4" />
                                     {witnessCount > 0 && (
-                                        <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-emerald-500 text-[6px] font-black text-white border-2 border-background">
+                                        <span className={cn(
+                                            "absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full text-[6px] font-black text-white border-2 border-background",
+                                            hasWitnessed ? "bg-emerald-600" : "bg-emerald-500"
+                                        )}>
                                             {witnessCount}
                                         </span>
                                     )}
@@ -642,7 +647,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-                            <p className="text-[10px] font-black uppercase">Bear Witness</p>
+                            <p className="text-[10px] font-black uppercase">{hasWitnessed ? "You Have Witnessed" : "Bear Witness"}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
