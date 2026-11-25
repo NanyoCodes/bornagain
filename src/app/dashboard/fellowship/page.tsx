@@ -833,13 +833,13 @@ function FellowshipDashboardContent() {
 
             {mounted && (
                 isMobile ? (
-                    <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left p-0">
+                                <SheetHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left">Create a space for community and growth.</DrawerDescription>
-                                </DrawerHeader>
+                                </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow">
                                 <div className="p-8">
@@ -851,8 +851,8 @@ function FellowshipDashboardContent() {
                                     />
                                 </div>
                             </ScrollArea>
-                        </DrawerContent>
-                    </Drawer>
+                        </SheetContent>
+                    </Sheet>
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
