@@ -515,6 +515,21 @@
         "upvotes": { "type": "array", "items": { "type": "string" } }
       },
       "required": ["text", "authorId", "createdAt"]
+    },
+    "Witness": {
+      "title": "Witness",
+      "description": "A formal endorsement or secondary account of a shared miracle.",
+      "type": "object",
+      "properties": {
+        "authorId": { "type": "string" },
+        "authorFirstName": { "type": "string" },
+        "authorLastName": { "type": "string" },
+        "authorAvatarUrl": { "type": "string", "format": "uri" },
+        "text": { "type": "string", "description": "The witness's account or confirmation." },
+        "createdAt": { "type": "object" },
+        "testimonyId": { "type": "string" }
+      },
+      "required": ["authorId", "text", "createdAt", "testimonyId"]
     }
   },
   "auth": {
@@ -566,6 +581,12 @@
         "$ref": "#/entities/ChallengeSolution"
       },
       "description": "Solutions proposed for regional challenges."
+    },
+    "/testimonies/{testimonyId}/witnesses/{witnessId}": {
+      "schema": {
+        "$ref": "#/entities/Witness"
+      },
+      "description": "Formal endorsements for a testimony."
     }
   }
 }

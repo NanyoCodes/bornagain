@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -253,6 +254,17 @@ export type TestimonyComment = {
     supporters?: string[];
     inspiredBy?: string[];
     connectedBy?: string[];
+};
+
+export type Witness = {
+  id: string;
+  authorId: string;
+  authorFirstName: string;
+  authorLastName: string;
+  authorAvatarUrl?: string;
+  text: string;
+  createdAt: Timestamp;
+  testimonyId: string;
 };
 
 export type PrayerRequest = {

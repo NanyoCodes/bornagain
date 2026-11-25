@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -212,7 +213,7 @@ service cloud.firestore {
       match /resources/{resourceId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId);
         allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
       }
     }
@@ -226,7 +227,7 @@ service cloud.firestore {
       match /solutions/{solutionId} {
         allow read, list: if true; 
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes']));
+        allow update: if isAuthenticated() && (resource.data.authorId == request.authorId || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes']));
         allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
       }
     }
@@ -259,6 +260,13 @@ service cloud.firestore {
             (resource.data.authorId == request.auth.uid) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
           );
+      }
+
+      match /witnesses/{witnessId} {
+        allow read, list: if true;
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow update: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
       }
     }
     
@@ -339,7 +347,7 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/fellowships/$(fellowshipId)/devotionals/$(date)).data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/fellowships/$(fellowshipId)/devotionals/$(date)).data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
               (request.resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
