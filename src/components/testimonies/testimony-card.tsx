@@ -49,8 +49,8 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogDescription, 
-  DialogTrigger,
-  DialogFooter,
+  DialogTrigger, 
+  DialogFooter, 
   DialogClose
 } from "@/components/ui/dialog";
 import { 
@@ -159,22 +159,22 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           ) : type === 'video' ? (
               <video key={url} src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
           ) : (
-              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left text-left text-left">
-                  <div className="relative shrink-0 text-left">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner text-left">
-                          <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary text-left" />
+              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
+                  <div className="relative shrink-0">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
+                          <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
                       <motion.div 
-                        className="absolute -top-1 -right-1 text-left"
+                        className="absolute -top-1 -right-1"
                         animate={{ opacity: [0.4, 1, 0.4] }}
                         transition={{ repeat: Infinity, duration: 2 }}
                       >
-                        <Sparkles className="h-3 w-3 text-primary animate-pulse text-left" />
+                        <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                       </motion.div>
                   </div>
-                  <div className="min-w-0 flex-1 text-left text-left">
-                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none text-left">Voice Proclamation</p>
-                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60 text-left">Tap to Hear Miracle</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
+                    <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
                   </div>
               </div>
           )}
@@ -186,20 +186,20 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           <React.Fragment>
             {trigger}
             <Drawer open={isOpen} onOpenChange={setIsOpen}>
-                <DrawerContent className="p-0 bg-black/95 border-0 h-dvh rounded-none flex items-center justify-center text-center text-left text-left">
-                    <div className="sr-only text-left">
-                        <DrawerHeader className="text-left">
-                            <DrawerTitle className="text-left">Media View</DrawerTitle>
-                            <DrawerDescription className="text-left">Full screen media preview.</DrawerDescription>
+                <DrawerContent className="p-0 bg-black/95 border-0 h-dvh rounded-none flex items-center justify-center text-center">
+                    <div className="sr-only">
+                        <DrawerHeader>
+                            <DrawerTitle>Media View</DrawerTitle>
+                            <DrawerDescription>Full screen media preview.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 z-50 rounded-full bg-white/10 text-white hover:bg-white/20 text-left" onClick={() => setIsOpen(false)}>
-                        <X className="h-6 w-6 text-left" />
+                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 z-50 rounded-full bg-white/10 text-white hover:bg-white/20" onClick={() => setIsOpen(false)}>
+                        <X className="h-6 w-6" />
                     </Button>
                     {mediaContent}
-                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4 text-center">
-                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest text-center text-left">
-                          <a href={url} target="_blank" rel="noopener noreferrer" className="text-center text-left">Open in new tab</a>
+                    <div className="absolute bottom-10 left-0 right-0 flex justify-center p-4">
+                        <Button variant="link" asChild className="text-white/40 text-[10px] uppercase font-bold tracking-widest text-center">
+                          <a href={url} target="_blank" rel="noopener noreferrer">Open in new tab</a>
                         </Button>
                     </div>
                 </DrawerContent>
@@ -211,11 +211,11 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
   return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
           {trigger}
-          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left text-left">
-              <div className="sr-only text-left text-left">
-                  <DialogHeader className="text-left text-left text-left">
-                    <DialogTitle className="text-left text-left text-left">Full View</DialogTitle>
-                    <DialogDescription className="text-left text-left text-left">Full miracle proof preview.</DialogDescription>
+          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+              <div className="sr-only">
+                  <DialogHeader>
+                    <DialogTitle>Full View</DialogTitle>
+                    <DialogDescription>Full miracle proof preview.</DialogDescription>
                   </DialogHeader>
               </div>
               {mediaContent}
@@ -322,64 +322,64 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
     return (
         <div className="space-y-8 text-left">
             {user && !isAuthor && (
-                <form onSubmit={handlePostWitness} className="space-y-4 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left">
-                        <ShieldCheck className="h-4 w-4 text-primary text-left" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.2em] text-left">Add Your Account</span>
+                <form onSubmit={handlePostWitness} className="space-y-4 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner">
+                    <div className="flex items-center gap-2 mb-1">
+                        <ShieldCheck className="h-4 w-4 text-primary" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Add Your Account</span>
                     </div>
                     <Textarea 
                         placeholder="I was there, I saw this miracle too..."
                         value={witnessText}
                         onChange={e => setWitnessText(e.target.value)}
-                        className="min-h-[100px] rounded-2xl bg-background border-none shadow-inner text-base text-left"
+                        className="min-h-[100px] rounded-2xl bg-background border-none shadow-inner text-base"
                     />
                     <Button 
                         type="submit" 
                         disabled={isSubmitting || !witnessText.trim()}
-                        className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center text-left"
+                        className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20"
                     >
-                        {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : <Send className="h-4 w-4 mr-2 text-left" />}
+                        {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
                         BEAR WITNESS
                     </Button>
                 </form>
             )}
 
             {isAuthor && (
-                <div className="p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed flex items-start gap-4 shadow-inner text-left">
-                    <Info className="h-5 w-5 text-muted-foreground mt-1 shrink-0 text-left" />
+                <div className="p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed flex items-start gap-4 shadow-inner">
+                    <Info className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
                     <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-left">
                         The witness must be someone else. Others who witnessed this miracle can provide their formal endorsement here to build the "Cloud of Witnesses."
                     </p>
                 </div>
             )}
 
-            <div className="space-y-6 text-left">
-                <div className="flex items-center gap-2 px-1 text-left">
-                    <Users className="h-4 w-4 text-primary text-left" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground text-left">The Cloud of Witnesses</h3>
+            <div className="space-y-6">
+                <div className="flex items-center gap-2 px-1">
+                    <Users className="h-4 w-4 text-primary" />
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">The Cloud of Witnesses</h3>
                 </div>
                 
                 {loading ? (
-                    <div className="flex justify-center py-12 text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
+                    <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
                 ) : witnesses && witnesses.length > 0 ? (
-                    <div className="space-y-4 text-left">
+                    <div className="space-y-4">
                         {witnesses.map(w => (
-                            <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border text-left">
-                                <LiveAuthorAvatar userId={w.authorId} fallbackInitials={w.authorFirstName?.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0 text-left" />
-                                <div className="min-w-0 flex-1 text-left">
-                                    <div className="flex justify-between items-baseline mb-1 text-left">
-                                        <p className="font-black text-sm uppercase tracking-tight text-left">{w.authorFirstName} {w.authorLastName}</p>
-                                        <span className="text-[8px] font-bold text-muted-foreground uppercase opacity-60 text-left">{w.createdAt ? format(safeToDate(w.createdAt)!, 'MMM d') : 'Just now'}</span>
+                            <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border">
+                                <LiveAuthorAvatar userId={w.authorId} fallbackInitials={w.authorFirstName?.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex justify-between items-baseline mb-1">
+                                        <p className="font-black text-sm uppercase tracking-tight">{w.authorFirstName} {w.authorLastName}</p>
+                                        <span className="text-[8px] font-bold text-muted-foreground uppercase opacity-60">{w.createdAt ? format(safeToDate(w.createdAt)!, 'MMM d') : 'Just now'}</span>
                                     </div>
-                                    <p className="text-sm text-muted-foreground leading-relaxed italic text-left">&ldquo;{w.text}&rdquo;</p>
+                                    <p className="text-sm text-muted-foreground leading-relaxed italic">&ldquo;{w.text}&rdquo;</p>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 border-2 border-dashed rounded-[2rem] bg-muted/5 text-center text-left">
-                        <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-left" />
-                        <p className="text-xs text-muted-foreground italic font-medium px-12 text-center text-left">No additional witnesses have shared their account yet.</p>
+                    <div className="text-center py-20 border-2 border-dashed rounded-[2rem] bg-muted/5">
+                        <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3" />
+                        <p className="text-xs text-muted-foreground italic font-medium px-12 text-center">No additional witnesses have shared their account yet.</p>
                     </div>
                 )}
             </div>
@@ -567,8 +567,8 @@ export const TestimonyCard = memo(function TestimonyCard({
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="space-y-8 pb-8 px-2 text-left text-left">
-        <div className={cn("grid gap-4 text-left", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
+      <div className="space-y-8 pb-8 px-2 text-left">
+        <div className={cn("grid gap-4", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
             {testimony.mediaUrl && (
               <MediaPreview url={testimony.mediaUrl} type={testimony.mediaType as any} isFull />
             )}
@@ -576,7 +576,7 @@ export const TestimonyCard = memo(function TestimonyCard({
               <MediaPreview url={testimony.mediaUrl2} type={testimony.mediaType2 as any} isFull />
             )}
         </div>
-        <div className="text-base sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium text-left">
+        <div className="text-base sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium">
             {testimony.content}
         </div>
       </div>
@@ -592,40 +592,40 @@ export const TestimonyCard = memo(function TestimonyCard({
         isPartner && "sm:ring-1 ring-primary/20",
         testimony.answeredPrayerId && "sm:border-l-4 sm:border-l-amber-500"
       )}>
-        <div className="p-4 sm:p-6 pb-2 text-left text-left">
+        <div className="p-4 sm:p-6 pb-2 text-left">
           <div className="flex flex-row items-start justify-between gap-3 text-left">
-            <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left text-left">
+            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 {testimony.isAnonymous ? (
-                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm text-left">
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-left"><Users className="h-5 w-5 text-left" /></AvatarFallback>
+                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold"><Users className="h-5 w-5" /></AvatarFallback>
                     </Avatar>
                 ) : (
-                    <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14 text-left" />
+                    <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
                 )}
                 <div className="min-w-0 flex-1 text-left">
-                    <div className="flex items-center gap-2 flex-wrap text-left text-left">
-                        <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0 text-left text-left">
-                             <h3 className="text-base sm:text-lg font-bold capitalize leading-none text-left text-left"> 
+                    <div className="flex items-center gap-2 flex-wrap text-left">
+                        <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
+                             <h3 className="text-base sm:text-lg font-bold capitalize leading-none"> 
                                 <LiveAuthorName userId={String(testimony.authorId)} fallbackName={authorName} />
                              </h3>
                         </Link>
-                        {isPartner && <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20 shrink-0 text-left">Partner</Badge>}
+                        {isPartner && <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20 shrink-0">Partner</Badge>}
                         {!isAuthor && !isPartner && currentUserProfile && (
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <button className={cn("h-6 w-6 rounded-full transition-colors flex items-center justify-center text-center text-left", hasPendingRequest ? "text-muted-foreground" : "text-primary hover:bg-primary/10")} onClick={handleSendPartnerRequest} disabled={isRequestingPartner || hasPendingRequest}>
-                                            {isRequestingPartner ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : hasPendingRequest ? <Hourglass className="h-3.5 w-3.5 text-left" /> : <UserPlus className="h-3.5 w-3.5 text-left" />}
+                                        <button className={cn("h-6 w-6 rounded-full transition-colors flex items-center justify-center", hasPendingRequest ? "text-muted-foreground" : "text-primary hover:bg-primary/10")} onClick={handleSendPartnerRequest} disabled={isRequestingPartner || hasPendingRequest}>
+                                            {isRequestingPartner ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : hasPendingRequest ? <Hourglass className="h-3.5 w-3.5" /> : <UserPlus className="h-3.5 w-3.5" />}
                                         </button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left"><p className={cn("text-[10px] font-black uppercase tracking-widest text-left")}>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p></TooltipContent>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className={cn("text-[10px] font-black uppercase tracking-widest")}>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         )}
                     </div>
-                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left text-left text-left text-left">
-                        <div className="truncate text-[10px] sm:text-xs opacity-70 text-left"> {displayDate}</div>
-                        <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium text-left"><Globe className="h-3 w-3 text-primary shrink-0 text-left" /> {locationString}</div>
+                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left text-left text-left">
+                        <div className="truncate text-[10px] sm:text-xs opacity-70"> {displayDate}</div>
+                        <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
                     </div>
                 </div>
             </div>
@@ -643,53 +643,53 @@ export const TestimonyCard = memo(function TestimonyCard({
                                 )}
                                 onClick={(e) => { e.stopPropagation(); setIsWitnessOpen(true); }}
                             >
-                                <div className="relative text-left">
-                                    <ShieldCheck className="h-5 w-5 text-left" />
+                                <div className="relative">
+                                    <ShieldCheck className="h-5 w-5" />
                                     {witnessCount > 0 && (
                                         <span className={cn(
-                                            "absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full text-[6px] font-black text-white border-2 border-background text-center text-left",
+                                            "absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full text-[6px] font-black text-white border-2 border-background text-center",
                                             hasWitnessed ? "bg-emerald-600" : "bg-emerald-500"
                                         )}>
                                             {witnessCount}
                                         </span>
                                     )}
                                 </div>
-                                <span className="sr-only text-left">Witness</span>
+                                <span className="sr-only">Witness</span>
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left">
-                            <p className="text-[10px] font-black uppercase text-left">{isAuthor ? "View Witnesses" : hasWitnessed ? "You Have Witnessed" : "Bear Witness"}</p>
+                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+                            <p className="text-[10px] font-black uppercase">{isAuthor ? "View Witnesses" : hasWitnessed ? "You Have Witnessed" : "Bear Witness"}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
 
-                <Button variant="outline" size="icon" className="h-10 w-10 rounded-full bg-background text-left" onClick={handleShare}>
-                    <Share2 className="h-3.5 w-3.5 text-left" /><span className="sr-only text-left">Share</span>
+                <Button variant="outline" size="icon" className="h-10 w-10 rounded-full bg-background" onClick={handleShare}>
+                    <Share2 className="h-3.5 w-3.5" /><span className="sr-only">Share</span>
                 </Button>
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-left" onClick={(e) => { e.stopPropagation(); }}><MoreVertical className="h-4 w-4 text-left" /></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl text-left text-left text-left">
+                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-10 w-10 rounded-full" onClick={(e) => { e.stopPropagation(); }}><MoreVertical className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl text-left text-left">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black text-left">Manage Story</DropdownMenuLabel>
-                        <DropdownMenuSeparator className="text-left" />
+                        <DropdownMenuSeparator />
                         {isAuthor ? (
                             <React.Fragment>
                                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onEdit); }} className="rounded-lg text-left">
-                                    <Edit className="mr-2 h-4 w-4 text-primary text-left" />
+                                    <Edit className="mr-2 h-4 w-4 text-primary" />
                                     Edit Story
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setIsBoostOpen(true); }} className="rounded-lg text-left">
-                                    <TrendingUp className="mr-2 h-4 w-4 text-indigo-600 text-left" />
+                                    <TrendingUp className="mr-2 h-4 w-4 text-indigo-600" />
                                     Boost Miracle
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg text-left text-left">
-                                    <Trash2 className="mr-2 h-4 w-4 text-left" />
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg text-left">
+                                    <Trash2 className="mr-2 h-4 w-4" />
                                     Delete Permanently
                                 </DropdownMenuItem>
                             </React.Fragment>
                         ) : (
                             <DropdownMenuItem onClick={handleShare} className="rounded-lg text-left">
-                                <Share2 className="mr-2 h-4 w-4 text-primary text-left" />
+                                <Share2 className="mr-2 h-4 w-4 text-primary" />
                                 Spread the Word
                             </DropdownMenuItem>
                         )}
@@ -699,16 +699,16 @@ export const TestimonyCard = memo(function TestimonyCard({
           </div>
         </div>
         
-        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4 text-left text-left">
-          <div className="text-sm sm:text-base text-muted-foreground leading-relaxed text-left">
-            <div className={cn("leading-relaxed max-w-full text-left", (testimony.mediaUrl || testimony.mediaUrl2) ? "line-clamp-3" : "line-clamp-6")}>
+        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4 text-left">
+          <div className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+            <div className={cn("leading-relaxed max-w-full", (testimony.mediaUrl || testimony.mediaUrl2) ? "line-clamp-3" : "line-clamp-6")}>
                 <div ref={contentRef}>{testimony.content}</div>
             </div>
             {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1 text-left" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
           </div>
 
           {(testimony.mediaUrl || testimony.mediaUrl2) && (
-              <div className={cn("grid gap-3 text-left", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-2" : "grid-cols-1")}>
+              <div className={cn("grid gap-3", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-2" : "grid-cols-1")}>
                  {testimony.mediaUrl && (
                     <MediaPreview url={testimony.mediaUrl} type={testimony.mediaType as any} />
                  )}
@@ -719,11 +719,11 @@ export const TestimonyCard = memo(function TestimonyCard({
           )}
 
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
-            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden text-left">
+            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden">
                 <div className="p-4 text-left">
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1 text-left">Answering Prayer Request:</div>
-                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground text-left">
-                        <div className="line-clamp-2 text-left">
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">Answering Prayer Request:</div>
+                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground">
+                        <div className="line-clamp-2">
                            <div ref={prayerRef}>{testimony.answeredPrayerContent}</div>
                         </div>
                     </div>
@@ -731,7 +731,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                         <Button 
                             variant="link" 
                             size="sm" 
-                            className="p-0 h-auto self-start text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 mt-2 hover:no-underline text-left"
+                            className="p-0 h-auto self-start text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 mt-2 hover:no-underline"
                             onClick={(e) => { e.stopPropagation(); setShowFullPrayer(true); }}
                         >
                             Read Full Request
@@ -742,40 +742,40 @@ export const TestimonyCard = memo(function TestimonyCard({
           )}
 
            {(totalReactions > 0 || witnessCount > 0) && (
-             <div className="flex items-center justify-between pt-2 text-left">
-                <div className="flex items-center gap-1.5 text-left text-left">
-                    <div className="flex items-center -space-x-1.5 text-left">
-                        {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30 shadow-sm"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current text-left" /></div>}
-                        {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20 shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current text-left" /></div>}
-                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white text-left" /></div>}
-                        {witnessCount > 0 && <div className="bg-emerald-500 rounded-full p-1 border-2 border-background z-40 shadow-sm"><ShieldCheck className="h-2.5 w-2.5 text-white text-left" /></div>}
+             <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-1.5">
+                    <div className="flex items-center -space-x-1.5">
+                        {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30 shadow-sm"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
+                        {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20 shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
+                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
+                        {witnessCount > 0 && <div className="bg-emerald-500 rounded-full p-1 border-2 border-background z-40 shadow-sm"><ShieldCheck className="h-2.5 w-2.5 text-white" /></div>}
                     </div>
-                    <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-tight ml-1 text-left text-left">
-                        {totalReactions > 0 && <span className="text-left"> {totalReactions} REACTIONS</span>}
-                        {witnessCount > 0 && <span className="text-emerald-600 text-left"> {witnessCount} WITNESSES</span>}
+                    <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-tight ml-1">
+                        {totalReactions > 0 && <span> {totalReactions} REACTIONS</span>}
+                        {witnessCount > 0 && <span className="text-emerald-600"> {witnessCount} WITNESSES</span>}
                     </div>
                 </div>
-                {testimony.campaignTitle && <span className="text-[9px] font-black uppercase text-muted-foreground/60 truncate italic bg-muted/50 px-2 py-0.5 rounded-full border max-w-[150px] text-left">RE: {testimony.campaignTitle}</span>}
+                {testimony.campaignTitle && <span className="text-[9px] font-black uppercase text-muted-foreground/60 truncate italic bg-muted/50 px-2 py-0.5 rounded-full border max-w-[150px]">RE: {testimony.campaignTitle}</span>}
              </div>
            )}
         </div>
 
         <Separator className="mx-4 sm:mx-6 w-auto opacity-50 text-left" />
         <div className="py-2 sm:py-3 px-2 sm:px-4 grid grid-cols-4 gap-0.5 sm:gap-1 text-left">
-            <Button onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-center text-left", hasAmened && "text-primary hover:text-primary bg-primary/5")}>
-                {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
+            <Button onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}>
+                {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
                 Amen
             </Button>
-            <Button onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-center text-left", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}>
-                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <Sparkles className={cn("h-4 w-4", hasInspired && "fill-current")} />}
+            <Button onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}>
+                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className={cn("h-4 w-4", hasInspired && "fill-current")} />}
                 Hallelujah
             </Button>
-            <Button onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-center text-left", hasCelebrated && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}>
-                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
+            <Button onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasCelebrated && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}>
+                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
                 Celebrate
             </Button>
-            <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-center text-left", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
-                <div className="relative flex flex-col items-center justify-center h-full text-center text-left"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm text-center text-left"> {commentCount}</span>}</div>Comment
+            <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
+                <div className="relative flex flex-col items-center justify-center h-full text-center"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm text-center"> {commentCount}</span>}</div>Comment
             </Button>
         </div>
       </div>
@@ -787,7 +787,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                         <div className="p-0 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                <TrendingUp className="h-5 w-5 text-indigo-600 text-left" />
+                                <TrendingUp className="h-5 w-5 text-indigo-600" />
                                 <span className="text-[10px] font-black uppercase text-indigo-600 tracking-[0.3em] text-left text-left">Kingdom Promotion</span>
                             </div>
                             <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Boost Your Testimony</DrawerTitle>
@@ -795,12 +795,12 @@ export const TestimonyCard = memo(function TestimonyCard({
                         </div>
                     </div>
                     <div className="p-8 space-y-6 text-left text-left text-left text-left">
-                        <div className="bg-primary/5 rounded-2xl p-6 border-2 border-dashed border-primary/20 text-left text-left text-left text-left text-left">
-                            <h4 className="font-bold text-sm mb-2 text-left text-left text-left">Promotion Benefits</h4>
+                        <div className="bg-primary/5 rounded-2xl p-6 border-2 border-dashed border-primary/20 text-left text-left text-left text-left">
+                            <h4 className="font-bold text-sm mb-2 text-left text-left">Promotion Benefits</h4>
                             <ul className="space-y-2 text-xs text-muted-foreground font-medium text-left">
-                                <li className="flex items-center gap-2 text-left"><Sparkles className="h-3.5 w-3.5 text-primary text-left" /> Featured in the Kingdom Spotlight carousel.</li>
-                                <li className="flex items-center gap-2 text-left"><Sparkles className="h-3.5 w-3.5 text-primary text-left" /> Prioritized in search results and regional feeds.</li>
-                                <li className="flex items-center gap-2 text-left"><Sparkles className="h-3.5 w-3.5 text-primary text-left" /> Reach believers outside your immediate circle.</li>
+                                <li className="flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" /> Featured in the Kingdom Spotlight carousel.</li>
+                                <li className="flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" /> Prioritized in search results and regional feeds.</li>
+                                <li className="flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" /> Reach believers outside your immediate circle.</li>
                             </ul>
                         </div>
                         
@@ -815,7 +815,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                         <div className="flex gap-3 text-left">
                             <Button variant="outline" className="flex-1 h-12 rounded-xl font-bold text-left" onClick={() => setIsBoostOpen(false)}>Cancel</Button>
                             <Button asChild className="flex-1 h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center text-left text-left">
-                                <Link href={`/contact?subject=Testimony Boost Request&id=${testimony.id}`} className="text-center">PROCEED TO HUB</Link>
+                                <Link href={`/contact?subject=Testimony Boost Request&id=${testimony.id}`}>PROCEED TO HUB</Link>
                             </Button>
                         </div>
                     </div>
@@ -832,7 +832,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left">BY {authorName} • {displayDate}</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <div className="flex-grow min-h-0 pt-8 px-6 text-left text-left text-left text-left">{fullTextContent}</div>
+                            <div className="flex-grow min-h-0 pt-8 px-6 text-left text-left">{fullTextContent}</div>
                         </DrawerContent>
                     </Drawer>
                 )}
@@ -841,7 +841,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                         <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left text-left text-left text-left text-left">
                                 <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline text-left" />Answered Prayer</DrawerTitle>
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
@@ -860,7 +860,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                 <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left text-left">Responses</DrawerTitle>
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
-                                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Swipe down to close</span></div>
+                                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
                             <div className="flex-grow min-h-0 text-left text-left text-left text-left">{isCommentsOpen && <CommentSection path={`testimonies/${testimony.id}/comments`} />}</div>
@@ -877,11 +877,11 @@ export const TestimonyCard = memo(function TestimonyCard({
                                         <span className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.3em] text-left text-left text-left text-left text-left text-left text-left">Miracle Verification</span>
                                     </div>
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left text-left text-left">The Cloud of Witnesses</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left">the testimony of two men is true scripture</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left">the testimony of two men is true.</DrawerDescription>
                                     <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left">
+                            <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left text-left">
                                 <div className="p-8 pb-32 text-left text-left text-left text-left text-left text-left">
                                     <WitnessSection testimonyId={testimony.id} testimonyAuthorId={testimony.authorId} />
                                 </div>
