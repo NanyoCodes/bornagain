@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
@@ -487,7 +486,7 @@ function FellowshipDashboardContent() {
     const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
     
     const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [createType, setCreateType] = useState<'Fellowship' | 'Association'>( 'Fellowship');
+    const [createType, setCreateType] = useState<'Fellowship' | 'Association'>('Fellowship');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [fellowshipToManage, setFellowshipToManage] = useState<Fellowship | null>(null);
     const [fellowshipToDelete, setFellowshipToDelete] = useState<Fellowship | null>(null);
@@ -526,7 +525,7 @@ function FellowshipDashboardContent() {
       if (!user?.uid || !firestore) return null;
       return query(collection(firestore, `users/${user.uid}/joinedFellowships`));
     }, [user?.uid, firestore]);
-    const { data: joinedFellowshipRefs } = useCollection<JoinedFellowship>(joinedGroupsRefsQuery);
+    const { data: joinedFellowshipRefs, loading: joinedLoading } = useCollection<JoinedFellowship>(joinedGroupsRefsQuery);
 
     const handleCreateFellowship = async (values: z.infer<typeof formSchema>) => {
         if (!user || !userProfile || !firestore) return;
@@ -716,7 +715,7 @@ function FellowshipDashboardContent() {
         return list;
     }, [filteredFellowships]);
 
-    const loading = userLoading || profileLoading || fellowshipsLoading;
+    const loading = userLoading || profileLoading || fellowshipsLoading || joinedLoading;
 
     return (
         <div className="w-full max-w-7xl mx-auto text-left">
