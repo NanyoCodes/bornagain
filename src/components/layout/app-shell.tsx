@@ -1,3 +1,4 @@
+// ... (rest of imports remains same, just ensuring Target, Globe, Gamepad2 are here)
 'use client';
 
 import Link from "next/link";
@@ -231,7 +232,7 @@ function CartButton() {
             </div>
             <DialogHeader className="text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Pending Offering</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1">Review the provisions in your active package.</DialogDescription>
+                <DialogDescription className="text-sm font-medium mt-1 text-left">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto">

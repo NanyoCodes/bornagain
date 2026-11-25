@@ -1,3 +1,4 @@
+// ... (rest of imports remains same, ensuring AppShell and Target/MapPin are here)
 'use client';
 
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
@@ -682,6 +683,7 @@ function FellowshipDashboardContent() {
             }, user));
         } finally {
             setIsDeleting(false);
+            closeAllDialogs();
         }
     };
 
