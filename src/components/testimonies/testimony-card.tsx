@@ -32,7 +32,8 @@ import {
   Newspaper,
   ShieldCheck,
   User,
-  Send
+  Send,
+  Info
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -747,7 +748,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <div className="flex items-center -space-x-1.5 text-left">
                         {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30 shadow-sm text-left"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current text-left" /></div>}
                         {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20 shadow-sm text-left"><Sparkles className="h-2.5 w-2.5 text-white fill-current text-left" /></div>}
-                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm text-left"><PartyPopper className="h-2.5 w-2.5 text-white text-left" /></div>}
+                        {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white text-left" /></div>}
                         {witnessCount > 0 && <div className="bg-emerald-500 rounded-full p-1 border-2 border-background z-40 shadow-sm text-left"><ShieldCheck className="h-2.5 w-2.5 text-white text-left" /></div>}
                     </div>
                     <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-tight ml-1 text-left">
