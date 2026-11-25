@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
@@ -20,7 +21,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, serverTimestamp, doc, runTransaction, updateDoc, writeBatch, where, getDocs, deleteField, increment, arrayUnion, arrayRemove } from "firebase/firestore";
+import { collection, query, orderBy, serverTimestamp, doc, runTransaction, updateDoc, where, getDocs, deleteField, increment, arrayUnion, arrayRemove } from "firebase/firestore";
 import type { UserProfile, Fellowship, FellowshipMember, JoinedFellowship } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -333,6 +334,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             </div>
                         </RadioGroup>
                     </FormControl>
+                    <FormMessage />
                     </FormItem>
                 )}
             />
@@ -383,6 +385,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             </div>
                         </RadioGroup>
                     </FormControl>
+                    <FormMessage />
                     </FormItem>
                     )}
             />
@@ -478,7 +481,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
 
 function FellowshipDashboardContent() {
     const router = useRouter();
-    const { user } = useUser();
+    const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
@@ -824,8 +827,8 @@ function FellowshipDashboardContent() {
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left p-0">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Create a space for community and growth.</DrawerDescription>
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Create a space for community and growth.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow">
@@ -888,7 +891,7 @@ function FellowshipDashboardContent() {
                     </Sheet>
                 ) : (
                     <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col overflow-hidden rounded-3xl border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader className="text-left p-0">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</DialogTitle>
