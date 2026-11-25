@@ -208,6 +208,8 @@ export type TestimonyCategory =
   | 'Business Growth' 
   | 'General';
 
+export type TestimonyWitnessType = 'Beneficiary' | 'Eye Witness' | 'Report';
+
 export type Testimony = {
   id: string;
   authorId: string;
@@ -218,6 +220,7 @@ export type Testimony = {
   createdAt: Timestamp;
   updatedAt?: Timestamp;
   category: TestimonyCategory;
+  witnessType?: TestimonyWitnessType;
   campaignId?: string;
   campaignTitle?: string;
   authorLocation?: {

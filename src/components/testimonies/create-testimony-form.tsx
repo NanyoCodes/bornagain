@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,12 +16,13 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Camera, X, FileUp, Sparkles, Info, Newspaper, HandHeart, Video, Mic, Square } from "lucide-react";
-import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest } from "@/lib/types";
+import { Loader2, Camera, X, FileUp, Sparkles, Info, Newspaper, HandHeart, Video, Mic, Square, User, Users } from "lucide-react";
+import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest, TestimonyWitnessType } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -50,6 +52,7 @@ const testimonyCategories: TestimonyCategory[] = [
 
 const formSchema = z.object({
   category: z.string({ required_error: "Please select a category." }),
+  witnessType: z.enum(['Beneficiary', 'Eye Witness', 'Report']).default('Beneficiary'),
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
   mediaUrl: z.string().optional(),
   mediaType: z.enum(['image', 'video', 'audio']).optional(),
@@ -96,17 +99,22 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { content: "", category: undefined },
+    defaultValues: { 
+      content: "", 
+      category: undefined,
+      witnessType: 'Beneficiary'
+    },
   });
 
   useEffect(() => {
     if (prayerRequest) {
       form.reset({
         category: testimonyCategories.includes(prayerRequest.category as TestimonyCategory) ? prayerRequest.category : 'General',
-        content: ""
+        content: "",
+        witnessType: 'Beneficiary'
       });
     } else if (campaign) {
-      form.reset({ category: 'Salvation', content: "" });
+      form.reset({ category: 'Salvation', content: "", witnessType: 'Beneficiary' });
     }
   }, [prayerRequest, campaign, form]);
 
@@ -185,11 +193,11 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       const recorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
 
-      recorder.onDataAvailable = (e) => {
+      recorder.onDataavailable = (e) => {
           if (e.data.size > 0) chunksRef.current.push(e.data);
       };
 
-      recorder.onStop = async () => {
+      recorder.onstop = async () => {
           const actualMimeType = mediaRecorderRef.current?.mimeType || getSupportedMimeType(recorderMode);
           const extension = actualMimeType.includes('mp4') ? 'mp4' : actualMimeType.includes('webm') ? 'webm' : 'bin';
           const blob = new Blob(chunksRef.current, { type: actualMimeType });
@@ -294,6 +302,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         content: values.content, 
         createdAt: serverTimestamp(), 
         category: values.category as TestimonyCategory, 
+        witnessType: values.witnessType as TestimonyWitnessType,
         supporters: [], 
         inspiredBy: [], 
         connectedBy: [], 
@@ -379,8 +388,61 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             <Card className="bg-amber-500/5 border-y border-x-0 sm:border-x-2 border-solid border-amber-500/20 rounded-none sm:rounded-[1.5rem] relative overflow-hidden text-left"><CardHeader className="p-5 pb-2 relative z-10 text-left"><div className="flex items-center gap-2 mb-1 text-left"><HandHeart className="h-3.5 w-3.5 text-amber-600 text-left" /><span className="text-[9px] font-black uppercase text-amber-700 tracking-widest text-left">Answering Prayer Altar</span></div><CardDescription className="italic text-sm text-muted-foreground leading-relaxed line-clamp-3 text-left">&ldquo;{prayerRequest.content}&rdquo;</CardDescription></CardHeader></Card>
         )}
       </div>
-      <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
           <div className="space-y-6 text-left">
+            <FormField
+              control={form.control}
+              name="witnessType"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">My Role in this Proclamation</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                    >
+                      <div className={cn(
+                        "flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer",
+                        field.value === 'Beneficiary' ? "bg-primary/10 border-primary shadow-sm" : "bg-muted/20 border-transparent hover:bg-muted/30"
+                      )}>
+                        <RadioGroupItem value="Beneficiary" id="beneficiary" className="sr-only" />
+                        <Label htmlFor="beneficiary" className="flex items-center gap-3 cursor-pointer w-full">
+                          <div className={cn("h-8 w-8 rounded-xl flex items-center justify-center shadow-inner", field.value === 'Beneficiary' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                            <User className="h-4 w-4" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs font-black uppercase tracking-tight">Beneficiary</p>
+                            <p className="text-[9px] font-bold text-muted-foreground opacity-70">Personal Miracle</p>
+                          </div>
+                          {field.value === 'Beneficiary' && <CheckCircle2 className="h-4 w-4 text-primary fill-current" />}
+                        </Label>
+                      </div>
+
+                      <div className={cn(
+                        "flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer",
+                        field.value === 'Eye Witness' ? "bg-primary/10 border-primary shadow-sm" : "bg-muted/20 border-transparent hover:bg-muted/30"
+                      )}>
+                        <RadioGroupItem value="Eye Witness" id="eyewitness" className="sr-only" />
+                        <Label htmlFor="eyewitness" className="flex items-center gap-3 cursor-pointer w-full">
+                          <div className={cn("h-8 w-8 rounded-xl flex items-center justify-center shadow-inner", field.value === 'Eye Witness' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                            <Users className="h-4 w-4" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs font-black uppercase tracking-tight">Eye Witness</p>
+                            <p className="text-[9px] font-bold text-muted-foreground opacity-70">I saw it happen</p>
+                          </div>
+                          {field.value === 'Eye Witness' && <CheckCircle2 className="h-4 w-4 text-primary fill-current" />}
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField control={form.control} name="category" render={({ field }) => (
                 <FormItem className="text-left">
                     <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Theme</FormLabel>
@@ -446,7 +508,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 TO THE GLORY OF JESUS CHRIST
               </p>
           </div>
-        </form></Form>
+        </form>
+      </Form>
 
       <Dialog open={isRecorderOpen} onOpenChange={(open) => !open && closeRecorder()}>
           <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-black text-left">
@@ -466,7 +529,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       <video ref={videoPreviewRef} autoPlay muted playsInline className="w-full h-full object-cover mirror scale-x-[-1] text-left" />
                       <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 pointer-events-none text-left">
                           <div className="flex justify-between items-start text-left">
-                              <div className="flex items-center gap-3 text-left">{isRecording && (<div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left"><div className="h-2 w-2 rounded-full bg-white text-left" /><span className="text-[10px] font-black text-white uppercase tracking-widest text-left">REC</span></div>)}<Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px] text-left">{Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00</Badge></div>
+                              <div className="flex items-center gap-3 text-left">{isRecording && (
+                                  <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg text-left">
+                                      <div className="h-2 w-2 rounded-full bg-white text-left" />
+                                      <span className="text-[10px] font-black text-white uppercase tracking-widest text-left">REC</span>
+                                  </div>
+                              )}<Badge className="bg-black/60 backdrop-blur-md text-white border-white/10 font-bold uppercase tracking-widest text-[10px] text-left">{Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')} / 2:00</Badge></div>
                           </div>
                           <div className="space-y-4 text-left">
                             <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden text-left"><motion.div className="h-full bg-primary text-left" initial={{ width: 0 }} animate={{ width: `${(recordingTime / MAX_RECORDING_SECONDS) * 100}%` }} /></div>
