@@ -283,16 +283,7 @@ function FellowshipForm({
 }
 
 function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete }: { fellowship: Fellowship, onFormSubmit: (values: any) => void, isSubmitting: boolean, onDelete: () => void }) {
-  const firestore = useFirestore();
-  const { user } = useUser();
-  const router = useRouter();
-
-  const membersQuery = useMemo(() => {
-    if (!firestore || !fellowship.id) return null;
-    return query(collection(firestore, 'fellowships', fellowship.id, 'members'), orderBy('joinedAt', 'asc'));
-  }, [firestore, fellowship.id]);
-  const { data: members, loading: membersLoading } = useCollection<FellowshipMember>(membersQuery);
-
+  const countriesList = useMemo(() => Country.getAllCountries(), []);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -309,10 +300,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
   });
 
   const watchedCountryName = form.watch('country');
-
-  const countriesList = useMemo(() => Country.getAllCountries(), []);
   const selectedCountry = useMemo(() => countriesList.find(c => c.name === watchedCountryName), [countriesList, watchedCountryName]);
-
   const statesList = useMemo(() => selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : [], [selectedCountry]);
 
   const handleCreateMeet = () => {
@@ -395,7 +383,6 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             </div>
                         </RadioGroup>
                     </FormControl>
-                    <FormMessage />
                     </FormItem>
                     )}
             />
@@ -491,7 +478,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
 
 function FellowshipDashboardContent() {
     const router = useRouter();
-    const { user, loading: userLoading } = useUser();
+    const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();

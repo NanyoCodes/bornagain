@@ -224,11 +224,11 @@ function CartButton() {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0">
-            <div className="flex items-center gap-2 mb-1 text-left">
+            <div className="flex items-center gap-2 mb-1 text-left text-left">
                 <ShoppingCart className="h-5 w-5 text-primary text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kindness Package</span>
             </div>
-            <DialogHeader className="text-left">
+            <DialogHeader className="text-left text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Pending Offering</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1 text-left">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
@@ -658,7 +658,9 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       pathname.startsWith('/bible') ||
       pathname.startsWith('/dashboard/bible') ||
       pathname.startsWith('/notifications') ||
-      pathname.startsWith('/dashboard/notifications')
+      pathname.startsWith('/dashboard/notifications') ||
+      pathname.startsWith('/fellowships') ||
+      pathname.startsWith('/dashboard/fellowship')
     );
   }, [pathname]);
 
@@ -682,49 +684,92 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
-        <div className="relative mb-8 mx-auto w-fit"><Loader2 className="h-12 w-12 animate-spin text-primary" /><div className="absolute inset-0 flex items-center justify-center"><div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /></div></div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8">{loadingMessage || "GOD FIRST"}</p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center">Kingdom Network Active</p>
+        <div className="relative mb-8 mx-auto w-fit text-left text-left text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
+            <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            </div>
+        </div>
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8">
+          {loadingMessage || "GOD FIRST"}
+        </p>
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center">
+            Kingdom Network Active
+        </p>
       </div>
     );
   }
 
   const isProfileIncomplete = !!(user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim()));
+
   const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
 
   return (
-    <div className={cn("flex w-full flex-col overflow-x-hidden text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
-      <AnimatePresence>{showSplash && <SplashScreen onDismiss={handleDismissSplash} />}</AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0 text-left">
-          {!isTakeoverPage && (<AppHeader unreadChatCount={unreadChatCount} unreadNotifCount={unreadNotifCount} isPublicRoute={isPublicRoute} isProfileIncomplete={isProfileIncomplete} />)}
-          <div className="flex-1 relative min-h-0">
-          <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
-              <div className={cn("mx-auto h-full", (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col")}>
+    <div className={cn("flex w-full flex-col overflow-x-hidden text-left text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+      <AnimatePresence>
+          {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
+      </AnimatePresence>
+
+      <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: contentVisible ? 1 : 0 }}
+          transition={{ duration: 1 }}
+          className="flex-1 flex flex-col min-h-0 text-left text-left"
+      >
+          {!isTakeoverPage && (
+            <AppHeader 
+                unreadChatCount={unreadChatCount} 
+                unreadNotifCount={unreadNotifCount}
+                isPublicRoute={isPublicRoute}
+                isProfileIncomplete={isProfileIncomplete}
+            />
+          )}
+          <div className="flex-1 relative min-h-0 text-left text-left">
+          <main 
+              ref={scrollContainerRef}
+              className={cn(
+                  "absolute inset-0 text-left text-left", 
+                  !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
+              )}
+          >
+              <div className={cn(
+              "mx-auto h-full text-left text-left", 
+              (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
+              )}>
                   <PageTransition>{children}</PageTransition>
               </div>
           </main>
           </div>
       </motion.div>
+
       {user && showBottomNav && <BottomNavBar />}
+      
       {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]"><SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle><SheetDescription className="text-xs text-muted-foreground">Join the global movement by introducing yourself.</SheetDescription></SheetHeader></div>
-            <div className="flex-grow overflow-y-auto p-8">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left text-left text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left text-left">
+              <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
+                <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <div className="flex-grow overflow-y-auto p-8 text-left text-left text-left text-left">
+              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+            </div>
           </SheetContent>
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-            <div className="p-6 border-b bg-muted/10">
-              <DialogHeader className="text-left">
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left">
+              <DialogHeader className="text-left text-left text-left text-left text-left text-left">
                 <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
                 <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -755,12 +800,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SearchProvider>
-        <Suspense fallback={<div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
-                <div className="relative mx-auto w-fit">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <Suspense fallback={
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left text-left">
+                <div className="relative mx-auto w-fit text-left text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left" />
                 </div>
-            </div>}>
-            <ShellInner unreadChatCount={unreadChatCount} unreadNotifCount={unreadNotifCount} >{children}</ShellInner>
+            </div>
+        }>
+            <ShellInner 
+              unreadChatCount={unreadChatCount} 
+              unreadNotifCount={unreadNotifCount}
+            >
+              {children}
+            </ShellInner>
         </Suspense>
     </SearchProvider>
   );

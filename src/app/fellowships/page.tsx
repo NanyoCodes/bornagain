@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { AppShell } from '@/components/layout/app-shell';
 import FellowshipPageContent from '@/app/dashboard/fellowship/page';
 
 export const metadata: Metadata = {
@@ -7,10 +6,12 @@ export const metadata: Metadata = {
   description: 'Find a local or virtual fellowship group to grow in faith and collaborate on follow-up and discipleship. Connect with the global Body of Christ.',
 };
 
+/**
+ * @fileOverview Flattened route for fellowship hub. 
+ * Re-uses the dashboard content without nested shells.
+ */
 export default function FellowshipsStandalonePage() {
   return (
-    <AppShell>
-      <FellowshipPageContent />
-    </AppShell>
+    <FellowshipPageContent />
   );
 }
