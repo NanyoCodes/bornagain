@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Final fix for author variable syntax and subcollection authorization - 2025-04-02T11:00:00Z
+    // Deployment trigger: Final fix for author variable syntax and subcollection authorization - 2025-04-06T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -260,6 +260,13 @@ service cloud.firestore {
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
           );
       }
+
+      match /witnesses/{witnessId} {
+        allow read, list: if true;
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow update: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
+      }
     }
     
     match /prayerRequests/{requestId} {
@@ -299,7 +306,12 @@ service cloud.firestore {
     
     match /chats/{chatId} {
       allow create: if isAuthenticated();
-      allow read, update: if canAccessChatDoc(resource.data);
+      allow read: if canAccessChatDoc(resource.data);
+      allow update: if canAccessChatDoc(resource.data) || (
+        isAuthenticated() && 
+        resource.data.get('isGroupChat', false) == true &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantIds', 'participantInfo'])
+      );
       allow delete: if false;
 
       match /messages/{messageId} {
@@ -339,7 +351,7 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/fellowships/$(fellowshipId)/devotionals/$(date)).data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/fellowships/$(fellowshipId)/devotionals/$(date)).data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
               (request.resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
