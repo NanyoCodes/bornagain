@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -26,22 +25,15 @@ import {
     HelpCircle,
     Loader2,
     Sword,
-    Share2,
-    Hourglass,
-    Clock,
-    Users,
-    Lock,
-    ShieldAlert,
     TrendingUp,
     ShieldCheck,
     Quote,
-    Activity,
-    ChevronRight,
+    Users,
     User,
     Square
 } from "lucide-react";
 import { cn, safeToDate } from "@/lib/utils";
-import { format, isSameDay } from "date-fns";
+import { format, differenceInMinutes } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUser, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { 
@@ -54,7 +46,6 @@ import {
     orderBy, 
     limit,
     doc,
-    addDoc,
     setDoc
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -67,14 +58,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
-import Link from 'next/link';
+
+const timerOptions = [60, 90, 120];
 
 function LiveMemberAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
@@ -182,8 +167,9 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         setIsSavingSession(true);
 
         const totalPoints = finalCorrect * 10;
+        const participantIds = [user.uid];
         const sessionData = {
-            participantIds: [user.uid],
+            participantIds,
             userId: user.uid,
             fellowshipId: fellowshipId,
             fellowshipName: fellowship.name,
@@ -271,14 +257,14 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     if (!fellowship) return <div className="p-20 text-center"><h2>Group not found</h2></div>;
 
     const directoryContent = (
-        <div className="space-y-8">
+        <div className="space-y-8 text-left">
             <Card className="rounded-[2.5rem] border-none shadow-xl bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/20">
                 <CardHeader className="p-8 pb-4">
-                    <CardTitle className="text-xs font-black uppercase tracking-[0.3em] opacity-80 flex items-center gap-2 text-left"><Trophy className="h-4 w-4" /> Global Crusade XP</CardTitle>
+                    <CardTitle className="text-xs font-black uppercase tracking-[0.3em] opacity-80 flex items-center gap-2"><Trophy className="h-4 w-4" /> Global Crusade XP</CardTitle>
                 </CardHeader>
                 <CardContent className="p-8 pt-0">
-                    <p className="text-5xl font-black tracking-tighter text-left">{totalGroupXP}</p>
-                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mt-2 text-left">Total Community Score</p>
+                    <p className="text-5xl font-black tracking-tighter">{totalGroupXP}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mt-2">Total Community Score</p>
                 </CardContent>
             </Card>
 
@@ -485,7 +471,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
             </header>
 
             <footer className="px-6 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
-                <p className="text-[9px] sm:text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance">
+                <p className="text-[9px] sm:text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center">
                     "Iron sharpeneth iron; so a man sharpeneth the countenance of his friend." — Proverbs 27:17
                 </p>
             </footer>
