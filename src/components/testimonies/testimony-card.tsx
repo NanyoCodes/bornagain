@@ -342,7 +342,7 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
             {isAuthor && (
                 <div className="p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed flex items-start gap-4 shadow-inner">
                     <Info className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
-                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-balance text-left">
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-balance">
                         The witness must be someone else. Others who witnessed this miracle can provide their formal endorsement here to build the "Cloud of Witnesses."
                     </p>
                 </div>
@@ -361,7 +361,7 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
                         {witnesses.map(w => (
                             <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border text-left">
                                 <LiveAuthorAvatar userId={w.authorId} fallbackInitials={w.authorFirstName?.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
-                                <div className="min-w-0 flex-1 text-left">
+                                <div className="min-w-0 flex-1">
                                     <div className="flex justify-between items-baseline mb-1">
                                         <p className="font-black text-sm uppercase tracking-tight">{w.authorFirstName} {w.authorLastName}</p>
                                         <span className="text-[8px] font-bold text-muted-foreground uppercase opacity-60">{w.createdAt ? format(safeToDate(w.createdAt)!, 'MMM d') : 'Just now'}</span>
@@ -842,7 +842,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 {showFullText && (
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
                         <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left text-left">
                                 <DrawerHeader className="text-left p-0 text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</DrawerTitle>
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription>
