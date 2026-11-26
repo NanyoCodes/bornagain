@@ -145,19 +145,33 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
 
     const nextChallenge = useCallback(() => {
         const pool = BIBLE_GAME_DATA[activeGameType];
-        const availableIndices = pool.map((_, i) => i).filter(i => !usedIndices.includes(i));
+        const storageKey = `seen_questions_crusade_${activeGameType}_${user?.uid}`;
+        const seenIndices = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        
+        const availableIndices = pool.map((_, i) => i).filter(i => !usedIndices.includes(i) && !seenIndices.includes(i));
+        
+        let targetIdx: number;
         
         if (availableIndices.length === 0) {
-            handleGameEnd();
-            return;
+            localStorage.setItem(storageKey, JSON.stringify([]));
+            const freshIndices = pool.map((_, i) => i).filter(i => !usedIndices.includes(i));
+            if (freshIndices.length === 0) {
+                handleGameEnd();
+                return;
+            }
+            targetIdx = freshIndices[Math.floor(Math.random() * freshIndices.length)];
+        } else {
+            targetIdx = availableIndices[Math.floor(Math.random() * availableIndices.length)];
         }
 
-        const targetIdx = availableIndices[Math.floor(Math.random() * availableIndices.length)];
         setUsedIndices(prev => [...prev, targetIdx]);
+        const newSeen = [...seenIndices, targetIdx];
+        localStorage.setItem(storageKey, JSON.stringify(newSeen));
+        
         setQuizIndex(targetIdx);
         setGameState('playing');
         setSelectedOption(null);
-    }, [activeGameType, usedIndices]);
+    }, [activeGameType, usedIndices, user?.uid]);
 
     const handleGameEnd = useCallback(() => {
         const finalCorrect = correctCountRef.current;
@@ -297,7 +311,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                         </div>
                                     )}
                                 </div>
-                                <div className="min-w-0">
+                                <div className="min-w-0 text-left">
                                     <span className="text-sm font-black uppercase tracking-tight truncate block">{entry.name}</span>
                                     <span className="text-[9px] font-bold text-muted-foreground uppercase">{entry.sessions} MISSIONS</span>
                                 </div>
@@ -319,7 +333,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                     {members?.map(m => (
                         <div key={m.id} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5">
                             <LiveMemberAvatar userId={m.userId} fallbackInitials={m.firstName?.charAt(0)} className="h-8 w-8 border shadow-sm" />
-                            <div className="min-w-0">
+                            <div className="min-w-0 text-left">
                                 <p className="text-xs font-black uppercase truncate">{m.firstName} {m.lastName}</p>
                                 <p className="text-[8px] font-bold text-muted-foreground uppercase">Member</p>
                             </div>
@@ -420,13 +434,13 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                 <div className="flex items-center justify-between px-2">
                                                     <div className="flex items-center gap-4">
                                                         <div className={cn("h-12 w-12 sm:h-16 sm:w-16 rounded-[1.25rem] sm:rounded-[1.5rem] flex items-center justify-center border-2 shadow-2xl transition-all", timeLeft <= 10 ? "bg-red-600 border-red-500 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary")}><Timer className="h-6 w-6 sm:h-8 sm:w-8" /></div>
-                                                        <div className="text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Remaining</p><p className={cn("text-2xl sm:text-4xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
+                                                        <div className="text-left text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Remaining</p><p className={cn("text-2xl sm:text-4xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
                                                     </div>
-                                                    <div className="text-right"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10} POINTS</p></div>
+                                                    <div className="text-right"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10} POINTS</p></div>
                                                 </div>
-                                                <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none"><Target className="h-24 w-24 text-primary" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center">&ldquo;{BIBLE_GAME_DATA[activeGameType][quizIndex]?.text}&rdquo;</motion.p></AnimatePresence></div>
+                                                <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden text-left text-left text-left"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left text-left text-left text-left"><Target className="h-24 w-24 text-primary text-left" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center">&ldquo;{BIBLE_GAME_DATA[activeGameType][quizIndex]?.text}&rdquo;</motion.p></AnimatePresence></div>
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    {BIBLE_GAME_DATA[activeGameType][quizIndex]?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-16 sm:h-24 rounded-[1.25rem] sm:rounded-[2rem] font-black uppercase tracking-widest text-xs sm:text-base transition-all border-2 text-center whitespace-normal p-4", gameState === 'correct' && opt === BIBLE_GAME_DATA[activeGameType][quizIndex].correct ? "bg-green-600 text-white border-green-400 scale-[1.03] shadow-[0_0_40px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-xl" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/40")} disabled={gameState !== 'playing'} onClick={() => handleCheck(opt)}>{opt}</Button>))}
+                                                    {BIBLE_GAME_DATA[activeGameType][quizIndex]?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-16 sm:h-24 rounded-[1.25rem] sm:rounded-[2rem] font-black uppercase tracking-widest text-xs sm:text-base transition-all border-2 text-center whitespace-normal p-4 text-left text-left", gameState === 'correct' && opt === BIBLE_GAME_DATA[activeGameType][quizIndex].correct ? "bg-green-600 text-white border-green-400 scale-[1.03] shadow-[0_0_40px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-xl" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/40")} disabled={gameState !== 'playing'} onClick={() => handleCheck(opt)}>{opt}</Button>))}
                                                 </div>
                                                 <AnimatePresence mode="wait">
                                                     {gameState === 'wrong' && (

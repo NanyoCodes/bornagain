@@ -791,11 +791,11 @@ export const TestimonyCard = memo(function TestimonyCard({
                 Hallelujah
             </Button>
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-left", hasCelebrated && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}>
-                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <PartyPopper className={cn("h-3.5 w-3.5 text-left", hasCelebrated && "fill-current")} />}
+                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-left" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
                 Celebrate
             </Button>
             <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-left", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
-                <div className="relative flex flex-col items-center justify-center h-full text-left"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 w-4 text-left", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm text-center text-left"> {commentCount}</span>}</div>Comment
+                <div className="relative flex flex-col items-center justify-center h-full text-left"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm text-center text-left"> {commentCount}</span>}</div>Comment
             </Button>
         </div>
       </div>
@@ -862,7 +862,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                             <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left">
                                 <DrawerHeader className="text-left p-0 text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left"><Target className="h-5 w-5 mr-2 inline text-left" />Answered Prayer</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">The specific request that God has fulfilled.</DrawerDescription>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow px-8 py-10 text-left">
