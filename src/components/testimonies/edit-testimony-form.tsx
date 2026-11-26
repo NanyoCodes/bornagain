@@ -213,33 +213,33 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const renderMediaSlot = (slot: 1 | 2, preview: any, setPreview: any, inputRef: React.RefObject<HTMLInputElement | null>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
     const isAudio = preview?.type === 'audio';
     return (
-      <div className="space-y-4 flex-1 text-left">
+      <div className="space-y-4 flex-1">
           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2"><Camera className="h-3.5 w-3.5 text-primary" /> Evidence {slot}</Label>
           {!preview ? (
-              <div className="space-y-3 text-left">
-                  <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px] text-left", isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
+              <div className="space-y-3">
+                  <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px]", isUploadingMedia === slot ? "opacity-50 pointer-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
                       {isUploadingMedia === slot ? (
-                          <div className="flex flex-col items-center gap-2 text-left">
+                          <div className="flex flex-col items-center gap-2">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
                               <p className="text-[9px] font-black uppercase text-primary"> {Math.round(uploadProgress)}%</p>
                           </div>
                       ) : (
-                          <div className="flex flex-col items-center text-center">
+                          <div className="flex flex-col items-center">
                               <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><FileUp className="h-4 w-4 text-primary" /></div>
                               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">CHANGE PROOF</p>
                           </div>
                       )}
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-left">
+                  <div className="grid grid-cols-2 gap-2">
                         <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center" onClick={() => startRecorder(slot, 'video')} disabled={isUploadingMedia !== null}><Video className="h-3 w-3 mb-0.5" />VIDEO</Button>
                         <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center" onClick={() => startRecorder(slot, 'audio')} disabled={isUploadingMedia !== null}><Mic className="h-3 w-3 mb-0.5" />AUDIO</Button>
                   </div>
               </div>
           ) : (
-              <div className="space-y-2 text-left">
+              <div className="space-y-2">
                 <div className={cn("relative rounded-3xl overflow-hidden border-2 bg-muted shadow-inner group", isAudio ? "h-auto min-h-[100px]" : "aspect-square")}>
-                    {preview.type === 'image' ? <Image src={preview.localUrl || preview.url} alt="Ev" fill className="object-cover" unoptimized /> : preview.type === 'video' ? <video key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls preload="metadata" /> : <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left"><div className="shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"><Mic className="h-5 w-5 text-primary" /></div></div><div className="flex-1 min-w-0 text-left"><p className="text-[10px] font-black uppercase text-primary mb-2">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" /></div></div>}
-                    <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg" onClick={() => { setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}><X className="h-3.5 w-3.5" /></Button>
+                    {preview.type === 'image' ? <Image src={preview.localUrl || preview.url} alt="Ev" fill className="object-cover" unoptimized /> : preview.type === 'video' ? <video key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full h-full object-cover bg-zinc-950" playsInline controls preload="metadata" /> : <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4"><div className="shrink-0"><div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2"><Mic className="h-5 w-5 text-primary" /></div></div><div className="flex-1 min-w-0"><p className="text-[10px] font-black uppercase text-primary mb-2">Voice Proclamation</p><audio key={preview.localUrl || preview.url} src={preview.localUrl || preview.url} className="w-full" controls preload="metadata" /></div></div>}
+                    <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg" onClick={() => { if (preview.localUrl) URL.revokeObjectURL(preview.localUrl); setPreview(null); form.setValue(urlField, null); form.setValue(typeField, null); }}><X className="h-3.5 w-3.5" /></Button>
                 </div>
               </div>
           )}
@@ -249,19 +249,19 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   };
 
   return (
-    <div className="space-y-8 text-left">
-        <div className="flex items-center gap-3 px-1 text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1 text-left"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Edit Testimony</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Refine your shared miracle</p></div></div>
+    <div className="space-y-8">
+        <div className="flex items-center gap-3 px-1"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Edit Testimony</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Refine your shared miracle</p></div></div>
         <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="witnessType"
               render={({ field }) => (
-                <FormItem className="space-y-3 text-left">
+                <FormItem className="space-y-3">
                   <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">My Role</FormLabel>
                   <FormControl>
                     <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className={cn("flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer text-left", field.value === 'Beneficiary' ? "bg-primary/10 border-primary shadow-sm" : "bg-muted/20 border-transparent")}>
+                      <div className={cn("flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer", field.value === 'Beneficiary' ? "bg-primary/10 border-primary shadow-sm" : "bg-muted/20 border-transparent")}>
                         <RadioGroupItem value="Beneficiary" id="edit-beneficiary" className="sr-only" />
                         <Label htmlFor="edit-beneficiary" className="flex items-center gap-3 cursor-pointer w-full">
                           <div className={cn("h-8 w-8 rounded-xl flex items-center justify-center", field.value === 'Beneficiary' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}><User className="h-4 w-4" /></div>
@@ -269,7 +269,7 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                           {field.value === 'Beneficiary' && <CheckCircle2 className="h-4 w-4 text-primary fill-current" />}
                         </Label>
                       </div>
-                      <div className={cn("flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer text-left", field.value === 'Eye Witness' ? "bg-primary/10 border-primary shadow-sm" : "bg-muted/20 border-transparent")}>
+                      <div className={cn("flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer", field.value === 'Eye Witness' ? "bg-primary/10 border-primary shadow-sm" : "bg-muted/20 border-transparent")}>
                         <RadioGroupItem value="Eye Witness" id="edit-eyewitness" className="sr-only" />
                         <Label htmlFor="edit-eyewitness" className="flex items-center gap-3 cursor-pointer w-full">
                           <div className={cn("h-8 w-8 rounded-xl flex items-center justify-center", field.value === 'Eye Witness' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}><Users className="h-4 w-4" /></div>
@@ -282,9 +282,9 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 </FormItem>
               )}
             />
-            <FormField control={form.control} name="category" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl border-2 text-left"><SelectValue placeholder="Category" /></SelectTrigger></FormControl><SelectContent className="rounded-2xl">{testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /><FormField control={form.control} name="content" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Testimony</FormLabel><FormControl><Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} /></FormControl><FormMessage /></FormItem>)} />
-            <div className="space-y-4 text-left">
-                <div className="flex flex-col sm:flex-row gap-6 text-left">
+            <FormField control={form.control} name="category" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl border-2"><SelectValue placeholder="Category" /></SelectTrigger></FormControl><SelectContent className="rounded-2xl">{testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /><FormField control={form.control} name="content" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Testimony</FormLabel><FormControl><Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} /></FormControl><FormMessage /></FormItem>)} />
+            <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-6">
                     {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
                     {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
                 </div>

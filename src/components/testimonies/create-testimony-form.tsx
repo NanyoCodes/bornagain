@@ -352,7 +352,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2"><Camera className="h-3.5 w-3.5 text-primary" /> Evidence {slot} {slot === 2 && "(Optional)"}</Label>
           {!preview ? (
               <div className="space-y-3">
-                  <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px]", isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
+                  <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px]", isUploadingMedia === slot ? "opacity-50 pointer-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
                       {isUploadingMedia === slot ? (
                           <div className="flex flex-col items-center gap-2">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -601,7 +601,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               ) : (
                   <div className="p-12 sm:p-20 bg-[#09090b] flex flex-col items-center text-center space-y-10">
                        <div className="relative">
-                            <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.1)]">
+                            <div className="h-32 w-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20 shadow-[0_0_50px_rgba(249,116,22,0.15)]">
                                 <Mic className={cn("h-16 w-16 text-primary transition-all", isRecording && "scale-110")} />
                             </div>
                             {isRecording && (

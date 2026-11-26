@@ -59,6 +59,8 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
 
+const timerOptions = [30, 60, 90, 120];
+
 function LiveMemberAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
     const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
@@ -255,10 +257,10 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     if (!fellowship) return <div className="p-20 text-center"><h2>Group not found</h2></div>;
 
     const directoryContent = (
-        <div className="space-y-8 text-left">
+        <div className="space-y-8">
             <Card className="rounded-[2.5rem] border-none shadow-xl bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/20">
                 <CardHeader className="p-8 pb-4">
-                    <CardTitle className="text-xs font-black uppercase tracking-[0.3em] opacity-80 flex items-center gap-2"><Trophy className="h-4 w-4" /> Global Crusade XP</CardTitle>
+                    <CardTitle className="text-xs font-black uppercase tracking-[0.3em] opacity-80 flex items-center gap-2"><Trophy className="h-4 w-4" /> Global Crusade POINTS</CardTitle>
                 </CardHeader>
                 <CardContent className="p-8 pt-0">
                     <p className="text-5xl font-black tracking-tighter">{totalGroupXP}</p>
@@ -293,12 +295,12 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                     )}
                                 </div>
                                 <div className="min-w-0">
-                                    <span className="text-sm font-black uppercase tracking-tight truncate block"> {entry.name}</span>
+                                    <span className="text-sm font-black uppercase tracking-tight truncate block">{entry.name}</span>
                                     <span className="text-[9px] font-bold text-muted-foreground uppercase">{entry.sessions} MISSIONS</span>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className={cn("text-base font-black tracking-tighter", i === 0 ? "text-amber-600" : "text-primary")}>{entry.score} XP</p>
+                                <p className={cn("text-base font-black tracking-tighter", i === 0 ? "text-amber-600" : "text-primary")}>{entry.score} POINTS</p>
                             </div>
                         </div>
                     )) : <p className="text-center text-xs text-muted-foreground italic py-10">No sessions recorded yet.</p>}
@@ -328,7 +330,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     return (
         <div className="h-full w-full flex flex-col overflow-hidden">
             <ScrollArea className="flex-1 w-full">
-                <div className="max-w-6xl mx-auto space-y-12 pb-32 px-4 sm:px-6 text-left">
+                <div className="max-w-6xl mx-auto space-y-12 pb-32 px-4 sm:px-6">
                     <header className="space-y-6 pt-4">
                         <div className="flex items-center gap-4">
                             <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
@@ -456,7 +458,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                 </div>
                                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                     <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner">
-                                                        <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-2 tracking-widest">Group Contribution</p>
+                                                        <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-2 tracking-widest">Group Legacy</p>
                                                         <p className="text-3xl sm:text-5xl font-black text-white">+{correctCount * 10} POINTS</p>
                                                     </div>
                                                     <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner">

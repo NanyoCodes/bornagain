@@ -564,7 +564,7 @@ export const TestimonyCard = memo(function TestimonyCard({
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="space-y-8 pb-8 px-2 text-left">
+      <div className="space-y-8 pb-8 px-2">
         <div className={cn("grid gap-4", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
             {testimony.mediaUrl && (
               <MediaPreview url={testimony.mediaUrl} type={testimony.mediaType as any} isFull />
@@ -583,7 +583,7 @@ export const TestimonyCard = memo(function TestimonyCard({
   return (
     <React.Fragment>
       <div id={testimony.id} className={cn(
-        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 text-left",
+        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48",
         "rounded-none sm:rounded-[2rem] border-y border-border sm:border-x border-t-4 border-t-amber-500/20 shadow-none sm:shadow-lg",
         "bg-card/50 backdrop-blur-sm",
         isPartner && "sm:ring-1 ring-primary/20",
@@ -706,7 +706,7 @@ export const TestimonyCard = memo(function TestimonyCard({
           </div>
         </div>
         
-        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4 text-left">
+        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4">
           <div className="text-sm sm:text-base text-muted-foreground leading-relaxed">
             <div className={cn("leading-relaxed max-w-full", (testimony.mediaUrl || testimony.mediaUrl2) ? "line-clamp-3" : "line-clamp-6")}>
                 <div ref={contentRef}>{testimony.content}</div>
@@ -727,7 +727,7 @@ export const TestimonyCard = memo(function TestimonyCard({
 
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
             <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden">
-                <div className="p-4 text-left">
+                <div className="p-4">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">Answering Prayer Request:</div>
                     <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground">
                         <div className="line-clamp-2">
@@ -790,7 +790,7 @@ export const TestimonyCard = memo(function TestimonyCard({
       {mounted && (
         <React.Fragment>
             <Drawer open={isBoostOpen} onOpenChange={setIsBoostOpen}>
-                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
+                <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12">
                     <div className="p-8 border-b shrink-0 bg-muted/10">
                         <div className="p-0">
                             <div className="flex items-center gap-2 mb-2">
@@ -832,7 +832,7 @@ export const TestimonyCard = memo(function TestimonyCard({
             <AnimatePresence>
                 {showFullText && (
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-muted/20">
                                 <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline">Kingdom Testimony</DrawerTitle>
@@ -845,7 +845,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 {showFullPrayer && (
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
-                        <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-amber-500/10">
                                 <DrawerHeader className="text-left p-0 text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer</DrawerTitle>
@@ -862,7 +862,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 {isCommentsOpen && (
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase">Responses</DrawerTitle>
@@ -876,7 +876,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 {isWitnessOpen && (
                     <Drawer open={isWitnessOpen} onOpenChange={setIsWitnessOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-emerald-500/10">
                                 <DrawerHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">
