@@ -68,7 +68,7 @@ function LiveMemberAvatar({ userId, fallbackInitials, className }: { userId: str
     return (
         <Avatar className={className}>
             <AvatarImage src={photoURL} className="object-cover" />
-            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials || 'U'}</AvatarFallback>
+            <AvatarFallback className="font-black bg-primary/10 text-primary">{fallbackInitials || 'U'}</AvatarFallback>
         </Avatar>
     );
 }
@@ -124,14 +124,20 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         
         groupSessions.forEach(s => {
             if (!map[s.userId]) {
-                map[s.userId] = { userId: s.userId, name: 'Kingdom Laborer', score: 0, sessions: 0 };
+                const memberInfo = members?.find(m => m.userId === s.userId);
+                map[s.userId] = { 
+                    userId: s.userId, 
+                    name: memberInfo ? `${memberInfo.firstName} ${memberInfo.lastName}` : 'Kingdom Laborer', 
+                    score: 0, 
+                    sessions: 0 
+                };
             }
             map[s.userId].score += s.score;
             map[s.userId].sessions++;
         });
 
         return Object.values(map).sort((a, b) => b.score - a.score).slice(0, 10);
-    }, [groupSessions]);
+    }, [groupSessions, members]);
 
     const totalGroupXP = useMemo(() => {
         return groupSessions?.reduce((acc, s) => acc + s.score, 0) || 0;
