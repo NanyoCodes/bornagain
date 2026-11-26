@@ -95,7 +95,6 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [isSavingSession, setIsSavingSession] = useState(false);
     
-    const directoryRef = useRef<HTMLDivElement>(null);
     const correctCountRef = useRef(0);
     const wrongCountRef = useRef(0);
 
@@ -266,12 +265,11 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         }
     };
 
-    const scrollToDirectory = () => {
-        directoryRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
-
     if (fellowshipLoading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
     if (!fellowship) return <div className="p-20 text-center"><h2>Group not found</h2></div>;
+
+    const currentPointsGained = correctCount * 10;
+    const finalTotalXP = (userProfile?.kingdomPoints || 0) + currentPointsGained;
 
     const directoryContent = (
         <div className="space-y-8">
@@ -311,7 +309,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                         </div>
                                     )}
                                 </div>
-                                <div className="min-w-0 text-left">
+                                <div className="min-w-0">
                                     <span className="text-sm font-black uppercase tracking-tight truncate block">{entry.name}</span>
                                     <span className="text-[9px] font-bold text-muted-foreground uppercase">{entry.sessions} MISSIONS</span>
                                 </div>
@@ -321,24 +319,6 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                             </div>
                         </div>
                     )) : <p className="text-center text-xs text-muted-foreground italic py-10">No sessions recorded yet.</p>}
-                </div>
-            </div>
-
-            <div className="space-y-6">
-                <div className="flex items-center gap-3 px-1">
-                    <Users className="h-4 w-4 text-primary" />
-                    <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Active Workforce</h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
-                    {members?.map(m => (
-                        <div key={m.id} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5">
-                            <LiveMemberAvatar userId={m.userId} fallbackInitials={m.firstName?.charAt(0)} className="h-8 w-8 border shadow-sm" />
-                            <div className="min-w-0 text-left">
-                                <p className="text-xs font-black uppercase truncate">{m.firstName} {m.lastName}</p>
-                                <p className="text-[8px] font-bold text-muted-foreground uppercase">Member</p>
-                            </div>
-                        </div>
-                    ))}
                 </div>
             </div>
         </div>
@@ -423,9 +403,6 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                         <Button onClick={handleStart} size="lg" className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 text-lg active:scale-95 transition-transform">
                                                             LAUNCH CRUSADE
                                                         </Button>
-                                                        <Button variant="ghost" onClick={scrollToDirectory} className="h-12 font-black uppercase tracking-widest text-[10px] text-muted-foreground">
-                                                            VIEW WORKFORCE & RANK
-                                                        </Button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -438,18 +415,10 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                     </div>
                                                     <div className="text-right"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10} POINTS</p></div>
                                                 </div>
-                                                <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden text-left text-left text-left"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left text-left text-left text-left"><Target className="h-24 w-24 text-primary text-left" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center">&ldquo;{BIBLE_GAME_DATA[activeGameType][quizIndex]?.text}&rdquo;</motion.p></AnimatePresence></div>
+                                                <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none"><Target className="h-24 w-24 text-primary" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center">&ldquo;{BIBLE_GAME_DATA[activeGameType][quizIndex]?.text}&rdquo;</motion.p></AnimatePresence></div>
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    {BIBLE_GAME_DATA[activeGameType][quizIndex]?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-16 sm:h-24 rounded-[1.25rem] sm:rounded-[2rem] font-black uppercase tracking-widest text-xs sm:text-base transition-all border-2 text-center whitespace-normal p-4 text-left text-left", gameState === 'correct' && opt === BIBLE_GAME_DATA[activeGameType][quizIndex].correct ? "bg-green-600 text-white border-green-400 scale-[1.03] shadow-[0_0_40px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-xl" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/40")} disabled={gameState !== 'playing'} onClick={() => handleCheck(opt)}>{opt}</Button>))}
+                                                    {BIBLE_GAME_DATA[activeGameType][quizIndex]?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-16 sm:h-24 rounded-[1.25rem] sm:rounded-[2rem] font-black uppercase tracking-widest text-xs sm:text-base transition-all border-2 text-center whitespace-normal p-4", gameState === 'correct' && opt === BIBLE_GAME_DATA[activeGameType][quizIndex].correct ? "bg-green-600 text-white border-green-400 scale-[1.03] shadow-[0_0_40px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-xl" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/40")} disabled={gameState !== 'playing'} onClick={() => handleCheck(opt)}>{opt}</Button>))}
                                                 </div>
-                                                <AnimatePresence mode="wait">
-                                                    {gameState === 'wrong' && (
-                                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-4 bg-red-600/10 border-2 border-red-600/30 rounded-2xl text-center shadow-xl animate-in zoom-in">
-                                                            <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Correct Answer</p>
-                                                            <p className="text-lg font-black text-white">{BIBLE_GAME_DATA[activeGameType][quizIndex].correct}</p>
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
                                             </div>
                                         ) : (
                                             <div className="space-y-10 sm:space-y-16 animate-in slide-in-from-bottom-8 duration-700 text-center">
@@ -462,7 +431,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                     </div>
                                                     <div className="space-y-4">
                                                         <h3 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight">Crusade Complete!</h3>
-                                                        <div className="bg-zinc-900 rounded-[2rem] p-8 border-2 border-dashed border-primary/20 max-w-md mx-auto text-left">
+                                                        <div className="bg-zinc-900 rounded-[2rem] p-8 border-2 border-dashed border-primary/20 max-w-md mx-auto">
                                                             <div className="flex items-center justify-center gap-2 mb-3">
                                                                 <Badge className="bg-primary/20 text-primary border-none font-black text-[10px]">KINGDOM VERSE</Badge>
                                                             </div>
@@ -476,7 +445,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                     <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner">
                                                         <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-2 tracking-widest">Group Legacy</p>
-                                                        <p className="text-3xl sm:text-5xl font-black text-white">+{correctCount * 10} POINTS</p>
+                                                        <p className="text-3xl sm:text-5xl font-black text-white">+{currentPointsGained} POINTS</p>
                                                     </div>
                                                     <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner">
                                                         <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-2 tracking-widest">Accuracy</p>
@@ -484,7 +453,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                     </div>
                                                     <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 border border-white/5 text-center shadow-inner">
                                                         <p className="text-[10px] sm:text-xs font-black text-amber-500 uppercase mb-2 tracking-widest">Total XP</p>
-                                                        <p className="text-3xl sm:text-5xl font-black text-white">{(userProfile?.kingdomPoints || 0) + correctCount * 10} POINTS</p>
+                                                        <p className="text-3xl sm:text-5xl font-black text-white">{finalTotalXP} POINTS</p>
                                                     </div>
                                                 </div>
                                                 <Button onClick={() => { setGameState('playing'); setIsGameActive(false); setSelectedOption(null); }} className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl">RETURN TO HUB</Button>
@@ -494,12 +463,12 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                     <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5 relative z-10"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em]">United in Truth • Shared in Spirit</p></CardFooter>
                                 </Card>
                             </div>
-
-                            <div ref={directoryRef} className="w-full lg:w-96 space-y-8 scroll-mt-24">
-                                {directoryContent}
-                            </div>
                         </div>
                     </header>
+
+                    <div className="w-full space-y-8">
+                        {directoryContent}
+                    </div>
 
                     <footer className="px-6 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
                         <p className="text-[9px] sm:text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center">
