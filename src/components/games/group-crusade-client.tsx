@@ -33,7 +33,7 @@ import {
     Square
 } from "lucide-react";
 import { cn, safeToDate } from "@/lib/utils";
-import { format, differenceInMinutes } from "date-fns";
+import { format, parseISO, isSameDay, differenceInMinutes } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUser, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { 
@@ -70,7 +70,7 @@ function LiveMemberAvatar({ userId, fallbackInitials, className }: { userId: str
     return (
         <Avatar className={className}>
             <AvatarImage src={photoURL} className="object-cover" />
-            <AvatarFallback className="font-black bg-primary/10 text-primary">{fallbackInitials || 'U'}</AvatarFallback>
+            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials || 'U'}</AvatarFallback>
         </Avatar>
     );
 }
@@ -345,8 +345,19 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
 
                 <div className="flex flex-col lg:flex-row gap-10 items-start">
                     <div className="flex-1 w-full space-y-10">
-                        <Card className="rounded-[2.5rem] sm:rounded-[3.5rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden relative">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-zinc-900 overflow-hidden">
+                        <Card className="rounded-[2.5rem] sm:rounded-[3.5rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden relative group/arena transition-all hover:border-primary/40">
+                            {/* Background Atmosphere */}
+                            <div className="absolute inset-0 z-0 pointer-events-none">
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(249,116,22,0.1),transparent_70%)]" />
+                                <div className="absolute top-0 right-0 p-12 opacity-[0.03] transition-transform group-hover/arena:scale-110 group-hover/arena:rotate-12 duration-1000">
+                                    <Sword className="h-64 w-64 text-primary" />
+                                </div>
+                                <div className="absolute bottom-0 left-0 p-12 opacity-[0.03] transition-transform group-hover/arena:scale-110 group-hover/arena:-rotate-12 duration-1000">
+                                    <ShieldCheck className="h-64 w-64 text-primary" />
+                                </div>
+                            </div>
+
+                            <div className="absolute top-0 left-0 w-full h-1 bg-zinc-900 overflow-hidden z-20">
                                 {isGameActive && (
                                     <motion.div 
                                         className={cn("h-full", timeLeft <= 10 ? "bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)]" : "bg-primary")}
@@ -357,15 +368,17 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                 )}
                             </div>
 
-                            <CardHeader className="p-8 sm:p-12 pb-4 text-center">
-                                <div className="flex items-center justify-center gap-2 mb-2">
-                                    <Gamepad2 className="h-5 w-5 text-primary" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Crusade Mission</span>
+                            <CardHeader className="p-8 sm:p-12 pb-4 text-center relative z-10">
+                                <div className="flex items-center justify-center gap-2 mb-4">
+                                    <div className="h-px w-8 bg-primary/20" />
+                                    <Gamepad2 className="h-5 w-5 text-primary animate-pulse" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Crusade Mission</span>
+                                    <div className="h-px w-8 bg-primary/20" />
                                 </div>
-                                <CardTitle className="text-2xl sm:text-5xl font-black font-headline uppercase text-white">The Arena</CardTitle>
+                                <CardTitle className="text-3xl sm:text-6xl font-black font-headline uppercase text-white tracking-tighter leading-none">The Arena</CardTitle>
                             </CardHeader>
                             
-                            <CardContent className={cn("p-8 sm:p-16 pt-0 space-y-10", !isGameActive && "flex flex-col items-center justify-center")}>
+                            <CardContent className={cn("p-8 sm:p-16 pt-0 space-y-10 relative z-10", !isGameActive && "flex flex-col items-center justify-center")}>
                                 {!isGameActive && gameState !== 'finished' ? (
                                     <div className="py-8 flex flex-col items-center gap-10 w-full">
                                         <div className="w-full space-y-10">
@@ -456,11 +469,11 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                 <p className="text-3xl sm:text-5xl font-black text-white">{(userProfile?.kingdomPoints || 0) + correctCount * 10}</p>
                                             </div>
                                         </div>
-                                        <Button onClick={() => { setGameState('playing'); setIsGameActive(false); setSelectedOption(null); }} className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.2em] shadow-2xl">RETURN TO HUB</Button>
+                                        <Button onClick={() => { setGameState('playing'); setIsGameActive(false); setSelectedOption(null); }} className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl">RETURN TO HUB</Button>
                                     </div>
                                 )}
                             </CardContent>
-                            <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em]">United in Truth • Shared in Spirit</p></CardFooter>
+                            <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5 relative z-10"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em]">United in Truth • Shared in Spirit</p></CardFooter>
                         </Card>
                     </div>
 

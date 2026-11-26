@@ -317,7 +317,7 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
     };
 
     return (
-        <div className="space-y-8 text-left">
+        <div className="space-y-8">
             {user && !isAuthor && (
                 <form onSubmit={handlePostWitness} className="space-y-4 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner">
                     <div className="flex items-center gap-2 mb-1">
@@ -465,9 +465,9 @@ export const TestimonyCard = memo(function TestimonyCard({
   
   const hasWitnessed = useMemo(() => user && witnessesData?.some(w => w.authorId === user.uid), [user, witnessesData]);
 
-  const hasAmened = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
-  const hasInspired = useMemo(() => user ? inspiredBy.includes(user.uid) : false, [user, inspiredBy]);
-  const hasCelebrated = useMemo(() => user ? connectedBy.includes(user.uid) : false, [user, connectedBy]);
+  const hasAmened = useMemo(() => user ? (supporters || []).includes(user.uid) : false, [user, supporters]);
+  const hasInspired = useMemo(() => user ? (inspiredBy || []).includes(user.uid) : false, [user, inspiredBy]);
+  const hasCelebrated = useMemo(() => user ? (connectedBy || []).includes(user.uid) : false, [user, connectedBy]);
 
   useEffect(() => {
     const checkTruncation = () => {
@@ -678,7 +678,11 @@ export const TestimonyCard = memo(function TestimonyCard({
                 </Button>
                 {isAuthor && (
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-10 w-10 rounded-full"><MoreVertical className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48 rounded-xl">
                             <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Manage Story</DropdownMenuLabel>
                             <DropdownMenuSeparator />
@@ -899,4 +903,3 @@ export const TestimonyCard = memo(function TestimonyCard({
   );
 });
 TestimonyCard.displayName = "TestimonyCard";
-
