@@ -30,7 +30,8 @@ import {
     Quote,
     Users,
     User,
-    Square
+    Square,
+    Clock
 } from "lucide-react";
 import { cn, safeToDate } from "@/lib/utils";
 import { format, parseISO, isSameDay, differenceInMinutes } from "date-fns";
@@ -46,11 +47,14 @@ import {
     orderBy, 
     limit,
     doc,
-    setDoc
+    setDoc,
+    deleteDoc,
+    addDoc,
+    writeBatch
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import type { UserProfile, Fellowship, GameSession, GameSessionType, FellowshipMember } from '@/lib/types';
+import type { UserProfile, Fellowship, GameSession, GameSessionType, FellowshipMember, GameInvitation } from '@/lib/types';
 import { Label } from '@/components/ui/label';
 import { BIBLE_GAME_DATA } from '@/lib/bible-game-data';
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -95,14 +99,34 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [isSavingSession, setIsSavingSession] = useState(false);
     const [initialXP, setInitialXP] = useState(0);
+    const [isRequesting, setIsRequesting] = useState(false);
+    const [now, setNow] = useState<Date | null>(null);
     
     const correctCountRef = useRef(0);
     const wrongCountRef = useRef(0);
+
+    useEffect(() => {
+        setNow(new Date());
+        const timer = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     const fellowshipDocRef = useMemo(() => (firestore && fellowshipId) ? doc(firestore, 'fellowships', fellowshipId) : null, [firestore, fellowshipId]);
     const { data: fellowship, loading: fellowshipLoading } = useDoc<Fellowship>(fellowshipDocRef);
 
     const isMember = useMemo(() => (user && (fellowship?.memberIds || []).includes(user.uid)) || false, [user, fellowship?.memberIds]);
+    const isOrganizer = useMemo(() => (user && fellowship?.organizerId === user.uid) || false, [user, fellowship?.organizerId]);
+
+    const invitationQuery = useMemo(() => {
+        if (!firestore || !user?.uid || !fellowshipId) return null;
+        return query(
+            collection(firestore, 'gameInvitations'),
+            where('participantIds', 'array-contains', user.uid),
+            where('status', 'in', ['pending', 'accepted'])
+        );
+    }, [firestore, user?.uid, fellowshipId]);
+    const { data: invitations } = useCollection<GameInvitation>(invitationQuery);
+    const activeInvitation = useMemo(() => invitations?.find(i => (i as any).fellowshipId === fellowshipId), [invitations, fellowshipId]);
 
     const sessionsQuery = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
@@ -184,7 +208,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         setIsSavingSession(true);
 
         const totalPoints = finalCorrect * 10;
-        const participantIds = [user.uid];
+        const participantIds = fellowship.memberIds;
         const sessionData = {
             participantIds,
             userId: user.uid,
@@ -206,21 +230,20 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                     kingdomPoints: increment(totalPoints),
                     lastGameAt: serverTimestamp()
                 });
+                
+                if (activeInvitation && activeInvitation.hostId === user.uid) {
+                    deleteDoc(doc(firestore, 'gameInvitations', activeInvitation.id));
+                }
+
                 toast({ title: 'Crusade Victory!', description: `Contribution of ${totalPoints} Points recorded.` });
             })
             .catch(() => toast({ variant: 'destructive', title: 'Save Failed' }))
             .finally(() => setIsSavingSession(false));
-    }, [user, firestore, fellowshipId, fellowship, activeGameType, toast, isMember]);
+    }, [user, firestore, fellowshipId, fellowship, activeGameType, toast, isMember, activeInvitation]);
 
-    const handleStart = () => {
-        if (!isMember) {
-            toast({ variant: 'destructive', title: 'Membership Required', description: `You must join ${fellowship?.name} to participate.` });
-            return;
-        }
-        
+    const handleStartGame = useCallback((type: GameSessionType = activeGameType, duration?: number) => {
         setInitialXP(userProfile?.kingdomPoints || 0);
-        
-        const pool = BIBLE_GAME_DATA[activeGameType];
+        const pool = BIBLE_GAME_DATA[type];
         const initialIdx = Math.floor(Math.random() * pool.length);
         
         setQuizIndex(initialIdx);
@@ -229,11 +252,90 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         setWrongCount(0);
         correctCountRef.current = 0;
         wrongCountRef.current = 0;
-        setTimeLeft(selectedTimer);
+        setTimeLeft(duration || selectedTimer);
         setGameState('playing');
         setIsGameActive(true);
         setSelectedOption(null);
+    }, [activeGameType, userProfile?.kingdomPoints, selectedTimer]);
+
+    const handleLaunchCrusade = async () => {
+        if (!user || !firestore || !fellowship || !isMember) return;
+        setIsRequesting(true);
+
+        const participantIds = fellowship.memberIds;
+        const invitationData = {
+            hostId: user.uid,
+            guestId: fellowshipId, // Representing the group
+            fellowshipId: fellowshipId,
+            participantIds,
+            status: 'pending' as const,
+            gameType: activeGameType,
+            timerDuration: selectedTimer,
+            createdAt: serverTimestamp()
+        };
+
+        const invitationRef = doc(collection(firestore, 'gameInvitations'));
+        
+        try {
+            await setDoc(invitationRef, invitationData);
+            
+            // Notify other members
+            const batch = writeBatch(firestore);
+            const otherMemberIds = fellowship.memberIds.filter(id => id !== user.uid);
+            
+            otherMemberIds.forEach(mId => {
+                const notifRef = doc(collection(firestore, `users/${mId}/notifications`));
+                batch.set(notifRef, {
+                    userId: mId,
+                    type: 'org_invite',
+                    targetId: user.uid,
+                    title: 'Fellowship Crusade!',
+                    message: `${userProfile?.firstName} has called a ${selectedTimer}s ${activeGameType} crusade for ${fellowship.name}!`,
+                    link: `/games/crusade/${fellowshipId}`,
+                    isRead: false,
+                    createdAt: serverTimestamp()
+                });
+            });
+
+            await batch.commit();
+            toast({ title: 'Crusade Mobilized', description: 'Members have been notified to join the arena.' });
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Mobilization Failed' });
+        } finally {
+            setIsRequesting(false);
+        }
     };
+
+    const handleAcceptCrusade = async () => {
+        if (!activeInvitation || !firestore || !user) return;
+        const invitationRef = doc(firestore, 'gameInvitations', activeInvitation.id);
+        updateDoc(invitationRef, {
+            status: 'accepted',
+            acceptedAt: serverTimestamp()
+        }).then(() => {
+            handleStartGame(activeInvitation.gameType, activeInvitation.timerDuration);
+        });
+    };
+
+    const handleDeclineCrusade = async () => {
+        if (!activeInvitation || !firestore) return;
+        // For a group crusade, we just "hide" it for the current user if they aren't the host
+        if (activeInvitation.hostId === user?.uid) {
+            deleteDoc(doc(firestore, 'gameInvitations', activeInvitation.id));
+        } else {
+            // Logic to mark as read or ignored could go here
+            toast({ title: 'Invitation Ignored' });
+        }
+    };
+
+    useEffect(() => {
+        if (activeInvitation?.status === 'accepted' && !isGameActive && gameState === 'playing' && now) {
+            const acceptedAt = safeToDate(activeInvitation.acceptedAt);
+            if (acceptedAt && differenceInMinutes(now, acceptedAt) < 1) {
+                handleStartGame(activeInvitation.gameType, activeInvitation.timerDuration);
+            }
+        }
+    }, [activeInvitation?.status, isGameActive, gameState, activeInvitation?.acceptedAt, now, handleStartGame]);
 
     useEffect(() => {
         let timer: any;
@@ -269,64 +371,11 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         }
     };
 
-    if (fellowshipLoading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
+    if (fellowshipLoading || sessionsLoading || !now) return <div className="flex h-screen items-center justify-center bg-background"><Loader2 className="animate-spin text-primary h-12 w-12" /></div>;
     if (!fellowship) return <div className="p-20 text-center"><h2>Group not found</h2></div>;
 
     const currentPointsGained = correctCount * 10;
     const finalTotalXP = initialXP + currentPointsGained;
-
-    const directoryContent = (
-        <div className="space-y-8">
-            <Card className="rounded-[2.5rem] border-none shadow-xl bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/20">
-                <CardHeader className="p-8 pb-4">
-                    <CardTitle className="text-xs font-black uppercase tracking-[0.3em] opacity-80 flex items-center gap-2"><Trophy className="h-4 w-4" /> Global Crusade POINTS</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 pt-0">
-                    <p className="text-5xl font-black tracking-tighter">{totalGroupXP}</p>
-                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mt-2">Total Community Score</p>
-                </CardContent>
-            </Card>
-
-            <div className="space-y-6">
-                <div className="flex items-center gap-3 px-1">
-                    <TrendingUp className="h-4 w-4 text-primary" />
-                    <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Crusade Leaderboard</h3>
-                </div>
-                <div className="space-y-3">
-                    {leaderboard.length > 0 ? leaderboard.map((entry, i) => (
-                        <div key={entry.userId} className={cn(
-                            "flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 group",
-                            i === 0 ? "bg-amber-500/10 border-amber-500/30 shadow-md ring-1 ring-amber-500/10" : 
-                            i === 1 ? "bg-slate-400/10 border-slate-400/30" :
-                            i === 2 ? "bg-orange-700/10 border-orange-700/30" :
-                            "bg-muted/30 border-transparent"
-                        )}>
-                            <div className="flex items-center gap-4">
-                                <div className="relative shrink-0">
-                                    <LiveMemberAvatar userId={entry.userId} fallbackInitials="L" className="h-10 w-10 border-2 border-background shadow-lg" />
-                                    {i < 3 && (
-                                        <div className={cn(
-                                            "absolute -top-1 -right-1 h-5 w-5 rounded-full flex items-center justify-center border-2 border-background shadow-lg",
-                                            i === 0 ? "bg-amber-500" : i === 1 ? "bg-slate-400" : "bg-orange-700"
-                                        )}>
-                                            <Trophy className="h-2.5 w-2.5 text-white fill-current" />
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="min-w-0">
-                                    <span className="text-sm font-black uppercase tracking-tight truncate block">{entry.name}</span>
-                                    <span className="text-[9px] font-bold text-muted-foreground uppercase">{entry.sessions} MISSIONS</span>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <p className={cn("text-base font-black tracking-tighter", i === 0 ? "text-amber-600" : "text-primary")}>{entry.score} POINTS</p>
-                            </div>
-                        </div>
-                    )) : <p className="text-center text-xs text-muted-foreground italic py-10">No sessions recorded yet.</p>}
-                </div>
-            </div>
-        </div>
-    );
 
     return (
         <div className="h-dvh w-full flex flex-col overflow-hidden bg-background">
@@ -383,99 +432,125 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                     <CardContent className={cn("p-8 sm:p-16 pt-0 space-y-10 relative z-10", !isGameActive && "flex flex-col items-center justify-center")}>
                                         {!isGameActive && gameState !== 'finished' ? (
                                             <div className="py-8 flex flex-col items-center gap-10 w-full">
-                                                <div className="w-full space-y-10">
-                                                    <div className="space-y-4">
-                                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Crusade Mode</Label>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                                            {[ { id: 'word', label: 'Word Arena', icon: BookOpen }, { id: 'prayer', label: 'Prayer Altar', icon: HandHeart }, { id: 'trivia', label: 'Kingdom Trivia', icon: HelpCircle } ].map(type => (
-                                                                <Button key={type.id} variant="outline" onClick={() => setActiveGameType(type.id as any)} className={cn("h-24 sm:h-32 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-5 sm:gap-3 px-8 sm:px-4 rounded-[2rem] border-2 transition-all group/mode", activeGameType === type.id ? "bg-primary/20 border-primary text-primary shadow-2xl scale-[1.02]" : "bg-zinc-900/50 border-zinc-800 text-zinc-500 hover:border-primary/40")}>
-                                                                    <type.icon className={cn("h-8 w-8 shrink-0 transition-transform group-hover/mode:scale-110", activeGameType === type.id ? "text-primary" : "text-zinc-600")} />
-                                                                    <span className="text-xs font-black uppercase tracking-widest">{type.label}</span>
-                                                                </Button>
-                                                            ))}
+                                                {!activeInvitation ? (
+                                                    <div className="w-full space-y-10">
+                                                        <div className="space-y-4 text-left">
+                                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Crusade Mode</Label>
+                                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                                {[ { id: 'word', label: 'Word Arena', icon: BookOpen }, { id: 'prayer', label: 'Prayer Altar', icon: HandHeart }, { id: 'trivia', label: 'Kingdom Trivia', icon: HelpCircle } ].map(type => (
+                                                                    <Button key={type.id} variant="outline" onClick={() => setActiveGameType(type.id as any)} className={cn("h-24 sm:h-32 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-5 sm:gap-3 px-8 sm:px-4 rounded-[2rem] border-2 transition-all group/mode", activeGameType === type.id ? "bg-primary/20 border-primary text-primary shadow-2xl scale-[1.02]" : "bg-zinc-900/50 border-zinc-800 text-zinc-500 hover:border-primary/40")}>
+                                                                        <type.icon className={cn("h-8 w-8 shrink-0 transition-transform group-hover/mode:scale-110", activeGameType === type.id ? "text-primary" : "text-zinc-600")} />
+                                                                        <span className="text-xs font-black uppercase tracking-widest">{type.label}</span>
+                                                                    </Button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                        <div className="space-y-4 text-left">
+                                                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Mission Duration</Label>
+                                                            <div className="grid grid-cols-4 gap-3">
+                                                                {timerOptions.map(opt => (
+                                                                    <Button key={opt} variant="outline" size="sm" onClick={() => setSelectedTimer(opt)} className={cn("h-14 rounded-2xl font-black text-sm transition-all border-2", selectedTimer === opt ? "bg-primary text-white border-primary shadow-xl" : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white")}>{opt}s</Button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex flex-col gap-4">
+                                                            <Button onClick={handleLaunchCrusade} size="lg" className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 text-lg active:scale-95 transition-transform" disabled={isRequesting}>
+                                                                {isRequesting ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Sword className="h-5 w-5 mr-2" />}
+                                                                LAUNCH CRUSADE
+                                                            </Button>
                                                         </div>
                                                     </div>
-                                                    <div className="space-y-4">
-                                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Mission Duration</Label>
-                                                        <div className="grid grid-cols-4 gap-3">
-                                                            {timerOptions.map(opt => (
-                                                                <Button key={opt} variant="outline" size="sm" onClick={() => setSelectedTimer(opt)} className={cn("h-14 rounded-2xl font-black text-sm transition-all border-2", selectedTimer === opt ? "bg-primary text-white border-primary shadow-xl" : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white")}>{opt}s</Button>
-                                                            ))}
+                                                ) : activeInvitation.hostId === user?.uid ? (
+                                                    <div className="space-y-8 w-full flex flex-col items-center justify-center animate-in fade-in text-center">
+                                                        <div className="relative">
+                                                            <Users className="h-20 w-20 text-primary animate-pulse" />
+                                                            <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-spin duration-[15s] opacity-20 pointer-events-none" />
                                                         </div>
-                                                    </div>
-                                                    <div className="flex flex-col gap-4">
-                                                        <Button onClick={handleStart} size="lg" className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 text-lg active:scale-95 transition-transform">
-                                                            LAUNCH CRUSADE
+                                                        <div className="space-y-2">
+                                                            <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest">
+                                                                Mobilizing Members...
+                                                            </Badge>
+                                                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] opacity-60">Awaiting brethren to join the crusade</p>
+                                                        </div>
+                                                        <Button onClick={handleAcceptCrusade} size="lg" className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl">
+                                                            ENTER ARENA NOW
                                                         </Button>
                                                     </div>
-                                                </div>
+                                                ) : (
+                                                    <div className="space-y-8 w-full flex flex-col items-center justify-center animate-in slide-in-from-bottom-4 text-center">
+                                                        <div className="relative">
+                                                            <div className="h-20 w-20 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-background animate-bounce">
+                                                                <Sword className="h-10 w-10 text-white" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <p className="text-xl font-black text-white uppercase tracking-widest">CRUSADE CALL!</p>
+                                                            <p className="text-sm text-zinc-400 font-medium">Your fellowship is entering the Arena.</p>
+                                                        </div>
+                                                        <div className="flex flex-col gap-3 w-full max-w-xs mx-auto">
+                                                            <Button onClick={handleAcceptCrusade} size="lg" className="h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl">
+                                                                <Check className="mr-2 h-5 w-5" /> JOIN CRUSADE
+                                                            </Button>
+                                                            <Button variant="ghost" onClick={handleDeclineCrusade} className="text-destructive font-black uppercase tracking-widest text-xs">
+                                                                DECLINE
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         ) : isGameActive ? (
-                                            <div className="space-y-8 sm:space-y-12 animate-in fade-in zoom-in duration-500">
+                                            <div className="space-y-8 sm:space-y-12 animate-in fade-in zoom-in duration-500 text-left">
                                                 <div className="flex items-center justify-between px-2">
                                                     <div className="flex items-center gap-4">
                                                         <div className={cn("h-12 w-12 sm:h-16 sm:w-16 rounded-[1.25rem] sm:rounded-[1.5rem] flex items-center justify-center border-2 shadow-2xl transition-all", timeLeft <= 10 ? "bg-red-600 border-red-500 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary")}><Timer className="h-6 w-6 sm:h-8 sm:w-8" /></div>
                                                         <div className="text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Remaining</p><p className={cn("text-2xl sm:text-4xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
                                                     </div>
-                                                    <div className="text-right"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10} POINTS</p></div>
+                                                    <div className="text-right text-left text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none text-right">+{correctCount * 10} POINTS</p></div>
                                                 </div>
-                                                <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none"><Target className="h-24 w-24 text-primary" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center">&ldquo;{BIBLE_GAME_DATA[activeGameType][quizIndex]?.text}&rdquo;</motion.p></AnimatePresence></div>
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    {BIBLE_GAME_DATA[activeGameType][quizIndex]?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-16 sm:h-24 rounded-[1.25rem] sm:rounded-[2rem] font-black uppercase tracking-widest text-xs sm:text-base transition-all border-2 text-center whitespace-normal p-4", gameState === 'correct' && opt === BIBLE_GAME_DATA[activeGameType][quizIndex].correct ? "bg-green-600 text-white border-green-400 scale-[1.03] shadow-[0_0_40px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-xl" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/40")} disabled={gameState !== 'playing'} onClick={() => handleCheck(opt)}>{opt}</Button>))}
+                                                <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left text-left text-left"><Target className="h-24 w-24 text-primary text-left" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center">&ldquo;{BIBLE_GAME_DATA[activeGameType][quizIndex]?.text}&rdquo;</motion.p></AnimatePresence></div>
+                                                <div className="grid grid-cols-2 gap-4 text-left text-left text-left text-left">
+                                                    {BIBLE_GAME_DATA[activeGameType][quizIndex]?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-16 sm:h-24 rounded-[1.25rem] sm:rounded-[2rem] font-black uppercase tracking-widest text-xs sm:text-base transition-all border-2 text-center whitespace-normal p-4 text-left", gameState === 'correct' && opt === BIBLE_GAME_DATA[activeGameType][quizIndex].correct ? "bg-green-600 text-white border-green-400 scale-[1.03] shadow-[0_0_40px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-xl" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/40")} disabled={gameState !== 'playing'} onClick={() => handleCheck(opt)}>{opt}</Button>))}
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="space-y-10 sm:space-y-16 animate-in slide-in-from-bottom-8 duration-700 text-center">
-                                                <div className="space-y-6">
-                                                    <div className="relative">
-                                                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-                                                        <div className="h-28 w-28 sm:h-36 sm:w-36 rounded-[2.5rem] sm:rounded-[3.5rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 relative z-10">
-                                                            <Award className="h-14 w-14 sm:h-20 sm:w-20 text-white" />
+                                            <div className="space-y-10 sm:space-y-16 animate-in slide-in-from-bottom-8 duration-700 text-center text-left text-left text-left">
+                                                <div className="space-y-6 text-center text-left text-left text-left">
+                                                    <div className="relative text-left text-left">
+                                                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse text-left text-left" />
+                                                        <div className="h-28 w-28 sm:h-36 sm:w-36 rounded-[2.5rem] sm:rounded-[3.5rem] bg-primary flex items-center justify-center mx-auto shadow-2xl border-4 border-white/10 relative z-10 text-left text-left text-left">
+                                                            <Award className="h-14 w-14 sm:h-20 sm:w-20 text-white text-left text-left text-left" />
                                                         </div>
                                                     </div>
-                                                    <div className="space-y-4">
-                                                        <h3 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight">Crusade Complete!</h3>
-                                                        <div className="bg-zinc-900 rounded-[2rem] p-8 border-2 border-dashed border-primary/20 max-w-md mx-auto">
-                                                            <div className="flex items-center justify-center gap-2 mb-3">
-                                                                <Badge className="bg-primary/20 text-primary border-none font-black text-[10px]">KINGDOM VERSE</Badge>
+                                                    <div className="space-y-4 text-center text-left text-left text-left">
+                                                        <h3 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight text-center text-left">Crusade Complete!</h3>
+                                                        <div className="bg-zinc-900 rounded-[2rem] p-8 border-2 border-dashed border-primary/20 max-w-md mx-auto text-left text-left text-left">
+                                                            <div className="flex items-center justify-center gap-2 mb-3 text-left">
+                                                                <Badge className="bg-primary/20 text-primary border-none font-black text-[10px] text-left text-left text-left">KINGDOM VERSE</Badge>
                                                             </div>
-                                                            <p className="text-xl font-black text-white uppercase tracking-widest text-center">{BIBLE_GAME_DATA[activeGameType][quizIndex]?.ref}</p>
-                                                            <p className="text-sm text-zinc-400 italic mt-3 leading-relaxed text-center text-balance">
+                                                            <p className="text-xl font-black text-white uppercase tracking-widest text-center text-left text-left">{BIBLE_GAME_DATA[activeGameType][quizIndex]?.ref}</p>
+                                                            <p className="text-sm text-zinc-400 italic mt-3 leading-relaxed text-center text-balance text-left text-left">
                                                                 {BIBLE_GAME_DATA[activeGameType][quizIndex]?.explanation || "Your labor in the Word builds an unshakeable foundation for the community."}
                                                             </p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                                    <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner">
-                                                        <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-2 tracking-widest">Group Legacy</p>
-                                                        <p className="text-2xl sm:text-4xl font-black text-white">+{currentPointsGained} POINTS</p>
-                                                    </div>
-                                                    <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner">
-                                                        <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-2 tracking-widest">Accuracy</p>
-                                                        <p className="text-2xl sm:text-4xl font-black text-white">{Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%</p>
-                                                    </div>
-                                                    <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 border border-white/5 text-center shadow-inner">
-                                                        <p className="text-[10px] sm:text-xs font-black text-amber-500 uppercase mb-2 tracking-widest">Total XP</p>
-                                                        <p className="text-2xl sm:text-4xl font-black text-white">{finalTotalXP} POINTS</p>
-                                                    </div>
-                                                </div>
-                                                <Button onClick={() => { setGameState('playing'); setIsGameActive(false); setSelectedOption(null); }} className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl">RETURN TO HUB</Button>
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left text-left text-left"><div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner text-center text-left text-left"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-2 tracking-widest text-center">Group Legacy</p><p className="text-2xl sm:text-4xl font-black text-white text-center text-left">+{currentPointsGained} POINTS</p></div><div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner text-center text-left text-left"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-2 tracking-widest text-center">Accuracy</p><p className="text-2xl sm:text-4xl font-black text-white text-center text-left">{Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%</p></div><div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 border border-white/5 text-center shadow-inner text-center text-left text-left"><p className="text-[10px] sm:text-xs font-black text-amber-500 uppercase mb-2 tracking-widest text-center text-left">Total XP</p><p className="text-2xl sm:text-4xl font-black text-white text-center text-left text-left">{finalTotalXP} POINTS</p></div></div>
+                                                <Button onClick={() => { setGameState('playing'); setIsGameActive(false); setSelectedOption(null); }} className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl text-center text-left text-left">RETURN TO HUB</Button>
                                             </div>
                                         )}
                                     </CardContent>
-                                    <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5 relative z-10"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em]">United in Truth • Shared in Spirit</p></CardFooter>
+                                    <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5 relative z-10 text-left text-left text-left"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em] text-center">United in Truth • Shared in Spirit</p></CardFooter>
                                 </Card>
                             </div>
                         </div>
                     </header>
 
-                    <div className="w-full space-y-8">
+                    <div className="w-full space-y-8 text-left text-left text-left text-left">
                         {directoryContent}
                     </div>
 
-                    <footer className="px-6 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
-                        <p className="text-[9px] sm:text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center">
+                    <footer className="px-6 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left text-left">
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center text-left">
                             "Iron sharpeneth iron; so a man sharpeneth the countenance of his friend." — Proverbs 27:17
                         </p>
                     </footer>
