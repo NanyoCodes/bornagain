@@ -475,7 +475,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   <DropdownMenuItem asChild>
                       <Link href="/resources" className="flex items-center gap-3 w-full">
                         <BookMarked className="h-3.5 w-3.5" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest">Kingdom Library</span>
+                        <span className="text-[11px) font-bold uppercase tracking-widest">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>
@@ -633,9 +633,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       pathname.startsWith('/dashboard/bible') ||
       pathname.startsWith('/notifications') ||
       pathname.startsWith('/dashboard/notifications') ||
-      pathname.startsWith('/games/crusade') ||
-      pathname.startsWith('/fellowships') ||
-      pathname.startsWith('/dashboard/fellowship')
+      pathname.startsWith('/games/crusade')
     );
   }, [pathname]);
 
