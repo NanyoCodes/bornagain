@@ -83,7 +83,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     const router = useRouter();
     const firestore = useFirestore();
     const { user } = useUser();
-    const { userProfile } = useUserProfile();
+    const { userProfile, loading: profileLoading } = useUserProfile();
     const { toast } = useToast();
     const isMobile = useIsMobile();
 
@@ -167,36 +167,6 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         return groupSessions?.reduce((acc, s) => acc + s.score, 0) || 0;
     }, [groupSessions]);
 
-    const nextChallenge = useCallback(() => {
-        const pool = BIBLE_GAME_DATA[activeGameType];
-        const storageKey = `seen_questions_crusade_${activeGameType}_${user?.uid}`;
-        const seenIndices = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        
-        const availableIndices = pool.map((_, i) => i).filter(i => !usedIndices.includes(i) && !seenIndices.includes(i));
-        
-        let targetIdx: number;
-        
-        if (availableIndices.length === 0) {
-            localStorage.setItem(storageKey, JSON.stringify([]));
-            const freshIndices = pool.map((_, i) => i).filter(i => !usedIndices.includes(i));
-            if (freshIndices.length === 0) {
-                handleGameEnd();
-                return;
-            }
-            targetIdx = freshIndices[Math.floor(Math.random() * freshIndices.length)];
-        } else {
-            targetIdx = availableIndices[Math.floor(Math.random() * availableIndices.length)];
-        }
-
-        setUsedIndices(prev => [...prev, targetIdx]);
-        const newSeen = [...seenIndices, targetIdx];
-        localStorage.setItem(storageKey, JSON.stringify(newSeen));
-        
-        setQuizIndex(targetIdx);
-        setGameState('playing');
-        setSelectedOption(null);
-    }, [activeGameType, usedIndices, user?.uid]);
-
     const handleGameEnd = useCallback(() => {
         const finalCorrect = correctCountRef.current;
         const finalWrong = wrongCountRef.current;
@@ -241,6 +211,36 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
             .finally(() => setIsSavingSession(false));
     }, [user, firestore, fellowshipId, fellowship, activeGameType, toast, isMember, activeInvitation]);
 
+    const nextChallenge = useCallback(() => {
+        const pool = BIBLE_GAME_DATA[activeGameType];
+        const storageKey = `seen_questions_crusade_${activeGameType}_${user?.uid}`;
+        const seenIndices = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        
+        const availableIndices = pool.map((_, i) => i).filter(i => !usedIndices.includes(i) && !seenIndices.includes(i));
+        
+        let targetIdx: number;
+        
+        if (availableIndices.length === 0) {
+            localStorage.setItem(storageKey, JSON.stringify([]));
+            const freshIndices = pool.map((_, i) => i).filter(i => !usedIndices.includes(i));
+            if (freshIndices.length === 0) {
+                handleGameEnd();
+                return;
+            }
+            targetIdx = freshIndices[Math.floor(Math.random() * freshIndices.length)];
+        } else {
+            targetIdx = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+        }
+
+        setUsedIndices(prev => [...prev, targetIdx]);
+        const newSeen = [...seenIndices, targetIdx];
+        localStorage.setItem(storageKey, JSON.stringify(newSeen));
+        
+        setQuizIndex(targetIdx);
+        setGameState('playing');
+        setSelectedOption(null);
+    }, [activeGameType, usedIndices, user?.uid, handleGameEnd]);
+
     const handleStartGame = useCallback((type: GameSessionType = activeGameType, duration?: number) => {
         setInitialXP(userProfile?.kingdomPoints || 0);
         const pool = BIBLE_GAME_DATA[type];
@@ -265,7 +265,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         const participantIds = fellowship.memberIds;
         const invitationData = {
             hostId: user.uid,
-            guestId: fellowshipId, // Representing the group
+            guestId: fellowshipId,
             fellowshipId: fellowshipId,
             participantIds,
             status: 'pending' as const,
@@ -279,7 +279,6 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         try {
             await setDoc(invitationRef, invitationData);
             
-            // Notify other members
             const batch = writeBatch(firestore);
             const otherMemberIds = fellowship.memberIds.filter(id => id !== user.uid);
             
@@ -616,13 +615,13 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                     </CardContent>
                                     <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5 relative z-10"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em]">United in Truth • Shared in Spirit</p></CardFooter>
                                 </Card>
+
+                                <div className="w-full space-y-8">
+                                    {directoryContent}
+                                </div>
                             </div>
                         </div>
                     </header>
-
-                    <div className="w-full space-y-8">
-                        {directoryContent}
-                    </div>
 
                     <footer className="px-6 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
                         <p className="text-[9px] sm:text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-[0.2em] opacity-40 italic text-balance text-center">
