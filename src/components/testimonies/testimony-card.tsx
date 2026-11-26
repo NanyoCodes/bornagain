@@ -361,7 +361,7 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
                         {witnesses.map(w => (
                             <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border text-left">
                                 <LiveAuthorAvatar userId={w.authorId} fallbackInitials={w.authorFirstName?.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
-                                <div className="min-w-0 flex-1">
+                                <div className="min-w-0 flex-1 text-left">
                                     <div className="flex justify-between items-baseline mb-1">
                                         <p className="font-black text-sm uppercase tracking-tight">{w.authorFirstName} {w.authorLastName}</p>
                                         <span className="text-[8px] font-bold text-muted-foreground uppercase opacity-60">{w.createdAt ? format(safeToDate(w.createdAt)!, 'MMM d') : 'Just now'}</span>
@@ -800,7 +800,7 @@ export const TestimonyCard = memo(function TestimonyCard({
         <React.Fragment>
             <Drawer open={isBoostOpen} onOpenChange={setIsBoostOpen}>
                 <DrawerContent className="p-0 rounded-t-[2.5rem] sm:max-w-lg sm:mx-auto h-auto pb-12 text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                         <div className="p-0 text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left text-left">
                                 <TrendingUp className="h-5 w-5 text-indigo-600 text-left" />
@@ -842,7 +842,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 {showFullText && (
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
                         <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left">
                                 <DrawerHeader className="text-left p-0 text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</DrawerTitle>
                                     <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription>
@@ -854,15 +854,15 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 {showFullPrayer && (
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
-                        <DrawerContent className="h-auto max-h-[85dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left">
+                        <DrawerContent className="h-auto max-h-[85dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left">
                                 <DrawerHeader className="text-left p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left"><Target className="h-5 w-5 mr-2 inline text-left" />Answered Prayer</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">The specific request that God has fulfilled.</DrawerDescription>
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left"><Target className="h-5 w-5 mr-2 inline text-left text-left" />Answered Prayer</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow px-8 py-10 text-left">
-                                <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left">
+                            <ScrollArea className="flex-grow px-8 py-10 text-left text-left">
+                                <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left text-left">
                                     {testimony.answeredPrayerContent}
                                 </div>
                             </ScrollArea>
@@ -871,34 +871,34 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 {isCommentsOpen && (
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Responses</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
-                                    <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Swipe down to close</span></div>
+                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left">Responses</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
+                                    <div className="flex items-center gap-2 mt-4 text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
-                            <div className="flex-grow min-h-0 text-left"><CommentSection path={`testimonies/${testimony.id}/comments`} /></div>
+                            <div className="flex-grow min-h-0 text-left text-left"><CommentSection path={`testimonies/${testimony.id}/comments`} /></div>
                         </DrawerContent>
                     </Drawer>
                 )}
                 {isWitnessOpen && (
                     <Drawer open={isWitnessOpen} onOpenChange={setIsWitnessOpen}>
-                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-emerald-500/10 text-left">
-                                <DrawerHeader className="text-left p-0 text-left">
-                                    <div className="flex items-center gap-2 mb-2 text-left">
-                                        <ShieldCheck className="h-4 w-4 text-emerald-600 text-left" />
-                                        <span className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.3em] text-left">Miracle Verification</span>
+                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-emerald-500/10 text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left">
+                                    <div className="flex items-center gap-2 mb-2 text-left text-left">
+                                        <ShieldCheck className="h-4 w-4 text-emerald-600 text-left text-left" />
+                                        <span className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.3em] text-left text-left">Miracle Verification</span>
                                     </div>
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">The Cloud of Witnesses</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">The testimony of two men is true.</DrawerDescription>
-                                    <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Swipe down to close</span></div>
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left">The Cloud of Witnesses</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">The testimony of two men is true.</DrawerDescription>
+                                    <div className="flex items-center gap-2 mt-4 text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow min-h-0 text-left">
-                                <div className="p-8 pb-32 text-left">
+                            <ScrollArea className="flex-grow min-h-0 text-left text-left">
+                                <div className="p-8 pb-32 text-left text-left">
                                     <WitnessSection testimonyId={testimony.id} testimonyAuthorId={testimony.authorId} />
                                 </div>
                             </ScrollArea>

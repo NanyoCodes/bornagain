@@ -319,11 +319,9 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
 
     const handleDeclineCrusade = async () => {
         if (!activeInvitation || !firestore) return;
-        // For a group crusade, we just "hide" it for the current user if they aren't the host
         if (activeInvitation.hostId === user?.uid) {
             deleteDoc(doc(firestore, 'gameInvitations', activeInvitation.id));
         } else {
-            // Logic to mark as read or ignored could go here
             toast({ title: 'Invitation Ignored' });
         }
     };
@@ -371,11 +369,69 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         }
     };
 
-    if (fellowshipLoading || sessionsLoading || !now) return <div className="flex h-screen items-center justify-center bg-background"><Loader2 className="animate-spin text-primary h-12 w-12" /></div>;
-    if (!fellowship) return <div className="p-20 text-center"><h2>Group not found</h2></div>;
-
     const currentPointsGained = correctCount * 10;
     const finalTotalXP = initialXP + currentPointsGained;
+
+    const directoryContent = (
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="bg-muted/10 rounded-[2rem] p-6 sm:p-10 border border-muted-foreground/10 text-center">
+                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.4em] mb-2">Global Crusade POINTS</p>
+                <p className="text-4xl sm:text-6xl font-black text-primary tracking-tighter">{totalGroupXP}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase mt-2 opacity-60">Total Community Score</p>
+            </div>
+
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 px-1">
+                    <Trophy className="h-4 w-4 text-amber-500" />
+                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Crusade Leaderboard</h3>
+                </div>
+                {leaderboard.length > 0 ? (
+                    <div className="grid gap-3">
+                        {leaderboard.map((entry, idx) => (
+                            <div key={entry.userId} className="flex items-center justify-between p-4 rounded-2xl bg-card/50 border shadow-sm group hover:border-primary/20 transition-all">
+                                <div className="flex items-center gap-4 min-w-0">
+                                    <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center shrink-0">
+                                        <span className="text-[10px] font-black text-muted-foreground">{idx + 1}</span>
+                                    </div>
+                                    <LiveMemberAvatar userId={entry.userId} fallbackInitials={entry.name.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
+                                    <div className="min-w-0">
+                                        <p className="font-black text-sm uppercase truncate group-hover:text-primary transition-colors">{entry.name}</p>
+                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{entry.sessions} Missions Logged</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-lg font-black text-primary tracking-tighter">{entry.score}</p>
+                                    <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-40">Points</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="py-12 text-center border-2 border-dashed rounded-[2rem] bg-muted/5">
+                        <p className="text-xs text-muted-foreground italic font-medium">No sessions recorded yet.</p>
+                    </div>
+                )}
+            </div>
+
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 px-1">
+                    <Users className="h-4 w-4 text-primary" />
+                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Active Workforce</h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {members?.map(m => (
+                        <div key={m.userId} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/20">
+                            <LiveMemberAvatar userId={m.userId} fallbackInitials={m.firstName.charAt(0)} className="h-9 w-9 border shadow-sm" />
+                            <div className="min-w-0">
+                                <p className="font-black text-xs uppercase truncate">{m.firstName} {m.lastName}</p>
+                                <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Member</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <div className="h-dvh w-full flex flex-col overflow-hidden bg-background">
@@ -539,7 +595,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                             </div>
                                         )}
                                     </CardContent>
-                                    <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5 relative z-10 text-left text-left text-left"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em] text-center">United in Truth • Shared in Spirit</p></CardFooter>
+                                    <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5 relative z-10 text-left text-left text-left text-left"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em] text-center">United in Truth • Shared in Spirit</p></CardFooter>
                                 </Card>
                             </div>
                         </div>
