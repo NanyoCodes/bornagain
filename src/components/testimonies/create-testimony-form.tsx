@@ -34,8 +34,10 @@ import {
   Square, 
   User, 
   Users, 
-  CheckCircle2 
+  CheckCircle2,
+  Send
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import type { TestimonyCategory, Campaign, UserProfile, PrayerRequest, TestimonyWitnessType } from "@/lib/types";
 import { useUser, useFirestore, useStorage } from "@/firebase";
 import { collection, serverTimestamp, doc, runTransaction } from "firebase/firestore";
@@ -168,7 +170,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       setRecorderMode(mode);
       try {
           const constraints = mode === 'video' 
-            ? { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true }
+            ? { video: { facingMode: 'user' }, audio: true }
             : { audio: true };
             
           const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -183,7 +185,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             }, 100);
           }
       } catch (err) {
-          console.error("Media access error:", err);
           toast({ variant: 'destructive', title: 'Access Blocked', description: `Please enable ${mode} permissions to record live.` });
       }
   };
@@ -244,10 +245,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
 
   const handleUploadProcessedFile = async (file: File | Blob, slot: 1 | 2, type: 'video' | 'audio' | 'image') => {
     if (!user || !storage) return;
-    if (file.size > 100 * 1024 * 1024) { 
-      toast({ variant: 'destructive', title: 'File Too Large', description: 'Maximum size is 100MB.' }); 
-      return; 
-    }
     setIsUploadingMedia(slot);
     setUploadProgress(0);
     const localUrl = URL.createObjectURL(file);
@@ -354,9 +351,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               <div className="space-y-3">
                   <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px]", isUploadingMedia === slot ? "opacity-50 pointer-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
                       {isUploadingMedia === slot ? (
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-2 text-center">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                              <div className="space-y-1 text-center"><p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p><p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p></div>
+                              <div className="space-y-1">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p>
+                                <p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p>
+                              </div>
                           </div>
                       ) : (
                           <div className="flex flex-col items-center">
@@ -366,8 +366,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       )}
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                      <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1" onClick={() => startRecorder(slot, 'video')} disabled={isUploadingMedia !== null}><Video className="h-3 w-3 mb-0.5" />RECORD VIDEO</Button>
-                      <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1" onClick={() => startRecorder(slot, 'audio')} disabled={isUploadingMedia !== null}><Mic className="h-3 w-3 mb-0.5" />RECORD AUDIO</Button>
+                      <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1" onClick={() => startRecorder(slot, 'video')} disabled={isUploadingMedia !== null}><Video className="h-3 w-3 mb-0.5" />VIDEO</Button>
+                      <Button type="button" variant="outline" size="sm" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 flex flex-col items-center justify-center py-1" onClick={() => startRecorder(slot, 'audio')} disabled={isUploadingMedia !== null}><Mic className="h-3 w-3 mb-0.5" />AUDIO</Button>
                   </div>
               </div>
           ) : (
@@ -497,7 +497,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                 </div>
                 <div className="bg-primary/5 p-4 rounded-2xl border-2 border-dashed border-primary/10 flex items-start gap-3 mt-4">
                     <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-balance text-left">
                         Providing proof (photos/videos/audio) strengthens faith. Maximum file size is 100MB.
                     </p>
                 </div>
@@ -508,12 +508,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               <Button type="submit" className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-2xl shadow-primary/30 tracking-widest uppercase transition-all active:scale-95" disabled={isSubmitting || isUploadingMedia !== null}>
                 {isSubmitting ? (
                     <div className="flex items-center justify-center gap-3">
-                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
                         <span>PROCLAIMING...</span>
                     </div>
                 ) : (
                     <div className="flex items-center justify-center gap-3">
-                        <Sparkles className="h-6 w-6" />
+                        <Send className="h-6 w-6" />
                         <span>PUBLISH TESTIMONY</span>
                     </div>
                 )}
@@ -609,9 +609,9 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                             )}
                        </div>
 
-                       <div className="space-y-4 w-full">
-                           <div className="text-2xl font-black font-headline uppercase tracking-tight text-white text-center">Voice Proclamation</div>
-                           <p className="text-zinc-500 text-sm font-medium text-center">Record your vocal testimony (max 2 minutes).</p>
+                       <div className="space-y-4 w-full text-center">
+                           <div className="text-2xl font-black font-headline uppercase tracking-tight text-white">Voice Proclamation</div>
+                           <p className="text-zinc-500 text-sm font-medium">Record your vocal testimony (max 2 minutes).</p>
                            
                            <div className="flex items-center justify-center gap-3">
                                {isRecording && <div className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />}
@@ -633,7 +633,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                             {!isRecording ? (
                                 <Button 
                                     onClick={startRecording} 
-                                    className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20"
+                                    className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl shadow-primary/20 text-center"
                                 >
                                     <Mic className="mr-3 h-6 w-6" /> START
                                 </Button>
@@ -641,7 +641,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                                 <Button 
                                     onClick={stopRecording} 
                                     variant="destructive"
-                                    className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl"
+                                    className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-lg shadow-xl text-center"
                                 >
                                     <Square className="mr-3 h-6 w-6 fill-current" /> STOP
                                 </Button>

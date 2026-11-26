@@ -86,9 +86,6 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { MutualConnectBadge } from "./mutual-connect-badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 
 export function getYouTubeEmbedUrl(url: string | undefined | null) {
   if (!url) return null;
@@ -362,7 +359,7 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
                 ) : witnesses && witnesses.length > 0 ? (
                     <div className="space-y-4">
                         {witnesses.map(w => (
-                            <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border text-left">
+                            <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border">
                                 <LiveAuthorAvatar userId={w.authorId} fallbackInitials={w.authorFirstName?.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
                                 <div className="min-w-0 flex-1">
                                     <div className="flex justify-between items-baseline mb-1">
@@ -565,7 +562,7 @@ export const TestimonyCard = memo(function TestimonyCard({
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="space-y-8 pb-8 px-2 text-left">
+      <div className="space-y-8 pb-8 px-2">
         <div className={cn("grid gap-4", (testimony.mediaUrl && testimony.mediaUrl2) ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
             {testimony.mediaUrl && (
               <MediaPreview url={testimony.mediaUrl} type={testimony.mediaType as any} isFull />
@@ -584,15 +581,15 @@ export const TestimonyCard = memo(function TestimonyCard({
   return (
     <React.Fragment>
       <div id={testimony.id} className={cn(
-        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 text-left",
+        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48",
         "rounded-none sm:rounded-[2rem] border-y border-border sm:border-x border-t-4 border-t-amber-500/20 shadow-none sm:shadow-lg",
         "bg-card/50 backdrop-blur-sm",
         isPartner && "sm:ring-1 ring-primary/20",
         testimony.answeredPrayerId && "sm:border-l-4 sm:border-l-amber-500"
       )}>
-        <div className="p-4 sm:p-6 pb-2 text-left">
-          <div className="flex flex-row items-start justify-between gap-3 text-left">
-            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+        <div className="p-4 sm:p-6 pb-2">
+          <div className="flex flex-row items-start justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
                 {testimony.isAnonymous ? (
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
                         <AvatarFallback className="bg-primary/10 text-primary font-bold"><Users className="h-5 w-5" /></AvatarFallback>
@@ -600,10 +597,10 @@ export const TestimonyCard = memo(function TestimonyCard({
                 ) : (
                     <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
                 )}
-                <div className="min-w-0 flex-1 text-left">
+                <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-x-2 gap-y-1.5 flex-wrap">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 min-w-0 shrink-0">
-                             <h3 className="text-base sm:text-lg font-bold capitalize leading-none truncate text-left"> 
+                             <h3 className="text-base sm:text-lg font-bold capitalize leading-none truncate"> 
                                 <LiveAuthorName userId={String(testimony.authorId)} fallbackName={authorName} />
                              </h3>
                         </Link>
@@ -634,13 +631,13 @@ export const TestimonyCard = memo(function TestimonyCard({
                             )}
                         </div>
                     </div>
-                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left">
+                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5">
                         <div className="truncate text-[10px] sm:text-xs opacity-70"> {displayDate}</div>
                         <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
                     </div>
                 </div>
             </div>
-            <div className="flex items-center gap-1.5 shrink-0 text-left">
+            <div className="flex items-center gap-1.5 shrink-0">
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -683,7 +680,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                         <MoreVertical className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl text-left">
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Manage Story</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {isAuthor ? (
@@ -697,7 +694,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                     Boost Miracle
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg text-left">
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg">
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     Delete Permanently
                                 </DropdownMenuItem>
@@ -714,12 +711,12 @@ export const TestimonyCard = memo(function TestimonyCard({
           </div>
         </div>
         
-        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4 text-left">
+        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4">
           <div className="text-sm sm:text-base text-muted-foreground leading-relaxed">
             <div className={cn("leading-relaxed max-w-full", (testimony.mediaUrl || testimony.mediaUrl2) ? "line-clamp-3" : "line-clamp-6")}>
                 <div ref={contentRef}>{testimony.content}</div>
             </div>
-            {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1 text-left" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
+            {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
           </div>
 
           {(testimony.mediaUrl || testimony.mediaUrl2) && (
@@ -734,8 +731,8 @@ export const TestimonyCard = memo(function TestimonyCard({
           )}
 
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
-            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden text-left">
-                <div className="p-4 text-left">
+            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden">
+                <div className="p-4">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">Answering Prayer Request:</div>
                     <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground">
                         <div className="line-clamp-2">
@@ -779,8 +776,8 @@ export const TestimonyCard = memo(function TestimonyCard({
            )}
         </div>
 
-        <Separator className="mx-4 sm:mx-6 w-auto opacity-50 text-left" />
-        <div className="py-2 sm:py-3 px-2 sm:px-4 grid grid-cols-4 gap-0.5 sm:gap-1 text-left">
+        <Separator className="mx-4 sm:mx-6 w-auto opacity-50" />
+        <div className="py-2 sm:py-3 px-2 sm:px-4 grid grid-cols-4 gap-0.5 sm:gap-1">
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}>
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className={cn("h-4 w-4", hasAmened && "fill-current")} />}
                 Amen
@@ -794,7 +791,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 Celebrate
             </Button>
             <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-xs font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
-                <div className="relative flex flex-col items-center justify-center h-full"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm text-center text-left"> {commentCount}</span>}</div>Comment
+                <div className="relative flex flex-col items-center justify-center h-full"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm text-center"> {commentCount}</span>}</div>Comment
             </Button>
         </div>
       </div>
@@ -802,7 +799,7 @@ export const TestimonyCard = memo(function TestimonyCard({
       {mounted && (
         <React.Fragment>
             <Drawer open={isBoostOpen} onOpenChange={setIsBoostOpen}>
-                <DrawerContent className="p-0 rounded-t-[2.5rem] sm:max-w-lg sm:mx-auto h-auto pb-12 text-left">
+                <DrawerContent className="p-0 rounded-t-[2.5rem] sm:max-w-lg sm:mx-auto h-auto pb-12">
                     <div className="p-8 border-b shrink-0 bg-muted/10">
                         <div className="p-0">
                             <div className="flex items-center gap-2 mb-2">
@@ -844,7 +841,7 @@ export const TestimonyCard = memo(function TestimonyCard({
             <AnimatePresence>
                 {showFullText && (
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
-                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-muted/20">
                                 <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline">Kingdom Testimony</DrawerTitle>
@@ -857,7 +854,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 {showFullPrayer && (
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
-                        <DrawerContent className="h-auto max-h-[85dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-auto max-h-[85dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-amber-500/10">
                                 <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer</DrawerTitle>
@@ -874,7 +871,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 {isCommentsOpen && (
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DrawerHeader className="text-left p-0">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase">Responses</DrawerTitle>
@@ -888,7 +885,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 {isWitnessOpen && (
                     <Drawer open={isWitnessOpen} onOpenChange={setIsWitnessOpen}>
-                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-emerald-500/10">
                                 <DrawerHeader className="text-left p-0">
                                     <div className="flex items-center gap-2 mb-2">

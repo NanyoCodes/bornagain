@@ -33,8 +33,10 @@ import {
   Square, 
   User, 
   Users, 
-  CheckCircle2 
+  CheckCircle2,
+  Send
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Testimony, TestimonyCategory, TestimonyWitnessType } from "@/lib/types";
 import { useFirestore, useUser, useStorage } from "@/firebase";
 import { doc, updateDoc, serverTimestamp, collection } from "firebase/firestore";
@@ -160,17 +162,36 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   const startRecording = () => {
       if (!stream) return;
       chunksRef.current = [];
-      const recorder = new MediaRecorder(stream, { mimeType: getSupportedMimeType(recorderMode) });
+      const mimeType = getSupportedMimeType(recorderMode);
+      
+      const recorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+
+      recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
       recorder.onstop = async () => {
-          const blob = new Blob(chunksRef.current, { type: recorder.mimeType });
-          await handleUploadProcessedFile(blob, activeSlot, recorderMode);
+          const actualMimeType = mediaRecorderRef.current?.mimeType || getSupportedMimeType(recorderMode);
+          const extension = actualMimeType.includes('mp4') ? 'mp4' : actualMimeType.includes('webm') ? 'webm' : 'bin';
+          const blob = new Blob(chunksRef.current, { type: actualMimeType });
+          const file = new File([blob], `recorded_testimony_edit_${Date.now()}.${extension}`, { type: actualMimeType });
+          await handleUploadProcessedFile(file, activeSlot, recorderMode);
           closeRecorder();
       };
+
       recorder.start();
       setIsRecording(true);
-      timerRef.current = setInterval(() => { setRecordingTime(prev => { if (prev >= MAX_RECORDING_SECONDS - 1) { stopRecording(); return MAX_RECORDING_SECONDS; } return prev + 1; }); }, 1000);
+      
+      timerRef.current = setInterval(() => {
+          setRecordingTime(prev => {
+              if (prev >= MAX_RECORDING_SECONDS - 1) {
+                  stopRecording();
+                  return MAX_RECORDING_SECONDS;
+              }
+              return prev + 1;
+          });
+      }, 1000);
   };
 
   const stopRecording = () => { if (mediaRecorderRef.current && isRecording) { mediaRecorderRef.current.stop(); setIsRecording(false); } };
@@ -182,8 +203,11 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
     const localUrl = URL.createObjectURL(file);
     try {
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_edit_slot${slot}`);
-        const uploadTask = uploadBytesResumable(fileRef, file, { contentType: file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4') });
-        uploadTask.on('state_changed', (snapshot) => setUploadProgress((snapshot.bytesTransferred/snapshot.totalBytes)*100), 
+        const metadata = { contentType: file.type || (type === 'audio' ? 'audio/mp4' : 'video/mp4') };
+        
+        const uploadTask = uploadBytesResumable(fileRef, file, metadata);
+        uploadTask.on('state_changed', 
+            (snapshot) => setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
             () => { toast({ variant: 'destructive', title: 'Upload Failed' }); setIsUploadingMedia(null); },
             async () => {
                 const url = await getDownloadURL(uploadTask.snapshot.ref);
@@ -219,9 +243,12 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
               <div className="space-y-3">
                   <div className={cn("border-2 border-dashed rounded-3xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[140px]", isUploadingMedia === slot ? "opacity-50 pointer-none" : "hover:bg-muted/20")} onClick={() => inputRef.current?.click()}>
                       {isUploadingMedia === slot ? (
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-2 text-center">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                              <p className="text-[9px] font-black uppercase text-primary"> {Math.round(uploadProgress)}%</p>
+                              <div className="space-y-1">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-primary">Uploading...</p>
+                                <p className="text-[8px] font-bold text-primary/60">{Math.round(uploadProgress)}%</p>
+                              </div>
                           </div>
                       ) : (
                           <div className="flex flex-col items-center">
@@ -249,32 +276,32 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
   };
 
   return (
-    <div className="space-y-8">
-        <div className="flex items-center gap-3 px-1"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner"><Newspaper className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1"><h3 className="text-xl font-black font-headline uppercase tracking-tight">Edit Testimony</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Refine your shared miracle</p></div></div>
+    <div className="space-y-8 text-left">
+        <div className="flex items-center gap-3 px-1 text-left"><div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left"><Newspaper className="h-5 w-5 text-primary text-left" /></div><div className="min-w-0 flex-1 text-left"><h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</h3><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Refine your shared miracle</p></div></div>
         <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
             <FormField
               control={form.control}
               name="witnessType"
               render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">My Role</FormLabel>
-                  <FormControl>
-                    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className={cn("flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer", field.value === 'Beneficiary' ? "bg-primary/10 border-primary shadow-sm" : "bg-muted/20 border-transparent")}>
+                <FormItem className="space-y-3 text-left">
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">My Role</FormLabel>
+                  <FormControl className="text-left">
+                    <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                      <div className={cn("flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer text-left", field.value === 'Beneficiary' ? "bg-primary/10 border-primary shadow-sm" : "bg-muted/20 border-transparent")}>
                         <RadioGroupItem value="Beneficiary" id="edit-beneficiary" className="sr-only" />
-                        <Label htmlFor="edit-beneficiary" className="flex items-center gap-3 cursor-pointer w-full">
-                          <div className={cn("h-8 w-8 rounded-xl flex items-center justify-center", field.value === 'Beneficiary' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}><User className="h-4 w-4" /></div>
-                          <div className="flex-1"><p className="text-xs font-black uppercase">Beneficiary</p><p className="text-[9px] font-bold opacity-70">Personal</p></div>
-                          {field.value === 'Beneficiary' && <CheckCircle2 className="h-4 w-4 text-primary fill-current" />}
+                        <Label htmlFor="edit-beneficiary" className="flex items-center gap-3 cursor-pointer w-full text-left">
+                          <div className={cn("h-8 w-8 rounded-xl flex items-center justify-center text-left", field.value === 'Beneficiary' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}><User className="h-4 w-4 text-left" /></div>
+                          <div className="flex-1 text-left"><p className="text-xs font-black uppercase text-left">Beneficiary</p><p className="text-[9px] font-bold opacity-70 text-left">Personal</p></div>
+                          {field.value === 'Beneficiary' && <CheckCircle2 className="h-4 w-4 text-primary fill-current text-left" />}
                         </Label>
                       </div>
-                      <div className={cn("flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer", field.value === 'Eye Witness' ? "bg-primary/10 border-primary shadow-sm" : "bg-muted/20 border-transparent")}>
+                      <div className={cn("flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer text-left", field.value === 'Eye Witness' ? "bg-primary/10 border-primary shadow-sm" : "bg-muted/20 border-transparent")}>
                         <RadioGroupItem value="Eye Witness" id="edit-eyewitness" className="sr-only" />
-                        <Label htmlFor="edit-eyewitness" className="flex items-center gap-3 cursor-pointer w-full">
-                          <div className={cn("h-8 w-8 rounded-xl flex items-center justify-center", field.value === 'Eye Witness' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}><Users className="h-4 w-4" /></div>
-                          <div className="flex-1"><p className="text-xs font-black uppercase">Eye Witness</p><p className="text-[9px] font-bold opacity-70">I saw it</p></div>
-                          {field.value === 'Eye Witness' && <CheckCircle2 className="h-4 w-4 text-primary fill-current" />}
+                        <Label htmlFor="edit-eyewitness" className="flex items-center gap-3 cursor-pointer w-full text-left">
+                          <div className={cn("h-8 w-8 rounded-xl flex items-center justify-center text-left", field.value === 'Eye Witness' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}><Users className="h-4 w-4 text-left" /></div>
+                          <div className="flex-1 text-left"><p className="text-xs font-black uppercase text-left">Eye Witness</p><p className="text-[9px] font-bold opacity-70 text-left">I saw it</p></div>
+                          {field.value === 'Eye Witness' && <CheckCircle2 className="h-4 w-4 text-primary fill-current text-left" />}
                         </Label>
                       </div>
                     </RadioGroup>
@@ -282,14 +309,14 @@ export function EditTestimonyForm({ testimony, onTestimonyUpdated }: EditTestimo
                 </FormItem>
               )}
             />
-            <FormField control={form.control} name="category" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl><SelectTrigger className="h-12 rounded-2xl border-2"><SelectValue placeholder="Category" /></SelectTrigger></FormControl><SelectContent className="rounded-2xl">{testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} /><FormField control={form.control} name="content" render={({ field }) => (<FormItem><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Testimony</FormLabel><FormControl><Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} /></FormControl><FormMessage /></FormItem>)} />
-            <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-6">
+            <FormField control={form.control} name="category" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}><FormControl className="text-left"><SelectTrigger className="h-12 rounded-2xl border-2 text-left"><SelectValue placeholder="Category" className="text-left" /></SelectTrigger></FormControl><SelectContent className="rounded-2xl text-left">{testimonyCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl text-left">{cat}</SelectItem>)}</SelectContent></Select><FormMessage className="text-left" /></FormItem>)} /><FormField control={form.control} name="content" render={({ field }) => (<FormItem className="text-left"><FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Your Testimony</FormLabel><FormControl className="text-left"><Textarea className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed text-left" {...field} /></FormControl><FormMessage className="text-left" /></FormItem>)} />
+            <div className="space-y-4 text-left">
+                <div className="flex flex-col sm:flex-row gap-6 text-left">
                     {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
                     {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
                 </div>
             </div>
-            <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-center" disabled={isSubmitting || isUploadingMedia !== null}>{isSubmitting ? 'SAVING...' : 'SAVE CHANGES'}</Button>
+            <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase text-center text-left" disabled={isSubmitting || isUploadingMedia !== null}>{isSubmitting ? 'SAVING...' : 'SAVE CHANGES'}</Button>
         </form>
         </Form>
     </div>
