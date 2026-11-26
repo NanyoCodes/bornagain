@@ -25,15 +25,15 @@ import {
   Camera, 
   X, 
   FileUp, 
-  Sparkles,
-  Info,
-  Newspaper,
-  Video,
-  Mic,
-  Square,
-  User,
-  Users,
-  CheckCircle2
+  Sparkles, 
+  Info, 
+  Newspaper, 
+  Video, 
+  Mic, 
+  Square, 
+  User, 
+  Users, 
+  CheckCircle2 
 } from "lucide-react";
 import { Testimony, TestimonyCategory, TestimonyWitnessType } from "@/lib/types";
 import { useFirestore, useUser, useStorage } from "@/firebase";

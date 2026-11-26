@@ -59,8 +59,6 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
 
-const timerOptions = [30, 60, 90, 120];
-
 function LiveMemberAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
     const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
@@ -82,6 +80,8 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     const { userProfile } = useUserProfile();
     const { toast } = useToast();
     const isMobile = useIsMobile();
+
+    const timerOptions = [30, 60, 90, 120];
 
     const [isGameActive, setIsGameActive] = useState(false);
     const [activeGameType, setActiveGameType] = useState<GameSessionType>('word');
@@ -115,10 +115,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     }, [firestore, fellowshipId]);
     const { data: groupSessions, loading: sessionsLoading } = useCollection<GameSession>(sessionsQuery);
 
-    const membersQuery = useMemo(() => {
-        if (!firestore || !fellowshipId || !isMember) return null;
-        return query(collection(firestore, 'fellowships', fellowshipId, 'members'), orderBy('joinedAt', 'desc'));
-    }, [firestore, fellowshipId, isMember]);
+    const membersQuery = useMemo(() => (firestore && fellowshipId && isMember) ? query(collection(firestore, 'fellowships', fellowshipId, 'members'), orderBy('joinedAt', 'desc')) : null, [firestore, fellowshipId, isMember]);
     const { data: members } = useCollection<FellowshipMember>(membersQuery);
 
     const leaderboard = useMemo(() => {
@@ -328,8 +325,8 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     );
 
     return (
-        <div className="h-full w-full flex flex-col overflow-hidden">
-            <ScrollArea className="flex-1 w-full">
+        <div className="h-dvh w-full flex flex-col overflow-hidden bg-background">
+            <ScrollArea className="flex-1 w-full h-full">
                 <div className="max-w-6xl mx-auto space-y-12 pb-32 px-4 sm:px-6">
                     <header className="space-y-6 pt-4">
                         <div className="flex items-center gap-4">
@@ -396,7 +393,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                     </div>
                                                     <div className="space-y-4">
                                                         <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Mission Duration</Label>
-                                                        <div className="grid grid-cols-3 gap-3">
+                                                        <div className="grid grid-cols-4 gap-3">
                                                             {timerOptions.map(opt => (
                                                                 <Button key={opt} variant="outline" size="sm" onClick={() => setSelectedTimer(opt)} className={cn("h-14 rounded-2xl font-black text-sm transition-all border-2", selectedTimer === opt ? "bg-primary text-white border-primary shadow-xl" : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white")}>{opt}s</Button>
                                                             ))}
