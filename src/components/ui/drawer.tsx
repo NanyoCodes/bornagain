@@ -32,7 +32,7 @@ const DrawerOverlay = React.forwardRef<
     {...props}
   />
 ))
-DrawerOverlay.displayName = DrawerOverlay.displayName
+DrawerOverlay.displayName = "DrawerOverlay"
 
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
@@ -102,8 +102,7 @@ const DrawerDescription = React.forwardRef<
     {...props}
   />
 ))
-DrawerDescription.displayName =
-  "DrawerDescription"
+DrawerDescription.displayName = "DrawerDescription"
 
 export {
   Drawer,

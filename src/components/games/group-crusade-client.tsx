@@ -59,6 +59,8 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
 
+const timerOptions = [30, 60, 90, 120];
+
 function LiveMemberAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
     const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
@@ -81,8 +83,6 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     const { toast } = useToast();
     const isMobile = useIsMobile();
 
-    const timerOptions = [30, 60, 90, 120];
-
     const [isGameActive, setIsGameActive] = useState(false);
     const [activeGameType, setActiveGameType] = useState<GameSessionType>('word');
     const [timeLeft, setTimeLeft] = useState(60);
@@ -94,6 +94,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     const [gameState, setGameState] = useState<'playing' | 'correct' | 'wrong' | 'finished'>('playing');
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [isSavingSession, setIsSavingSession] = useState(false);
+    const [initialXP, setInitialXP] = useState(0);
     
     const correctCountRef = useRef(0);
     const wrongCountRef = useRef(0);
@@ -216,6 +217,9 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
             toast({ variant: 'destructive', title: 'Membership Required', description: `You must join ${fellowship?.name} to participate.` });
             return;
         }
+        
+        setInitialXP(userProfile?.kingdomPoints || 0);
+        
         const pool = BIBLE_GAME_DATA[activeGameType];
         const initialIdx = Math.floor(Math.random() * pool.length);
         
@@ -269,7 +273,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     if (!fellowship) return <div className="p-20 text-center"><h2>Group not found</h2></div>;
 
     const currentPointsGained = correctCount * 10;
-    const finalTotalXP = (userProfile?.kingdomPoints || 0) + currentPointsGained;
+    const finalTotalXP = initialXP + currentPointsGained;
 
     const directoryContent = (
         <div className="space-y-8">
@@ -411,9 +415,9 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                 <div className="flex items-center justify-between px-2">
                                                     <div className="flex items-center gap-4">
                                                         <div className={cn("h-12 w-12 sm:h-16 sm:w-16 rounded-[1.25rem] sm:rounded-[1.5rem] flex items-center justify-center border-2 shadow-2xl transition-all", timeLeft <= 10 ? "bg-red-600 border-red-500 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary")}><Timer className="h-6 w-6 sm:h-8 sm:w-8" /></div>
-                                                        <div className="text-left text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-left">Time Remaining</p><p className={cn("text-2xl sm:text-4xl font-black tracking-tighter leading-none text-left", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
+                                                        <div className="text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Remaining</p><p className={cn("text-2xl sm:text-4xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
                                                     </div>
-                                                    <div className="text-right"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10} POINTS</p></div>
+                                                    <div className="text-right"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10} POINTS</p></div>
                                                 </div>
                                                 <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none"><Target className="h-24 w-24 text-primary" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center">&ldquo;{BIBLE_GAME_DATA[activeGameType][quizIndex]?.text}&rdquo;</motion.p></AnimatePresence></div>
                                                 <div className="grid grid-cols-2 gap-4">
@@ -445,15 +449,15 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                     <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner">
                                                         <p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-2 tracking-widest">Group Legacy</p>
-                                                        <p className="text-3xl sm:text-5xl font-black text-white">+{currentPointsGained} POINTS</p>
+                                                        <p className="text-2xl sm:text-4xl font-black text-white">+{currentPointsGained} POINTS</p>
                                                     </div>
                                                     <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner">
                                                         <p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-2 tracking-widest">Accuracy</p>
-                                                        <p className="text-3xl sm:text-5xl font-black text-white">{Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%</p>
+                                                        <p className="text-2xl sm:text-4xl font-black text-white">{Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%</p>
                                                     </div>
                                                     <div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 border border-white/5 text-center shadow-inner">
                                                         <p className="text-[10px] sm:text-xs font-black text-amber-500 uppercase mb-2 tracking-widest">Total XP</p>
-                                                        <p className="text-3xl sm:text-5xl font-black text-white">{finalTotalXP} POINTS</p>
+                                                        <p className="text-2xl sm:text-4xl font-black text-white">{finalTotalXP} POINTS</p>
                                                     </div>
                                                 </div>
                                                 <Button onClick={() => { setGameState('playing'); setIsGameActive(false); setSelectedOption(null); }} className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl">RETURN TO HUB</Button>

@@ -24,7 +24,6 @@ import {
   Users,
   Camera,
   X,
-  ChevronRight,
   ChevronDown,
   TrendingUp,
   Target,
@@ -161,7 +160,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           ) : type === 'video' ? (
               <video key={url} src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
           ) : (
-              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
+              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4">
                   <div className="relative shrink-0">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
                           <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
@@ -174,7 +173,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
                         <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                       </motion.div>
                   </div>
-                  <div className="min-w-0 flex-1 text-left">
+                  <div className="min-w-0 flex-1">
                     <p className="text-[10px] sm:text-[11px] font-black uppercase text-primary tracking-widest leading-none">Voice Proclamation</p>
                     <p className="text-[9px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter opacity-60">Tap to Hear Miracle</p>
                   </div>
@@ -319,9 +318,9 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
     };
 
     return (
-        <div className="space-y-8 text-left">
+        <div className="space-y-8">
             {user && !isAuthor && (
-                <form onSubmit={handlePostWitness} className="space-y-4 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner text-left">
+                <form onSubmit={handlePostWitness} className="space-y-4 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner">
                     <div className="flex items-center gap-2 mb-1">
                         <ShieldCheck className="h-4 w-4 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-widest">Add Your Account</span>
@@ -346,7 +345,7 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
             {isAuthor && (
                 <div className="p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed flex items-start gap-4 shadow-inner">
                     <Info className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
-                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-balance">
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-balance text-left">
                         The witness must be someone else. Others who witnessed this miracle can provide their formal endorsement here to build the "Cloud of Witnesses."
                     </p>
                 </div>
@@ -363,7 +362,7 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
                 ) : witnesses && witnesses.length > 0 ? (
                     <div className="space-y-4">
                         {witnesses.map(w => (
-                            <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border">
+                            <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border text-left">
                                 <LiveAuthorAvatar userId={w.authorId} fallbackInitials={w.authorFirstName?.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
                                 <div className="min-w-0 flex-1">
                                     <div className="flex justify-between items-baseline mb-1">
@@ -698,7 +697,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                     Boost Miracle
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg">
+                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); triggerAction(onDelete); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg text-left">
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     Delete Permanently
                                 </DropdownMenuItem>
