@@ -216,7 +216,7 @@ function FellowshipForm({
                                             <SelectValue placeholder="Select Country" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="max-h-[300px] overflow-y-auto">
+                                    <SelectContent className="max-h-[300px]">
                                         {countriesList.map(c => (
                                             <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
                                         ))}
@@ -240,7 +240,7 @@ function FellowshipForm({
                                                 <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent className="max-h-[300px] overflow-y-auto">
+                                        <SelectContent className="max-h-[300px]">
                                             {statesList.map(s => (
                                                 <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>
                                             ))}
@@ -333,7 +333,6 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             </div>
                         </RadioGroup>
                     </FormControl>
-                    <FormMessage />
                     </FormItem>
                 )}
             />
@@ -384,7 +383,6 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             </div>
                         </RadioGroup>
                     </FormControl>
-                    <FormMessage />
                     </FormItem>
                     )}
             />
@@ -399,7 +397,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                                         <SelectValue placeholder="Select Country" />
                                     </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="max-h-[300px] overflow-y-auto">
+                                <SelectContent className="max-h-[300px]">
                                     {countriesList.map(c => (
                                         <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>
                                     ))}
@@ -423,7 +421,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                                             <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="max-h-[300px] overflow-y-auto">
+                                    <SelectContent className="max-h-[300px]">
                                         {statesList.map(s => (
                                             <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>
                                         ))}
@@ -721,20 +719,20 @@ function FellowshipDashboardContent() {
         <div className="w-full max-w-7xl mx-auto text-left">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-8 space-y-8 pb-32">
-                    <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden">
-                        <CardContent className="p-3 sm:p-6">
-                        <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
+                    <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
+                        <CardContent className="p-3 sm:p-6 text-left">
+                        <div className="flex flex-row items-center gap-2 sm:gap-4 w-full text-left">
                             <Button 
                                 variant="outline" 
-                                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
+                                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed text-left"
                                 onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
                                 disabled={loading}
                             >
-                            <span className="truncate">
+                            <span className="truncate text-left">
                                 {loading ? "Preparing..." : "Start a new fellowship group?"}
                             </span>
                             </Button>
-                            <div className="flex items-center gap-2 shrink-0">
+                            <div className="flex items-center gap-2 shrink-0 text-left">
                                 <Button 
                                     variant="secondary" 
                                     size="icon" 
@@ -760,25 +758,25 @@ function FellowshipDashboardContent() {
                         </CardContent>
                     </Card>
 
-                    <div className="flex flex-col gap-6">
-                        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0">
-                            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                                <TabsList className="grid w-full grid-cols-2 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl">
-                                    <TabsTrigger value="Fellowship" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Fellowships</TabsTrigger>
-                                    <TabsTrigger value="Association" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Associations</TabsTrigger>
+                    <div className="flex flex-col gap-6 text-left">
+                        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0 text-left">
+                            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto text-left">
+                                <TabsList className="grid w-full grid-cols-2 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl text-left">
+                                    <TabsTrigger value="Fellowship" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-center">Fellowships</TabsTrigger>
+                                    <TabsTrigger value="Association" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-center">Associations</TabsTrigger>
                                 </TabsList>
                             </Tabs>
-                            <Tabs value={membershipFilter} onValueChange={setMembershipFilter} className="w-full sm:w-auto">
-                                <TabsList className="grid w-full grid-cols-3 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl">
-                                    <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">All</TabsTrigger>
-                                    <TabsTrigger value="owned" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Mine</TabsTrigger>
-                                    <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Joined</TabsTrigger>
+                            <Tabs value={membershipFilter} onValueChange={setMembershipFilter} className="w-full sm:w-auto text-left">
+                                <TabsList className="grid w-full grid-cols-3 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl text-left">
+                                    <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-center">All</TabsTrigger>
+                                    <TabsTrigger value="owned" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-center">Mine</TabsTrigger>
+                                    <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-center">Joined</TabsTrigger>
                                 </TabsList>
                             </Tabs>
                         </div>
 
                         {loading ? (
-                            <div className="flex flex-col gap-6 w-full">
+                            <div className="flex flex-col gap-6 w-full text-left">
                                 {[...Array(3)].map((_, i) => (
                                     <Card key={i} className="rounded-2xl shadow-none h-40">
                                         <CardContent className="h-full animate-pulse bg-muted rounded-2xl" />
@@ -786,7 +784,7 @@ function FellowshipDashboardContent() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex flex-col gap-6 w-full">
+                            <div className="flex flex-col gap-6 w-full text-left">
                                 {interleavedFellowships.map((f: any) => (
                                     f.isGame ? (
                                         <BibleGameCard key={f.id} />
@@ -815,7 +813,7 @@ function FellowshipDashboardContent() {
                     </div>
                 </div>
 
-                <div className="lg:col-span-4">
+                <div className="lg:col-span-4 text-left">
                     <FeedSidebar mode="fellowships" />
                 </div>
             </div>
@@ -826,12 +824,12 @@ function FellowshipDashboardContent() {
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left p-0">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Create a space for community and growth.</DrawerDescription>
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">New Community Group</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Create a space for community and growth.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow">
-                                <div className="p-8">
+                                <div className="p-8 text-left">
                                     <FellowshipForm 
                                         userProfile={userProfile ?? null} 
                                         onFormSubmit={handleCreateFellowship} 
@@ -845,14 +843,14 @@ function FellowshipDashboardContent() {
                 ) : (
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="text-left p-0">
                                     <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">New Community Group</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium">Create a space for community and growth.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium text-left">Create a space for community and growth.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0">
-                                <div className="p-8">
+                            <ScrollArea className="flex-1 min-h-0 text-left">
+                                <div className="p-8 text-left">
                                     <FellowshipForm 
                                         userProfile={userProfile ?? null} 
                                         onFormSubmit={handleCreateFellowship} 
@@ -871,13 +869,13 @@ function FellowshipDashboardContent() {
                     <Sheet open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left p-0">
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1">Update your group's details.</SheetDescription>
+                                <SheetHeader className="text-left p-0 text-left">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Group</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Update your group's details.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow">
-                                <div className="p-8">
+                                <div className="p-8 text-left">
                                     <ManageFellowshipForm 
                                         fellowship={fellowshipToManage} 
                                         onFormSubmit={handleUpdateFellowship} 
@@ -891,14 +889,14 @@ function FellowshipDashboardContent() {
                 ) : (
                     <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
                         <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DialogHeader className="text-left p-0">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium">Update your group's details.</DialogDescription>
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                                <DialogHeader className="text-left p-0 text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Group</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium text-left">Update your group's details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0">
-                                <div className="p-8">
+                            <ScrollArea className="flex-1 min-h-0 text-left">
+                                <div className="p-8 text-left">
                                      <ManageFellowshipForm 
                                         fellowship={fellowshipToManage} 
                                         onFormSubmit={handleUpdateFellowship} 
@@ -915,15 +913,15 @@ function FellowshipDashboardContent() {
             {fellowshipToDelete && (
                 <AlertDialog open={!!fellowshipToDelete} onOpenChange={(open) => !open && closeAllDialogs()}>
                     <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                        <AlertDialogHeader>
-                            <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">Delete Group?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+                        <AlertDialogHeader className="text-left">
+                            <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Group?</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
                                 Are you sure you want to permanently remove this group? All assigned souls will be unassigned from this spiritual history.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <AlertDialogFooter className="gap-3 mt-6">
-                            <AlertDialogCancel className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center">
+                        <AlertDialogFooter className="gap-3 mt-6 text-left">
+                            <AlertDialogCancel className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-center text-left">
                                 {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                 Confirm Delete
                             </AlertDialogAction>
@@ -938,7 +936,7 @@ function FellowshipDashboardContent() {
 export default function FellowshipStandalonePage() {
   return (
     <AppShell>
-      <Suspense fallback={<div className="flex justify-center p-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>}>
+      <Suspense fallback={<div className="flex justify-center p-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>}>
         <FellowshipDashboardContent />
       </Suspense>
     </AppShell>
