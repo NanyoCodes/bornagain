@@ -847,7 +847,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DrawerContent className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-amber-500/10">
-                                <DrawerHeader className="text-left p-0">
+                                <DrawerHeader className="text-left p-0 text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600"><Target className="h-5 w-5 mr-2 inline" />Answered Prayer</DrawerTitle>
                                     <DrawerDescription className="text-sm font-medium mt-1">The specific request that God has fulfilled.</DrawerDescription>
                                 </DrawerHeader>

@@ -32,7 +32,7 @@ const DrawerOverlay = React.forwardRef<
     {...props}
   />
 ))
-DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
+DrawerOverlay.displayName = DrawerOverlay.displayName
 
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
@@ -90,7 +90,7 @@ const DrawerTitle = React.forwardRef<
     {...props}
   />
 ))
-DrawerTitle.displayName = "DrawerTitle"
+DrawerTitle.displayName = DrawerTitle.displayName
 
 const DrawerDescription = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Description>,
