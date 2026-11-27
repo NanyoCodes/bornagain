@@ -284,11 +284,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   return (
     <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4">
       <div className="flex shrink-0 w-auto">
-        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
           {logo && (
-            <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
-              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-              <AvatarFallback className="font-black font-serif">B</AvatarFallback>
+            <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent text-left">
+              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
+              <AvatarFallback className="text-left font-black font-serif">B</AvatarFallback>
             </Avatar>
           )}
         </Link>
@@ -362,7 +362,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 shrink-0">
                   <Avatar className="h-10 w-10 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
-                    <AvatarFallback className="text-xs font-bold font-black">B</AvatarFallback>
+                    <AvatarFallback className="text-xs font-bold font-black font-serif">B</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
                     <span className="absolute top-0 right-0 flex h-3 w-3">

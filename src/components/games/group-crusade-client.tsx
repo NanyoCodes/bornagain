@@ -168,11 +168,11 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     }, [groupSessions]);
 
     const directoryContent = (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 text-left">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="bg-muted/10 rounded-[2rem] p-6 sm:p-10 border border-muted-foreground/10 text-center">
                 <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.4em] mb-2">Global Crusade POINTS</p>
-                <p className="text-4xl sm:text-6xl font-black text-primary tracking-tighter text-center">{totalGroupXP}</p>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase mt-2 opacity-60 text-center">Total Community Score</p>
+                <p className="text-4xl sm:text-6xl font-black text-primary tracking-tighter">{totalGroupXP}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase mt-2 opacity-60">Total Community Score</p>
             </div>
 
             <div className="space-y-4">
@@ -183,7 +183,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                 {leaderboard.length > 0 ? (
                     <div className="grid gap-3">
                         {leaderboard.map((entry, idx) => (
-                            <div key={entry.userId} className="flex items-center justify-between p-4 rounded-2xl bg-card/50 border shadow-sm group hover:border-primary/20 transition-all text-left">
+                            <div key={entry.userId} className="flex items-center justify-between p-4 rounded-2xl bg-card/50 border shadow-sm group hover:border-primary/20 transition-all">
                                 <div className="flex items-center gap-4 min-w-0">
                                     <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center shrink-0">
                                         <span className="text-[10px] font-black text-muted-foreground">{idx + 1}</span>
@@ -215,7 +215,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {members?.map(m => (
-                        <div key={m.userId} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/20 text-left">
+                        <div key={m.userId} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/20">
                             <LiveMemberAvatar userId={m.userId} fallbackInitials={m.firstName.charAt(0)} className="h-9 w-9 border shadow-sm" />
                             <div className="min-w-0">
                                 <p className="font-black text-xs uppercase truncate">{m.firstName} {m.lastName}</p>
@@ -443,9 +443,9 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
 
     if (fellowshipError || !fellowship) {
         return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center">
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Crusade Lost</h2>
-                <p className="mt-2 text-sm text-muted-foreground">The fellowship arena is no longer active.</p>
+            <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center text-left">
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Crusade Lost</h2>
+                <p className="mt-2 text-sm text-muted-foreground text-left">The fellowship arena is no longer active.</p>
                 <Button variant="outline" className="mt-8 rounded-xl h-11 px-8" onClick={() => router.back()}>Go Back</Button>
             </div>
         );
@@ -453,10 +453,10 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
 
     return (
         <div className="h-dvh w-full flex flex-col overflow-hidden bg-background">
-            <ScrollArea className="flex-1 w-full h-full text-left">
+            <ScrollArea className="flex-1 w-full h-full">
                 <div className="max-w-6xl mx-auto space-y-12 pb-32 px-4 sm:px-6">
-                    <header className="space-y-6 pt-4">
-                        <div className="flex items-center gap-4">
+                    <header className="space-y-6 pt-4 text-left">
+                        <div className="flex items-center gap-4 text-left">
                             <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
                                 <ArrowLeft className="h-5 w-5" />
                             </Button>
@@ -471,7 +471,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
 
                         <div className="flex flex-col lg:flex-row gap-10 items-start">
                             <div className="flex-1 w-full space-y-10">
-                                <Card className="rounded-[2.5rem] sm:rounded-[3.5rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden relative group/arena transition-all hover:border-primary/40">
+                                <Card className="rounded-[2.5rem] sm:rounded-[3.5rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden relative group/arena transition-all hover:border-primary/40 text-left">
                                     <div className="absolute inset-0 z-0 pointer-events-none">
                                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(249,116,22,0.1),transparent_70%)]" />
                                     </div>
@@ -568,7 +568,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                             </div>
                                         ) : isGameActive ? (
                                             <div className="space-y-8 sm:space-y-12 animate-in fade-in zoom-in duration-500">
-                                                <div className="flex items-center justify-between px-2 text-left">
+                                                <div className="flex items-center justify-between px-2 text-left text-left text-left">
                                                     <div className="flex items-center gap-4">
                                                         <div className={cn("h-12 w-12 sm:h-16 sm:w-16 rounded-[1.25rem] sm:rounded-[1.5rem] flex items-center justify-center border-2 shadow-2xl transition-all", timeLeft <= 10 ? "bg-red-600 border-red-500 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary")}><Timer className="h-6 w-6 sm:h-8 sm:w-8" /></div>
                                                         <div className="text-left text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Remaining</p><p className={cn("text-2xl sm:text-4xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
