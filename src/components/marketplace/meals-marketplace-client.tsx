@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
-import { collection, query, where, doc, serverTimestamp, writeBatch, limit, getDocs } from 'firebase/firestore';
-import type { VendorProfile, UserProfile } from '@/lib/types';
+import { useUser, useFirestore, useCollection } from '@/firebase';
+import { collection, query, where, doc, serverTimestamp, writeBatch, limit, getDocs, addDoc } from 'firebase/firestore';
+import type { VendorProfile, UserProfile, Meal } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -126,35 +126,28 @@ export default function MealsMarketplaceClient() {
 
     useEffect(() => { setMounted(true); }, []);
 
-    const vendorsQuery = useMemo(() => {
+    // Collection group query for all meals across all vendors
+    const mealsQuery = useMemo(() => {
         if (!firestore) return null;
-        return query(collection(firestore, 'vendors'), where('status', '==', 'active'), where('vendorType', '==', 'meal'));
+        return query(collection(firestore, 'meals'), where('currency', '!=', ''), limit(100));
     }, [firestore]);
-    const { data: vendors, loading: vendorsLoading } = useCollection<VendorProfile>(vendorsQuery);
+    const { data: allMeals, loading: mealsLoading } = useCollection<Meal>(mealsQuery);
 
-    const filteredVendors = useMemo(() => {
-        if (!vendors) return [];
-        let list = [...vendors];
+    const filteredMeals = useMemo(() => {
+        if (!allMeals) return [];
+        let list = [...allMeals];
 
         if (searchTerm) {
             const term = searchTerm.toLowerCase();
-            list = list.filter(v => v.businessName.toLowerCase().includes(term) || v.description?.toLowerCase().includes(term));
+            list = list.filter(m => m.name.toLowerCase().includes(term) || m.description?.toLowerCase().includes(term));
         }
 
         if (filterCategory !== 'all') {
-            list = list.filter(v => v.category === filterCategory);
-        }
-
-        if (filterCountry !== 'all') {
-            list = list.filter(v => v.location?.toLowerCase().includes(filterCountry.toLowerCase()));
-        }
-
-        if (filterState !== 'all') {
-            list = list.filter(v => v.location?.toLowerCase().includes(filterState.toLowerCase()));
+            list = list.filter(m => m.category === filterCategory);
         }
 
         return list;
-    }, [vendors, searchTerm, filterCategory, filterCountry, filterState]);
+    }, [allMeals, searchTerm, filterCategory]);
 
     const handleRegisterVendor = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -222,7 +215,7 @@ export default function MealsMarketplaceClient() {
                 </div>
 
                 <div className="space-y-4 text-left">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Storefront Photo</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Storefront Photo</Label>
                   <ImageUpload 
                       initialImageUrl={vendorPhotoURL} 
                       onUploadComplete={setVendorPhotoURL} 
@@ -232,13 +225,13 @@ export default function MealsMarketplaceClient() {
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Business Name</Label>
+                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Business Name</Label>
                     <Input id="businessName" name="businessName" placeholder="e.g., Kingdom Kitchen" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left">
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Category</Label>
                         <Select name="category" defaultValue="Restaurant">
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left">
                                 <SelectValue placeholder="Select Category" className="text-left" />
@@ -251,7 +244,7 @@ export default function MealsMarketplaceClient() {
                         </Select>
                     </div>
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Base Currency</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Base Currency</Label>
                         <Select onValueChange={setSelectedCurrency} value={selectedCurrency}>
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left">
                                 <SelectValue placeholder="Select Currency" className="text-left" />
@@ -285,7 +278,7 @@ export default function MealsMarketplaceClient() {
 
                     <div className="grid grid-cols-2 gap-4 text-left">
                         <div className="space-y-2 text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">State</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">State</Label>
                             <Select onValueChange={setRegState} value={regState} disabled={!regCountry || regStatesList.length === 0}>
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left">
                                     <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "Select State"} className="text-left" />
@@ -326,12 +319,12 @@ export default function MealsMarketplaceClient() {
         <div className="space-y-6 sm:space-y-10 max-w-4xl mx-auto pb-32 px-4 sm:px-6 text-left">
             <header className="space-y-6 pt-4 text-left">
                 <div className="flex items-center justify-between gap-4 text-left">
-                    <div className="flex items-center gap-4 min-w-0 flex-1 text-left">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left"><ArrowLeft className="h-6 w-6" /></Button>
+                    <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left text-left">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left"><ArrowLeft className="h-6 w-6 text-left" /></Button>
                         <div className="space-y-1 min-w-0 text-left">
                             <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate text-left">Meals Center</h1>
                             <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left">
-                            <Utensils className="h-4 w-4 text-primary" /> Provision Hub
+                            <Utensils className="h-4 w-4 text-primary" /> Provision Discovery
                             </p>
                         </div>
                     </div>
@@ -340,7 +333,7 @@ export default function MealsMarketplaceClient() {
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <Button onClick={() => setIsRegisterOpen(true)} variant="outline" size="icon" className="rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background h-10 w-10 sm:h-12 sm:w-12 text-left">
-                                        <PlusCircle className="h-5 w-5 sm:h-6 sm:w-6" />
+                                        <PlusCircle className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left"><p className="text-[10px] font-black uppercase text-left">Become a Provider</p></TooltipContent>
@@ -354,7 +347,7 @@ export default function MealsMarketplaceClient() {
                         <div className="relative flex-1 text-left">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                             <Input 
-                                placeholder="Search for business or service..." 
+                                placeholder="Search for meals, recipes, provision..." 
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                                 className="h-12 sm:h-14 pl-12 rounded-xl sm:rounded-[1.5rem] bg-muted/20 border-none shadow-inner font-bold w-full text-sm sm:text-lg text-left"
@@ -364,14 +357,14 @@ export default function MealsMarketplaceClient() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="icon" className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-[1.5rem] border-2 border-primary/20 text-primary hover:bg-primary/5 shadow-sm shrink-0 text-left">
-                                    <Filter className="h-5 w-5 sm:h-6 sm:w-6" />
+                                    <Filter className="h-5 w-5 sm:h-6 sm:w-6 text-left" />
                                     <span className="sr-only text-left">Filter Category</span>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-2xl border-none p-2 text-left">
                                 <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2 text-left">Select Category</DropdownMenuLabel>
                                 <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onSelect={() => setFilterCategory('all')} className="rounded-xl py-2.5 text-left">All Providers</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => setFilterCategory('all')} className="rounded-xl py-2.5 text-left">All Categories</DropdownMenuItem>
                                 {vendorCategories.map(cat => (
                                     <DropdownMenuItem key={cat} onSelect={() => setFilterCategory(cat)} className="rounded-xl py-2.5 text-left">{cat}</DropdownMenuItem>
                                 ))}
@@ -379,75 +372,66 @@ export default function MealsMarketplaceClient() {
                         </DropdownMenu>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 text-left">
-                        <div className="flex-1 flex gap-3 overflow-x-auto pb-1 no-scrollbar text-left">
-                            <div className="space-y-1.5 shrink-0 text-left">
-                                <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">Country</Label>
-                                <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
-                                    <SelectTrigger className="w-[130px] h-9 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
-                                        <SelectValue placeholder="Select" className="text-left" />
-                                    </SelectTrigger>
-                                    <SelectContent className="max-h-[300px] text-left">
-                                        <SelectItem value="all" className="text-left">All Countries</SelectItem>
-                                        {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                    <div className="flex overflow-x-auto pb-1 no-scrollbar gap-3 text-left">
+                        <div className="space-y-1.5 shrink-0 text-left">
+                            <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">Country</Label>
+                            <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
+                                <SelectTrigger className="w-[130px] h-9 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
+                                    <SelectValue placeholder="Select" className="text-left" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px] text-left">
+                                    <SelectItem value="all" className="text-left">All Countries</SelectItem>
+                                    {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name} className="text-left">{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                            <div className="space-y-1.5 shrink-0 text-left text-left">
-                                <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">Region</Label>
-                                <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
-                                    <SelectTrigger className="w-[140px] h-9 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left">
-                                        <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "Select"} className="text-left" />
-                                    </SelectTrigger>
-                                    <SelectContent className="max-h-[300px] text-left">
-                                        <SelectItem value="all" className="text-left">All States</SelectItem>
-                                        {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <div className="space-y-1.5 shrink-0 text-left text-left">
+                            <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">Region</Label>
+                            <Select value={filterState} onValueChange={setFilterState} disabled={filterCountry === 'all' || filterStatesList.length === 0}>
+                                <SelectTrigger className="w-[140px] h-9 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-[10px] uppercase tracking-wider text-left text-left text-left text-left">
+                                    <SelectValue placeholder={filterStatesList.length === 0 ? "N/A" : "Select"} className="text-left" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px] text-left">
+                                    <SelectItem value="all" className="text-left">All States</SelectItem>
+                                    {filterStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 </div>
             </header>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-0 text-left">
-                {vendorsLoading ? (
+                {mealsLoading ? (
                     [...Array(6)].map((_, i) => (
                         <Card key={i} className="rounded-[2rem] border-none shadow-sm animate-pulse h-64 bg-muted/30 text-left" />
                     ))
-                ) : filteredVendors.length > 0 ? (
-                    filteredVendors.map(vendor => (
-                        <Card key={vendor.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
-                            <div className="aspect-[21/9] relative bg-muted text-left">
-                                {vendor.photoURL ? (
-                                    <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover transition-transform group-hover:scale-105 text-left" unoptimized />
+                ) : filteredMeals.length > 0 ? (
+                    filteredMeals.map(meal => (
+                        <Card key={meal.id} className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
+                            <div className="aspect-[4/3] relative bg-muted text-left">
+                                {meal.photoURL ? (
+                                    <Image src={meal.photoURL} alt={meal.name} fill className="object-cover transition-transform group-hover:scale-105 text-left" unoptimized />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-left">
-                                        <Store className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
+                                        <Utensils className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                                     </div>
                                 )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity text-left" />
-                                <div className="absolute bottom-3 left-4 text-left">
-                                    <Badge className="bg-primary text-white font-black text-[9px] px-2 h-5 rounded-full border-none tracking-widest text-left">{vendor.category}</Badge>
+                                <div className="absolute top-3 right-3 text-left">
+                                    <Badge className="bg-primary text-white font-black text-[9px] px-2 h-6 rounded-full border-none tracking-widest text-left">{getCurrencySymbol(meal.currency)}{meal.price.toLocaleString()}</Badge>
                                 </div>
                             </div>
                             <div className="p-5 flex-grow space-y-3 text-left">
-                                <div className="space-y-1 text-left">
-                                    <h3 className="font-black text-base uppercase tracking-tight truncate leading-tight text-left">{vendor.businessName}</h3>
-                                    <div className="flex items-center gap-1 text-muted-foreground text-left">
-                                        <MapPin className="h-3 w-3 text-primary shrink-0 text-left" />
-                                        <p className="text-[10px] font-bold uppercase tracking-widest truncate text-left">{vendor.location || 'Kingdom Network'}</p>
-                                    </div>
-                                </div>
-                                <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left text-left">
-                                    &ldquo;{vendor.description || 'Verified Kingdom provision partner.'}&rdquo;
+                                <h3 className="font-black text-base uppercase tracking-tight truncate leading-tight text-left">{meal.name}</h3>
+                                <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left text-left text-left">
+                                    {meal.description || 'Verified Kingdom provision partner.'}
                                 </p>
                             </div>
                             <CardFooter className="p-5 pt-0 text-left">
                                 <Button asChild variant="ghost" className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] border-2 border-primary/20 text-primary hover:bg-primary/5 transition-all group/btn text-center text-left">
-                                    <Link href={`/marketplace/vendors/${vendor.id}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`} className="flex items-center justify-center w-full gap-2 text-center text-left text-left">
-                                        VIEW MENU & PROVISIONS <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" />
+                                    <Link href={`/marketplace/vendors/${meal.vendorId}`} className="flex items-center justify-center w-full gap-2 text-center text-left text-left">
+                                        VIEW STORE <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1 text-left" />
                                     </Link>
                                 </Button>
                             </CardFooter>
@@ -456,8 +440,8 @@ export default function MealsMarketplaceClient() {
                 ) : (
                     <div className="col-span-full py-32 text-center flex flex-col items-center text-left">
                         <Store className="h-16 w-16 text-muted-foreground opacity-10 mb-6 text-left" />
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">No Providers Found</h3>
-                        <p className="text-sm text-muted-foreground italic mt-2 text-center text-balance px-8 text-left">No provision partners found for this criteria. Be the first to register in your area!</p>
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-center text-left">No Provisions Found</h3>
+                        <p className="text-sm text-muted-foreground italic mt-2 text-center text-balance px-8 text-left">Kingdom provisions will appear here.</p>
                     </div>
                 )}
             </div>
@@ -466,10 +450,10 @@ export default function MealsMarketplaceClient() {
                 isMobile ? (
                     <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left p-0 text-left">
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision.</SheetDescription>
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                                <SheetHeader className="text-left p-0 text-left text-left text-left">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Become a Provider</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Register your meal service and start providing physical provision.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -479,11 +463,11 @@ export default function MealsMarketplaceClient() {
                     </Sheet>
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                                <DialogHeader className="p-0 text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Become a Provider</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Register your meal service and start providing physical provision for the brethren.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
+                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
+                                <DialogHeader className="p-0 text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Become a Provider</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left">Register your meal service and start providing physical provision for the brethren.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">

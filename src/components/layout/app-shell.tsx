@@ -178,41 +178,41 @@ function CartButton() {
   );
 
   const listContent = (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 text-left">
         {cartItems && cartItems.length > 0 ? (
             <div className="space-y-3">
                 {cartItems.map((item: any) => (
                     <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 group/item">
-                        <Avatar className="h-10 w-10 border shrink-0">
-                            <AvatarImage src={item.photoURL} />
-                            <AvatarFallback>P</AvatarFallback>
+                        <Avatar className="h-10 w-10 border shrink-0 text-left">
+                            <AvatarImage src={item.photoURL} className="text-left" />
+                            <AvatarFallback className="text-left">P</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0 flex-1">
-                            <p className="font-bold text-sm truncate uppercase tracking-tight">{item.name}</p>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{item.currency}{item.price.toLocaleString()} x {item.quantity}</p>
+                        <div className="min-w-0 flex-1 text-left">
+                            <p className="font-bold text-sm truncate uppercase tracking-tight text-left">{item.name}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">{item.currency}{item.price.toLocaleString()} x {item.quantity}</p>
                         </div>
                         <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="h-8 w-8 rounded-lg text-muted-foreground/30 hover:text-destructive shrink-0 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                            className="h-8 w-8 rounded-lg text-muted-foreground/30 hover:text-destructive shrink-0 opacity-0 group-hover/item:opacity-100 transition-opacity text-left"
                             onClick={(e) => handleRemoveItem(item.id, e)}
                         >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-4 w-4 text-left" />
                         </Button>
                     </div>
                 ))}
-                <div className="pt-4 border-t border-dashed">
-                    <Button asChild className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center">
-                        <Link href="/marketplace/checkout" onClick={() => setIsOpen(false)}>PROCEED TO HUB</Link>
+                <div className="pt-4 border-t border-dashed text-left">
+                    <Button asChild className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-center text-left">
+                        <Link href="/marketplace/checkout" onClick={() => setIsOpen(false)} className="text-left">PROCEED TO HUB</Link>
                     </Button>
                 </div>
             </div>
         ) : (
-            <div className="py-12 text-center flex flex-col items-center">
-                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4" />
-                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center">Your package is empty</p>
-                <Button variant="link" asChild className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest h-auto p-0 text-center">
-                    <Link href="/marketplace" onClick={() => setIsOpen(false)}>Explore Provision Hub</Link>
+            <div className="py-12 text-center flex flex-col items-center text-left">
+                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left" />
+                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center text-left">Your package is empty</p>
+                <Button variant="link" asChild className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest h-auto p-0 text-center text-left">
+                    <Link href="/marketplace" onClick={() => setIsOpen(false)} className="text-left">Explore Provision Hub</Link>
                 </Button>
             </div>
         )}
@@ -222,18 +222,18 @@ function CartButton() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh]">
-        <div className="p-8 border-b bg-muted/10 shrink-0">
-            <div className="flex items-center gap-2 mb-1">
-                <ShoppingCart className="h-5 w-5 text-primary" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <div className="flex items-center gap-2 mb-1 text-left">
+                <ShoppingCart className="h-5 w-5 text-primary text-left" />
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Offering</span>
             </div>
-            <DialogHeader>
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Pending Offering</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1">Review the provisions in your active package.</DialogDescription>
+            <DialogHeader className="text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Pending Offering</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-left">Review the provisions in your active package.</DialogDescription>
             </DialogHeader>
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto text-left">
           {listContent}
         </div>
       </DialogContent>
@@ -260,17 +260,17 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-50 flex h-dvh w-full flex-col bg-background pt-[env(safe-area-inset-top)] animate-in fade-in duration-300">
-        <div className="flex h-16 items-center gap-3 px-4 border-b shrink-0">
-          <Button variant="ghost" size="icon" onClick={() => { setShowMobileSearch(false); setSearchTerm(''); }} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors">
-            <ArrowLeft className="h-6 w-6" />
+      <header className="sticky top-0 z-50 flex h-dvh w-full flex-col bg-background pt-[env(safe-area-inset-top)] animate-in fade-in duration-300 text-left">
+        <div className="flex h-16 items-center gap-3 px-4 border-b shrink-0 text-left">
+          <Button variant="ghost" size="icon" onClick={() => { setShowMobileSearch(false); setSearchTerm(''); }} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors text-left">
+            <ArrowLeft className="h-6 w-6 text-left" />
           </Button>
-          <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50" />
+          <div className="relative flex-1 text-left">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50 text-left" />
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="w-full pl-10 h-11 rounded-2xl bg-muted/20 border-none shadow-inner text-base"
+                className="w-full pl-10 h-11 rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 autoFocus
@@ -282,20 +282,20 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4">
-      <div className="flex shrink-0 w-auto">
-        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
+    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4 text-left">
+      <div className="flex shrink-0 w-auto text-left">
+        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
           {logo && (
-            <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent text-left text-left">
-              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left" />
-              <AvatarFallback className="text-left font-black font-serif text-left">B</AvatarFallback>
+            <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent text-left">
+              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
+              <AvatarFallback className="text-left font-black font-serif text-left text-left">B</AvatarFallback>
             </Avatar>
           )}
         </Link>
       </div>
 
-      <nav className="hidden md:flex flex-1 justify-center items-center h-full min-w-0">
-        <div className="flex items-center gap-1 lg:gap-2 h-full max-w-full overflow-x-auto no-scrollbar">
+      <nav className="hidden md:flex flex-1 justify-center items-center h-full min-w-0 text-left">
+        <div className="flex items-center gap-1 lg:gap-2 h-full max-w-full overflow-x-auto no-scrollbar text-left">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -322,21 +322,21 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0">
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left">
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-6 w-6" />
-            <span className="sr-only">Search</span>
+          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full transition-transform active:scale-95 text-left" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-6 w-6 text-left" />
+            <span className="sr-only text-left">Search</span>
           </Button>
         )}
         
         {user ? (
           <>
             <CartButton />
-            <Link href="/chats">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
-                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110" />
+            <Link href="/chats" className="text-left">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
+                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110 text-left" />
                       {unreadChatCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadChatCount}
@@ -345,10 +345,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                     </Button>
                 </motion.div>
             </Link>
-            <Link href="/notifications">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
-                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110" />
+            <Link href="/notifications" className="text-left">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
+                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110 text-left" />
                       {unreadNotifCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadNotifCount}
@@ -359,9 +359,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 shrink-0">
-                  <Avatar className="h-10 w-10 border shadow-sm">
-                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 shrink-0 text-left">
+                  <Avatar className="h-10 w-10 border shadow-sm text-left">
+                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover text-left" />
                     <AvatarFallback className="text-xs font-bold font-black font-serif text-left">B</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
@@ -372,127 +372,133 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[70vh] overflow-y-auto no-scrollbar" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal p-4">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-black leading-none truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{user.email}</p>
+              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[70vh] overflow-y-auto no-scrollbar text-left" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal p-4 text-left">
+                  <div className="flex flex-col space-y-1 text-left">
+                    <p className="text-sm font-black leading-none truncate uppercase tracking-tight text-left">{user.displayName || 'User'}</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider text-left">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 space-y-1">
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center gap-3 w-full">
-                      <User className="h-3.5 w-3.5" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Profile Identity</span>
+                <div className="p-1 space-y-1 text-left">
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/profile" className="flex items-center gap-3 w-full text-left">
+                      <User className="h-3.5 w-3.5 text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Profile Identity</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/accountability" className="flex items-center gap-3 w-full">
-                      <HeartHandshake className="h-3.5 w-3.5" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Partners</span>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/accountability" className="flex items-center gap-3 w-full text-left">
+                      <HeartHandshake className="h-3.5 w-3.5 text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Partners</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings" className="flex items-center gap-3 w-full">
-                      <Settings className="h-3.5 w-3.5" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Settings</span>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/settings" className="flex items-center gap-3 w-full text-left">
+                      <Settings className="h-3.5 w-3.5 text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Settings</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 space-y-1">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Kingdom Hubs</p>
-                  <DropdownMenuItem asChild>
-                    <Link href="/victory-hub" className="flex items-center gap-3 w-full">
-                      <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Victory Hub</span>
+                <div className="p-1 space-y-1 text-left">
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left">
+                      <ShieldCheck className="h-3.5 w-3.5 text-primary text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/territories" className="flex items-center gap-3 w-full">
-                      <Globe className="h-3.5 w-3.5 text-primary" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Regions Hub</span>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/territories" className="flex items-center gap-3 w-full text-left">
+                      <Globe className="h-3.5 w-3.5 text-primary text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Regions Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/games" className="flex items-center gap-3 w-full">
-                      <Gamepad2 className="h-3.5 w-3.5 text-primary" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Games Arena</span>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/campaigns" className="flex items-center gap-3 w-full text-left">
+                      <Target className="h-3.5 w-3.5 text-primary text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Missions Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/fellowships" className="flex items-center gap-3 w-full">
-                      <Users className="h-3.5 w-3.5 text-primary" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Fellowship Hub</span>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/games" className="flex items-center gap-3 w-full text-left">
+                      <Gamepad2 className="h-3.5 w-3.5 text-primary text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Games Arena</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/events" className="flex items-center gap-3 w-full">
-                      <CalendarDays className="h-3.5 w-3.5 text-primary" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Events Hub</span>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/fellowships" className="flex items-center gap-3 w-full text-left">
+                      <Users className="h-3.5 w-3.5 text-primary text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Fellowship Hub</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/events" className="flex items-center gap-3 w-full text-left">
+                      <CalendarDays className="h-3.5 w-3.5 text-primary text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Events Hub</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 space-y-1">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Provision & Support</p>
-                  <DropdownMenuItem asChild>
-                    <Link href="/marketplace" className="flex items-center gap-3 w-full">
-                      <Utensils className="h-3.5 w-3.5 text-blue-500" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Meals Center</span>
+                <div className="p-1 space-y-1 text-left">
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Provision & Support</p>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/marketplace" className="flex items-center gap-3 w-full text-left">
+                      <Utensils className="h-3.5 w-3.5 text-blue-500 text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Meals Center</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
-                      <Gift className="h-3.5 w-3.5 text-indigo-600" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Kindness Center</span>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left">
+                      <Gift className="h-3.5 w-3.5 text-indigo-600 text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kindness Center</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
-                      <Package className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Order Hub</span>
+                  <DropdownMenuItem asChild className="text-left">
+                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left">
+                      <Package className="h-3.5 w-3.5 text-muted-foreground text-left" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Order Hub</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 space-y-1">
-                  <DropdownMenuItem asChild>
-                      <Link href="/guide" className="flex items-center gap-3 w-full">
-                        <Info className="h-3.5 w-3.5" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest">App Guide</span>
+                <div className="p-1 space-y-1 text-left">
+                  <DropdownMenuItem asChild className="text-left">
+                      <Link href="/guide" className="flex items-center gap-3 w-full text-left">
+                        <Info className="h-3.5 w-3.5 text-left" />
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                      <Link href="/resources" className="flex items-center gap-3 w-full">
-                        <BookMarked className="h-3.5 w-3.5" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest">Kingdom Library</span>
+                  <DropdownMenuItem asChild className="text-left">
+                      <Link href="/resources" className="flex items-center gap-3 w-full text-left">
+                        <BookMarked className="h-3.5 w-3.5 text-left" />
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1">
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive rounded-xl h-10 px-3 cursor-pointer">
-                    <LogOut className="mr-3 h-4 w-4" />
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">Sign Out</span>
+                <div className="p-1 text-left">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive rounded-xl h-10 px-3 cursor-pointer text-left">
+                    <LogOut className="mr-3 h-4 w-4 text-left" />
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-left">Sign Out</span>
                   </DropdownMenuItem>
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </>
         ) : showGuestButtons ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-left">
             <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold text-left">
               <Link href="/login" className="text-left">Sign In</Link>
             </Button>
@@ -501,7 +507,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </Button>
           </div>
         ) : (
-          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
+          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted text-left" />
         )}
       </div>
     </header>
@@ -660,13 +666,13 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <div className="relative mb-8 mx-auto w-fit text-left">
             <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
             <div className="absolute inset-0 flex items-center justify-center text-left">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left" />
             </div>
         </div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8">
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8 text-left">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center text-left">
             Kingdom Network Active
         </p>
       </div>
@@ -779,8 +785,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SearchProvider>
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left">
-                <div className="relative mx-auto w-fit text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
+                <div className="relative mx-auto w-fit text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
                 </div>
             </div>
         }>
