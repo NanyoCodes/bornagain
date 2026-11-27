@@ -64,9 +64,9 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
             checkDate.setDate(checkDate.getDate() - 1);
         }
 
-        // Safety limit to 366 iterations to prevent infinite loop
+        // Safety limit to prevent infinite loops during date math
         let iterations = 0;
-        while (sharedDates.has(format(checkDate, 'yyyy-MM-dd')) && iterations < 366) {
+        while (sharedDates.has(format(checkDate, 'yyyy-MM-dd')) && iterations < 400) {
             streak++;
             checkDate.setDate(checkDate.getDate() - 1);
             iterations++;
@@ -107,9 +107,9 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
             checkDate.setDate(checkDate.getDate() - 1);
         }
         
-        // Safety limit to 61 iterations (limit of query)
+        // Safety limit bounded by query limit (60)
         let iterations = 0;
-        while (iterations < 61) {
+        while (iterations < 65) {
             const dateString = format(checkDate, 'yyyy-MM-dd');
             const log = historyMap.get(dateString);
             if (log && log.length >= 3) { // Assuming 3 disciplines
@@ -198,7 +198,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4 text-left">
-                          <div className="grid grid-cols-4 items-center gap-4 text-left">
+                          <div className="grid grid-cols-4 items-center gap-4 text-left text-left">
                             <Label htmlFor="goal" className="text-right text-left">
                               Souls
                             </Label>
@@ -228,7 +228,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                 )}
             </CardHeader>
             <CardContent className="space-y-6 text-left">
-                <div className="space-y-2 text-left">
+                <div className="space-y-2 text-left text-left">
                   <div className="flex justify-between items-baseline text-left">
                     <div className="text-2xl font-bold text-left">{totalSouls}</div>
                     <div className="text-sm text-primary-foreground/80 font-black uppercase tracking-widest text-left">
