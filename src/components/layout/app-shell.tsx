@@ -284,11 +284,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
   return (
     <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4">
       <div className="flex shrink-0 w-auto">
-        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
+        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
           {logo && (
-            <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent text-left">
-              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
-              <AvatarFallback className="text-left font-black font-serif">B</AvatarFallback>
+            <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent text-left text-left">
+              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left" />
+              <AvatarFallback className="text-left font-black font-serif text-left">B</AvatarFallback>
             </Avatar>
           )}
         </Link>
@@ -362,7 +362,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 shrink-0">
                   <Avatar className="h-10 w-10 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
-                    <AvatarFallback className="text-xs font-bold font-black font-serif">B</AvatarFallback>
+                    <AvatarFallback className="text-xs font-bold font-black font-serif text-left">B</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
                     <span className="absolute top-0 right-0 flex h-3 w-3">
@@ -372,7 +372,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar" align="end" forceMount>
+              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[70vh] overflow-y-auto no-scrollbar" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-black leading-none truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
@@ -493,11 +493,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
           </>
         ) : showGuestButtons ? (
           <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold">
-              <Link href="/login">Sign In</Link>
+            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold text-left">
+              <Link href="/login" className="text-left">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20">
-              <Link href="/signup">Join Movement</Link>
+            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
+              <Link href="/signup" className="text-left">Join Movement</Link>
             </Button>
           </div>
         ) : (
@@ -656,10 +656,10 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
 
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
-        <div className="relative mb-8 mx-auto w-fit">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <div className="absolute inset-0 flex items-center justify-center">
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
+        <div className="relative mb-8 mx-auto w-fit text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left">
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             </div>
         </div>
@@ -678,7 +678,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
 
   return (
-    <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+    <div className={cn("flex w-full flex-col overflow-x-hidden text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
       <AnimatePresence>
           {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
       </AnimatePresence>
@@ -687,7 +687,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           initial={{ opacity: 0 }}
           animate={{ opacity: contentVisible ? 1 : 0 }}
           transition={{ duration: 1 }}
-          className="flex-1 flex flex-col min-h-0"
+          className="flex-1 flex flex-col min-h-0 text-left"
       >
           {!isTakeoverPage && (
             <AppHeader 
@@ -697,16 +697,16 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
                 isProfileIncomplete={isProfileIncomplete}
             />
           )}
-          <div className="flex-1 relative min-h-0">
+          <div className="flex-1 relative min-h-0 text-left">
           <main 
               ref={scrollContainerRef}
               className={cn(
-                  "absolute inset-0", 
+                  "absolute inset-0 text-left", 
                   !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
               )}
           >
               <div className={cn(
-              "mx-auto h-full", 
+              "mx-auto h-full text-left", 
               (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
               )}>
                   <PageTransition>{children}</PageTransition>
@@ -721,15 +721,15 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
-              <SheetHeader className="text-left flex-shrink-0">
-                <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+          <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
+              <SheetHeader className="text-left flex-shrink-0 text-left">
+                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <ScrollArea className="flex-grow">
-              <div className="p-8">
+            <ScrollArea className="flex-grow text-left">
+              <div className="p-8 text-left">
                 {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
               </div>
             </ScrollArea>
@@ -737,15 +737,15 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
-            <div className="p-6 border-b bg-muted/10">
-              <DialogHeader>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
+            <div className="p-6 border-b bg-muted/10 text-left">
+              <DialogHeader className="text-left">
                 <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
                 <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <ScrollArea className="max-h-[70vh]">
-              <div className="p-6">
+            <ScrollArea className="max-h-[70vh] text-left">
+              <div className="p-6 text-left">
                 {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
               </div>
             </ScrollArea>
@@ -778,9 +778,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
-                <div className="relative mx-auto w-fit">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left">
+                <div className="relative mx-auto w-fit text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
                 </div>
             </div>
         }>
