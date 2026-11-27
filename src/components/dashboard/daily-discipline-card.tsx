@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useUser, useDoc, useFirestore } from '@/firebase';
-import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
-import type { UserProfile } from '@/lib/types';
+import { useUser, useDoc, useFirestore, useCollection } from '@/firebase';
+import { doc, serverTimestamp, writeBatch, collection, query, where, orderBy } from 'firebase/firestore';
+import type { UserProfile, Fellowship, Campaign } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -16,7 +16,8 @@ import {
     Edit, 
     HeartHandshake, 
     PlusCircle, 
-    ChevronDown 
+    ChevronDown,
+    X
 } from 'lucide-react';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
@@ -41,6 +42,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
+import { LogSoulForm } from '@/components/souls/log-soul-form';
 
 const disciplines = [
   { id: 'pray', label: 'Pray', Icon: Zap, color: 'text-amber-500' },
@@ -67,14 +70,16 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
 
     return (
         <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-transparent hover:border-primary/20 transition-all group text-left">
-            <Link href={`/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity text-left">
-                <Avatar className="h-8 w-8 border shadow-sm shrink-0 text-left">
-                    <AvatarImage src={livePhotoURL} className="object-cover text-left" />
-                    <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
+            <Link href={`/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity text-left text-left">
+                <Avatar className="h-8 w-8 border shadow-sm shrink-0">
+                    <AvatarImage src={livePhotoURL} className="object-cover" />
+                    <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full">
+                        {partner.firstName?.charAt(0)}
+                    </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 text-left">
-                    <p className="text-xs font-bold truncate leading-tight group-hover:text-primary transition-colors text-left">{partner.firstName}</p>
-                    <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter text-left">Partner</p>
+                    <p className="text-xs font-bold truncate leading-tight group-hover:text-primary transition-colors">{partner.firstName}</p>
+                    <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">Partner</p>
                 </div>
             </Link>
             
@@ -84,18 +89,18 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <div className={cn(
-                                    "h-5 w-5 rounded-full flex items-center justify-center transition-all duration-300 text-left",
+                                    "h-5 w-5 rounded-full flex items-center justify-center transition-all duration-300",
                                     completedOnDate.includes(d.id) ? "bg-primary text-primary-foreground shadow-sm scale-110" : "bg-muted text-muted-foreground/30"
                                 )}>
                                     {completedOnDate.includes(d.id) ? (
-                                        <CheckCircle2 className="h-3 w-3 fill-current text-left" />
+                                        <CheckCircle2 className="h-3 w-3 fill-current" />
                                     ) : (
-                                        <d.Icon className="h-3 w-3 opacity-40 text-left" />
+                                        <d.Icon className="h-3 w-3 opacity-40" />
                                     )}
                                 </div>
                             </TooltipTrigger>
-                            <TooltipContent className="text-left">
-                                <p className="text-[10px] font-bold uppercase tracking-wider text-left">{d.label}: {completedOnDate.includes(d.id) ? 'Completed' : 'Pending'}</p>
+                            <TooltipContent>
+                                <p className="text-[10px] font-bold uppercase tracking-wider">{d.label}: {completedOnDate.includes(d.id) ? 'Completed' : 'Pending'}</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -109,14 +114,17 @@ export function DailyDisciplineCard() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
+  const isMobile = useIsMobile();
+
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [isPrayerDialogOpen, setIsPrayerDialogOpen] = useState(false);
   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
   const [isAttendChurchDialogOpen, setIsAttendChurchDialogOpen] = useState(false);
+  const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
   const [attendChurchDialogView, setAttendChurchDialogView] = useState<'confirm' | 'form'>('form');
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
-  const router = useRouter();
   
   useEffect(() => {
     setCurrentDate(new Date());
@@ -127,6 +135,12 @@ export function DailyDisciplineCard() {
     return doc(firestore, 'users', user.uid);
   }, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+
+  const activeFellowshipsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'fellowships'), where('status', '==', 'active'));
+  }, [firestore]);
+  const { data: fellowships } = useCollection<Fellowship>(activeFellowshipsQuery);
 
   const loading = userLoading || profileLoading;
 
@@ -274,7 +288,7 @@ export function DailyDisciplineCard() {
     }
   };
   
-   useEffect(() => {
+  useEffect(() => {
     if (!isPrayerDialogOpen && togglingId === 'pray') setTogglingId(null);
     if (!isNotesDialogOpen && togglingId === 'take_notes') setTogglingId(null);
     if (!isAttendChurchDialogOpen && togglingId === 'attend_church') setTogglingId(null);
@@ -295,13 +309,13 @@ export function DailyDisciplineCard() {
 
   if (loading) {
     return (
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left text-left">
-        <CardHeader className="p-4 sm:p-6 text-left text-left text-left">
-          <Skeleton className="h-5 w-32 mb-2 text-left text-left text-left" />
-          <Skeleton className="h-3 w-48 text-left text-left text-left" />
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
+        <CardHeader className="p-4 sm:p-6 text-left">
+          <Skeleton className="h-5 w-32 mb-2" />
+          <Skeleton className="h-3 w-48" />
         </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-6 text-left text-left text-left text-left text-left text-left">
-            <Skeleton className="h-14 w-full rounded-2xl text-left text-left text-left text-left text-left text-left" />
+        <CardContent className="px-4 sm:px-6 pb-6 text-left">
+            <Skeleton className="h-14 w-full rounded-2xl" />
         </CardContent>
       </Card>
     );
@@ -309,41 +323,41 @@ export function DailyDisciplineCard() {
 
   return (
     <>
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left text-left">
-        <CardHeader className="text-left text-left text-left">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left text-left text-left">
-            <div className="space-y-1 text-left text-left text-left text-left">
-              <CardTitle className="text-xl font-semibold tracking-tight text-left text-left text-left text-left text-left">Daily Discipline</CardTitle>
-              <CardDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Your spiritual checklist for today.</CardDescription>
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
+        <CardHeader className="text-left">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
+            <div className="space-y-1 text-left">
+              <CardTitle className="text-xl font-semibold tracking-tight text-left">Daily Discipline</CardTitle>
+              <CardDescription className="text-sm font-medium text-left">Your spiritual checklist for today.</CardDescription>
             </div>
             {currentDate && (
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left text-left text-left text-left text-left">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
                 {format(currentDate, 'PPPP')}
               </div>
             )}
           </div>
         </CardHeader>
-        <CardContent className="space-y-8 text-left text-left text-left text-left text-left">
-            <div className="space-y-4 text-left text-left text-left text-left text-left">
+        <CardContent className="space-y-8 text-left text-left">
+            <div className="space-y-4 text-left">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
-                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left px-4 text-left text-left text-left text-left text-left text-left"
+                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left px-4"
                             disabled={togglingId !== null}
                         >
-                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin text-left text-left text-left text-left text-left text-left text-left text-left" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110 text-left text-left text-left text-left text-left text-left text-left text-left" />}
-                            <span className="text-[10px] sm:text-sm font-black uppercase tracking-tight text-left text-left text-left text-left text-left">DECLARE DAILY DISCIPLINE</span>
-                            <div className="ml-auto flex items-center gap-2 text-left text-left text-left">
-                                <span className="text-[9px] sm:text-[10px] opacity-60 whitespace-nowrap text-left text-left text-left">{completedToday.length}/4 COMPLETED</span>
-                                <ChevronDown className="h-4 w-4 opacity-40 shrink-0 text-left text-left text-left" />
+                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110" />}
+                            <span className="text-[10px] sm:text-sm font-black uppercase tracking-tight">DECLARE DAILY DISCIPLINE</span>
+                            <div className="ml-auto flex items-center gap-2">
+                                <span className="text-[9px] sm:text-[10px] opacity-60 whitespace-nowrap">{completedToday.length}/4 COMPLETED</span>
+                                <ChevronDown className="h-4 w-4 opacity-40 shrink-0" />
                             </div>
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-[400px] rounded-[2rem] p-2 shadow-2xl border-none text-left text-left text-left text-left text-left text-left text-left text-left" align="center" sideOffset={8}>
-                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3 text-left text-left text-left text-left text-left text-left">Select Discipline</DropdownMenuLabel>
-                        <DropdownMenuSeparator className="opacity-50 text-left text-left text-left text-left text-left text-left text-left text-left" />
-                        <ScrollArea className="h-80 text-left text-left text-left text-left text-left text-left">
-                            <div className="p-1.5 space-y-1 text-left text-left text-left text-left text-left text-left">
+                    <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-[400px] rounded-[2rem] p-2 shadow-2xl border-none text-left" align="center" sideOffset={8}>
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3 text-left">Select Discipline</DropdownMenuLabel>
+                        <DropdownMenuSeparator className="opacity-50 text-left" />
+                        <ScrollArea className="h-80 text-left">
+                            <div className="p-1.5 space-y-1 text-left">
                                 {disciplines.map(discipline => {
                                     const isCompleted = completedToday.includes(discipline.id);
                                     const { Icon } = discipline;
@@ -352,20 +366,20 @@ export function DailyDisciplineCard() {
                                             key={discipline.id} 
                                             onSelect={() => handleDisciplineClick(discipline.id)}
                                             className={cn(
-                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4 text-left text-left text-left text-left text-left",
+                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4 text-left",
                                                 isCompleted ? "bg-primary/5 text-primary" : "hover:bg-muted/50"
                                             )}
                                         >
                                             <div className={cn(
-                                                "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border text-left text-left text-left text-left text-left",
+                                                "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border text-left",
                                                 isCompleted ? "bg-primary/10 border-primary/20" : "bg-muted/50 border-transparent"
                                             )}>
-                                                <Icon className={cn("h-4 w-4 text-left text-left text-left text-left text-left", isCompleted ? "text-primary" : "text-muted-foreground")} />
+                                                <Icon className={cn("h-4 w-4 text-left", isCompleted ? "text-primary" : "text-muted-foreground")} />
                                             </div>
-                                            <span className={cn("text-xs font-black uppercase tracking-tight text-left text-left text-left text-left text-left", isCompleted ? "text-primary" : "text-foreground")}>
+                                            <span className={cn("text-xs font-black uppercase tracking-tight text-left", isCompleted ? "text-primary" : "text-foreground")}>
                                                 {discipline.label}
                                             </span>
-                                            {isCompleted && <CheckCircle2 className="h-4 w-4 ml-auto text-primary fill-current text-left text-left text-left text-left text-left" />}
+                                            {isCompleted && <CheckCircle2 className="h-4 w-4 ml-auto text-primary fill-current text-left" />}
                                         </DropdownMenuItem>
                                     )
                                 })}
@@ -374,29 +388,29 @@ export function DailyDisciplineCard() {
                     </DropdownMenuContent>
                 </DropdownMenu>
                 
-                <div className="px-1 space-y-1 text-left text-left text-left text-left text-left">
-                    <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 text-left text-left text-left text-left">
-                        <span className="text-left text-left text-left">Today's Dedication</span>
-                        <span className="text-left text-left text-left">{Math.round((completedToday.length / 4) * 100)}%</span>
+                <div className="px-1 space-y-1 text-left">
+                    <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 text-left">
+                        <span className="text-left">Today's Dedication</span>
+                        <span className="text-left">{Math.round((completedToday.length / 4) * 100)}%</span>
                     </div>
-                    <Progress value={(completedToday.length / 4) * 100} className="h-1 text-left text-left text-left text-left" />
+                    <Progress value={(completedToday.length / 4) * 100} className="h-1 text-left" />
                 </div>
             </div>
 
             {uniquePartners.length > 0 && currentDate && (
-                <div className="space-y-4 text-left text-left text-left text-left text-left">
-                    <Separator className="opacity-50 text-left text-left text-left text-left text-left" />
-                    <div className="flex items-center justify-between px-1 text-left text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 text-left text-left text-left text-left text-left">
-                            <HeartHandshake className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left text-left text-left text-left text-left">Partner Activity</h4>
+                <div className="space-y-4 text-left text-left">
+                    <Separator className="opacity-50 text-left" />
+                    <div className="flex items-center justify-between px-1 text-left">
+                        <div className="flex items-center gap-2 text-left">
+                            <HeartHandshake className="h-4 w-4 text-primary text-left" />
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left">Partner Activity</h4>
                         </div>
-                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left text-left text-left text-left text-left text-left">
-                            <Link href="/accountability" className="text-left text-left text-left text-left text-left text-left">Full View</Link>
+                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left">
+                            <Link href="/accountability" className="text-left">Full View</Link>
                         </Button>
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-left text-left text-left text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
                         {uniquePartners.slice(0, 4).map(partner => (
                             <PartnerCompactStatus key={partner.userId} partner={partner} date={currentDate} />
                         ))}
@@ -405,6 +419,7 @@ export function DailyDisciplineCard() {
             )}
         </CardContent>
       </Card>
+      
       <PrayerDialog
         isOpen={isPrayerDialogOpen}
         onOpenChange={(open) => {
@@ -413,6 +428,10 @@ export function DailyDisciplineCard() {
         }}
         onDisciplineCompleted={handlePray}
         userProfile={userProfile}
+        onOpenSouls={() => setIsLogSoulOpen(true)}
+        onOpenNotes={() => handleDisciplineClick('take_notes')}
+        onOpenChurch={() => handleDisciplineClick('attend_church')}
+        onOpenBible={() => handleDisciplineClick('read_bible')}
       />
        <NotesDialog
         isOpen={isNotesDialogOpen}
@@ -433,6 +452,23 @@ export function DailyDisciplineCard() {
         userProfile={userProfile}
         initialView={attendChurchDialogView}
       />
+
+      <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left flex items-center justify-between gap-4">
+                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                    <DrawerTitle className="text-2xl font-black font-headline text-left">Log Harvest</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
+                </DrawerHeader>
+                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-left" onClick={() => setIsLogSoulOpen(false)}>
+                    <X className="h-5 w-5 text-left" />
+                </Button>
+            </div>
+            <ScrollArea className="flex-1 min-h-0 p-8 text-left">
+                <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={fellowships || []} campaigns={[]} />
+            </ScrollArea>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
