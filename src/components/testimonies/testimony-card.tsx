@@ -157,7 +157,7 @@ export const MediaPreview = ({ url, type, isFull = false }: { url: string, type:
           ) : type === 'video' ? (
               <video key={url} src={url} className="w-full h-full object-cover bg-zinc-950" muted playsInline loop preload="metadata" />
           ) : (
-              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4">
+              <div className="w-full h-full flex flex-row items-center gap-4 bg-primary/5 p-4 text-left">
                   <div className="relative shrink-0">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20 shadow-inner">
                           <Mic className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
@@ -599,8 +599,8 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 <div className="min-w-0 flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 min-w-0">
-                        <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 min-w-0">
-                             <h3 className="text-base sm:text-lg font-bold capitalize leading-none truncate"> 
+                        <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2">
+                             <h3 className="text-base sm:text-lg font-bold capitalize leading-tight break-words"> 
                                 <LiveAuthorName userId={String(testimony.authorId)} fallbackName={authorName} />
                              </h3>
                         </Link>

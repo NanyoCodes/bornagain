@@ -120,7 +120,6 @@ export default function MealsMarketplaceClient() {
 
     useEffect(() => { setMounted(true); }, []);
 
-    // Primary query for Provision Stores (Vendors)
     const vendorsQuery = useMemo(() => {
         if (!firestore) return null;
         return query(collection(firestore, 'vendors'), where('vendorType', '==', 'meal'), limit(100));
@@ -217,7 +216,7 @@ export default function MealsMarketplaceClient() {
                 </div>
 
                 <div className="space-y-4 text-left">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Storefront Photo</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Storefront Photo</Label>
                   <ImageUpload 
                       initialImageUrl={vendorPhotoURL} 
                       onUploadComplete={setVendorPhotoURL} 
@@ -227,13 +226,13 @@ export default function MealsMarketplaceClient() {
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Business Name</Label>
+                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Business Name</Label>
                     <Input id="businessName" name="businessName" placeholder="e.g., Kingdom Kitchen" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Category</Label>
                         <Select name="category" defaultValue="Restaurant">
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                 <SelectValue placeholder="Select Category" className="text-left" />
@@ -286,7 +285,7 @@ export default function MealsMarketplaceClient() {
                                     <SelectValue placeholder={regStatesList.length === 0 ? "N/A" : "Select State"} className="text-left text-left" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px] text-left">
-                                    {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name} className="text-left">{s.name}</SelectItem>)}
+                                    {regStatesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -319,12 +318,12 @@ export default function MealsMarketplaceClient() {
 
     return (
         <div className="space-y-6 sm:space-y-10 max-w-4xl mx-auto pb-32 px-4 sm:px-6 text-left text-left text-left">
-            <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left">
+            <header className="space-y-6 pt-4 text-left text-left">
                 <div className="flex items-center justify-between gap-4 text-left">
                     <div className="flex items-center gap-4 min-w-0 flex-1 text-left text-left text-left">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left"><ArrowLeft className="h-6 w-6 text-left text-left" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left"><ArrowLeft className="h-6 w-6 text-left text-left" /></Button>
                         <div className="space-y-1 min-w-0 text-left text-left text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate text-left text-left">Meals Center</h1>
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase truncate text-left text-left">Meals Center</h1>
                             <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left text-left">
                             <Utensils className="h-4 w-4 text-primary text-left text-left" /> Provision Hub
                             </p>
@@ -374,7 +373,7 @@ export default function MealsMarketplaceClient() {
                         </DropdownMenu>
                     </div>
 
-                    <div className="flex overflow-x-auto pb-1 no-scrollbar gap-3 text-left text-left text-left text-left">
+                    <div className="flex overflow-x-auto pb-1 no-scrollbar gap-3 text-left text-left text-left text-left text-left">
                         <div className="space-y-1.5 shrink-0 text-left text-left text-left text-left">
                             <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">Country</Label>
                             <Select value={filterCountry} onValueChange={(v) => { setFilterCountry(v); setFilterState('all'); }}>
@@ -437,7 +436,7 @@ export default function MealsMarketplaceClient() {
                             <CardFooter className="p-5 pt-0 text-left">
                                 <Button asChild variant="ghost" className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] border-2 border-primary/20 text-primary hover:bg-primary/5 transition-all group/btn text-center text-left text-left text-left">
                                     <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center justify-center w-full gap-2 text-center text-left text-left text-left">
-                                        ENTER STORE <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1 text-left text-left text-left" />
+                                        ENTER STORE <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" />
                                     </Link>
                                 </Button>
                             </CardFooter>
@@ -469,9 +468,9 @@ export default function MealsMarketplaceClient() {
                     </Sheet>
                 ) : (
                     <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
-                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
-                                <DialogHeader className="p-0 text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
+                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left">
+                                <DialogHeader className="p-0 text-left text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Become a Provider</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Register your meal service and start providing physical provision for the brethren.</DialogDescription>
                                 </DialogHeader>
