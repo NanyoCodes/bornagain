@@ -318,7 +318,7 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
         <div className="space-y-8">
             {user && !isAuthor && (
                 <form onSubmit={handlePostWitness} className="space-y-4 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 text-left">
                         <ShieldCheck className="h-4 w-4 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-widest">Add Your Account</span>
                     </div>
@@ -349,7 +349,7 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
             )}
 
             <div className="space-y-6">
-                <div className="flex items-center gap-2 px-1">
+                <div className="flex items-center gap-2 px-1 text-left">
                     <Users className="h-4 w-4 text-primary" />
                     <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">The Cloud of Witnesses</h3>
                 </div>
@@ -598,8 +598,8 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
                 )}
                 <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 min-w-0">
-                        <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 min-w-0 flex-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 min-w-0">
+                        <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 min-w-0">
                              <h3 className="text-base sm:text-lg font-bold capitalize leading-none truncate"> 
                                 <LiveAuthorName userId={String(testimony.authorId)} fallbackName={authorName} />
                              </h3>
