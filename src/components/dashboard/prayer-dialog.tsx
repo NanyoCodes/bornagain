@@ -7,14 +7,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from '@/components/ui/drawer';
 import {
   Card,
   CardContent,
@@ -332,9 +333,8 @@ export function PrayerDialog({
 
   if (isMobile) {
     return (
-      <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent
-          side="bottom"
+      <Drawer open={isOpen} onOpenChange={onOpenChange}>
+        <DrawerContent
           className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem] text-left"
         >
           <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
@@ -379,8 +379,8 @@ export function PrayerDialog({
                 Complete all {prayerPoints.length} focus points to mark as finished.
             </p>
           </div>
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
     );
   }
 
