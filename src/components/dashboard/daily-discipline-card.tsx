@@ -71,7 +71,7 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
 
     return (
         <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-transparent hover:border-primary/20 transition-all group text-left">
-            <Link href={`/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity text-left text-left">
+            <Link href={`/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity text-left">
                 <Avatar className="h-8 w-8 border shadow-sm shrink-0">
                     <AvatarImage src={livePhotoURL} className="object-cover" />
                     <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full">
@@ -79,8 +79,8 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
                     </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 text-left">
-                    <p className="text-xs font-bold truncate leading-tight group-hover:text-primary transition-colors">{partner.firstName}</p>
-                    <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">Partner</p>
+                    <p className="text-xs font-bold truncate leading-tight group-hover:text-primary transition-colors text-left">{partner.firstName}</p>
+                    <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter text-left">Partner</p>
                 </div>
             </Link>
             
@@ -94,9 +94,9 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
                                     completedOnDate.includes(d.id) ? "bg-primary text-primary-foreground shadow-sm scale-110" : "bg-muted text-muted-foreground/30"
                                 )}>
                                     {completedOnDate.includes(d.id) ? (
-                                        <CheckCircle2 className="h-3 w-3 fill-current" />
+                                        <CheckCircle2 className="h-3 w-3 fill-current text-left" />
                                     ) : (
-                                        <d.Icon className="h-3 w-3 opacity-40" />
+                                        <d.Icon className="h-3 w-3 opacity-40 text-left" />
                                     )}
                                 </div>
                             </TooltipTrigger>
@@ -310,12 +310,12 @@ export function DailyDisciplineCard() {
 
   if (loading) {
     return (
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left">
         <CardHeader className="p-4 sm:p-6 text-left">
           <Skeleton className="h-5 w-32 mb-2" />
           <Skeleton className="h-3 w-48" />
         </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-6 text-left">
+        <CardContent className="px-4 sm:px-6 pb-6 text-left text-left">
             <Skeleton className="h-14 w-full rounded-2xl" />
         </CardContent>
       </Card>
@@ -324,9 +324,9 @@ export function DailyDisciplineCard() {
 
   return (
     <>
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
-        <CardHeader className="text-left">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left">
+        <CardHeader className="text-left text-left">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
             <div className="space-y-1 text-left">
               <CardTitle className="text-xl font-semibold tracking-tight text-left">Daily Discipline</CardTitle>
               <CardDescription className="text-sm font-medium text-left">Your spiritual checklist for today.</CardDescription>
@@ -338,8 +338,8 @@ export function DailyDisciplineCard() {
             )}
           </div>
         </CardHeader>
-        <CardContent className="space-y-8 text-left text-left">
-            <div className="space-y-4 text-left text-left">
+        <CardContent className="space-y-8 text-left">
+            <div className="space-y-4 text-left">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
@@ -399,19 +399,19 @@ export function DailyDisciplineCard() {
             </div>
 
             {uniquePartners.length > 0 && currentDate && (
-                <div className="space-y-4 text-left text-left">
+                <div className="space-y-4 text-left">
                     <Separator className="opacity-50 text-left" />
-                    <div className="flex items-center justify-between px-1 text-left">
+                    <div className="flex items-center justify-between px-1 text-left text-left">
                         <div className="flex items-center gap-2 text-left">
                             <HeartHandshake className="h-4 w-4 text-primary text-left" />
                             <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left">Partner Activity</h4>
                         </div>
-                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left text-left">
+                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left">
                             <Link href="/accountability" className="text-left">Full View</Link>
                         </Button>
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
                         {uniquePartners.slice(0, 4).map(partner => (
                             <PartnerCompactStatus key={partner.userId} partner={partner} date={currentDate} />
                         ))}
@@ -455,17 +455,17 @@ export function DailyDisciplineCard() {
       />
 
       <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left flex items-center justify-between gap-4 text-left">
-                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
-                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Log Harvest</DrawerTitle>
-                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</DrawerDescription>
+        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex items-center justify-between gap-4 text-left">
+                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
+                    <DrawerTitle className="text-2xl font-black font-headline text-left">Log Harvest</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
                 </DrawerHeader>
-                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-left text-left" onClick={() => setIsLogSoulOpen(false)}>
-                    <X className="h-5 w-5 text-left text-left" />
+                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-left" onClick={() => setIsLogSoulOpen(false)}>
+                    <X className="h-5 w-5 text-left" />
                 </Button>
             </div>
-            <ScrollArea className="flex-1 min-h-0 p-8 text-left text-left">
+            <ScrollArea className="flex-1 min-h-0 p-8 text-left">
                 <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={fellowships || []} campaigns={[]} />
             </ScrollArea>
         </DrawerContent>

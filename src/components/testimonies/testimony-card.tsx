@@ -86,6 +86,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { MutualConnectBadge } from "./mutual-connect-badge";
 import { motion, AnimatePresence } from "framer-motion";
+import { Textarea } from "@/components/ui/textarea";
 
 export function getYouTubeEmbedUrl(url: string | undefined | null) {
   if (!url) return null;
@@ -257,20 +258,6 @@ function LiveAuthorName({ userId, fallbackName }: { userId: string, fallbackName
     return <span className="capitalize">{name}</span>;
 }
 
-export function getStatusClasses(status: FollowUpStatus | undefined): string {
-    if (!status) return 'bg-secondary text-secondary-foreground border-border';
-    switch (status) {
-        case 'New':
-            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
-        case 'Contacted':
-            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
-        case 'Established':
-            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
-        default:
-            return 'bg-secondary text-secondary-foreground border-border';
-    }
-}
-
 function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: string, testimonyAuthorId: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
@@ -315,18 +302,18 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 text-left">
             {user && !isAuthor && (
-                <form onSubmit={handlePostWitness} className="space-y-4 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner">
-                    <div className="flex items-center gap-2 mb-1 text-left">
-                        <ShieldCheck className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-widest">Add Your Account</span>
+                <form onSubmit={handlePostWitness} className="space-y-4 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner text-left">
+                    <div className="flex items-center gap-2 mb-1 text-left text-left">
+                        <ShieldCheck className="h-4 w-4 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-widest text-left">Add Your Account</span>
                     </div>
                     <Textarea 
                         placeholder="I was there, I saw this miracle too..."
                         value={witnessText}
                         onChange={e => setWitnessText(e.target.value)}
-                        className="min-h-[100px] rounded-2xl bg-background border-none shadow-inner text-base"
+                        className="min-h-[100px] rounded-2xl bg-background border-none shadow-inner text-base text-left"
                     />
                     <Button 
                         type="submit" 
@@ -340,18 +327,18 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
             )}
 
             {isAuthor && (
-                <div className="p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed flex items-start gap-4 shadow-inner">
-                    <Info className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
-                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-balance">
+                <div className="p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed flex items-start gap-4 shadow-inner text-left">
+                    <Info className="h-5 w-5 text-muted-foreground mt-1 shrink-0 text-left" />
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-balance text-left">
                         The witness must be someone else. Others who witnessed this miracle can provide their formal endorsement here to build the "Cloud of Witnesses."
                     </p>
                 </div>
             )}
 
-            <div className="space-y-6">
+            <div className="space-y-6 text-left">
                 <div className="flex items-center gap-2 px-1 text-left">
-                    <Users className="h-4 w-4 text-primary" />
-                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">The Cloud of Witnesses</h3>
+                    <Users className="h-4 w-4 text-primary text-left" />
+                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground text-left">The Cloud of Witnesses</h3>
                 </div>
                 
                 {loading ? (
@@ -361,12 +348,12 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
                         {witnesses.map(w => (
                             <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border text-left">
                                 <LiveAuthorAvatar userId={w.authorId} fallbackInitials={w.authorFirstName?.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
-                                <div className="min-w-0 flex-1">
-                                    <div className="flex justify-between items-baseline mb-1">
-                                        <p className="font-black text-sm uppercase tracking-tight">{w.authorFirstName} {w.authorLastName}</p>
-                                        <span className="text-[8px] font-bold text-muted-foreground uppercase opacity-60">{w.createdAt ? format(safeToDate(w.createdAt)!, 'MMM d') : 'Just now'}</span>
+                                <div className="min-w-0 flex-1 text-left">
+                                    <div className="flex justify-between items-baseline mb-1 text-left">
+                                        <p className="font-black text-sm uppercase tracking-tight text-left">{w.authorFirstName} {w.authorLastName}</p>
+                                        <span className="text-[8px] font-bold text-muted-foreground uppercase opacity-60 text-left">{w.createdAt ? format(safeToDate(w.createdAt)!, 'MMM d') : 'Just now'}</span>
                                     </div>
-                                    <p className="text-sm text-muted-foreground leading-relaxed italic">&ldquo;{w.text}&rdquo;</p>
+                                    <p className="text-sm text-muted-foreground leading-relaxed italic text-left">&ldquo;{w.text}&rdquo;</p>
                                 </div>
                             </div>
                         ))}
@@ -588,8 +575,8 @@ export const TestimonyCard = memo(function TestimonyCard({
         testimony.answeredPrayerId && "sm:border-l-4 sm:border-l-amber-500"
       )}>
         <div className="p-4 sm:p-6 pb-2">
-          <div className="flex flex-row items-start justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-3 text-left">
+            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 {testimony.isAnonymous ? (
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
                         <AvatarFallback className="bg-primary/10 text-primary font-bold"><Users className="h-5 w-5" /></AvatarFallback>
@@ -597,7 +584,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                 ) : (
                     <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
                 )}
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 min-w-0">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2">
                              <h3 className="text-base sm:text-lg font-bold capitalize leading-tight break-words"> 
@@ -641,13 +628,11 @@ export const TestimonyCard = memo(function TestimonyCard({
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button 
-                                variant="outline" 
-                                size="icon" 
+                            <button 
                                 className={cn(
-                                    "h-10 w-10 rounded-full bg-background transition-colors",
+                                    "h-10 w-10 rounded-full border transition-colors flex items-center justify-center",
                                     hasWitnessed ? "text-emerald-600 border-emerald-500/30 bg-emerald-500/10 shadow-sm ring-1 ring-emerald-500/20" : 
-                                    witnessCount > 0 ? "text-emerald-600/70 border-emerald-500/20 bg-emerald-500/5" : "text-muted-foreground"
+                                    witnessCount > 0 ? "text-emerald-600/70 border-emerald-500/20 bg-emerald-500/5" : "text-muted-foreground border-border bg-background"
                                 )}
                                 onClick={(e) => { e.stopPropagation(); setIsWitnessOpen(true); }}
                             >
@@ -662,8 +647,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                                         </span>
                                     )}
                                 </div>
-                                <span className="sr-only">Witness</span>
-                            </Button>
+                            </button>
                         </TooltipTrigger>
                         <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
                             <p className="text-[10px] font-black uppercase">{isAuthor ? "View Witnesses" : hasWitnessed ? "You Have Witnessed" : "Bear Witness"}</p>
@@ -799,8 +783,8 @@ export const TestimonyCard = memo(function TestimonyCard({
       {mounted && (
         <React.Fragment>
             <Drawer open={isBoostOpen} onOpenChange={setIsBoostOpen}>
-                <DrawerContent className="p-0 rounded-t-[2.5rem] sm:max-w-lg sm:mx-auto h-auto pb-12 text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                <DrawerContent className="p-0 rounded-t-[2.5rem] sm:max-w-lg sm:mx-auto h-auto pb-12 text-left text-left text-left">
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                         <div className="p-0 text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
                                 <TrendingUp className="h-5 w-5 text-indigo-600 text-left" />
@@ -810,9 +794,9 @@ export const TestimonyCard = memo(function TestimonyCard({
                             <DrawerDescription className="text-sm font-medium mt-1 text-balance text-left">Share your miracle with a wider global audience.</DrawerDescription>
                         </div>
                     </div>
-                    <div className="p-8 space-y-6 text-left">
-                        <div className="bg-primary/5 rounded-2xl p-6 border-2 border-dashed border-primary/20 text-left text-left">
-                            <h4 className="font-bold text-sm mb-2 text-left">Promotion Benefits</h4>
+                    <div className="p-8 space-y-6 text-left text-left text-left text-left">
+                        <div className="bg-primary/5 rounded-2xl p-6 border-2 border-dashed border-primary/20 text-left text-left text-left text-left">
+                            <h4 className="font-bold text-sm mb-2 text-left text-left">Promotion Benefits</h4>
                             <ul className="space-y-2 text-xs text-muted-foreground font-medium text-left">
                                 <li className="flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary text-left" /> Featured in the Kingdom Spotlight carousel.</li>
                                 <li className="flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary text-left" /> Prioritized in search results and regional feeds.</li>
@@ -820,8 +804,8 @@ export const TestimonyCard = memo(function TestimonyCard({
                             </ul>
                         </div>
                         
-                        <div className="p-6 rounded-2xl border bg-muted/20 space-y-4 text-left">
-                            <div className="space-y-1 text-left">
+                        <div className="p-6 rounded-2xl border bg-muted/20 space-y-4 text-left text-left">
+                            <div className="space-y-1 text-left text-left">
                                 <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest text-left">Estimated Reach</p>
                                 <p className="text-2xl font-black text-primary text-left">5,000+ Believers</p>
                             </div>
@@ -841,28 +825,28 @@ export const TestimonyCard = memo(function TestimonyCard({
             <AnimatePresence>
                 {showFullText && (
                     <Drawer open={showFullText} onOpenChange={setShowFullText}>
-                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left text-left">
-                                <DrawerHeader className="text-left p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left">BY {authorName} • {displayDate}</DrawerDescription>
+                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Kingdom Testimony</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left">BY {authorName} • {displayDate}</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <div className="flex-grow min-h-0 pt-8 px-6 text-left">{fullTextContent}</div>
+                            <div className="flex-grow min-h-0 pt-8 px-6 text-left text-left">{fullTextContent}</div>
                         </DrawerContent>
                     </Drawer>
                 )}
                 {showFullPrayer && (
                     <Drawer open={showFullPrayer} onOpenChange={setShowFullPrayer}>
-                        <DrawerContent className="h-auto max-h-[85dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left text-left">
-                                <DrawerHeader className="text-left p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left"><Target className="h-5 w-5 mr-2 inline text-left text-left" />Answered Prayer</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
+                        <DrawerContent className="h-auto max-h-[85dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left text-left"><Target className="h-5 w-5 mr-2 inline text-left text-left text-left" />Answered Prayer</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">The specific request that God has fulfilled.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow px-8 py-10 text-left text-left">
-                                <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left text-left">
+                            <ScrollArea className="flex-grow px-8 py-10 text-left text-left text-left">
+                                <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed italic text-left text-left text-left">
                                     {testimony.answeredPrayerContent}
                                 </div>
                             </ScrollArea>
@@ -871,34 +855,34 @@ export const TestimonyCard = memo(function TestimonyCard({
                 )}
                 {isCommentsOpen && (
                     <Drawer open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <DrawerHeader className="text-left p-0 text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left">Responses</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
-                                    <div className="flex items-center gap-2 mt-4 text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left text-left">Swipe down to close</span></div>
+                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left">Responses</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-bold uppercase tracking-widest text-left text-left text-left text-left text-left">GATHERED JOY FOR {authorName}</DrawerDescription>
+                                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left text-left text-left text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
-                            <div className="flex-grow min-h-0 text-left text-left"><CommentSection path={`testimonies/${testimony.id}/comments`} /></div>
+                            <div className="flex-grow min-h-0 text-left text-left text-left">{isCommentsOpen && <CommentSection path={`testimonies/${testimony.id}/comments`} />}</div>
                         </DrawerContent>
                     </Drawer>
                 )}
                 {isWitnessOpen && (
                     <Drawer open={isWitnessOpen} onOpenChange={setIsWitnessOpen}>
-                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-emerald-500/10 text-left text-left">
-                                <DrawerHeader className="text-left p-0 text-left text-left">
-                                    <div className="flex items-center gap-2 mb-2 text-left text-left">
-                                        <ShieldCheck className="h-4 w-4 text-emerald-600 text-left text-left" />
-                                        <span className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.3em] text-left text-left text-left">Miracle Verification</span>
+                        <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-emerald-500/10 text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
+                                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
+                                        <ShieldCheck className="h-4 w-4 text-emerald-600 text-left text-left text-left text-left text-left" />
+                                        <span className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.3em] text-left text-left text-left text-left text-left">Miracle Verification</span>
                                     </div>
-                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left">The Cloud of Witnesses</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">The testimony of two men is true.</DrawerDescription>
-                                    <div className="flex items-center gap-2 mt-4 text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left text-left">Swipe down to close</span></div>
+                                    <DrawerTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left text-left text-left">The Cloud of Witnesses</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">The testimony of two men is true.</DrawerDescription>
+                                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left text-left text-left text-left">Swipe down to close</span></div>
                                 </DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow min-h-0 text-left text-left">
-                                <div className="p-8 pb-32 text-left text-left">
+                            <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
+                                <div className="p-8 pb-32 text-left text-left text-left">
                                     <WitnessSection testimonyId={testimony.id} testimonyAuthorId={testimony.authorId} />
                                 </div>
                             </ScrollArea>

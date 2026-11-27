@@ -2,7 +2,7 @@
 
 /**
  * @fileOverview This page handles the dedicated sign-up experience.
- * Updated to reflect Church and Corporate registration options.
+ * Updated to reflect Church and Corporate registration options and fixed Google signup crash.
  */
 
 import Link from 'next/link';
@@ -92,13 +92,15 @@ export default function SignUpPage() {
         errorEmitter.emit('permission-error', permissionError);
       });
 
-      toast({
-        title: "Success",
-        description: "Welcome to the movement!",
-      });
+      await signOut(auth);
 
-      sessionStorage.setItem('testify_force_splash', 'true');
-      router.push('/testimonies');
+      toast({
+        title: "Account Created!",
+        description: "Activation link sent! Check your inbox to activate your identity before signing in.",
+      });
+      
+      router.push("/login");
+
     } catch (error) {
       const authError = error as AuthError;
       
@@ -121,7 +123,7 @@ export default function SignUpPage() {
 
   if (authLoading || (user && (user.emailVerified || user.providerData.some(p => p.providerId === 'google.com')))) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-left text-left">
+      <div className="flex min-h-screen items-center justify-center bg-background text-left">
         <div className="flex flex-col items-center gap-4 text-left">
           <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
           <p className="text-[10px] font-black uppercase tracking-widest text-primary animate-pulse text-center text-left">Establishing Identity...</p>
@@ -133,35 +135,35 @@ export default function SignUpPage() {
   return (
     <AuthLayout>
       <div className="space-y-6 text-left">
-        <div className="grid gap-2 text-left">
-          <h1 className="text-2xl md:text-4xl font-black font-headline tracking-tight uppercase text-left">Registration</h1>
-          <p className="text-balance text-muted-foreground font-medium text-sm text-left">
+        <div className="grid gap-2 text-left text-left">
+          <h1 className="text-2xl md:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">Registration</h1>
+          <p className="text-balance text-muted-foreground font-medium text-sm text-left text-left">
             Register as a <span className="text-primary font-bold text-left">Personal</span>, <span className="text-primary font-bold text-left">Church</span>, or <span className="text-primary font-bold text-left">Corporate</span> account to start mobilizing for the Kingdom.
           </p>
         </div>
 
         <SignUpForm />
 
-        <div className="text-center text-sm font-medium">
+        <div className="text-center text-sm font-medium text-left">
           Already have an account?{' '}
-          <Link href="/login" className="underline cursor-pointer font-bold text-primary text-left">
+          <Link href="/login" className="underline cursor-pointer font-bold text-primary text-left text-left">
             Sign in
           </Link>
         </div>
 
-        <div className="relative text-left">
+        <div className="relative text-left text-left">
               <div className="absolute inset-0 flex items-center text-left">
                   <span className="w-full border-t text-left" />
               </div>
-              <div className="relative flex justify-center text-[10px] uppercase text-left text-left">
+              <div className="relative flex justify-center text-[10px] uppercase text-left">
                   <span className="bg-background px-3 font-black text-muted-foreground tracking-widest text-left">
                     Or Continue With
                   </span>
               </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 text-left">
-              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-12 rounded-xl text-left font-bold text-left">
+          <div className="grid grid-cols-1 gap-2 text-left text-left">
+              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-12 rounded-xl text-left font-bold text-left text-left">
                   {isGoogleLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary text-left" />
                   ) : (

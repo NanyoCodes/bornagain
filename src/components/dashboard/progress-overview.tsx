@@ -166,11 +166,11 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
 
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-left">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-left text-left">
             <CardHeader className="text-left">
-                <div className="flex items-center justify-between text-left">
+                <div className="flex items-center justify-between text-left text-left text-left">
                     <div className="flex items-center gap-2 text-left">
-                        <CardTitle className="text-lg text-left">Your Growth</CardTitle>
+                        <CardTitle className="text-lg text-left text-left">Your Growth</CardTitle>
                         <div className="relative flex h-3 w-3">
                             <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></div>
                             <div className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></div>
@@ -191,15 +191,15 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px] text-left">
-                        <DialogHeader className="text-left">
+                        <DialogHeader className="text-left text-left">
                             <DialogTitle className="text-left">{currentDate ? `Set Goal for ${format(currentDate, 'MMMM')}` : 'Set Goal'}</DialogTitle>
                             <DialogDescription className="text-left">
                                 Set your personal goal for souls won for the current month.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4 text-left">
-                          <div className="grid grid-cols-4 items-center gap-4 text-left text-left">
-                            <Label htmlFor="goal" className="text-right text-left">
+                          <div className="grid grid-cols-4 items-center gap-4 text-left">
+                            <Label htmlFor="goal" className="text-right text-left text-left">
                               Souls
                             </Label>
                             <Input
@@ -212,7 +212,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                             />
                           </div>
                         </div>
-                        <DialogFooter className="text-left">
+                        <DialogFooter className="text-left text-left">
                             <Button onClick={handleSaveGoal} disabled={isSavingGoal} className="text-left">
                                 {isSavingGoal && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                                 Save Goal
@@ -228,8 +228,8 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                 )}
             </CardHeader>
             <CardContent className="space-y-6 text-left">
-                <div className="space-y-2 text-left text-left">
-                  <div className="flex justify-between items-baseline text-left">
+                <div className="space-y-2 text-left">
+                  <div className="flex justify-between items-baseline text-left text-left">
                     <div className="text-2xl font-bold text-left">{totalSouls}</div>
                     <div className="text-sm text-primary-foreground/80 font-black uppercase tracking-widest text-left">
                       /{monthlyGoal} SOULS
@@ -245,7 +245,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                 </div>
                 
                 <div className="flex items-center justify-around text-center text-left">
-                     <div className="flex flex-col items-center gap-1 text-left">
+                     <div className="flex flex-col items-center gap-1 text-left text-left">
                         <div className="text-4xl font-bold flex items-center justify-center gap-2 text-left">
                            {testimonyStreak} <Flame className="h-8 w-8 text-left" />
                         </div>
@@ -253,7 +253,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                     </div>
                     <div className="h-16 w-px bg-primary-foreground/30 text-left"></div>
                      <div className="flex flex-col items-center gap-1 text-left">
-                        <div className="text-4xl font-bold flex items-center justify-center gap-2 text-left">
+                        <div className="text-4xl font-bold flex items-center justify-center gap-2 text-left text-left">
                            {loadingDiscipline ? <div className="animate-pulse rounded-md h-8 w-10 bg-white/20 text-left" /> : disciplineStreak} <Zap className="h-8 w-8 text-left" />
                         </div>
                         <p className="text-sm opacity-80 uppercase tracking-tight text-center text-left">Discipline Streak</p>
