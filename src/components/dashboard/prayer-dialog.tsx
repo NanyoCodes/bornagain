@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
-import { Loader2, PlayCircle, ChevronDown, Zap, HandHeart, UserPlus, BookMarked, Edit, Church, HeartHandshake } from 'lucide-react';
+import { Loader2, PlayCircle, ChevronDown, Zap, HandHeart, UserPlus, BookMarked, Edit, Church, HeartHandshake, X } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
 import { useUser } from '@/firebase';
 import { PrayerLinksSettingsCard } from '../settings/prayer-links-settings-card';
@@ -39,6 +39,7 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { Checkbox } from '../ui/checkbox';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const prayerPoints = [
   {
@@ -294,6 +295,7 @@ export function PrayerDialog({
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [checkedPrayers, setCheckedPrayers] = useState<string[]>([]);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     setMounted(true);
@@ -331,8 +333,8 @@ export function PrayerDialog({
 
   if (!mounted) return null;
 
-  return (
-    <>
+  if (isMobile) {
+    return (
       <Drawer open={isOpen} onOpenChange={onOpenChange}>
         <DrawerContent
           className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem] text-left"
@@ -382,43 +384,45 @@ export function PrayerDialog({
           </div>
         </DrawerContent>
       </Drawer>
+    );
+  }
 
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-xl hidden md:flex flex-col h-[85vh] max-h-[85vh] p-0 overflow-hidden text-left">
-          <div className="p-6 border-b shrink-0 text-left">
-              <DialogHeader className="text-left text-left">
-                  <DialogTitle className="text-left text-left">{titleText}</DialogTitle>
-                  <DialogDescription className="text-left text-left">{descText}</DialogDescription>
-              </DialogHeader>
-          </div>
-          <ScrollArea className="flex-1 min-h-0 px-6 text-left">
-              <div className="py-6 text-left">
-                <DialogBody 
-                  userProfile={userProfile}
-                  checkedPrayers={checkedPrayers}
-                  setCheckedPrayers={setCheckedPrayers}
-                  handleLinkClick={handleLinkClick}
-                  isCompleting={isCompleting}
-                  onOpenSouls={() => { onOpenChange(false); onOpenSouls?.(); }}
-                  onOpenNotes={() => { onOpenChange(false); onOpenNotes?.(); }}
-                  onOpenChurch={() => { onOpenChange(false); onOpenChurch?.(); }}
-                  onOpenBible={() => { onOpenChange(false); onOpenBible?.(); }}
-                  onOpenChange={onOpenChange}
-                />
-              </div>
-          </ScrollArea>
-          <div className="flex-shrink-0 p-6 border-t text-left">
-            <Button
-              onClick={handleComplete}
-              disabled={isCompleting || checkedPrayers.length < prayerPoints.length}
-              className="w-full h-12 font-bold text-lg text-center"
-            >
-              {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
-              Mark as Prayed
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-xl flex flex-col h-[85vh] max-h-[85vh] p-0 overflow-hidden text-left">
+        <div className="p-6 border-b shrink-0 text-left">
+            <DialogHeader className="text-left text-left">
+                <DialogTitle className="text-left text-left">{titleText}</DialogTitle>
+                <DialogDescription className="text-left text-left">{descText}</DialogDescription>
+            </DialogHeader>
+        </div>
+        <ScrollArea className="flex-1 min-h-0 px-6 text-left">
+            <div className="py-6 text-left">
+              <DialogBody 
+                userProfile={userProfile}
+                checkedPrayers={checkedPrayers}
+                setCheckedPrayers={setCheckedPrayers}
+                handleLinkClick={handleLinkClick}
+                isCompleting={isCompleting}
+                onOpenSouls={() => { onOpenChange(false); onOpenSouls?.(); }}
+                onOpenNotes={() => { onOpenChange(false); onOpenNotes?.(); }}
+                onOpenChurch={() => { onOpenChange(false); onOpenChurch?.(); }}
+                onOpenBible={() => { onOpenChange(false); onOpenBible?.(); }}
+                onOpenChange={onOpenChange}
+              />
+            </div>
+        </ScrollArea>
+        <div className="flex-shrink-0 p-6 border-t text-left">
+          <Button
+            onClick={handleComplete}
+            disabled={isCompleting || checkedPrayers.length < prayerPoints.length}
+            className="w-full h-12 font-bold text-lg text-center"
+          >
+            {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+            Mark as Prayed
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

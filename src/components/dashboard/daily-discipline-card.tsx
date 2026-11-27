@@ -339,7 +339,7 @@ export function DailyDisciplineCard() {
           </div>
         </CardHeader>
         <CardContent className="space-y-8 text-left text-left">
-            <div className="space-y-4 text-left">
+            <div className="space-y-4 text-left text-left">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
@@ -406,12 +406,12 @@ export function DailyDisciplineCard() {
                             <HeartHandshake className="h-4 w-4 text-primary text-left" />
                             <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left">Partner Activity</h4>
                         </div>
-                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left">
+                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left text-left">
                             <Link href="/accountability" className="text-left">Full View</Link>
                         </Button>
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-left">
                         {uniquePartners.slice(0, 4).map(partner => (
                             <PartnerCompactStatus key={partner.userId} partner={partner} date={currentDate} />
                         ))}
@@ -455,17 +455,17 @@ export function DailyDisciplineCard() {
       />
 
       <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left flex items-center justify-between gap-4">
-                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                    <DrawerTitle className="text-2xl font-black font-headline text-left">Log Harvest</DrawerTitle>
-                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
+        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left flex items-center justify-between gap-4 text-left">
+                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
+                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Log Harvest</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</DrawerDescription>
                 </DrawerHeader>
-                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-left" onClick={() => setIsLogSoulOpen(false)}>
-                    <X className="h-5 w-5 text-left" />
+                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-left text-left" onClick={() => setIsLogSoulOpen(false)}>
+                    <X className="h-5 w-5 text-left text-left" />
                 </Button>
             </div>
-            <ScrollArea className="flex-1 min-h-0 p-8 text-left">
+            <ScrollArea className="flex-1 min-h-0 p-8 text-left text-left">
                 <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={fellowships || []} campaigns={[]} />
             </ScrollArea>
         </DrawerContent>
