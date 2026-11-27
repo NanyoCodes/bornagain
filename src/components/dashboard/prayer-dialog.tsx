@@ -30,7 +30,6 @@ import type { UserProfile } from '@/lib/types';
 import { useUser } from '@/firebase';
 import { PrayerLinksSettingsCard } from '../settings/prayer-links-settings-card';
 import { useToast } from '@/hooks/use-toast';
-import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Accordion,
   AccordionContent,
@@ -104,6 +103,7 @@ interface DialogBodyProps {
   onOpenNotes?: () => void;
   onOpenChurch?: () => void;
   onOpenBible?: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 function DialogBody({ 
@@ -115,7 +115,8 @@ function DialogBody({
   onOpenSouls,
   onOpenNotes,
   onOpenChurch,
-  onOpenBible
+  onOpenBible,
+  onOpenChange
 }: DialogBodyProps) {
   const { user } = useUser();
   const prayerLinks = userProfile?.prayerLinks || [];
@@ -198,7 +199,7 @@ function DialogBody({
                             asChild
                             className="h-9 rounded-xl font-black uppercase text-[10px] tracking-widest border-primary/20 text-primary hover:bg-primary/5"
                         >
-                            <a href="/accountability">
+                            <a href="/accountability" onClick={() => onOpenChange(false)}>
                                 <HeartHandshake className="mr-2 h-3.5 w-3.5" />
                                 Check Partners
                             </a>
@@ -291,7 +292,6 @@ export function PrayerDialog({
 }) {
   const [isCompleting, setIsCompleting] = useState(false);
   const { toast } = useToast();
-  const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
   const [checkedPrayers, setCheckedPrayers] = useState<string[]>([]);
 
@@ -331,8 +331,8 @@ export function PrayerDialog({
 
   if (!mounted) return null;
 
-  if (isMobile) {
-    return (
+  return (
+    <>
       <Drawer open={isOpen} onOpenChange={onOpenChange}>
         <DrawerContent
           className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem] text-left"
@@ -362,6 +362,7 @@ export function PrayerDialog({
                 onOpenNotes={() => { onOpenChange(false); onOpenNotes?.(); }}
                 onOpenChurch={() => { onOpenChange(false); onOpenChurch?.(); }}
                 onOpenBible={() => { onOpenChange(false); onOpenBible?.(); }}
+                onOpenChange={onOpenChange}
               />
             </div>
           </ScrollArea>
@@ -381,44 +382,43 @@ export function PrayerDialog({
           </div>
         </DrawerContent>
       </Drawer>
-    );
-  }
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl flex flex-col h-[85vh] max-h-[85vh] p-0 overflow-hidden text-left">
-        <div className="p-6 border-b shrink-0 text-left">
-            <DialogHeader className="text-left text-left">
-                <DialogTitle className="text-left text-left">{titleText}</DialogTitle>
-                <DialogDescription className="text-left text-left">{descText}</DialogDescription>
-            </DialogHeader>
-        </div>
-        <ScrollArea className="flex-1 min-h-0 px-6 text-left">
-            <div className="py-6 text-left">
-              <DialogBody 
-                userProfile={userProfile}
-                checkedPrayers={checkedPrayers}
-                setCheckedPrayers={setCheckedPrayers}
-                handleLinkClick={handleLinkClick}
-                isCompleting={isCompleting}
-                onOpenSouls={() => { onOpenChange(false); onOpenSouls?.(); }}
-                onOpenNotes={() => { onOpenChange(false); onOpenNotes?.(); }}
-                onOpenChurch={() => { onOpenChange(false); onOpenChurch?.(); }}
-                onOpenBible={() => { onOpenChange(false); onOpenBible?.(); }}
-              />
-            </div>
-        </ScrollArea>
-        <div className="flex-shrink-0 p-6 border-t text-left">
-          <Button
-            onClick={handleComplete}
-            disabled={isCompleting || checkedPrayers.length < prayerPoints.length}
-            className="w-full h-12 font-bold text-lg text-center"
-          >
-            {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
-            Mark as Prayed
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-xl hidden md:flex flex-col h-[85vh] max-h-[85vh] p-0 overflow-hidden text-left">
+          <div className="p-6 border-b shrink-0 text-left">
+              <DialogHeader className="text-left text-left">
+                  <DialogTitle className="text-left text-left">{titleText}</DialogTitle>
+                  <DialogDescription className="text-left text-left">{descText}</DialogDescription>
+              </DialogHeader>
+          </div>
+          <ScrollArea className="flex-1 min-h-0 px-6 text-left">
+              <div className="py-6 text-left">
+                <DialogBody 
+                  userProfile={userProfile}
+                  checkedPrayers={checkedPrayers}
+                  setCheckedPrayers={setCheckedPrayers}
+                  handleLinkClick={handleLinkClick}
+                  isCompleting={isCompleting}
+                  onOpenSouls={() => { onOpenChange(false); onOpenSouls?.(); }}
+                  onOpenNotes={() => { onOpenChange(false); onOpenNotes?.(); }}
+                  onOpenChurch={() => { onOpenChange(false); onOpenChurch?.(); }}
+                  onOpenBible={() => { onOpenChange(false); onOpenBible?.(); }}
+                  onOpenChange={onOpenChange}
+                />
+              </div>
+          </ScrollArea>
+          <div className="flex-shrink-0 p-6 border-t text-left">
+            <Button
+              onClick={handleComplete}
+              disabled={isCompleting || checkedPrayers.length < prayerPoints.length}
+              className="w-full h-12 font-bold text-lg text-center"
+            >
+              {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+              Mark as Prayed
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

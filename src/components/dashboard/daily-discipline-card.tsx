@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUser, useDoc, useFirestore, useCollection } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, collection, query, where, orderBy } from 'firebase/firestore';
-import type { UserProfile, Fellowship, Campaign } from '@/lib/types';
+import type { UserProfile, Fellowship } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 

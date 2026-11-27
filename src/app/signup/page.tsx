@@ -16,6 +16,10 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   AuthError,
+  setPersistence,
+  browserLocalPersistence,
+  signOut,
+  updateProfile
 } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { doc, setDoc } from 'firebase/firestore';
@@ -57,6 +61,7 @@ export default function SignUpPage() {
     authProvider.setCustomParameters({ prompt: 'select_account' });
 
     try {
+      await setPersistence(auth, browserLocalPersistence);
       const result = await signInWithPopup(auth, authProvider);
       const loggedUser = result.user;
       
@@ -68,8 +73,8 @@ export default function SignUpPage() {
 
       const userDocRef = doc(firestore, "users", loggedUser.uid);
       const userData = {
-        firstName: values.firstName,
-        lastName: values.lastName,
+        firstName: firstName,
+        lastName: lastName,
         fullName_lowercase: fullName.toLowerCase(),
         name_tokens: nameTokens,
         email: loggedUser.email,
