@@ -44,6 +44,7 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const disciplines = [
   { id: 'pray', label: 'Pray', Icon: Zap, color: 'text-amber-500' },
