@@ -64,9 +64,12 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
             checkDate.setDate(checkDate.getDate() - 1);
         }
 
-        while (sharedDates.has(format(checkDate, 'yyyy-MM-dd'))) {
+        // Safety limit to 366 iterations to prevent infinite loop
+        let iterations = 0;
+        while (sharedDates.has(format(checkDate, 'yyyy-MM-dd')) && iterations < 366) {
             streak++;
             checkDate.setDate(checkDate.getDate() - 1);
+            iterations++;
         }
 
         return streak;
@@ -104,12 +107,15 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
             checkDate.setDate(checkDate.getDate() - 1);
         }
         
-        while (true) {
+        // Safety limit to 61 iterations (limit of query)
+        let iterations = 0;
+        while (iterations < 61) {
             const dateString = format(checkDate, 'yyyy-MM-dd');
             const log = historyMap.get(dateString);
             if (log && log.length >= 3) { // Assuming 3 disciplines
                 streak++;
                 checkDate.setDate(checkDate.getDate() - 1);
+                iterations++;
             } else {
                 break;
             }
