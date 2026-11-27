@@ -598,14 +598,14 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
                 )}
                 <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-x-2 gap-y-1.5 flex-wrap">
-                        <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 min-w-0 shrink-0">
+                    <div className="flex items-center gap-2 min-w-0">
+                        <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 min-w-0 flex-1">
                              <h3 className="text-base sm:text-lg font-bold capitalize leading-none truncate"> 
                                 <LiveAuthorName userId={String(testimony.authorId)} fallbackName={authorName} />
                              </h3>
                         </Link>
                         
-                        <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+                        <div className="flex items-center gap-1.5 shrink-0">
                             {testimony.witnessType && (
                                 <Badge variant="outline" className={cn(
                                     "h-4 px-1.5 text-[7px] uppercase font-black tracking-tighter flex items-center gap-1 shrink-0",
