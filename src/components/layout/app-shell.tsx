@@ -66,9 +66,9 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -288,7 +288,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
           {logo && (
             <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-              <AvatarFallback className="font-black">B</AvatarFallback>
+              <AvatarFallback className="font-black font-serif">B</AvatarFallback>
             </Avatar>
           )}
         </Link>
@@ -372,7 +372,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-black leading-none truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
@@ -475,7 +475,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   <DropdownMenuItem asChild>
                       <Link href="/resources" className="flex items-center gap-3 w-full">
                         <BookMarked className="h-3.5 w-3.5" />
-                        <span className="text-[11px) font-bold uppercase tracking-widest">Kingdom Library</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>

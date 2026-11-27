@@ -167,6 +167,67 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
         return groupSessions?.reduce((acc, s) => acc + s.score, 0) || 0;
     }, [groupSessions]);
 
+    const directoryContent = (
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 text-left">
+            <div className="bg-muted/10 rounded-[2rem] p-6 sm:p-10 border border-muted-foreground/10 text-center">
+                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.4em] mb-2">Global Crusade POINTS</p>
+                <p className="text-4xl sm:text-6xl font-black text-primary tracking-tighter text-center">{totalGroupXP}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase mt-2 opacity-60 text-center">Total Community Score</p>
+            </div>
+
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 px-1">
+                    <Trophy className="h-4 w-4 text-amber-500" />
+                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Crusade Leaderboard</h3>
+                </div>
+                {leaderboard.length > 0 ? (
+                    <div className="grid gap-3">
+                        {leaderboard.map((entry, idx) => (
+                            <div key={entry.userId} className="flex items-center justify-between p-4 rounded-2xl bg-card/50 border shadow-sm group hover:border-primary/20 transition-all text-left">
+                                <div className="flex items-center gap-4 min-w-0">
+                                    <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center shrink-0">
+                                        <span className="text-[10px] font-black text-muted-foreground">{idx + 1}</span>
+                                    </div>
+                                    <LiveMemberAvatar userId={entry.userId} fallbackInitials={entry.name.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
+                                    <div className="min-w-0">
+                                        <p className="font-black text-sm uppercase truncate group-hover:text-primary transition-colors">{entry.name}</p>
+                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{entry.sessions} Missions Logged</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-lg font-black text-primary tracking-tighter">{entry.score}</p>
+                                    <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-40">Points</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="py-12 text-center border-2 border-dashed rounded-[2rem] bg-muted/5">
+                        <p className="text-xs text-muted-foreground italic font-medium">No sessions recorded yet.</p>
+                    </div>
+                )}
+            </div>
+
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 px-1">
+                    <Users className="h-4 w-4 text-primary" />
+                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Active Workforce</h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {members?.map(m => (
+                        <div key={m.userId} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/20 text-left">
+                            <LiveMemberAvatar userId={m.userId} fallbackInitials={m.firstName.charAt(0)} className="h-9 w-9 border shadow-sm" />
+                            <div className="min-w-0">
+                                <p className="font-black text-xs uppercase truncate">{m.firstName} {m.lastName}</p>
+                                <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Member</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+
     const handleGameEnd = useCallback(() => {
         const finalCorrect = correctCountRef.current;
         const finalWrong = wrongCountRef.current;
@@ -371,67 +432,6 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
     const currentPointsGained = correctCount * 10;
     const finalTotalXP = initialXP + currentPointsGained;
 
-    const directoryContent = (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="bg-muted/10 rounded-[2rem] p-6 sm:p-10 border border-muted-foreground/10 text-center">
-                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.4em] mb-2">Global Crusade POINTS</p>
-                <p className="text-4xl sm:text-6xl font-black text-primary tracking-tighter">{totalGroupXP}</p>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase mt-2 opacity-60">Total Community Score</p>
-            </div>
-
-            <div className="space-y-4">
-                <div className="flex items-center gap-2 px-1">
-                    <Trophy className="h-4 w-4 text-amber-500" />
-                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Crusade Leaderboard</h3>
-                </div>
-                {leaderboard.length > 0 ? (
-                    <div className="grid gap-3">
-                        {leaderboard.map((entry, idx) => (
-                            <div key={entry.userId} className="flex items-center justify-between p-4 rounded-2xl bg-card/50 border shadow-sm group hover:border-primary/20 transition-all">
-                                <div className="flex items-center gap-4 min-w-0">
-                                    <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center shrink-0">
-                                        <span className="text-[10px] font-black text-muted-foreground">{idx + 1}</span>
-                                    </div>
-                                    <LiveMemberAvatar userId={entry.userId} fallbackInitials={entry.name.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
-                                    <div className="min-w-0">
-                                        <p className="font-black text-sm uppercase truncate group-hover:text-primary transition-colors">{entry.name}</p>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{entry.sessions} Missions Logged</p>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-lg font-black text-primary tracking-tighter">{entry.score}</p>
-                                    <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-40">Points</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="py-12 text-center border-2 border-dashed rounded-[2rem] bg-muted/5">
-                        <p className="text-xs text-muted-foreground italic font-medium">No sessions recorded yet.</p>
-                    </div>
-                )}
-            </div>
-
-            <div className="space-y-4">
-                <div className="flex items-center gap-2 px-1">
-                    <Users className="h-4 w-4 text-primary" />
-                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Active Workforce</h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {members?.map(m => (
-                        <div key={m.userId} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/20">
-                            <LiveMemberAvatar userId={m.userId} fallbackInitials={m.firstName.charAt(0)} className="h-9 w-9 border shadow-sm" />
-                            <div className="min-w-0">
-                                <p className="font-black text-xs uppercase truncate">{m.firstName} {m.lastName}</p>
-                                <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Member</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-
     if (fellowshipLoading || profileLoading || sessionsLoading || !now) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center">
@@ -453,7 +453,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
 
     return (
         <div className="h-dvh w-full flex flex-col overflow-hidden bg-background">
-            <ScrollArea className="flex-1 w-full h-full">
+            <ScrollArea className="flex-1 w-full h-full text-left">
                 <div className="max-w-6xl mx-auto space-y-12 pb-32 px-4 sm:px-6">
                     <header className="space-y-6 pt-4">
                         <div className="flex items-center gap-4">
@@ -474,12 +474,6 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                 <Card className="rounded-[2.5rem] sm:rounded-[3.5rem] border-2 border-primary/20 bg-[#09090b] shadow-2xl overflow-hidden relative group/arena transition-all hover:border-primary/40">
                                     <div className="absolute inset-0 z-0 pointer-events-none">
                                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(249,116,22,0.1),transparent_70%)]" />
-                                        <div className="absolute top-0 right-0 p-12 opacity-[0.03] transition-transform group-hover/arena:scale-110 group-hover/arena:rotate-12 duration-1000">
-                                            <Sword className="h-64 w-64 text-primary" />
-                                        </div>
-                                        <div className="absolute bottom-0 left-0 p-12 opacity-[0.03] transition-transform group-hover/arena:scale-110 group-hover/arena:-rotate-12 duration-1000">
-                                            <ShieldCheck className="h-64 w-64 text-primary" />
-                                        </div>
                                     </div>
 
                                     <div className="absolute top-0 left-0 w-full h-1 bg-zinc-900 overflow-hidden z-20">
@@ -500,7 +494,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Crusade Mission</span>
                                             <div className="h-px w-8 bg-primary/20" />
                                         </div>
-                                        <CardTitle className="text-3xl sm:text-6xl font-black font-headline uppercase text-white tracking-tighter leading-none">The Arena</CardTitle>
+                                        <CardTitle className="text-3xl sm:text-6xl font-black font-headline uppercase text-white tracking-tighter leading-none text-center">The Arena</CardTitle>
                                     </CardHeader>
                                     
                                     <CardContent className={cn("p-8 sm:p-16 pt-0 space-y-10 relative z-10", !isGameActive && "flex flex-col items-center justify-center")}>
@@ -513,7 +507,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                                 {[ { id: 'word', label: 'Word Arena', icon: BookOpen }, { id: 'prayer', label: 'Prayer Altar', icon: HandHeart }, { id: 'trivia', label: 'Kingdom Trivia', icon: HelpCircle } ].map(type => (
                                                                     <Button key={type.id} variant="outline" onClick={() => setActiveGameType(type.id as any)} className={cn("h-24 sm:h-32 flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-5 sm:gap-3 px-8 sm:px-4 rounded-[2rem] border-2 transition-all group/mode", activeGameType === type.id ? "bg-primary/20 border-primary text-primary shadow-2xl scale-[1.02]" : "bg-zinc-900/50 border-zinc-800 text-zinc-500 hover:border-primary/40")}>
-                                                                        <type.icon className={cn("h-8 w-8 shrink-0 transition-transform group-hover/mode:scale-110", activeGameType === type.id ? "text-primary" : "text-zinc-600")} />
+                                                                        <type.icon className={cn("h-8 w-8 shrink-0 transition-transform group-hover:mode:scale-110", activeGameType === type.id ? "text-primary" : "text-zinc-600")} />
                                                                         <span className="text-xs font-black uppercase tracking-widest">{type.label}</span>
                                                                     </Button>
                                                                 ))}
@@ -541,10 +535,10 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                             <div className="absolute inset-0 rounded-full border-2 border-dashed border-primary/40 animate-spin duration-[15s] opacity-20 pointer-events-none" />
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse">
+                                                            <Badge variant="outline" className="h-10 px-6 rounded-full border-primary/20 text-primary uppercase font-black tracking-widest animate-pulse text-center">
                                                                 Mobilizing Members...
                                                             </Badge>
-                                                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] opacity-60">Awaiting brethren to join the crusade</p>
+                                                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] opacity-60 text-center">Awaiting brethren to join the crusade</p>
                                                         </div>
                                                         <Button onClick={handleAcceptCrusade} size="lg" className="w-full h-16 rounded-2xl font-black uppercase tracking-widest shadow-xl">
                                                             ENTER ARENA NOW
@@ -574,12 +568,12 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                             </div>
                                         ) : isGameActive ? (
                                             <div className="space-y-8 sm:space-y-12 animate-in fade-in zoom-in duration-500">
-                                                <div className="flex items-center justify-between px-2">
+                                                <div className="flex items-center justify-between px-2 text-left">
                                                     <div className="flex items-center gap-4">
                                                         <div className={cn("h-12 w-12 sm:h-16 sm:w-16 rounded-[1.25rem] sm:rounded-[1.5rem] flex items-center justify-center border-2 shadow-2xl transition-all", timeLeft <= 10 ? "bg-red-600 border-red-500 text-white animate-pulse" : "bg-primary/10 border-primary/20 text-primary")}><Timer className="h-6 w-6 sm:h-8 sm:w-8" /></div>
-                                                        <div className="text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Remaining</p><p className={cn("text-2xl sm:text-4xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
+                                                        <div className="text-left text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Time Remaining</p><p className={cn("text-2xl sm:text-4xl font-black tracking-tighter leading-none", timeLeft <= 10 ? "text-red-500" : "text-white")}>{timeLeft}s</p></div>
                                                     </div>
-                                                    <div className="text-right"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none">+{correctCount * 10} POINTS</p></div>
+                                                    <div className="text-right"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none text-right">+{correctCount * 10} POINTS</p></div>
                                                 </div>
                                                 <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none"><Target className="h-24 w-24 text-primary" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center">&ldquo;{BIBLE_GAME_DATA[activeGameType][quizIndex]?.text}&rdquo;</motion.p></AnimatePresence></div>
                                                 <div className="grid grid-cols-2 gap-4">
@@ -596,24 +590,24 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                         </div>
                                                     </div>
                                                     <div className="space-y-4 text-center">
-                                                        <h3 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight">Crusade Complete!</h3>
-                                                        <div className="bg-zinc-900 rounded-[2rem] p-8 border-2 border-dashed border-primary/20 max-w-md mx-auto">
+                                                        <h3 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight text-center">Crusade Complete!</h3>
+                                                        <div className="bg-zinc-900 rounded-[2rem] p-8 border-2 border-dashed border-primary/20 max-w-md mx-auto text-left">
                                                             <div className="flex items-center justify-center gap-2 mb-3">
                                                                 <Badge className="bg-primary/20 text-primary border-none font-black text-[10px]">KINGDOM VERSE</Badge>
                                                             </div>
-                                                            <p className="text-xl font-black text-white uppercase tracking-widest">{BIBLE_GAME_DATA[activeGameType][quizIndex]?.ref}</p>
+                                                            <p className="text-xl font-black text-white uppercase tracking-widest text-center">{BIBLE_GAME_DATA[activeGameType][quizIndex]?.ref}</p>
                                                             <p className="text-sm text-zinc-400 italic mt-3 leading-relaxed text-center text-balance">
                                                                 {BIBLE_GAME_DATA[activeGameType][quizIndex]?.explanation || "Your labor in the Word builds an unshakeable foundation for the community."}
                                                             </p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4"><div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-2 tracking-widest">Group Legacy</p><p className="text-2xl sm:text-4xl font-black text-white">+{currentPointsGained} POINTS</p></div><div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-2 tracking-widest">Accuracy</p><p className="text-2xl sm:text-4xl font-black text-white">{Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%</p></div><div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 border border-white/5 text-center shadow-inner"><p className="text-[10px] sm:text-xs font-black text-amber-500 uppercase mb-2 tracking-widest">Total XP</p><p className="text-2xl sm:text-4xl font-black text-white">{finalTotalXP} POINTS</p></div></div>
-                                                <Button onClick={() => { setGameState('playing'); setIsGameActive(false); setSelectedOption(null); }} className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl">RETURN TO HUB</Button>
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4"><div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-primary uppercase mb-2 tracking-widest text-center">Group Legacy</p><p className="text-2xl sm:text-4xl font-black text-white text-center">+{currentPointsGained} POINTS</p></div><div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-center border border-white/5 shadow-inner"><p className="text-[10px] sm:text-xs font-black text-green-500 uppercase mb-2 tracking-widest text-center">Accuracy</p><p className="text-2xl sm:text-4xl font-black text-white text-center">{Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%</p></div><div className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 border border-white/5 text-center shadow-inner"><p className="text-[10px] sm:text-xs font-black text-amber-500 uppercase mb-2 tracking-widest text-center">Total XP</p><p className="text-2xl sm:text-4xl font-black text-white text-center">{finalTotalXP} POINTS</p></div></div>
+                                                <Button onClick={() => { setGameState('playing'); setIsGameActive(false); setSelectedOption(null); }} className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl text-center">RETURN TO HUB</Button>
                                             </div>
                                         )}
                                     </CardContent>
-                                    <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5 relative z-10"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em]">United in Truth • Shared in Spirit</p></CardFooter>
+                                    <CardFooter className="p-6 bg-black/40 text-center justify-center border-t border-white/5 relative z-10"><p className="text-[10px] sm:text-xs font-black text-zinc-600 uppercase tracking-[0.5em] text-center">United in Truth • Shared in Spirit</p></CardFooter>
                                 </Card>
 
                                 <div className="w-full space-y-8">

@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Group Crusade access fix - 2025-04-06T11:00:00Z
+    // Deployment trigger: Global CollectionGroup access fix - 2025-04-06T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -61,6 +61,20 @@ service cloud.firestore {
         (chatData.get('campaignId', '') != '' && exists(/databases/$(database)/documents/campaigns/$(chatData.get('campaignId', ''))/participants/$(request.auth.uid))) ||
         (chatData.get('eventId', '') != '' && exists(/databases/$(database)/documents/events/$(chatData.get('eventId', ''))/participants/$(request.auth.uid)))
       );
+    }
+
+    // Collection Group rules for public discovery
+    match /{path=**}/meals/{mealId} {
+      allow read: if true;
+    }
+    match /{path=**}/gallery/{itemId} {
+      allow read: if true;
+    }
+    match /{path=**}/witnesses/{witnessId} {
+      allow read: if true;
+    }
+    match /{path=**}/comments/{commentId} {
+      allow read: if true;
     }
 
     match /users/{userId} {
@@ -201,7 +215,7 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId);
         allow update: if isAuthenticated() && (
           (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
@@ -229,17 +243,6 @@ service cloud.firestore {
     match /regionalChallenges/{challengeId} {
       allow read, list: if true; 
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      await updateDoc(challengeRef, updatePayload).then(() => {
-        setIsPraying(false);
-        toast({ title: 'Prayer Established', description: 'Your spiritual support has been anchored.' });
-      }).catch((err) => {
-        setIsPraying(false);
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
-          path: challengeRef.path,
-          operation: 'update',
-          requestResourceData: updatePayload
-        }, user));
-      });
       allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['solutionCount', 'status', 'usersWhoPrayed']));
       allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
 
@@ -294,7 +297,7 @@ service cloud.firestore {
       allow create: if isAuthenticated();
       allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.auth.uid) ||
+        (resource.data.authorId == request.authorId) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.get('answeredTestimonyId', '') != '' && (
           request.resource.data.status == 'pending' || 
@@ -386,7 +389,7 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
 
       match /meals/{mealId} {
-        allow get, list: if true;
+        allow read: if true;
         allow create, update, delete: if isAuthenticated() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid;
       }
     }
