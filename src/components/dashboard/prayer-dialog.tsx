@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import {
   Drawer,
@@ -121,17 +120,17 @@ function DialogBody({
   const prayerLinks = userProfile?.prayerLinks || [];
 
   return (
-    <div className="space-y-6 text-left">
-      <Accordion type="single" collapsible className="w-full border rounded-2xl overflow-hidden px-4 bg-muted/20 text-left">
-        <AccordionItem value="manage-links" className="border-none text-left">
-          <AccordionPrimitive.Header className="text-left">
-            <AccordionPrimitive.Trigger className="flex w-full flex-1 items-center justify-between py-4 text-sm font-bold uppercase tracking-widest text-muted-foreground transition-all hover:text-primary [&[data-state=open]>svg]:rotate-180 text-left">
+    <div className="space-y-6 text-left text-left">
+      <Accordion type="single" collapsible className="w-full border rounded-2xl overflow-hidden px-4 bg-muted/20 text-left text-left">
+        <AccordionItem value="manage-links" className="border-none text-left text-left">
+          <AccordionPrimitive.Header className="text-left text-left text-left">
+            <AccordionPrimitive.Trigger className="flex w-full flex-1 items-center justify-between py-4 text-sm font-bold uppercase tracking-widest text-muted-foreground transition-all hover:text-primary [&[data-state=open]>svg]:rotate-180 text-left text-left">
               Manage Prayer Links
-              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 text-left" />
+              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 text-left text-left" />
             </AccordionPrimitive.Trigger>
           </AccordionPrimitive.Header>
-          <AccordionContent className="text-left">
-            <p className="text-xs text-muted-foreground mt-1 mb-4 italic text-left">
+          <AccordionContent className="text-left text-left text-left">
+            <p className="text-xs text-muted-foreground mt-1 mb-4 italic text-left text-left">
               Add, edit, or remove personal links to prayer meetings.
             </p>
             {user && userProfile && (
@@ -141,18 +140,18 @@ function DialogBody({
         </AccordionItem>
       </Accordion>
 
-      <Card className="rounded-3xl border shadow-sm text-left">
-        <CardHeader className="pb-3 px-6 pt-6 text-left">
-          <CardTitle className="text-xl font-black font-headline text-left">Prayer Focus</CardTitle>
-          <CardDescription className="text-sm font-medium text-left">Lifting up needs before the Throne of Grace.</CardDescription>
+      <Card className="rounded-3xl border shadow-sm text-left text-left text-left">
+        <CardHeader className="pb-3 px-6 pt-6 text-left text-left">
+          <CardTitle className="text-xl font-black font-headline text-left text-left">Prayer Focus</CardTitle>
+          <CardDescription className="text-sm font-medium text-left text-left">Lifting up needs before the Throne of Grace.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 px-6 pb-6 text-left">
-          <div className="space-y-px text-left">
+        <CardContent className="space-y-4 px-6 pb-6 text-left text-left text-left">
+          <div className="space-y-px text-left text-left text-left text-left">
             {prayerPoints.map((point, i) => (
-              <Accordion type="single" collapsible className="w-full text-left" key={i}>
-                <AccordionItem value={`item-${i}`} className="border-b last:border-0 border-muted/50 text-left">
-                  <AccordionPrimitive.Header className="flex w-full items-center justify-between py-4 font-medium text-left">
-                     <div className="flex items-center gap-4 text-left">
+              <Accordion type="single" collapsible className="w-full text-left text-left text-left" key={i}>
+                <AccordionItem value={`item-${i}`} className="border-b last:border-0 border-muted/50 text-left text-left text-left">
+                  <AccordionPrimitive.Header className="flex w-full items-center justify-between py-4 font-medium text-left text-left text-left">
+                     <div className="flex items-center gap-4 text-left text-left text-left">
                         <Checkbox
                           id={`prayer-${point.label}`}
                           checked={checkedPrayers.includes(point.label)}
@@ -165,28 +164,28 @@ function DialogBody({
                               );
                             }
                           }}
-                          className="h-5 w-5 rounded-md text-left"
+                          className="h-5 w-5 rounded-md text-left text-left text-left"
                         />
-                        <label htmlFor={`prayer-${point.label}`} className="cursor-pointer font-bold text-sm sm:text-base leading-tight text-left">
+                        <label htmlFor={`prayer-${point.label}`} className="cursor-pointer font-bold text-sm sm:text-base leading-tight text-left text-left">
                             {point.label}
                         </label>
                     </div>
-                     <AccordionPrimitive.Trigger className={cn("transition-transform duration-200 text-muted-foreground hover:text-primary [&[data-state=open]>svg]:rotate-180 p-2 text-left")}>
-                        <ChevronDown className="h-4 w-4 text-left" />
+                     <AccordionPrimitive.Trigger className={cn("transition-transform duration-200 text-muted-foreground hover:text-primary [&[data-state=open]>svg]:rotate-180 p-2 text-left text-left text-left")}>
+                        <ChevronDown className="h-4 w-4 text-left text-left text-left" />
                     </AccordionPrimitive.Trigger>
                   </AccordionPrimitive.Header>
-                  <AccordionContent className="text-left">
-                    <div className="pt-2 pb-6 space-y-4 px-1 text-left">
-                      <p className="text-sm text-muted-foreground leading-relaxed font-medium text-left">{point.prayer}</p>
+                  <AccordionContent className="text-left text-left text-left">
+                    <div className="pt-2 pb-6 space-y-4 px-1 text-left text-left text-left">
+                      <p className="text-sm text-muted-foreground leading-relaxed font-medium text-left text-left">{point.prayer}</p>
                       
                       {point.actionId === 'souls' && onOpenSouls && (
                         <Button 
                             variant="outline" 
                             size="sm" 
-                            className="h-9 rounded-xl font-black uppercase text-[10px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-left"
+                            className="h-9 rounded-xl font-black uppercase text-[10px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-left text-left"
                             onClick={onOpenSouls}
                         >
-                            <UserPlus className="mr-2 h-3.5 w-3.5 text-left" />
+                            <UserPlus className="mr-2 h-3.5 w-3.5 text-left text-left" />
                             Log Soul Won
                         </Button>
                       )}
@@ -196,21 +195,21 @@ function DialogBody({
                             variant="outline" 
                             size="sm" 
                             asChild
-                            className="h-9 rounded-xl font-black uppercase text-[10px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-left"
+                            className="h-9 rounded-xl font-black uppercase text-[10px] tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-left text-left"
                         >
-                            <a href="/accountability" onClick={() => onOpenChange(false)}>
-                                <HeartHandshake className="mr-2 h-3.5 w-3.5 text-left" />
+                            <a href="/accountability" onClick={() => onOpenChange(false)} className="text-left">
+                                <HeartHandshake className="mr-2 h-3.5 w-3.5 text-left text-left" />
                                 Check Partners
                             </a>
                         </Button>
                       )}
 
-                      <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10 relative text-left">
-                        <span className="absolute top-2 left-4 text-primary/20 font-black text-4xl leading-none text-left">"</span>
-                        <p className="italic text-sm text-foreground/80 leading-relaxed text-left">
+                      <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10 relative text-left text-left text-left">
+                        <span className="absolute top-2 left-4 text-primary/20 font-black text-4xl leading-none text-left text-left">"</span>
+                        <p className="italic text-sm text-foreground/80 leading-relaxed text-left text-left">
                             {point.text}
                         </p>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-primary text-right mt-3 text-right">- {point.verse}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary text-right mt-3 text-right text-left">- {point.verse}</p>
                       </div>
                     </div>
                   </AccordionContent>
@@ -219,45 +218,45 @@ function DialogBody({
             ))}
           </div>
 
-          <div className="pt-6 border-t mt-4 space-y-4 text-left">
-            <h4 className="font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">
+          <div className="pt-6 border-t mt-4 space-y-4 text-left text-left">
+            <h4 className="font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left text-left">
                 KINGDOM HUB
             </h4>
-            <div className="grid grid-cols-2 gap-3 text-left">
-                <Button variant="outline" className="h-14 rounded-2xl flex flex-col gap-1 items-center justify-center p-2 group transition-all hover:border-primary/40 text-left" onClick={onOpenSouls}>
-                    <UserPlus className="h-4 w-4 text-primary group-hover:scale-110 transition-transform text-left" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-left">Log Soul</span>
+            <div className="grid grid-cols-2 gap-3 text-left text-left">
+                <Button variant="outline" className="h-14 rounded-2xl flex flex-col gap-1 items-center justify-center p-2 group transition-all hover:border-primary/40 text-left text-left" onClick={onOpenSouls}>
+                    <UserPlus className="h-4 w-4 text-primary group-hover:scale-110 transition-transform text-left text-left" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-left text-left">Log Soul</span>
                 </Button>
-                <Button variant="outline" className="h-14 rounded-2xl flex flex-col gap-1 items-center justify-center p-2 group transition-all hover:border-primary/40 text-left" onClick={onOpenBible}>
-                    <BookMarked className="h-4 w-4 text-primary group-hover:scale-110 transition-transform text-left" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-left">Study Word</span>
+                <Button variant="outline" className="h-14 rounded-2xl flex flex-col gap-1 items-center justify-center p-2 group transition-all hover:border-primary/40 text-left text-left" onClick={onOpenBible}>
+                    <BookMarked className="h-4 w-4 text-primary group-hover:scale-110 transition-transform text-left text-left" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-left text-left">Study Word</span>
                 </Button>
-                <Button variant="outline" className="h-14 rounded-2xl flex flex-col gap-1 items-center justify-center p-2 group transition-all hover:border-primary/40 text-left" onClick={onOpenNotes}>
-                    <Edit className="h-4 w-4 text-primary group-hover:scale-110 transition-transform text-left" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-left">Journal</span>
+                <Button variant="outline" className="h-14 rounded-2xl flex flex-col gap-1 items-center justify-center p-2 group transition-all hover:border-primary/40 text-left text-left" onClick={onOpenNotes}>
+                    <Edit className="h-4 w-4 text-primary group-hover:scale-110 transition-transform text-left text-left" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-left text-left">Journal</span>
                 </Button>
-                <Button variant="outline" className="h-14 rounded-2xl flex flex-col gap-1 items-center justify-center p-2 group transition-all hover:border-primary/40 text-left" onClick={onOpenChurch}>
-                    <Church className="h-4 w-4 text-primary group-hover:scale-110 transition-transform text-left" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-left">Attend</span>
+                <Button variant="outline" className="h-14 rounded-2xl flex flex-col gap-1 items-center justify-center p-2 group transition-all hover:border-primary/40 text-left text-left" onClick={onOpenChurch}>
+                    <Church className="h-4 w-4 text-primary group-hover:scale-110 transition-transform text-left text-left" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-left text-left">Attend</span>
                 </Button>
             </div>
           </div>
 
           {prayerLinks.length > 0 && (
-            <div className="space-y-4 pt-6 border-t mt-4 text-left">
-              <h4 className="font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left">
+            <div className="space-y-4 pt-6 border-t mt-4 text-left text-left text-left">
+              <h4 className="font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left text-left text-left text-left">
                 JOIN A PRAYER STREAM
               </h4>
-              <div className="space-y-3 text-left">
+              <div className="space-y-3 text-left text-left text-left text-left">
                 {prayerLinks.map((link, index) => (
                   <Button
                     key={index}
                     variant="secondary"
-                    className="w-full justify-start h-12 rounded-2xl px-5 font-bold transition-transform active:scale-95 text-left"
+                    className="w-full justify-start h-12 rounded-2xl px-5 font-bold transition-transform active:scale-95 text-left text-left text-left"
                     onClick={() => handleLinkClick(link.url)}
                   >
-                    <PlayCircle className="mr-3 h-5 w-5 text-primary text-left" />
-                    <span className="truncate text-left">{link.name}</span>
+                    <PlayCircle className="mr-3 h-5 w-5 text-primary text-left text-left text-left" />
+                    <span className="truncate text-left text-left text-left">{link.name}</span>
                   </Button>
                 ))}
               </div>
@@ -322,32 +321,29 @@ export function PrayerDialog({
     });
   };
 
-  const titleText = "Secret Place";
-  const descText = "Communing with the Father in the secret place.";
-
   if (!mounted) return null;
 
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onOpenChange}>
         <DrawerContent
-          className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem] text-left"
+          className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem] text-left text-left text-left"
         >
-          <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-            <DrawerHeader className="text-left p-0 text-left">
-                <div className="flex items-center gap-3 mb-1 text-left">
-                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-left">
-                        <Zap className="h-5 w-5 text-primary fill-current text-left" />
+          <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+            <DrawerHeader className="text-left p-0 text-left text-left text-left">
+                <div className="flex items-center gap-3 mb-1 text-left text-left text-left">
+                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-left text-left text-left">
+                        <Zap className="h-5 w-5 text-primary fill-current text-left text-left text-left" />
                     </div>
-                    <DrawerTitle className="text-2xl font-black font-headline text-left">Secret Place</DrawerTitle>
+                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Secret Place</DrawerTitle>
                 </div>
-                <DrawerDescription className="text-sm font-medium text-left">
+                <DrawerDescription className="text-sm font-medium text-left text-left text-left">
                   Communing with the Father in the secret place.
                 </DrawerDescription>
             </DrawerHeader>
           </div>
-          <ScrollArea className="flex-grow px-8 text-left">
-            <div className="py-6 text-left">
+          <ScrollArea className="flex-grow px-8 text-left text-left text-left">
+            <div className="py-6 text-left text-left text-left">
               <DialogBody 
                 userProfile={userProfile}
                 checkedPrayers={checkedPrayers}
@@ -361,16 +357,16 @@ export function PrayerDialog({
               />
             </div>
           </ScrollArea>
-          <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left">
+          <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left text-left text-left">
             <Button
               onClick={handleComplete}
               disabled={checkedPrayers.length < prayerPoints.length}
               size="lg"
-              className="w-full h-14 text-xl font-black rounded-2xl shadow-xl shadow-primary/20 text-center text-left"
+              className="w-full h-14 text-xl font-black rounded-2xl shadow-xl shadow-primary/20 text-center text-left text-left text-left"
             >
               MARK AS PRAYED
             </Button>
-            <p className="text-[10px] text-center text-muted-foreground mt-4 font-medium tracking-wide">
+            <p className="text-[10px] text-center text-muted-foreground mt-4 font-medium tracking-wide w-full text-center text-left text-left text-left">
                 Complete all {prayerPoints.length} focus points to mark as finished.
             </p>
           </div>
@@ -381,15 +377,15 @@ export function PrayerDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl flex flex-col h-[85vh] max-h-[85vh] p-0 overflow-hidden text-left">
-        <div className="p-6 border-b shrink-0 text-left">
-            <DialogHeader className="text-left">
-                <DialogTitle className="text-left">Secret Place</DialogTitle>
-                <DialogDescription className="text-left">Communing with the Father in the secret place.</DialogDescription>
+      <DialogContent className="sm:max-w-xl flex flex-col h-[85vh] max-h-[85vh] p-0 overflow-hidden text-left text-left text-left">
+        <div className="p-6 border-b shrink-0 text-left text-left text-left text-left">
+            <DialogHeader className="text-left text-left text-left text-left">
+                <DialogTitle className="text-left text-left text-left text-left">Secret Place</DialogTitle>
+                <DialogDescription className="text-left text-left text-left text-left">Communing with the Father in the secret place.</DialogDescription>
             </DialogHeader>
         </div>
-        <ScrollArea className="flex-1 min-h-0 px-6 text-left">
-            <div className="py-6 text-left">
+        <ScrollArea className="flex-1 min-h-0 px-6 text-left text-left text-left text-left">
+            <div className="py-6 text-left text-left text-left text-left">
               <DialogBody 
                 userProfile={userProfile}
                 checkedPrayers={checkedPrayers}
@@ -403,11 +399,11 @@ export function PrayerDialog({
               />
             </div>
         </ScrollArea>
-        <div className="flex-shrink-0 p-6 border-t text-left">
+        <div className="flex-shrink-0 p-6 border-t text-left text-left text-left text-left">
           <Button
             onClick={handleComplete}
             disabled={checkedPrayers.length < prayerPoints.length}
-            className="w-full h-12 font-bold text-lg text-center"
+            className="w-full h-12 font-bold text-lg text-center text-left text-left text-left"
           >
             Mark as Prayed
           </Button>
