@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -24,7 +25,6 @@ import {
   Users,
   Camera,
   X,
-  ChevronRight,
   ChevronDown,
   TrendingUp,
   Target,
@@ -60,6 +60,14 @@ import {
   DrawerTitle,
   DrawerDescription
 } from "@/components/ui/drawer";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetTrigger
+} from "@/components/ui/sheet";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
 import {
   doc, 
@@ -651,36 +659,6 @@ export const TestimonyCard = memo(function TestimonyCard({
                 </div>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <button 
-                                className={cn(
-                                    "h-10 w-10 rounded-full border transition-colors flex items-center justify-center",
-                                    hasWitnessed ? "text-emerald-600 border-emerald-500/30 bg-emerald-500/10 shadow-sm ring-1 ring-emerald-500/20" : 
-                                    witnessCount > 0 ? "text-emerald-600/70 border-emerald-500/20 bg-emerald-500/5" : "text-muted-foreground border-border bg-background"
-                                )}
-                                onClick={(e) => { e.stopPropagation(); setIsWitnessOpen(true); }}
-                            >
-                                <div className="relative">
-                                    <ShieldCheck className="h-5 w-5" />
-                                    {witnessCount > 0 && (
-                                        <span className={cn(
-                                            "absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full text-[6px] font-black text-white border-2 border-background",
-                                            hasWitnessed ? "bg-emerald-600" : "bg-emerald-500"
-                                        )}>
-                                            {witnessCount}
-                                        </span>
-                                    )}
-                                </div>
-                            </button>
-                        </TooltipTrigger>
-                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-                            <p className="text-[10px] font-black uppercase">{isAuthor ? "View Witnesses" : hasWitnessed ? "You Have Witnessed" : "Bear Witness"}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-
                 <Button variant="outline" size="icon" className="h-10 w-10 rounded-full bg-background" onClick={handleShare}>
                     <Share2 className="h-3.5 w-3.5" /><span className="sr-only">Share</span>
                 </Button>
@@ -770,18 +748,42 @@ export const TestimonyCard = memo(function TestimonyCard({
                         {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30 shadow-sm"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
                         {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20 shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
                         {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
-                        {witnessCount > 0 && <div className="bg-emerald-500 rounded-full p-1 border-2 border-background z-40 shadow-sm"><ShieldCheck className="h-2.5 w-2.5 text-white" /></div>}
                     </div>
                     <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-tight ml-1 text-left">
                         {totalReactions > 0 && <span className="text-left"> {totalReactions} REACTIONS</span>}
-                        {witnessCount > 0 && (
-                            <span className="text-emerald-600 text-left">
-                                <span className="normal-case"> {witnessCount} {witnessCount === 1 ? 'Witness' : 'Witnesses'}</span>
-                            </span>
-                        )}
                     </div>
                 </div>
-                {testimony.campaignTitle && <span className="text-[9px] font-black uppercase text-muted-foreground/60 truncate italic bg-muted/50 px-2 py-0.5 rounded-full border max-w-[150px] text-left">RE: {testimony.campaignTitle}</span>}
+                <div className="flex items-center gap-3">
+                    {testimony.campaignTitle && <span className="text-[9px] font-black uppercase text-muted-foreground/60 truncate italic bg-muted/50 px-2 py-0.5 rounded-full border max-w-[150px] text-left">RE: {testimony.campaignTitle}</span>}
+                    
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button 
+                                    className={cn(
+                                        "h-9 px-3 rounded-full border transition-all flex items-center justify-center gap-2 group/witness shadow-sm",
+                                        hasWitnessed ? "text-emerald-600 border-emerald-500/30 bg-emerald-500/10" : 
+                                        witnessCount > 0 ? "text-emerald-600/70 border-emerald-500/20 bg-emerald-500/5" : "text-muted-foreground border-border bg-background"
+                                    )}
+                                    onClick={(e) => { e.stopPropagation(); setIsWitnessOpen(true); }}
+                                >
+                                    <ShieldCheck className={cn("h-4 w-4 transition-transform group-hover/witness:scale-110", witnessCount > 0 && "fill-current")} />
+                                    {witnessCount > 0 && (
+                                        <span className="text-[10px] font-black tracking-widest uppercase">
+                                            {witnessCount} {witnessCount === 1 ? 'WITNESS' : 'WITNESSES'}
+                                        </span>
+                                    )}
+                                    {witnessCount === 0 && (
+                                        <span className="text-[10px] font-black tracking-widest uppercase opacity-40 group-hover/witness:opacity-100 transition-opacity">WITNESS</span>
+                                    )}
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+                                <p className="text-[10px] font-black uppercase">{isAuthor ? "View Witnesses" : hasWitnessed ? "You Have Witnessed" : "Bear Witness"}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
              </div>
            )}
         </div>
@@ -897,7 +899,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                     <Drawer open={isWitnessOpen} onOpenChange={setIsWitnessOpen}>
                         <DrawerContent className="h-[95dvh] sm:max-w-lg sm:mx-auto flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-emerald-500/10 text-left text-left text-left text-left">
-                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left">
+                                <DrawerHeader className="text-left p-0 text-left text-left text-left text-left text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
                                         <ShieldCheck className="h-4 w-4 text-emerald-600 text-left text-left text-left text-left text-left" />
                                         <span className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.3em] text-left text-left text-left text-left text-left">Miracle Verification</span>

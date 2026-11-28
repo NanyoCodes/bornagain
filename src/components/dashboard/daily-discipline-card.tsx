@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -338,27 +339,27 @@ export function DailyDisciplineCard() {
             )}
           </div>
         </CardHeader>
-        <CardContent className="space-y-8 text-left text-left">
-            <div className="space-y-4 text-left text-left">
+        <CardContent className="space-y-8 text-left text-left text-left">
+            <div className="space-y-4 text-left text-left text-left">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
-                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left px-4 text-left text-left"
+                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left px-4 text-left text-left text-left"
                             disabled={togglingId !== null}
                         >
-                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110 text-left" />}
-                            <span className="text-[10px] sm:text-sm font-black uppercase tracking-tight text-left">DECLARE DAILY DISCIPLINE</span>
-                            <div className="ml-auto flex items-center gap-2 text-left">
-                                <span className="text-[9px] sm:text-[10px] opacity-60 whitespace-nowrap text-left">{completedToday.length}/4 COMPLETED</span>
-                                <ChevronDown className="h-4 w-4 opacity-40 shrink-0 text-left" />
+                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin text-left text-left" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110 text-left text-left" />}
+                            <span className="text-[10px] sm:text-sm font-black uppercase tracking-tight text-left text-left">DECLARE DAILY DISCIPLINE</span>
+                            <div className="ml-auto flex items-center gap-2 text-left text-left">
+                                <span className="text-[9px] sm:text-[10px] opacity-60 whitespace-nowrap text-left text-left">{completedToday.length}/4 COMPLETED</span>
+                                <ChevronDown className="h-4 w-4 opacity-40 shrink-0 text-left text-left" />
                             </div>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-[400px] rounded-[2rem] p-2 shadow-2xl border-none text-left" align="center" sideOffset={8}>
-                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3 text-left">Select Discipline</DropdownMenuLabel>
-                        <DropdownMenuSeparator className="opacity-50 text-left" />
-                        <ScrollArea className="h-80 text-left">
-                            <div className="p-1.5 space-y-1 text-left">
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4 py-3 text-left text-left">Select Discipline</DropdownMenuLabel>
+                        <DropdownMenuSeparator className="opacity-50 text-left text-left" />
+                        <ScrollArea className="h-80 text-left text-left">
+                            <div className="p-1.5 space-y-1 text-left text-left">
                                 {disciplines.map(discipline => {
                                     const isCompleted = completedToday.includes(discipline.id);
                                     const { Icon } = discipline;
@@ -367,20 +368,20 @@ export function DailyDisciplineCard() {
                                             key={discipline.id} 
                                             onSelect={() => handleDisciplineClick(discipline.id)}
                                             className={cn(
-                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4 text-left",
+                                                "rounded-xl h-14 gap-4 cursor-pointer transition-all px-4 text-left text-left",
                                                 isCompleted ? "bg-primary/5 text-primary" : "hover:bg-muted/50"
                                             )}
                                         >
                                             <div className={cn(
-                                                "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border text-left",
+                                                "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border text-left text-left",
                                                 isCompleted ? "bg-primary/10 border-primary/20" : "bg-muted/50 border-transparent"
                                             )}>
-                                                <Icon className={cn("h-4 w-4 text-left", isCompleted ? "text-primary" : "text-muted-foreground")} />
+                                                <Icon className={cn("h-4 w-4 text-left text-left", isCompleted ? "text-primary" : "text-muted-foreground")} />
                                             </div>
-                                            <span className={cn("text-xs font-black uppercase tracking-tight text-left", isCompleted ? "text-primary" : "text-foreground")}>
+                                            <span className={cn("text-xs font-black uppercase tracking-tight text-left text-left", isCompleted ? "text-primary" : "text-foreground")}>
                                                 {discipline.label}
                                             </span>
-                                            {isCompleted && <CheckCircle2 className="h-4 w-4 ml-auto text-primary fill-current text-left" />}
+                                            {isCompleted && <CheckCircle2 className="h-4 w-4 ml-auto text-primary fill-current text-left text-left" />}
                                         </DropdownMenuItem>
                                     )
                                 })}
@@ -400,14 +401,14 @@ export function DailyDisciplineCard() {
 
             {uniquePartners.length > 0 && currentDate && (
                 <div className="space-y-4 text-left text-left text-left">
-                    <Separator className="opacity-50 text-left" />
+                    <Separator className="opacity-50 text-left text-left" />
                     <div className="flex items-center justify-between px-1 text-left text-left text-left">
                         <div className="flex items-center gap-2 text-left text-left">
                             <HeartHandshake className="h-4 w-4 text-primary text-left text-left" />
                             <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left text-left">Partner Activity</h4>
                         </div>
-                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left">
-                            <Link href="/accountability" className="text-left">Full View</Link>
+                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left text-left">
+                            <Link href="/accountability" className="text-left text-left">Full View</Link>
                         </Button>
                     </div>
                     
@@ -455,17 +456,17 @@ export function DailyDisciplineCard() {
       />
 
       <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex items-center justify-between gap-4 text-left">
-                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
-                    <DrawerTitle className="text-2xl font-black font-headline text-left">Log Harvest</DrawerTitle>
-                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
+        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex items-center justify-between gap-4 text-left text-left">
+                <DrawerHeader className="text-left flex-shrink-0 p-0 text-left text-left">
+                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left">Log Harvest</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</DrawerDescription>
                 </DrawerHeader>
-                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-left" onClick={() => setIsLogSoulOpen(false)}>
-                    <X className="h-5 w-5 text-left" />
+                <Button variant="outline" size="icon" className="rounded-full h-9 w-9 shrink-0 border bg-background text-left text-left" onClick={() => setIsLogSoulOpen(false)}>
+                    <X className="h-5 w-5 text-left text-left" />
                 </Button>
             </div>
-            <ScrollArea className="flex-1 min-h-0 p-8 text-left">
+            <ScrollArea className="flex-1 min-h-0 p-8 text-left text-left">
                 <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={fellowships || []} campaigns={[]} />
             </ScrollArea>
         </DrawerContent>

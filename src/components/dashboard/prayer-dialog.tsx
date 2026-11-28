@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -25,7 +26,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
-import { Loader2, PlayCircle, ChevronDown, Zap, HandHeart, UserPlus, BookMarked, Edit, Church, HeartHandshake, X, Target } from 'lucide-react';
+import { Loader2, PlayCircle, ChevronDown, Zap, HandHeart, UserPlus, BookMarked, Edit, Church, HeartHandshake, X, Target, Sparkles } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
 import { useUser } from '@/firebase';
 import { PrayerLinksSettingsCard } from '../settings/prayer-links-settings-card';

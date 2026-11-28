@@ -1,8 +1,9 @@
+
 'use client';
 
 /**
  * @fileOverview This page handles the dedicated sign-up experience.
- * Updated to reflect Church and Corporate registration options and fixed Google signup crash.
+ * Updated to correctly handle Google Auth result data and prevent variable crashes.
  */
 
 import Link from 'next/link';
@@ -18,8 +19,7 @@ import {
   AuthError,
   setPersistence,
   browserLocalPersistence,
-  signOut,
-  updateProfile
+  signOut
 } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { doc, setDoc } from 'firebase/firestore';

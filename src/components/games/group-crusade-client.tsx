@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -388,7 +389,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                         {leaderboard.map((entry, idx) => (
                             <div key={entry.userId} className="flex items-center justify-between p-4 rounded-2xl bg-card/50 border shadow-sm group hover:border-primary/20 transition-all text-left">
                                 <div className="flex items-center gap-4 min-w-0 text-left">
-                                    <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center shrink-0 text-left">
+                                    <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center shrink-0 text-left text-left">
                                         <span className="text-[10px] font-black text-muted-foreground text-left text-left"> {idx + 1}</span>
                                     </div>
                                     <LiveMemberAvatar userId={entry.userId} fallbackInitials={entry.name.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0 text-left text-left" />
@@ -416,7 +417,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                     <Users className="h-4 w-4 text-primary text-left text-left" />
                     <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground text-left text-left">Active Workforce</h3>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left text-left text-left">
                     {members?.map(m => (
                         <div key={m.userId} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/20 text-left text-left text-left">
                             <LiveMemberAvatar userId={m.userId} fallbackInitials={m.firstName.charAt(0)} className="h-9 w-9 border shadow-sm text-left text-left text-left" />
@@ -441,7 +442,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                     <header className="space-y-6 pt-4 text-left text-left">
                         <div className="flex items-center gap-4 text-left text-left">
                             <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left text-left">
-                                <ArrowLeft className="h-5 w-5 text-left text-left text-left" />
+                                <ArrowLeft className="h-6 w-6 text-left text-left text-left" />
                             </Button>
                             <div className="min-w-0 text-left text-left text-left">
                                 <div className="flex items-center gap-2 mb-1 text-left text-left text-left text-left">
@@ -505,7 +506,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                             </div>
                                                         </div>
                                                         <div className="flex flex-col gap-4 text-left text-left text-left">
-                                                            <Button onClick={handleLaunchCrusade} size="lg" className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 text-lg active:scale-95 transition-transform text-center text-left text-left" disabled={isRequesting}>
+                                                            <Button onClick={handleLaunchCrusade} size="lg" className="w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 text-lg active:scale-95 transition-transform text-center text-left text-left text-left" disabled={isRequesting}>
                                                                 {isRequesting ? <Loader2 className="h-5 w-5 animate-spin mr-2 text-left text-left text-left" /> : <Sword className="h-5 w-5 mr-2 text-left text-left text-left" />}
                                                                 LAUNCH CRUSADE
                                                             </Button>
@@ -569,7 +570,7 @@ export default function GroupCrusadeClient({ fellowshipId }: { fellowshipId: str
                                                     </div>
                                                     <div className="text-right text-left text-left text-left"><p className="text-[10px] sm:text-[11px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1 text-right text-left text-left text-left">Contribution</p><p className="text-2xl sm:text-4xl font-black text-green-500 tracking-tighter leading-none text-right text-left text-left text-left">+{correctCount * 10} POINTS</p></div>
                                                 </div>
-                                                <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden text-left text-left text-left"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left text-left text-left text-left"><Target className="h-24 w-24 text-primary text-left text-left text-left text-left text-left" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center text-left text-left text-left">&ldquo;{BIBLE_GAME_DATA[activeGameType][quizIndex]?.text}&rdquo;</motion.p></AnimatePresence></div>
+                                                <div className="bg-zinc-900 rounded-[2rem] sm:rounded-[3.5rem] p-8 sm:p-14 border-2 border-dashed border-white/5 shadow-inner flex items-center justify-center min-h-[220px] text-center relative overflow-hidden text-left text-left text-left text-left"><div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left text-left text-left text-left text-left text-left"><Target className="h-24 w-24 text-primary text-left text-left text-left text-left text-left" /></div><AnimatePresence mode="wait"><motion.p key={quizIndex} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed text-zinc-100 text-balance text-center text-left text-left text-left">&ldquo;{BIBLE_GAME_DATA[activeGameType][quizIndex]?.text}&rdquo;</motion.p></AnimatePresence></div>
                                                 <div className="grid grid-cols-2 gap-4 text-left text-left text-left text-left">
                                                     {BIBLE_GAME_DATA[activeGameType][quizIndex]?.options.map((opt: string) => (<Button key={opt} variant="outline" className={cn("h-16 sm:h-24 rounded-[1.25rem] sm:rounded-[2rem] font-black uppercase tracking-widest text-xs sm:text-base transition-all border-2 text-center whitespace-normal p-4 text-left text-left text-left", gameState === 'correct' && opt === BIBLE_GAME_DATA[activeGameType][quizIndex].correct ? "bg-green-600 text-white border-green-400 scale-[1.03] shadow-[0_0_40px_rgba(22,163,74,0.4)]" : gameState === 'wrong' && opt === selectedOption ? "bg-red-600 text-white border-red-400 shadow-xl" : "bg-zinc-800/50 border-white/5 text-zinc-300 hover:bg-primary/10 hover:text-primary hover:border-primary/40")} disabled={gameState !== 'playing'} onClick={() => handleCheck(opt)}>{opt}</Button>))}
                                                 </div>
