@@ -1,4 +1,3 @@
-
 'use client';
 
 /**
@@ -135,9 +134,9 @@ export default function SignUpPage() {
   return (
     <AuthLayout>
       <div className="space-y-6 text-left">
-        <div className="grid gap-2 text-left text-left">
-          <h1 className="text-2xl md:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">Registration</h1>
-          <p className="text-balance text-muted-foreground font-medium text-sm text-left text-left">
+        <div className="grid gap-2 text-left">
+          <h1 className="text-2xl md:text-4xl font-black font-headline tracking-tight uppercase text-left">Registration</h1>
+          <p className="text-balance text-muted-foreground font-medium text-sm text-left">
             Register as a <span className="text-primary font-bold text-left">Personal</span>, <span className="text-primary font-bold text-left">Church</span>, or <span className="text-primary font-bold text-left">Corporate</span> account to start mobilizing for the Kingdom.
           </p>
         </div>
@@ -146,12 +145,12 @@ export default function SignUpPage() {
 
         <div className="text-center text-sm font-medium text-left">
           Already have an account?{' '}
-          <Link href="/login" className="underline cursor-pointer font-bold text-primary text-left text-left">
+          <Link href="/login" className="underline cursor-pointer font-bold text-primary text-left">
             Sign in
           </Link>
         </div>
 
-        <div className="relative text-left text-left">
+        <div className="relative text-left">
               <div className="absolute inset-0 flex items-center text-left">
                   <span className="w-full border-t text-left" />
               </div>
@@ -162,8 +161,8 @@ export default function SignUpPage() {
               </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 text-left text-left">
-              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-12 rounded-xl text-left font-bold text-left text-left">
+          <div className="grid grid-cols-1 gap-2 text-left">
+              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-12 rounded-xl text-left font-bold text-left">
                   {isGoogleLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary text-left" />
                   ) : (

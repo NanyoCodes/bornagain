@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -60,14 +59,6 @@ import {
   DrawerTitle,
   DrawerDescription
 } from "@/components/ui/drawer";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetTrigger
-} from "@/components/ui/sheet";
 import { useUser, useDoc, useCollection, useFirestore, useUserProfile } from "@/firebase";
 import {
   doc, 
@@ -267,20 +258,6 @@ function LiveAuthorName({ userId, fallbackName }: { userId: string, fallbackName
     return <span className="capitalize">{name}</span>;
 }
 
-export function getStatusClasses(status: FollowUpStatus | undefined): string {
-    if (!status) return 'bg-secondary text-secondary-foreground border-border';
-    switch (status) {
-        case 'New':
-            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
-        case 'Contacted':
-            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
-        case 'Established':
-            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
-        default:
-            return 'bg-secondary text-secondary-foreground border-border';
-    }
-}
-
 function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: string, testimonyAuthorId: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
@@ -352,14 +329,14 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
             {isAuthor && (
                 <div className="p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed flex items-start gap-4 shadow-inner">
                     <Info className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
-                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-balance">
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-balance text-left">
                         The witness must be someone else. Others who witnessed this miracle can provide their formal endorsement here to build the "Cloud of Witnesses."
                     </p>
                 </div>
             )}
 
             <div className="space-y-6">
-                <div className="flex items-center gap-2 px-1">
+                <div className="flex items-center gap-2 px-1 text-left">
                     <Users className="h-4 w-4 text-primary" />
                     <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">The Cloud of Witnesses</h3>
                 </div>
@@ -367,9 +344,9 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
                 {loading ? (
                     <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
                 ) : witnesses && witnesses.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="space-y-4 text-left">
                         {witnesses.map(w => (
-                            <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border">
+                            <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border text-left">
                                 <LiveAuthorAvatar userId={w.authorId} fallbackInitials={w.authorFirstName?.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
                                 <div className="min-w-0 flex-1">
                                     <div className="flex justify-between items-baseline mb-1">
@@ -509,7 +486,6 @@ export const TestimonyCard = memo(function TestimonyCard({
     if (e) { e.preventDefault(); e.stopPropagation(); }
     const shareUrl = `${window.location.origin}/testimonies#${testimony.id}`;
     
-    // Enhanced content for broader Kingdom proclamation
     const author = authorName;
     const category = testimony.category;
     const snippet = testimony.content.substring(0, 250);
@@ -533,7 +509,7 @@ export const TestimonyCard = memo(function TestimonyCard({
         if (err.name === 'AbortError') return;
         try {
           await navigator.clipboard.writeText(`${textContent}\n\n${shareUrl}`);
-          toast({ title: "Detailed Proclamation Copied!" });
+          toast({ title: "Proclamation Copied!" });
         } catch (clipErr) {
             await navigator.clipboard.writeText(shareUrl);
             toast({ title: "Link Copied!" });
@@ -609,7 +585,7 @@ export const TestimonyCard = memo(function TestimonyCard({
         testimony.answeredPrayerId && "sm:border-l-4 sm:border-l-amber-500"
       )}>
         <div className="p-4 sm:p-6 pb-2">
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-3 text-left">
+          <div className="flex flex-row items-start justify-between gap-3 text-left">
             <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 {testimony.isAnonymous ? (
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
@@ -822,7 +798,7 @@ export const TestimonyCard = memo(function TestimonyCard({
                             <DrawerDescription className="text-sm font-medium mt-1 text-balance text-left">Share your miracle with a wider global audience.</DrawerDescription>
                         </div>
                     </div>
-                    <div className="p-8 space-y-6 text-left text-left text-left text-left">
+                    <div className="p-8 space-y-6 text-left text-left text-left text-left text-left">
                         <div className="bg-primary/5 rounded-2xl p-6 border-2 border-dashed border-primary/20 text-left text-left text-left text-left">
                             <h4 className="font-bold text-sm mb-2 text-left text-left">Promotion Benefits</h4>
                             <ul className="space-y-2 text-xs text-muted-foreground font-medium text-left">
