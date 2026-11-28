@@ -24,6 +24,7 @@ import {
   Users,
   Camera,
   X,
+  ChevronRight,
   ChevronDown,
   TrendingUp,
   Target,
@@ -258,6 +259,20 @@ function LiveAuthorName({ userId, fallbackName }: { userId: string, fallbackName
     return <span className="capitalize">{name}</span>;
 }
 
+export function getStatusClasses(status: FollowUpStatus | undefined): string {
+    if (!status) return 'bg-secondary text-secondary-foreground border-border';
+    switch (status) {
+        case 'New':
+            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
+        case 'Contacted':
+            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
+        case 'Established':
+            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
+        default:
+            return 'bg-secondary text-secondary-foreground border-border';
+    }
+}
+
 function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: string, testimonyAuthorId: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
@@ -305,15 +320,15 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
         <div className="space-y-8 text-left">
             {user && !isAuthor && (
                 <form onSubmit={handlePostWitness} className="space-y-4 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 shadow-inner text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left text-left">
-                        <ShieldCheck className="h-4 w-4 text-primary text-left" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-widest text-left">Add Your Account</span>
+                    <div className="flex items-center gap-2 mb-1">
+                        <ShieldCheck className="h-4 w-4 text-primary" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-widest">Add Your Account</span>
                     </div>
                     <Textarea 
                         placeholder="I was there, I saw this miracle too..."
                         value={witnessText}
                         onChange={e => setWitnessText(e.target.value)}
-                        className="min-h-[100px] rounded-2xl bg-background border-none shadow-inner text-base text-left"
+                        className="min-h-[100px] rounded-2xl bg-background border-none shadow-inner text-base"
                     />
                     <Button 
                         type="submit" 
@@ -327,18 +342,18 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
             )}
 
             {isAuthor && (
-                <div className="p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed flex items-start gap-4 shadow-inner text-left">
-                    <Info className="h-5 w-5 text-muted-foreground mt-1 shrink-0 text-left" />
-                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-balance text-left">
+                <div className="p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed flex items-start gap-4 shadow-inner">
+                    <Info className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed italic text-balance">
                         The witness must be someone else. Others who witnessed this miracle can provide their formal endorsement here to build the "Cloud of Witnesses."
                     </p>
                 </div>
             )}
 
-            <div className="space-y-6 text-left">
-                <div className="flex items-center gap-2 px-1 text-left">
-                    <Users className="h-4 w-4 text-primary text-left" />
-                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground text-left">The Cloud of Witnesses</h3>
+            <div className="space-y-6">
+                <div className="flex items-center gap-2 px-1">
+                    <Users className="h-4 w-4 text-primary" />
+                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">The Cloud of Witnesses</h3>
                 </div>
                 
                 {loading ? (
@@ -346,14 +361,14 @@ function WitnessSection({ testimonyId, testimonyAuthorId }: { testimonyId: strin
                 ) : witnesses && witnesses.length > 0 ? (
                     <div className="space-y-4">
                         {witnesses.map(w => (
-                            <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border text-left">
+                            <div key={w.id} className="flex gap-4 items-start p-4 rounded-3xl bg-muted/20 border">
                                 <LiveAuthorAvatar userId={w.authorId} fallbackInitials={w.authorFirstName?.charAt(0)} className="h-10 w-10 border shadow-sm shrink-0" />
-                                <div className="min-w-0 flex-1 text-left">
-                                    <div className="flex justify-between items-baseline mb-1 text-left">
-                                        <p className="font-black text-sm uppercase tracking-tight text-left">{w.authorFirstName} {w.authorLastName}</p>
-                                        <span className="text-[8px] font-bold text-muted-foreground uppercase opacity-60 text-left">{w.createdAt ? format(safeToDate(w.createdAt)!, 'MMM d') : 'Just now'}</span>
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex justify-between items-baseline mb-1">
+                                        <p className="font-black text-sm uppercase tracking-tight">{w.authorFirstName} {w.authorLastName}</p>
+                                        <span className="text-[8px] font-bold text-muted-foreground uppercase opacity-60">{w.createdAt ? format(safeToDate(w.createdAt)!, 'MMM d') : 'Just now'}</span>
                                     </div>
-                                    <p className="text-sm text-muted-foreground leading-relaxed italic text-left">&ldquo;{w.text}&rdquo;</p>
+                                    <p className="text-sm text-muted-foreground leading-relaxed italic">&ldquo;{w.text}&rdquo;</p>
                                 </div>
                             </div>
                         ))}
@@ -485,9 +500,20 @@ export const TestimonyCard = memo(function TestimonyCard({
   const handleShare = async (e?: React.MouseEvent) => {
     if (e) { e.preventDefault(); e.stopPropagation(); }
     const shareUrl = `${window.location.origin}/testimonies#${testimony.id}`;
-    const textContent = `"${testimony.content.substring(0, 200)}${testimony.content.length > 200 ? '...' : ''}"\n\nRead full miracle on BornAgain:`;
     
-    const shareData: any = { title: 'Kingdom Testimony | BornAgain', text: textContent, url: shareUrl };
+    // Enhanced content for broader Kingdom proclamation
+    const author = authorName;
+    const category = testimony.category;
+    const snippet = testimony.content.substring(0, 250);
+    const hasMore = testimony.content.length > 250;
+    
+    const textContent = `🔥 NEW KINGDOM PROCLAMATION\n\nWitness: ${author}\nCategory: ${category}\n\n"${snippet}${hasMore ? '...' : ''}"\n\nRead the full account of God's manifest power on BornAgain Global:`;
+    
+    const shareData: any = { 
+      title: `${category} Victory | BornAgain Global`, 
+      text: textContent, 
+      url: shareUrl 
+    };
 
     try {
       if (navigator && navigator.share) {
@@ -498,8 +524,8 @@ export const TestimonyCard = memo(function TestimonyCard({
     } catch (err: any) {
         if (err.name === 'AbortError') return;
         try {
-          await navigator.clipboard.writeText(`${textContent} ${shareUrl}`);
-          toast({ title: "Details Copied!" });
+          await navigator.clipboard.writeText(`${textContent}\n\n${shareUrl}`);
+          toast({ title: "Detailed Proclamation Copied!" });
         } catch (clipErr) {
             await navigator.clipboard.writeText(shareUrl);
             toast({ title: "Link Copied!" });

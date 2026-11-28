@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
-import { Loader2, PlayCircle, ChevronDown, Zap, HandHeart, UserPlus, BookMarked, Edit, Church, HeartHandshake, X } from 'lucide-react';
+import { Loader2, PlayCircle, ChevronDown, Zap, HandHeart, UserPlus, BookMarked, Edit, Church, HeartHandshake, X, Target } from 'lucide-react';
 import type { UserProfile } from '@/lib/types';
 import { useUser } from '@/firebase';
 import { PrayerLinksSettingsCard } from '../settings/prayer-links-settings-card';
@@ -244,7 +244,7 @@ function DialogBody({
           </div>
 
           {prayerLinks.length > 0 && (
-            <div className="space-y-4 pt-6 border-t mt-4 text-left text-left text-left">
+            <div className="space-y-4 pt-6 border-t mt-4 text-left text-left text-left text-left">
               <h4 className="font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left text-left text-left text-left">
                 JOIN A PRAYER STREAM
               </h4>
@@ -366,7 +366,7 @@ export function PrayerDialog({
               onClick={handleComplete}
               disabled={checkedPrayers.length < prayerPoints.length}
               size="lg"
-              className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 text-center text-left"
+              className="w-full h-14 text-xl font-black rounded-2xl shadow-xl shadow-primary/20 text-center text-left"
             >
               MARK AS PRAYED
             </Button>
@@ -382,7 +382,7 @@ export function PrayerDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl flex flex-col h-[85vh] max-h-[85vh] p-0 overflow-hidden text-left">
-        <div className="p-6 border-b shrink-0 text-left text-left">
+        <div className="p-6 border-b shrink-0 text-left text-left text-left">
             <DialogHeader className="text-left text-left text-left">
                 <DialogTitle className="text-left text-left text-left">{titleText}</DialogTitle>
                 <DialogDescription className="text-left text-left text-left">{descText}</DialogDescription>

@@ -312,11 +312,11 @@ export function DailyDisciplineCard() {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left">
         <CardHeader className="p-4 sm:p-6 text-left">
-          <Skeleton className="h-5 w-32 mb-2" />
-          <Skeleton className="h-3 w-48" />
+          <Skeleton className="h-5 w-32 mb-2 text-left" />
+          <Skeleton className="h-3 w-48 text-left" />
         </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-6 text-left text-left">
-            <Skeleton className="h-14 w-full rounded-2xl" />
+        <CardContent className="px-4 sm:px-6 pb-6 text-left text-left text-left">
+            <Skeleton className="h-14 w-full rounded-2xl text-left" />
         </CardContent>
       </Card>
     );
@@ -325,32 +325,32 @@ export function DailyDisciplineCard() {
   return (
     <>
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left">
-        <CardHeader className="text-left text-left">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
-            <div className="space-y-1 text-left">
-              <CardTitle className="text-xl font-semibold tracking-tight text-left">Daily Discipline</CardTitle>
-              <CardDescription className="text-sm font-medium text-left">Your spiritual checklist for today.</CardDescription>
+        <CardHeader className="text-left text-left text-left">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left text-left">
+            <div className="space-y-1 text-left text-left">
+              <CardTitle className="text-xl font-semibold tracking-tight text-left text-left">Daily Discipline</CardTitle>
+              <CardDescription className="text-sm font-medium text-left text-left">Your spiritual checklist for today.</CardDescription>
             </div>
             {currentDate && (
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left">
                 {format(currentDate, 'PPPP')}
               </div>
             )}
           </div>
         </CardHeader>
-        <CardContent className="space-y-8 text-left">
-            <div className="space-y-4 text-left">
+        <CardContent className="space-y-8 text-left text-left">
+            <div className="space-y-4 text-left text-left">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
-                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left px-4"
+                            className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 gap-3 group/btn text-left px-4 text-left text-left"
                             disabled={togglingId !== null}
                         >
-                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110" />}
-                            <span className="text-[10px] sm:text-sm font-black uppercase tracking-tight">DECLARE DAILY DISCIPLINE</span>
-                            <div className="ml-auto flex items-center gap-2">
-                                <span className="text-[9px] sm:text-[10px] opacity-60 whitespace-nowrap">{completedToday.length}/4 COMPLETED</span>
-                                <ChevronDown className="h-4 w-4 opacity-40 shrink-0" />
+                            {togglingId ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : <PlusCircle className="h-5 w-5 transition-transform group-hover/btn:scale-110 text-left" />}
+                            <span className="text-[10px] sm:text-sm font-black uppercase tracking-tight text-left">DECLARE DAILY DISCIPLINE</span>
+                            <div className="ml-auto flex items-center gap-2 text-left">
+                                <span className="text-[9px] sm:text-[10px] opacity-60 whitespace-nowrap text-left">{completedToday.length}/4 COMPLETED</span>
+                                <ChevronDown className="h-4 w-4 opacity-40 shrink-0 text-left" />
                             </div>
                         </Button>
                     </DropdownMenuTrigger>
@@ -389,29 +389,29 @@ export function DailyDisciplineCard() {
                     </DropdownMenuContent>
                 </DropdownMenu>
                 
-                <div className="px-1 space-y-1 text-left">
-                    <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 text-left">
-                        <span className="text-left">Today's Dedication</span>
-                        <span className="text-left">{Math.round((completedToday.length / 4) * 100)}%</span>
+                <div className="px-1 space-y-1 text-left text-left text-left">
+                    <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 text-left text-left">
+                        <span className="text-left text-left">Today's Dedication</span>
+                        <span className="text-left text-left">{Math.round((completedToday.length / 4) * 100)}%</span>
                     </div>
-                    <Progress value={(completedToday.length / 4) * 100} className="h-1 text-left" />
+                    <Progress value={(completedToday.length / 4) * 100} className="h-1 text-left text-left" />
                 </div>
             </div>
 
             {uniquePartners.length > 0 && currentDate && (
-                <div className="space-y-4 text-left">
+                <div className="space-y-4 text-left text-left text-left">
                     <Separator className="opacity-50 text-left" />
-                    <div className="flex items-center justify-between px-1 text-left text-left">
-                        <div className="flex items-center gap-2 text-left">
-                            <HeartHandshake className="h-4 w-4 text-primary text-left" />
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left">Partner Activity</h4>
+                    <div className="flex items-center justify-between px-1 text-left text-left text-left">
+                        <div className="flex items-center gap-2 text-left text-left">
+                            <HeartHandshake className="h-4 w-4 text-primary text-left text-left" />
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left text-left">Partner Activity</h4>
                         </div>
                         <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left">
                             <Link href="/accountability" className="text-left">Full View</Link>
                         </Button>
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-left">
                         {uniquePartners.slice(0, 4).map(partner => (
                             <PartnerCompactStatus key={partner.userId} partner={partner} date={currentDate} />
                         ))}
@@ -455,7 +455,7 @@ export function DailyDisciplineCard() {
       />
 
       <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 flex items-center justify-between gap-4 text-left">
                 <DrawerHeader className="text-left flex-shrink-0 p-0 text-left">
                     <DrawerTitle className="text-2xl font-black font-headline text-left">Log Harvest</DrawerTitle>
